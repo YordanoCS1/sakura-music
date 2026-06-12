@@ -179,8 +179,12 @@ module.exports = (ipcMain, mainWindow) => {
       '--no-warnings', '--newline',
       '--js-runtimes', 'node',
       '--embed-metadata',
-      '--embed-thumbnail',
     ];
+
+    // Respetar el toggle "Incrustar portada" del usuario
+    if (embedCover !== false) {
+      ytArgs.push('--embed-thumbnail');
+    }
 
     if (format === 'mp3') {
       const bitrate = quality === 'audio_mp3_128' ? '5' : '0';

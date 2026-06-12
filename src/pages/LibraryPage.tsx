@@ -29,35 +29,25 @@ import { LayoutPorcelana } from '../components/library/LayoutPorcelana';
 import { LayoutDragon } from '../components/library/LayoutDragon';
 import { LayoutFestival } from '../components/library/LayoutFestival';
 import { LayoutJade } from '../components/library/LayoutJade';
+import { LayoutVinilo } from '../components/library/LayoutVinilo';
+import { LayoutCasete } from '../components/library/LayoutCasete';
+import { LayoutEstudio } from '../components/library/LayoutEstudio';
 import type { FileItem, SongMetadata } from './LibraryTypes';
 import type { LibraryLayout } from '../components/library/LayoutTypes';
 import toast from 'react-hot-toast';
 
 type SortKey = 'name' | 'artist' | 'date' | 'size';
 
+import { formatDuration, formatSize } from '../utils/format';
+
 const emptyMeta: SongMetadata = { title: null, artist: null, album: null, cover: null, duration: null };
-
-function formatDuration(seconds: number | null): string {
-  if (!seconds) return '--:--';
-  const m = Math.floor(seconds / 60);
-  const s = Math.floor(seconds % 60);
-  return `${m}:${s.toString().padStart(2, '0')}`;
-}
-
-function formatSize(bytes: number): string {
-  if (bytes === 0) return '0 B';
-  const k = 1024;
-  const sizes = ['B', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-}
 
 const numeral = (n: number) => n.toLocaleString();
 
 const layouts: Record<LibraryLayout, React.FC<any>> = {
   glass: LayoutGlass, 'list-minimal': LayoutListMinimal, masonry: LayoutMasonry, split: LayoutSplit, carousel: LayoutCarousel, mosaic: LayoutMosaic, feed: LayoutFeed, index: LayoutIndex, frame: LayoutFrame,
   citypop: LayoutCityPop, 'tokyo-neon': LayoutTokyoNeon, kawaii: LayoutKawaii, 'visual-kei': LayoutVisualKei, 'zen-garden': LayoutZenGarden, retrowave: LayoutRetroWave,
-  'anime-op': LayoutAnimeOP, yokai: LayoutYokai, 'ciudad-prohibida': LayoutCiudadProhibida, erudito: LayoutErudito, porcelana: LayoutPorcelana, dragon: LayoutDragon, festival: LayoutFestival, jade: LayoutJade,
+  'anime-op': LayoutAnimeOP, yokai: LayoutYokai, 'ciudad-prohibida': LayoutCiudadProhibida, erudito: LayoutErudito, porcelana: LayoutPorcelana, dragon: LayoutDragon, festival: LayoutFestival, jade: LayoutJade, vinilo: LayoutVinilo, casete: LayoutCasete, estudio: LayoutEstudio,
 };
 
 export const LibraryPage: React.FC = () => {
@@ -160,7 +150,45 @@ export const LibraryPage: React.FC = () => {
     return null;
   }, []);
 
-  async function loadPath(p?: string) {
+  const loadMetadataForFiles = useCallback((items: FileItem[]) => {
+    const audios = items.filter(f => f.is_audio);
+    if (audios.length === 0) return;
+    let i = 0;
+    let pending = 0;
+    let batchCount = 0;
+    const BATCH_SIZE = 20;
+    const flushBatch = () => {
+      if (batchCount > 0) { setMetaVersion(v => v + 1); batchCount = 0; }
+    };
+    const next = () => {
+      while (pending < 4 && i < audios.length) {
+        const f = audios[i++];
+        pending++;
+        invoke<SongMetadata>('get_file_metadata', { filePath: f.path }).then(meta => {
+          if (meta) {
+            metasRef.current.set(f.path, meta);
+            batchCount++;
+            if (batchCount >= BATCH_SIZE) flushBatch();
+          }
+        }).catch(() => {}).finally(() => { pending--; next(); });
+      }
+      if (pending === 0 && i >= audios.length) flushBatch();
+    };
+    next();
+  }, []);
+
+  const updateBreadcrumbs = useCallback((p: string) => {
+    const parts = p.replace(/\\/g, '/').split('/').filter(Boolean);
+    const crumbs = [{ name: 'Biblioteca', path: libraryRoot }];
+    let cur = '';
+    for (const part of parts) {
+      cur += (cur ? '\\' : '') + part;
+      crumbs.push({ name: part, path: cur });
+    }
+    setBreadcrumbs(crumbs);
+  }, [libraryRoot]);
+
+  const loadPath = useCallback(async (p?: string) => {
     const target = p || libraryRoot;
     if (!target) return;
     setLoading(true);
@@ -181,45 +209,7 @@ export const LibraryPage: React.FC = () => {
     } catch {
       toast.error('Error al cargar la biblioteca');
     } finally { setLoading(false); }
-  }
-
-  function loadMetadataForFiles(items: FileItem[]) {
-    const audios = items.filter(f => f.is_audio);
-    if (audios.length === 0) return;
-    let i = 0;
-    let pending = 0;
-    let batchCount = 0;
-    const BATCH_SIZE = 20;
-    function flushBatch() {
-      if (batchCount > 0) { setMetaVersion(v => v + 1); batchCount = 0; }
-    }
-    function next() {
-      while (pending < 4 && i < audios.length) {
-        const f = audios[i++];
-        pending++;
-        invoke<SongMetadata>('get_file_metadata', { filePath: f.path }).then(meta => {
-          if (meta) {
-            metasRef.current.set(f.path, meta);
-            batchCount++;
-            if (batchCount >= BATCH_SIZE) flushBatch();
-          }
-        }).catch(() => {}).finally(() => { pending--; next(); });
-      }
-      if (pending === 0 && i >= audios.length) flushBatch();
-    }
-    next();
-  }
-
-  function updateBreadcrumbs(p: string) {
-    const parts = p.replace(/\\/g, '/').split('/').filter(Boolean);
-    const crumbs = [{ name: 'Biblioteca', path: libraryRoot }];
-    let cur = '';
-    for (const part of parts) {
-      cur += (cur ? '\\' : '') + part;
-      crumbs.push({ name: part, path: cur });
-    }
-    setBreadcrumbs(crumbs);
-  }
+  }, [libraryRoot, updateBreadcrumbs, loadMetadataForFiles]);
 
   const handleFileClick = useCallback((file: FileItem, isDir: boolean) => {
     if (isDir) { loadPath(file.path); setSelectedFile(null); }
@@ -244,7 +234,7 @@ export const LibraryPage: React.FC = () => {
     });
   }, [filteredAndSortedFiles]);
 
-  function clearSelection() { setSelectedFiles(new Set()); }
+  const clearSelection = useCallback(() => { setSelectedFiles(new Set()); }, []);
 
   const handleOpenEditor = useCallback((file: FileItem) => {
     if (file.is_dir) setFolderCoverTarget(file);

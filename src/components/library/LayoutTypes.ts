@@ -33,14 +33,14 @@ export interface LibraryLayoutProps {
   onFilterChange: (val: string) => void;
   hoveredCard: string | null;
   onHover: (path: string | null) => void;
-  scrollRef: React.RefObject<HTMLDivElement | null>;
+  scrollRef: React.RefObject<HTMLDivElement>;
   setSelectedFile: (f: FileItem | null) => void;
   loadPath: (p?: string) => void;
   setInfoPanelFile: React.Dispatch<React.SetStateAction<FileItem | null>>;
   setMetadataEditorFile: React.Dispatch<React.SetStateAction<FileItem | null>>;
 }
 
-export type LibraryLayout = 'glass' | 'list-minimal' | 'masonry' | 'split' | 'carousel' | 'mosaic' | 'feed' | 'index' | 'frame' | 'citypop' | 'tokyo-neon' | 'kawaii' | 'visual-kei' | 'zen-garden' | 'retrowave' | 'anime-op' | 'yokai' | 'ciudad-prohibida' | 'erudito' | 'porcelana' | 'dragon' | 'festival' | 'jade';
+export type LibraryLayout = 'glass' | 'list-minimal' | 'masonry' | 'split' | 'carousel' | 'mosaic' | 'feed' | 'index' | 'frame' | 'citypop' | 'tokyo-neon' | 'kawaii' | 'visual-kei' | 'zen-garden' | 'retrowave' | 'anime-op' | 'yokai' | 'ciudad-prohibida' | 'erudito' | 'porcelana' | 'dragon' | 'festival' | 'jade' | 'vinilo' | 'casete' | 'estudio';
 
 export const LAYOUT_NAMES: Record<LibraryLayout, { name: string; desc: string }> = {
   'glass': { name: 'Glassmorphism Oscuro', desc: 'Cristal oscuro con cuadrícula de portadas' },
@@ -66,4 +66,7 @@ export const LAYOUT_NAMES: Record<LibraryLayout, { name: string; desc: string }>
   'dragon': { name: 'Dragón Celestial', desc: 'Mito chino con nubes doradas y perlas de jade' },
   'festival': { name: 'Festival', desc: 'Linternas rojas colgantes con borlas doradas' },
   'jade': { name: 'Jade', desc: 'Jade verde tallado con adornos dorados' },
+  'vinilo': { name: 'Vinilo', desc: 'Discos de vinilo girando en el tornamesa' },
+  'casete': { name: 'Casete', desc: 'Cintas de casete en el estante' },
+  'estudio': { name: 'Estudio', desc: 'Consola de grabación con rack de efectos' },
 };

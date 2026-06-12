@@ -2,12 +2,9 @@ import React, { useState, useRef, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Music, Search, Trash2, Edit3, FolderOpen, Disc3, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { LibraryLayoutProps } from './LayoutTypes';
+import { hashStr } from '../../utils/hash';
 
-function hashStr(s: string): number {
-  let h = 0;
-  for (let i = 0; i < s.length; i++) { h = ((h << 5) - h) + s.charCodeAt(i); h |= 0; }
-  return Math.abs(h);
-}
+
 
 const VINYL_COLORS = ['#ff6b35', '#e63946', '#457b9d', '#2a9d8f', '#e9c46a', '#f4a261', '#9b5de5', '#00bbf9'];
 

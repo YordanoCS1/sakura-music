@@ -1,13 +1,10 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Music, Search, Trash2, Edit3, FolderOpen, Disc3 } from 'lucide-react';
 import type { LibraryLayoutProps } from './LayoutTypes';
+import { hashStr } from '../../utils/hash';
 
-function hashStr(s: string): number {
-  let h = 0;
-  for (let i = 0; i < s.length; i++) { h = ((h << 5) - h) + s.charCodeAt(i); h |= 0; }
-  return Math.abs(h);
-}
+
 
 const SCROLL_SILK = ['#e8ddd0', '#f0e8d8', '#d8d0c0', '#e0d8c8', '#f0e0d0', '#d0c8b8', '#e0d5c5', '#f5ead5'];
 const ROLLER_COLOR = '#5a3a2a';
@@ -20,7 +17,7 @@ const PETAL_COLORS = ['#f8bbd0', '#f48fb1', '#f06292', '#e8a0bf', '#ffcdd2', '#f
 
 const EN_SO = '○';
 
-const FloatingPetal: React.FC<{ index: number }> = ({ index }) => {
+const FloatingPetal: React.FC<{ index: number }> = memo(({ index }) => {
   const seed = index * 137.5;
   const left = 5 + (seed % 90);
   const delay = -(seed % 20);
@@ -48,7 +45,7 @@ const FloatingPetal: React.FC<{ index: number }> = ({ index }) => {
       }}
     />
   );
-};
+});
 
 export const LayoutZenGarden: React.FC<LibraryLayoutProps> = (props) => {
   const {

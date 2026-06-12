@@ -12,18 +12,36 @@ interface ZenPlayerProps {
 export const ZenPlayer: React.FC<ZenPlayerProps> = ({ currentSong, isPlaying = false, onPlayPause, onNext, onPrevious, onSeek, currentTime: externalTime, queue = [] }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [volume, setVolume] = useState(70);
+  const [volume, setVolume] = useState(() => parseInt(localStorage.getItem('volume') || '70'));
   const [showVolume, setShowVolume] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const nextAudioRef = useRef<HTMLAudioElement | null>(null);
   const progressRef = useRef<HTMLDivElement>(null);
+  const expandedProgressRef = useRef<HTMLDivElement>(null);
   const prevSongRef = useRef<string | null>(null);
   const nextSongRef = useRef<string | null>(null);
   const onNextRef = useRef(onNext);
   onNextRef.current = onNext;
   const ctx = usePlayback();
+
+  // Cargar estado de favorito al cambiar de canción
+  useEffect(() => {
+    if (currentSong?.path) {
+      const liked = localStorage.getItem(`liked:${currentSong.path}`) === 'true';
+      setIsLiked(liked);
+    } else {
+      setIsLiked(false);
+    }
+  }, [currentSong?.path]);
+
+  const toggleLike = () => {
+    if (!currentSong?.path) return;
+    const newLiked = !isLiked;
+    setIsLiked(newLiked);
+    localStorage.setItem(`liked:${currentSong.path}`, String(newLiked));
+  };
 
   useEffect(() => { ctx.setCurrentSong(currentSong || null); }, [currentSong]);
   useEffect(() => { ctx.setIsPlaying(isPlaying); }, [isPlaying]);
@@ -38,13 +56,19 @@ export const ZenPlayer: React.FC<ZenPlayerProps> = ({ currentSong, isPlaying = f
     const onDurationChange = () => setDuration(audio.duration || 0);
     const onEnded = () => { if (onNextRef.current) onNextRef.current(); };
     audio.addEventListener('timeupdate', onTimeUpdate); audio.addEventListener('durationchange', onDurationChange); audio.addEventListener('ended', onEnded);
-    return () => { audio.removeEventListener('timeupdate', onTimeUpdate); audio.removeEventListener('durationchange', onDurationChange); audio.removeEventListener('ended', onEnded); };
+    return () => {
+      audio.removeEventListener('timeupdate', onTimeUpdate); audio.removeEventListener('durationchange', onDurationChange); audio.removeEventListener('ended', onEnded);
+      audio.pause(); audio.src = '';
+      if (nextAudioRef.current) { nextAudioRef.current.pause(); nextAudioRef.current.src = ''; }
+      audioRef.current = null; nextAudioRef.current = null;
+    };
   }, []);
 
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio || !currentSong) return;
     if (currentSong.path !== prevSongRef.current) { audio.src = currentSong.path; audio.load(); prevSongRef.current = currentSong.path; setCurrentTime(0); }
+    return () => { if (audio && audio.src) { audio.pause(); } };
   }, [currentSong]);
 
   useEffect(() => {
@@ -52,6 +76,7 @@ export const ZenPlayer: React.FC<ZenPlayerProps> = ({ currentSong, isPlaying = f
     if (!audio || !currentSong) return;
     if (isPlaying && audio.paused) audio.play().catch(() => {});
     else if (!isPlaying && !audio.paused) audio.pause();
+    return () => { if (audio && !audio.paused) audio.pause(); };
   }, [isPlaying, currentSong]);
 
   useEffect(() => { const audio = audioRef.current; if (audio) audio.volume = volume / 100; }, [volume]);
@@ -130,7 +155,7 @@ export const ZenPlayer: React.FC<ZenPlayerProps> = ({ currentSong, isPlaying = f
               </div>
 
               <div className="flex items-center gap-0.5">
-                <motion.button whileTap={{ scale: 0.88 }} onClick={() => setIsLiked(!isLiked)}
+                <motion.button whileTap={{ scale: 0.88 }} onClick={toggleLike}
                   className="p-1.5 rounded-lg transition-all" style={{ color: isLiked ? 'oklch(var(--zen-sakura-base))' : 'var(--text-dim)' }}>
                   <Heart size={14} fill={isLiked ? 'oklch(var(--zen-sakura-base))' : 'none'} />
                 </motion.button>
@@ -165,8 +190,23 @@ export const ZenPlayer: React.FC<ZenPlayerProps> = ({ currentSong, isPlaying = f
                     <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{currentSong.artist}</p>
                     <div className="flex items-center gap-3 mt-3">
                       <span className="text-[10px] font-mono" style={{ color: 'var(--text-label)' }}>{fmt(currentTime)}</span>
-                      <div className="flex-1 h-1 rounded-full" style={{ background: 'var(--bg-hover)' }}>
-                        <div className="h-full rounded-full transition-all" style={{ width: '100%', transform: `scaleX(${progress / 100})`, transformOrigin: 'left', background: 'linear-gradient(90deg, oklch(var(--zen-sakura-light)), oklch(var(--zen-sakura-base)))' }} />
+                      <div
+                        ref={expandedProgressRef}
+                        className="flex-1 h-1.5 rounded-full cursor-pointer group"
+                        style={{ background: 'var(--bg-hover)' }}
+                        onClick={(e) => {
+                          if (!expandedProgressRef.current || !sd) return;
+                          const rect = expandedProgressRef.current.getBoundingClientRect();
+                          const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                          const seekTime = pct * sd;
+                          if (audioRef.current) audioRef.current.currentTime = seekTime;
+                          setCurrentTime(seekTime);
+                          if (onSeek) onSeek(seekTime);
+                        }}
+                      >
+                        <div className="h-full rounded-full transition-all relative" style={{ width: '100%', transform: `scaleX(${progress / 100})`, transformOrigin: 'left', background: 'linear-gradient(90deg, oklch(var(--zen-sakura-light)), oklch(var(--zen-sakura-base)))' }}>
+                          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-white opacity-0 group-hover:opacity-100 transition-opacity" style={{ boxShadow: '0 0 6px oklch(var(--zen-sakura-base) / 0.6)' }} />
+                        </div>
                       </div>
                       <span className="text-[10px] font-mono" style={{ color: 'var(--text-label)' }}>{fmt(sd)}</span>
                     </div>

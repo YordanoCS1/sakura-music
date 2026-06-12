@@ -130,7 +130,7 @@ export const LayoutMasonry: React.FC<LibraryLayoutProps> = (props) => {
     return () => ro.disconnect();
   }, []);
 
-  const files = filteredFiles.filter(f => f.is_dir || f.is_audio);
+  const files = useMemo(() => filteredFiles.filter(f => f.is_dir || f.is_audio), [filteredFiles]);
   const rowCount = useMemo(() => Math.ceil(files.length / columns), [files.length, columns]);
   const isEmpty = !loading && filteredFiles.length === 0;
 

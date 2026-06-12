@@ -43,7 +43,7 @@ function timeAgo(iso: string): string {
   return new Date(iso).toLocaleDateString();
 }
 
-export const HomePage: React.FC = () => {
+export const HomePage: React.FC<{ onNavigate?: (page: string) => void }> = ({ onNavigate }) => {
   const [stats, setStats] = useState<HomeStats | null>(null);
   const [recentSongs, setRecentSongs] = useState<RecentSong[]>([]);
   const [loading, setLoading] = useState(true);
@@ -126,12 +126,13 @@ export const HomePage: React.FC = () => {
 
           <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {[
-              { icon: Download, gradient: 'from-purple-500 to-pink-500', title: 'Descargar música', desc: 'Desde YouTube, SoundCloud y más plataformas', color: 'oklch(var(--zen-sakura-base))' },
-              { icon: Headphones, gradient: 'from-pink-500 to-rose-500', title: 'Explorar biblioteca', desc: 'Organiza, edita metadatos y descubre tu colección', color: 'oklch(var(--zen-sakura-light))' },
+              { icon: Download, gradient: 'from-purple-500 to-pink-500', title: 'Descargar música', desc: 'Desde YouTube, SoundCloud y más plataformas', color: 'oklch(var(--zen-sakura-base))', page: 'downloader' },
+              { icon: Headphones, gradient: 'from-pink-500 to-rose-500', title: 'Explorar biblioteca', desc: 'Organiza, edita metadatos y descubre tu colección', color: 'oklch(var(--zen-sakura-light))', page: 'library' },
             ].map((item, i) => (
               <motion.div key={i} variants={itemAnim} whileHover={{ y: -2 }}
                 className="relative overflow-hidden rounded-xl p-5 cursor-pointer group"
-                style={{ background: `linear-gradient(135deg, ${item.color}12, transparent)`, border: `1px solid ${item.color}20` }}>
+                style={{ background: `linear-gradient(135deg, ${item.color}12, transparent)`, border: `1px solid ${item.color}20` }}
+                onClick={() => onNavigate?.(item.page)}>
                 <div className="absolute top-0 right-0 w-40 h-40 rounded-full blur-3xl" style={{ background: `${item.color}06`, transform: 'translate(20%, -20%)' }} />
                 <div className="relative z-10 flex items-center gap-4">
                   <div style={{ width: 48, height: 48, borderRadius: 12, background: `linear-gradient(135deg, ${item.gradient})`, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 20px rgba(0,0,0,0.2)', transition: 'transform 0.2s' }}

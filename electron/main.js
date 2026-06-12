@@ -127,15 +127,15 @@ ipcMain.handle('get:paths', () => ({
 }));
 
 // Shell operations
-ipcMain.handle('shell:openPath', async (_, filePath) => {
+ipcMain.handle('shell:openPath', async (_, { path: filePath }) => {
   await shell.openPath(filePath);
 });
 
-ipcMain.handle('shell:showItemInFolder', (_, filePath) => {
+ipcMain.handle('shell:showItemInFolder', (_, { path: filePath }) => {
   shell.showItemInFolder(filePath);
 });
 
-ipcMain.handle('shell:trashItem', async (_, filePath) => {
+ipcMain.handle('shell:trashItem', async (_, { path: filePath }) => {
   await shell.trashItem(filePath);
 });
 

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Download, Cookie, Palette, Save, Music, Wrench, RefreshCw, Check, Sliders, Paintbrush, Sparkles, Droplets, Zap, Moon, Sun, LayoutGrid, List, Columns3, GalleryVertical, Disc3, Terminal, Waves, Leaf, Crown, BookOpen, CircleDot, Diamond } from 'lucide-react';
-import { openFolder, musicDir, invoke } from '../bridge';
+import { Download, Cookie, Palette, Save, Music, Wrench, RefreshCw, Check, Sliders, Paintbrush, Sparkles, Droplets, Zap, Moon, Sun, LayoutGrid, List, Columns3, GalleryVertical, Disc3, Terminal, Waves, Leaf, Crown, BookOpen, CircleDot, Diamond, Keyboard, Volume2, Trash2 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+import { openFolder, musicDir, invoke, confirm } from '../bridge';
 import toast from 'react-hot-toast';
 import type { LibraryLayout } from '../components/library/LayoutTypes';
 import { LAYOUT_NAMES } from '../components/library/LayoutTypes';
@@ -17,6 +18,8 @@ export const SettingsPage: React.FC = () => {
   const [cookieBrowser, setCookieBrowser] = useState('none');
   const [currentTheme, setCurrentTheme] = useState('sakura');
   const [libraryLayout, setLibraryLayout] = useState<LibraryLayout>(() => (localStorage.getItem('library_layout') as LibraryLayout) || 'glass');
+  const [particlesEnabled, setParticlesEnabled] = useState(() => localStorage.getItem('particles') !== 'false');
+  const [initialVolume, setInitialVolume] = useState(() => parseInt(localStorage.getItem('volume') || '70'));
   const [toolVersions, setToolVersions] = useState<{ yt_dlp: string | null; ffmpeg: string | null }>({ yt_dlp: null, ffmpeg: null });
   const [updating, setUpdating] = useState<string | null>(null);
 
@@ -66,6 +69,9 @@ export const SettingsPage: React.FC = () => {
     { id: 'dragon', name: 'Dragón Celestial', icon: Diamond, color: '#2a8a5a', desc: 'Dragón chino con jade y oro' },
     { id: 'festival', name: 'Festival', icon: Sparkles, color: '#d4a017', desc: 'Festival de linternas con rojo y dorado' },
     { id: 'jade', name: 'Jade', icon: CircleDot, color: '#2d5a3a', desc: 'Jade verde tallado con adornos dorados' },
+    { id: 'bambu', name: 'Bambú', icon: Leaf, color: '#4a7c59', desc: 'Bosque de bambú verde y sereno' },
+    { id: 'atardecer', name: 'Atardecer', icon: Sun, color: '#e86a33', desc: 'Cielo naranja al atardecer' },
+    { id: 'hielo', name: 'Hielo', icon: Droplets, color: '#5bc0de', desc: 'Azul hielo frío y cristalino' },
   ];
 
   const saveSettings = () => {
@@ -78,10 +84,13 @@ export const SettingsPage: React.FC = () => {
     localStorage.setItem('theme', currentTheme);
     document.documentElement.setAttribute('data-theme', currentTheme);
     localStorage.setItem('library_layout', libraryLayout);
+    localStorage.setItem('particles', String(particlesEnabled));
+    document.documentElement.style.setProperty('--decorative-visible', particlesEnabled ? '1' : '0');
+    localStorage.setItem('volume', String(initialVolume));
     toast.success('Configuración guardada');
   };
 
-  const section = (icon: React.ComponentType<{ size?: number; color?: string }>, title: string, desc: string, content: React.ReactNode) => (
+  const section = (icon: LucideIcon, title: string, desc: string, content: React.ReactNode) => (
     <motion.div variants={itemAnim} style={{ background: 'var(--bg-card)', border: 'var(--border-card)', borderRadius: 12, padding: 18 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
         <div style={{ width: 28, height: 28, borderRadius: 8, background: 'var(--bg-accent-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -178,20 +187,38 @@ export const SettingsPage: React.FC = () => {
       )}
 
       {section(Palette, 'Apariencia', 'Tema visual de la aplicación',
-        <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5 max-w-[600px]">
-          {allThemes.map(t => {
-            const active = currentTheme === t.id;
-            return (
-              <button key={t.id} onClick={() => setCurrentTheme(t.id)}
-                style={{ padding: '10px 6px', borderRadius: 8, border: active ? '1.5px solid oklch(var(--zen-sakura-base))' : 'var(--border-card)', background: active ? 'var(--bg-accent-active)' : 'transparent', cursor: 'pointer', textAlign: 'center', transition: 'all 0.12s' }}>
-                <div style={{ width: 28, height: 28, borderRadius: '50%', background: active && t.id !== currentTheme ? 'oklch(var(--zen-sakura-base))' : t.color, margin: '0 auto 5px', border: active ? '2px solid oklch(var(--zen-sakura-base))' : '2px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {active && <Check size={12} strokeWidth={3} color="#F95738" />}
-                </div>
-                <span className="text-[10px] font-semibold block" style={{ color: 'var(--text-label)' }}>{t.name}</span>
-                <span className="text-[8px] block mt-0.5" style={{ color: 'var(--text-muted)' }}>{t.desc}</span>
-              </button>
-            );
-          })}
+        <div className="space-y-4">
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5 max-w-[600px]">
+            {allThemes.map(t => {
+              const active = currentTheme === t.id;
+              return (
+                <button key={t.id} onClick={() => setCurrentTheme(t.id)}
+                  style={{ padding: '10px 6px', borderRadius: 8, border: active ? '1.5px solid oklch(var(--zen-sakura-base))' : 'var(--border-card)', background: active ? 'var(--bg-accent-active)' : 'transparent', cursor: 'pointer', textAlign: 'center', transition: 'all 0.12s' }}>
+                  <div style={{ width: 28, height: 28, borderRadius: '50%', background: active && t.id !== currentTheme ? 'oklch(var(--zen-sakura-base))' : t.color, margin: '0 auto 5px', border: active ? '2px solid oklch(var(--zen-sakura-base))' : '2px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {active && <Check size={12} strokeWidth={3} color="#F95738" />}
+                  </div>
+                  <span className="text-[10px] font-semibold block" style={{ color: 'var(--text-label)' }}>{t.name}</span>
+                  <span className="text-[8px] block mt-0.5" style={{ color: 'var(--text-muted)' }}>{t.desc}</span>
+                </button>
+              );
+            })}
+          </div>
+          <div className="flex items-center gap-3" style={{ padding: '8px 12px', borderRadius: 8, background: 'var(--bg-input)', border: 'var(--border-subtle)' }}>
+            <Sparkles size={14} style={{ color: 'var(--text-icon)' }} />
+            <span className="text-xs" style={{ color: 'var(--text-body)' }}>Partículas decorativas</span>
+            <div onClick={() => setParticlesEnabled(!particlesEnabled)}
+              style={{
+                marginLeft: 'auto', width: 36, height: 20, borderRadius: 10,
+                background: particlesEnabled ? 'oklch(var(--zen-sakura-base))' : 'rgba(255,255,255,0.08)',
+                cursor: 'pointer', position: 'relative', transition: 'background 0.2s',
+              }}>
+              <div style={{
+                width: 16, height: 16, borderRadius: '50%', background: 'white',
+                position: 'absolute', top: 2, left: particlesEnabled ? 18 : 2,
+                transition: 'left 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+              }} />
+            </div>
+          </div>
         </div>
       )}
 
@@ -199,7 +226,7 @@ export const SettingsPage: React.FC = () => {
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-w-[450px]">
           {(Object.entries(LAYOUT_NAMES) as [LibraryLayout, { name: string; desc: string }][]).map(([id, info]) => {
             const active = libraryLayout === id;
-            const icons: Record<LibraryLayout, React.ComponentType<{ size?: number; color?: string }>> = { glass: LayoutGrid, 'list-minimal': List, masonry: GalleryVertical, split: Columns3, carousel: Disc3, mosaic: LayoutGrid, feed: List, index: Disc3, frame: Disc3, citypop: Disc3, 'tokyo-neon': Zap, kawaii: Sparkles, 'visual-kei': Disc3, 'zen-garden': Waves, retrowave: Zap, 'anime-op': Sparkles, yokai: Moon, 'ciudad-prohibida': Crown, erudito: BookOpen, porcelana: CircleDot, dragon: Diamond, festival: Sparkles, jade: CircleDot };
+            const icons: Record<LibraryLayout, LucideIcon> = { glass: LayoutGrid, 'list-minimal': List, masonry: GalleryVertical, split: Columns3, carousel: Disc3, mosaic: LayoutGrid, feed: List, index: Disc3, frame: Disc3, citypop: Disc3, 'tokyo-neon': Zap, kawaii: Sparkles, 'visual-kei': Disc3, 'zen-garden': Waves, retrowave: Zap, 'anime-op': Sparkles, yokai: Moon, 'ciudad-prohibida': Crown, erudito: BookOpen, porcelana: CircleDot, dragon: Diamond, festival: Sparkles, jade: CircleDot, vinilo: Disc3, casete: Disc3, estudio: Sliders };
             const Icon = icons[id];
             return (
               <button key={id} onClick={() => setLibraryLayout(id)}
@@ -212,6 +239,49 @@ export const SettingsPage: React.FC = () => {
               </button>
             );
           })}
+        </div>
+      )}
+
+      {section(Volume2, 'Reproductor', 'Volumen inicial del reproductor',
+        <div>
+          <label className="text-xs mb-1.5 block" style={{ color: 'var(--text-label)' }}>Volumen inicial: {initialVolume}%</label>
+          <input type="range" min="0" max="100" value={initialVolume} onChange={e => setInitialVolume(parseInt(e.target.value))}
+            style={{ width: '100%', accentColor: 'oklch(var(--zen-sakura-base))' }} />
+        </div>
+      )}
+
+      {section(Keyboard, 'Atajos de teclado', 'Navegación rápida por la aplicación',
+        <div className="space-y-1.5">
+          {[
+            ['Space', 'Reproducir / Pausar'],
+            ['Ctrl + →', 'Canción siguiente'],
+            ['Ctrl + ←', 'Canción anterior'],
+            ['Ctrl + H', 'Ir a Inicio'],
+            ['Ctrl + D', 'Ir a Descargar'],
+            ['Ctrl + L', 'Ir a Biblioteca'],
+            ['Ctrl + F', 'Ir a Explorar'],
+            ['Ctrl + ,', 'Ir a Ajustes'],
+            ['Ctrl + N', 'Siguiente página'],
+            ['Ctrl + A', 'Seleccionar todos'],
+            ['Escape', 'Limpiar selección'],
+          ].map(([key, desc]) => (
+            <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '6px 10px', borderRadius: 6, background: 'var(--bg-hover)' }}>
+              <kbd style={{ padding: '2px 8px', borderRadius: 4, background: 'var(--bg-card)', border: 'var(--border-subtle)', fontSize: '0.7rem', fontWeight: 600, color: 'var(--text-heading)', fontFamily: 'monospace', minWidth: 70, textAlign: 'center' }}>{key}</kbd>
+              <span className="text-xs" style={{ color: 'var(--text-body)' }}>{desc}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {section(Trash2, 'Avanzado', 'Restablecer configuración',
+        <div>
+          <p className="text-xs mb-3" style={{ color: 'var(--text-muted)' }}>Esto borrará todas tus preferencias (tema, diseño, descargas) y reiniciará la aplicación.</p>
+          <button onClick={async () => { const ok = await confirm('¿Restablecer toda la configuración?'); if (!ok) return; localStorage.clear(); document.documentElement.setAttribute('data-theme', 'sakura'); toast.success('Configuración restablecida'); setTimeout(() => window.location.reload(), 800); }}
+            style={{ padding: '8px 18px', borderRadius: 8, border: '1px solid rgba(239,68,68,0.3)', background: 'transparent', color: '#ef4444', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer', transition: 'all 0.12s' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.1)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}>
+            <Trash2 size={13} style={{ marginRight: 6, verticalAlign: 'middle' }} /> Restablecer todo
+          </button>
         </div>
       )}
 

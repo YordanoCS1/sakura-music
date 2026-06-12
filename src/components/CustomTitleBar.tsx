@@ -8,14 +8,14 @@ export const CustomTitleBar: React.FC = () => {
   useEffect(() => {
     const checkMaximized = async () => {
       const maximized = await windowControls.isMaximized();
-      setIsMaximized(maximized);
+      setIsMaximized(maximized as boolean);
     };
     checkMaximized();
   }, []);
 
   const handleMaximize = async () => {
     await windowControls.maximize();
-    setIsMaximized(await windowControls.isMaximized());
+    setIsMaximized((await windowControls.isMaximized()) as boolean);
   };
 
   return (

@@ -2,12 +2,9 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Music, Search, Trash2, Edit3, FolderOpen, Disc3, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { LibraryLayoutProps } from './LayoutTypes';
+import { hashStr } from '../../utils/hash';
 
-function hashStr(s: string): number {
-  let h = 0;
-  for (let i = 0; i < s.length; i++) { h = ((h << 5) - h) + s.charCodeAt(i); h |= 0; }
-  return Math.abs(h);
-}
+
 
 const SUNSET_COLORS = ['#ff007f', '#ff2a6d', '#d3278a', '#7b2d8e', '#1a0a2e', '#ff3c5f', '#b53789', '#ff1c7a'];
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, CheckCircle, AlertCircle, Clock, Trash2, RefreshCw, ChevronDown, ChevronUp, ListMusic, Check, FolderOpen, Copy, ExternalLink } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { invoke, listen, showInFolder } from '../bridge';
 import toast from 'react-hot-toast';
 import { ContextMenu } from '../components/ContextMenu';
@@ -8,7 +9,7 @@ import { Skeleton, SkeletonLine } from '../components/Skeleton';
 
 interface QueueItem {
   id: string; title: string; url: string; format: string; quality: string;
-  status: 'pending' | 'downloading' | 'completed' | 'error'; progress: number; error_message: string | null;
+  status: 'pending' | 'downloading' | 'completed' | 'failed'; progress: number; error_message: string | null;
   playlist_title: string | null; playlist_id: string | null; thumbnail: string | null; added_at: string; completed_at: string | null;
   subfolder: string | null;
 }
@@ -33,17 +34,46 @@ export const QueuePage: React.FC = () => {
   const [queue, setQueue] = useState<GroupedQueue>({ playlists: [], singles: [] });
   const [stats, setStats] = useState({ pending: 0, downloading: 0, completed: 0, error: 0, total: 0 });
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
-  const [filter, setFilter] = useState<'all' | 'pending' | 'downloading' | 'completed' | 'error'>('all');
+  const [filter, setFilter] = useState<'all' | 'pending' | 'downloading' | 'completed' | 'failed'>('all');
   const [ctxMenu, setCtxMenu] = useState<{ x: number; y: number; item: QueueItem } | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadQueue();
-    const unsubProgress = listen('queue-progress', (data: { id: string; progress: number }) => updateItemProgress(data.id, data.progress));
+    let pendingUpdates: Record<string, number> = {};
+    let throttleTimer: NodeJS.Timeout | null = null;
+
+    const flushUpdates = () => {
+      if (Object.keys(pendingUpdates).length === 0) return;
+      setQueue(prev => {
+        const nq = { ...prev };
+        for (const [id, progress] of Object.entries(pendingUpdates)) {
+          const si = nq.singles.findIndex(i => i.id === id); if (si !== -1) nq.singles[si].progress = progress;
+          for (const pl of nq.playlists) { const ii = pl.items.findIndex(i => i.id === id); if (ii !== -1) pl.items[ii].progress = progress; }
+        }
+        return nq;
+      });
+      pendingUpdates = {};
+    };
+
+    const unsubProgress = listen('queue-progress', (data: unknown) => {
+      const d = data as { id: string; progress: number };
+      pendingUpdates[d.id] = d.progress;
+      if (!throttleTimer) {
+        throttleTimer = setTimeout(() => {
+          flushUpdates();
+          throttleTimer = null;
+        }, 150); // Max ~6-7 FPS for progress updates
+      }
+    });
+
     const unsubUpdated = listen('queue-updated', () => loadQueue());
-    const unsubCompleted = listen('queue-item-completed', (data: { id: string; title: string }) => { toast.success(`${data.title} descargado`); loadQueue(); });
-    const unsubError = listen('queue-item-error', (data: { id: string; error: string }) => { toast.error(`Error: ${data.error}`); loadQueue(); });
-    return () => { unsubProgress(); unsubUpdated(); unsubCompleted(); unsubError(); };
+    const unsubCompleted = listen('queue-item-completed', (data: unknown) => { const d = data as { id: string; title: string }; toast.success(`${d.title} descargado`); loadQueue(); });
+    const unsubError = listen('queue-item-error', (data: unknown) => { const d = data as { id: string; error: string }; toast.error(`Error: ${d.error}`); loadQueue(); });
+    return () => { 
+      if (throttleTimer) clearTimeout(throttleTimer);
+      unsubProgress(); unsubUpdated(); unsubCompleted(); unsubError(); 
+    };
   }, []);
 
   const loadQueue = async () => {
@@ -51,38 +81,31 @@ export const QueuePage: React.FC = () => {
     const data = await invoke<GroupedQueue>('queue_get_grouped');
     setQueue(data);
     const all = [...data.singles, ...data.playlists.flatMap(p => p.items)];
-    setStats({ pending: all.filter(i => i.status === 'pending').length, downloading: all.filter(i => i.status === 'downloading').length, completed: all.filter(i => i.status === 'completed').length, error: all.filter(i => i.status === 'error').length, total: all.length });
+    setStats({ pending: all.filter(i => i.status === 'pending').length, downloading: all.filter(i => i.status === 'downloading').length, completed: all.filter(i => i.status === 'completed').length, error: all.filter(i => i.status === 'failed').length, total: all.length });
     setLoading(false);
   };
 
-  const updateItemProgress = (id: string, progress: number) => {
-    setQueue(prev => {
-      const nq = { ...prev };
-      const si = nq.singles.findIndex(i => i.id === id); if (si !== -1) nq.singles[si].progress = progress;
-      for (const pl of nq.playlists) { const ii = pl.items.findIndex(i => i.id === id); if (ii !== -1) pl.items[ii].progress = progress; }
-      return nq;
-    });
-  };
+
 
   const handleRemove = async (id: string) => { await invoke('queue_remove', { id }); loadQueue(); };
   const handleRetry = async (id: string) => { await invoke('queue_retry', { id }); loadQueue(); toast.success('Reintentando descarga', { icon: '🔄' }); };
   const handleClearCompleted = async () => { const count = await invoke('queue_clear_completed'); loadQueue(); toast.success(`Completados eliminados`); };
   const toggleGroup = (key: string) => { const s = new Set(expandedGroups); s.has(key) ? s.delete(key) : s.add(key); setExpandedGroups(s); };
 
-  const statusConfig: Record<string, { icon: React.ComponentType<{ size?: number; color?: string }>; color: string; label: string }> = {
+  const statusConfig: Record<string, { icon: LucideIcon; color: string; label: string }> = {
     pending: { icon: Clock, color: '#eab308', label: 'Pendiente' },
     downloading: { icon: Download, color: '#3b82f6', label: 'Descargando' },
     completed: { icon: CheckCircle, color: '#22c55e', label: 'Completado' },
-    error: { icon: AlertCircle, color: '#ef4444', label: 'Error' },
+    failed: { icon: AlertCircle, color: '#ef4444', label: 'Error' },
   };
 
-  const filterTabs = ['all', 'pending', 'downloading', 'completed', 'error'] as const;
-  const filterLabels: Record<string, string> = { all: 'Todos', pending: 'Pendientes', downloading: 'Descargando', completed: 'Completados', error: 'Errores' };
+  const filterTabs = ['all', 'pending', 'downloading', 'completed', 'failed'] as const;
+  const filterLabels: Record<string, string> = { all: 'Todos', pending: 'Pendientes', downloading: 'Descargando', completed: 'Completados', failed: 'Errores' };
 
   const getGroupData = (items: QueueItem[]) => {
     const total = items.length;
     const completed = items.filter(i => i.status === 'completed').length;
-    const failed = items.filter(i => i.status === 'error').length;
+    const failed = items.filter(i => i.status === 'failed').length;
     const downloading = items.filter(i => i.status === 'downloading').length;
     const pending = items.filter(i => i.status === 'pending').length;
     const avgProgress = total > 0 ? items.reduce((sum, i) => sum + (i.status === 'completed' ? 100 : (i.progress || 0)), 0) / total : 0;
@@ -97,7 +120,7 @@ export const QueuePage: React.FC = () => {
 
   const renderItem = (item: QueueItem) => {
     if (filter !== 'all' && item.status !== filter) return null;
-    const cfg = statusConfig[item.status];
+    const cfg = statusConfig[item.status] || statusConfig['failed'];
     return (
       <motion.div key={item.id} layout variants={itemAnim} initial="hidden" animate="show" exit={{ opacity: 0, x: -40 }}
         onContextMenu={e => { e.preventDefault(); setCtxMenu({ x: e.clientX, y: e.clientY, item }); }}
@@ -111,12 +134,12 @@ export const QueuePage: React.FC = () => {
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
           {item.status === 'downloading' && <span style={{ fontSize: '0.7rem', color: 'oklch(var(--zen-sakura-base))', fontWeight: 700 }}>{Math.round(item.progress || 0)}%</span>}
           {item.status === 'completed' && <Check size={13} color="#22c55e" />}
-          {item.status === 'error' && (
+          {item.status === 'failed' && (
             <button onClick={() => handleRetry(item.id)} style={{ background: 'none', border: 'none', color: '#22c55e', cursor: 'pointer', padding: 4, display: 'flex' }} title="Reintentar">
               <RefreshCw size={13} />
             </button>
           )}
-          {(item.status === 'pending' || item.status === 'error') && (
+          {(item.status === 'pending' || item.status === 'failed') && (
             <button onClick={() => handleRemove(item.id)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.2)', cursor: 'pointer', padding: 4, display: 'flex' }}
               onMouseEnter={e => e.currentTarget.style.color = '#ef4444'}
               onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.2)'}>
@@ -185,7 +208,7 @@ export const QueuePage: React.FC = () => {
         {!isExpanded && g.failed > 0 && (
           <div style={{ margin: '0 16px 12px', padding: '8px 12px', background: 'rgba(239,68,68,0.08)', borderRadius: 8, border: '1px solid rgba(239,68,68,0.15)' }}>
             <p style={{ fontSize: '0.7rem', color: '#ef4444', fontWeight: 600, marginBottom: 4 }}>❌ Fallidas ({g.failed})</p>
-            {items.filter(i => i.status === 'error').map(item => (
+            {items.filter(i => i.status === 'failed').map(item => (
               <div key={item.id} style={{ fontSize: '0.7rem', color: 'var(--text-dim)', display: 'flex', alignItems: 'center', gap: 4, marginBottom: 2 }}>
                 <span style={{ width: 4, height: 4, borderRadius: '50%', background: '#ef4444', display: 'inline-block', flexShrink: 0 }} />
                 {item.title}

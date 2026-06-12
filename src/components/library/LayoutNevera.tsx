@@ -4,12 +4,9 @@ import {
   Music, Search, Trash2, Edit3, FolderOpen, Disc3, Pin
 } from 'lucide-react';
 import type { LibraryLayoutProps } from './LayoutTypes';
+import { hashStr } from '../../utils/hash';
 
-function hashStr(s: string): number {
-  let h = 0;
-  for (let i = 0; i < s.length; i++) { h = ((h << 5) - h) + s.charCodeAt(i); h |= 0; }
-  return Math.abs(h);
-}
+
 
 const magnetColors = [
   '#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff',

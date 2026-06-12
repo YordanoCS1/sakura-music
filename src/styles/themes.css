@@ -1620,3 +1620,204 @@ body {
   border-radius: 100px !important;
 }
 [data-theme="jade"] ::selection { background: rgba(45,90,58,0.15); }
+
+/* ===== BAMBÚ: Gentle green bamboo ===== */
+[data-theme="bambu"] {
+  --zen-bg-primary: 0.92 0.025 140;
+  --zen-bg-secondary: 0.88 0.025 140;
+  --zen-bg-card: 0.97 0.02 140;
+  --zen-bg-glass: 0.94 0.025 140 / 0.9;
+  --zen-sakura-base: 0.4 0.13 145;
+  --zen-sakura-light: 0.5 0.1 145;
+  --zen-sakura-deep: 0.3 0.15 145;
+  --zen-text-primary: 0.08 0.02 140;
+  --zen-text-secondary: 0.18 0.02 140;
+  --zen-text-tertiary: 0.3 0.02 140;
+  --zen-text-muted: 0.22 0.02 140;
+  --bg-app: oklch(0.92 0.025 140);
+  --bg-sidebar: oklch(0.88 0.025 140 / 0.95);
+  --bg-sidebar-border: rgba(74,124,89,0.15);
+  --bg-card: oklch(0.97 0.02 140);
+  --bg-card-alt: oklch(0.93 0.025 140);
+  --bg-input: rgba(74,124,89,0.06);
+  --bg-hover: rgba(74,124,89,0.05);
+  --bg-active: rgba(74,124,89,0.09);
+  --bg-accent-soft: oklch(0.4 0.13 145 / 0.1);
+  --bg-accent-active: oklch(0.4 0.13 145 / 0.18);
+  --border-card: 1px solid rgba(74,124,89,0.1);
+  --border-input: 1px solid rgba(74,124,89,0.12);
+  --border-subtle: 1px solid rgba(74,124,89,0.04);
+  --border-divider: rgba(74,124,89,0.06);
+  --text-heading: rgba(20,50,30,0.95);
+  --text-body: rgba(20,50,30,0.72);
+  --text-label: rgba(20,50,30,0.4);
+  --text-muted: rgba(20,50,30,0.28);
+  --text-dim: rgba(20,50,30,0.18);
+  --text-icon: rgba(20,50,30,0.35);
+  --text-nav: rgba(20,50,30,0.55);
+  --text-active: #4a7c59;
+  --accent-gradient: linear-gradient(135deg, #4a7c59, #8fbc6e);
+  --accent-gradient-reverse: linear-gradient(135deg, #8fbc6e, #4a7c59);
+  --accent-glow-soft: 0 0 12px rgba(74,124,89,0.1);
+  --accent-glow-medium: 0 4px 20px rgba(74,124,89,0.18);
+  --accent-glow-strong: 0 0 28px rgba(74,124,89,0.25);
+  --card-shadow: 0 2px 8px oklch(0 0 0 / 0.04);
+  --card-shadow-hover: 0 8px 24px rgba(74,124,89,0.06);
+  --toast-bg: oklch(0.97 0.02 140);
+  --toast-border: 1px solid rgba(74,124,89,0.1);
+  --player-shadow: 0 -4px 20px rgba(74,124,89,0.04);
+  --body-bg: oklch(var(--zen-bg-primary));
+  --text-input: rgba(20,50,30,0.6);
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-weight-body: 400;
+  --font-weight-heading: 600;
+  --card-radius: 8px;
+  --card-radius-sm: 6px;
+  --button-radius: 6px;
+  --input-radius: 6px;
+  --pill-radius: 20px;
+  --body-bg-image: repeating-linear-gradient(0deg, transparent 0px, transparent 39px, rgba(74,124,89,0.03) 39px, rgba(74,124,89,0.03) 40px);
+  --body-bg-blend: normal;
+  --card-surface: oklch(0.97 0.02 140);
+  --card-border: 1px solid rgba(74,124,89,0.1);
+  --card-blur: none;
+  --shadow-color: oklch(0 0 0 / 0.04);
+  --decorative-visible: 1;
+}
+[data-theme="bambu"] ::-webkit-scrollbar-thumb { background: rgba(74,124,89,0.2) !important; border-radius: 100px !important; }
+[data-theme="bambu"] ::selection { background: rgba(74,124,89,0.15); }
+
+/* ===== ATARDECER: Warm sunset ===== */
+[data-theme="atardecer"] {
+  --zen-bg-primary: 0.92 0.03 60;
+  --zen-bg-secondary: 0.88 0.03 60;
+  --zen-bg-card: 0.97 0.02 60;
+  --zen-bg-glass: 0.94 0.03 60 / 0.9;
+  --zen-sakura-base: 0.55 0.18 50;
+  --zen-sakura-light: 0.65 0.15 50;
+  --zen-sakura-deep: 0.45 0.2 50;
+  --zen-text-primary: 0.08 0.02 60;
+  --zen-text-secondary: 0.18 0.02 60;
+  --zen-text-tertiary: 0.3 0.02 60;
+  --zen-text-muted: 0.22 0.02 60;
+  --bg-app: oklch(0.92 0.03 60);
+  --bg-sidebar: oklch(0.88 0.03 60 / 0.95);
+  --bg-sidebar-border: rgba(232,106,51,0.15);
+  --bg-card: oklch(0.97 0.02 60);
+  --bg-card-alt: oklch(0.93 0.03 60);
+  --bg-input: rgba(232,106,51,0.06);
+  --bg-hover: rgba(232,106,51,0.05);
+  --bg-active: rgba(232,106,51,0.09);
+  --bg-accent-soft: oklch(0.55 0.18 50 / 0.1);
+  --bg-accent-active: oklch(0.55 0.18 50 / 0.18);
+  --border-card: 1px solid rgba(232,106,51,0.1);
+  --border-input: 1px solid rgba(232,106,51,0.12);
+  --border-subtle: 1px solid rgba(232,106,51,0.04);
+  --border-divider: rgba(232,106,51,0.06);
+  --text-heading: rgba(60,25,10,0.95);
+  --text-body: rgba(60,25,10,0.72);
+  --text-label: rgba(60,25,10,0.4);
+  --text-muted: rgba(60,25,10,0.28);
+  --text-dim: rgba(60,25,10,0.18);
+  --text-icon: rgba(60,25,10,0.35);
+  --text-nav: rgba(60,25,10,0.55);
+  --text-active: #e86a33;
+  --accent-gradient: linear-gradient(135deg, #e86a33, #f4a261);
+  --accent-gradient-reverse: linear-gradient(135deg, #f4a261, #e86a33);
+  --accent-glow-soft: 0 0 12px rgba(232,106,51,0.1);
+  --accent-glow-medium: 0 4px 20px rgba(232,106,51,0.18);
+  --accent-glow-strong: 0 0 28px rgba(232,106,51,0.25);
+  --card-shadow: 0 2px 8px oklch(0 0 0 / 0.04);
+  --card-shadow-hover: 0 8px 24px rgba(232,106,51,0.06);
+  --toast-bg: oklch(0.97 0.02 60);
+  --toast-border: 1px solid rgba(232,106,51,0.1);
+  --player-shadow: 0 -4px 20px rgba(232,106,51,0.04);
+  --body-bg: oklch(var(--zen-bg-primary));
+  --text-input: rgba(60,25,10,0.6);
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-weight-body: 400;
+  --font-weight-heading: 700;
+  --card-radius: 8px;
+  --card-radius-sm: 6px;
+  --button-radius: 6px;
+  --input-radius: 6px;
+  --pill-radius: 20px;
+  --body-bg-image: radial-gradient(ellipse at 50% 20%, rgba(232,106,51,0.05), transparent 60%);
+  --body-bg-blend: normal;
+  --card-surface: oklch(0.97 0.02 60);
+  --card-border: 1px solid rgba(232,106,51,0.1);
+  --card-blur: none;
+  --shadow-color: oklch(0 0 0 / 0.04);
+  --decorative-visible: 1;
+}
+[data-theme="atardecer"] ::-webkit-scrollbar-thumb { background: rgba(232,106,51,0.2) !important; border-radius: 100px !important; }
+[data-theme="atardecer"] ::selection { background: rgba(232,106,51,0.15); }
+
+/* ===== HIELO: Cold ice blue ===== */
+[data-theme="hielo"] {
+  --zen-bg-primary: 0.93 0.02 220;
+  --zen-bg-secondary: 0.9 0.02 220;
+  --zen-bg-card: 0.97 0.015 220;
+  --zen-bg-glass: 0.95 0.02 220 / 0.9;
+  --zen-sakura-base: 0.45 0.12 230;
+  --zen-sakura-light: 0.55 0.1 230;
+  --zen-sakura-deep: 0.35 0.15 230;
+  --zen-text-primary: 0.08 0.02 220;
+  --zen-text-secondary: 0.18 0.02 220;
+  --zen-text-tertiary: 0.3 0.02 220;
+  --zen-text-muted: 0.22 0.02 220;
+  --bg-app: oklch(0.93 0.02 220);
+  --bg-sidebar: oklch(0.9 0.02 220 / 0.95);
+  --bg-sidebar-border: rgba(91,192,222,0.15);
+  --bg-card: oklch(0.97 0.015 220);
+  --bg-card-alt: oklch(0.94 0.02 220);
+  --bg-input: rgba(91,192,222,0.06);
+  --bg-hover: rgba(91,192,222,0.05);
+  --bg-active: rgba(91,192,222,0.09);
+  --bg-accent-soft: oklch(0.45 0.12 230 / 0.1);
+  --bg-accent-active: oklch(0.45 0.12 230 / 0.18);
+  --border-card: 1px solid rgba(91,192,222,0.1);
+  --border-input: 1px solid rgba(91,192,222,0.12);
+  --border-subtle: 1px solid rgba(91,192,222,0.04);
+  --border-divider: rgba(91,192,222,0.06);
+  --text-heading: rgba(10,30,60,0.95);
+  --text-body: rgba(10,30,60,0.72);
+  --text-label: rgba(10,30,60,0.4);
+  --text-muted: rgba(10,30,60,0.28);
+  --text-dim: rgba(10,30,60,0.18);
+  --text-icon: rgba(10,30,60,0.35);
+  --text-nav: rgba(10,30,60,0.55);
+  --text-active: #5bc0de;
+  --accent-gradient: linear-gradient(135deg, #5bc0de, #89cff0);
+  --accent-gradient-reverse: linear-gradient(135deg, #89cff0, #5bc0de);
+  --accent-glow-soft: 0 0 12px rgba(91,192,222,0.1);
+  --accent-glow-medium: 0 4px 20px rgba(91,192,222,0.18);
+  --accent-glow-strong: 0 0 28px rgba(91,192,222,0.25);
+  --card-shadow: 0 2px 8px oklch(0 0 0 / 0.04);
+  --card-shadow-hover: 0 8px 24px rgba(91,192,222,0.06);
+  --toast-bg: oklch(0.97 0.015 220);
+  --toast-border: 1px solid rgba(91,192,222,0.1);
+  --player-shadow: 0 -4px 20px rgba(91,192,222,0.04);
+  --body-bg: oklch(var(--zen-bg-primary));
+  --text-input: rgba(10,30,60,0.6);
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-weight-body: 400;
+  --font-weight-heading: 600;
+  --card-radius: 12px;
+  --card-radius-sm: 10px;
+  --button-radius: 10px;
+  --input-radius: 10px;
+  --pill-radius: 20px;
+  --body-bg-image: radial-gradient(ellipse at 50% 20%, rgba(91,192,222,0.04), transparent 60%);
+  --body-bg-blend: normal;
+  --card-surface: oklch(0.97 0.015 220);
+  --card-border: 1px solid rgba(91,192,222,0.1);
+  --card-blur: none;
+  --shadow-color: oklch(0 0 0 / 0.04);
+  --decorative-visible: 1;
+}
+[data-theme="hielo"] ::-webkit-scrollbar-thumb { background: rgba(91,192,222,0.2) !important; border-radius: 100px !important; }
+[data-theme="hielo"] ::selection { background: rgba(91,192,222,0.15); }

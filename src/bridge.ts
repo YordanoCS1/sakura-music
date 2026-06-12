@@ -29,13 +29,13 @@ export const confirm = (message: string, title?: string): Promise<boolean> =>
   invoke('dialog:confirm', { message, title });
 
 export const openPath = (path: string): Promise<void> =>
-  invoke('shell:openPath', path);
+  invoke('shell:openPath', { path });
 
 export const showInFolder = (path: string): Promise<void> =>
-  invoke('shell:showItemInFolder', path);
+  invoke('shell:showItemInFolder', { path });
 
 export const trashItem = (path: string): Promise<void> =>
-  invoke('shell:trashItem', path);
+  invoke('shell:trashItem', { path });
 
 export const windowControls = {
   minimize: () => invoke('window:minimize'),

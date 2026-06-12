@@ -5,7 +5,7 @@ import { invoke } from '../bridge';
 const metaCache = new Map();
 const pendingRequests = new Map();
 
-async function getCachedCover(filePath) {
+async function getCachedCover(filePath: string): Promise<string | null> {
   const cached = metaCache.get(filePath);
   if (cached) return cached;
 
@@ -13,7 +13,7 @@ async function getCachedCover(filePath) {
     return pendingRequests.get(filePath);
   }
 
-  const promise = invoke('get_file_metadata', { filePath }).then(meta => {
+  const promise = invoke<{ cover?: string | null }>('get_file_metadata', { filePath }).then(meta => {
     const cover = meta?.cover || null;
     metaCache.set(filePath, cover);
     if (metaCache.size > 2000) {
@@ -62,6 +62,7 @@ export const CoverArt: React.FC<CoverArtProps> = ({
   };
 
   const loadCover = useCallback(async () => {
+    if (!path) { setLoading(false); setError(true); return; }
     setLoading(true);
     setError(false);
 

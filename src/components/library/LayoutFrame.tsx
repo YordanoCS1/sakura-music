@@ -4,12 +4,9 @@ import {
   Music, Search, Check, Trash2, Edit3, FolderOpen, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import type { LibraryLayoutProps } from './LayoutTypes';
+import { hashStr } from '../../utils/hash';
 
-function hashStr(s: string): number {
-  let h = 0;
-  for (let i = 0; i < s.length; i++) { h = ((h << 5) - h) + s.charCodeAt(i); h |= 0; }
-  return Math.abs(h);
-}
+
 
 const frameColors = [
   '#d4c5a9', '#c9b99a', '#dfd0b5', '#e8dcc8', '#d0c0a0',

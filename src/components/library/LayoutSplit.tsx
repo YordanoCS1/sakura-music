@@ -568,9 +568,9 @@ export const LayoutSplit: React.FC<LibraryLayoutProps> = ({
 }) => {
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
 
-  const items = filteredFiles.length > 0 ? filteredFiles : files;
-  const folderItems = items.filter(f => f.is_dir);
-  const audioItems = items.filter(f => f.is_audio);
+  const items = useMemo(() => filteredFiles.length > 0 ? filteredFiles : files, [filteredFiles, files]);
+  const folderItems = useMemo(() => items.filter(f => f.is_dir), [items]);
+  const audioItems = useMemo(() => items.filter(f => f.is_audio), [items]);
 
   return (
     <div style={containerStyle}>

@@ -5,6 +5,7 @@ import {
   Trash2, Edit3, FolderOpen, Disc3
 } from 'lucide-react';
 import type { LibraryLayoutProps } from './LayoutTypes';
+import { hashStr } from '../../utils/hash';
 
 const gradients = [
   'linear-gradient(135deg, #667eea, #764ba2)',
@@ -17,11 +18,7 @@ const gradients = [
   'linear-gradient(135deg, #e0c3fc, #8ec5fc)',
 ];
 
-function hashStr(s: string): number {
-  let h = 0;
-  for (let i = 0; i < s.length; i++) { h = ((h << 5) - h) + s.charCodeAt(i); h |= 0; }
-  return Math.abs(h);
-}
+
 
 const COLORS = ['#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#3b82f6', '#ef4444'];
 

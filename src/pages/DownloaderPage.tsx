@@ -4,6 +4,7 @@ import { Download, Music, Video, CheckSquare, Square, Search, User, Disc, Check,
 import { Skeleton, SkeletonLine, SkeletonTable } from '../components/Skeleton';
 import { invoke, listen, confirm, musicDir } from '../bridge';
 import toast from 'react-hot-toast';
+import { formatDuration } from '../utils/format';
 
 interface VideoInfo {
   id: string; title: string; uploader: string; duration: number; thumbnail: string; url: string;
@@ -14,15 +15,8 @@ interface PlaylistEntry {
 }
 type QueueStatus = 'queued' | 'downloading' | 'completed' | 'error';
 
-interface ActiveDownload {
-  id: string; title: string; progress: number; speed: string; eta: string;
-}
 interface QueueItem {
   id: string; title: string; url: string; format: string; quality: string;
-  codec?: string;
-  downloadPath: string; cookieBrowser: string; embedCover: boolean;
-  artist?: string; album?: string; organize: boolean;
-  isPlaylist?: boolean; playlistName?: string;
   status: QueueStatus; progress: number; speed: string; eta: string; errorMessage?: string;
 }
 
@@ -83,11 +77,7 @@ export const DownloaderPage: React.FC = () => {
   const [album, setAlbum] = useState('');
   const [organize, setOrganize] = useState(true);
   const [selectedEntries, setSelectedEntries] = useState<Set<string>>(new Set());
-  const [activeDownloads, setActiveDownloads] = useState<ActiveDownload[]>([]);
   const [downloadPath, setDownloadPath] = useState('');
-  const [downloadQueue, setDownloadQueue] = useState<QueueItem[]>([]);
-  const queueRef = useRef<QueueItem[]>([]);
-  const processingRef = useRef(false);
   const [dragOver, setDragOver] = useState(false);
   const [codecPref, setCodecPref] = useState(() => localStorage.getItem('codecPreference') || 'auto');
 
@@ -102,7 +92,7 @@ export const DownloaderPage: React.FC = () => {
     e.preventDefault();
     setDragOver(false);
     const text = e.dataTransfer.getData('text');
-    if (text && isValidUrl(text)) { setUrl(text); setTimeout(() => analyzeUrlWithRef(text), 0); }
+    if (text && isValidUrl(text)) { setUrl(text); setTimeout(() => analyzeUrlRef.current(text), 0); }
     else toast.error('Arrastra un enlace válido');
   }, []);
   const handleDragOver = useCallback((e: React.DragEvent) => { e.preventDefault(); setDragOver(true); }, []);
@@ -110,33 +100,12 @@ export const DownloaderPage: React.FC = () => {
 
   useEffect(() => {
     loadSettings();
-    const unsubProgress = listen('download-progress', (data: ActiveDownload) => {
-      setActiveDownloads(prev => prev.map(d => d.id === data.id ? { ...d, progress: data.progress, speed: data.speed, eta: data.eta } : d));
-      setDownloadQueue(prev => prev.map(d => d.id === data.id ? { ...d, progress: data.progress, speed: data.speed, eta: data.eta } : d));
-    });
-    const unsubCompleted = listen('download-completed', (data: { id: string; title: string }) => {
-      setActiveDownloads(prev => prev.filter(d => d.id !== data.id));
-      setDownloadQueue(prev => prev.map(d => d.id === data.id ? { ...d, status: 'completed', progress: 100 } : d));
-      const qItem = queueRef.current.find(d => d.id === data.id);
-      if (qItem) { qItem.status = 'completed'; qItem.progress = 100; }
-      invoke('add_download_history', { title: data.title || qItem?.title || 'Archivo', url: qItem?.url || '', format: qItem?.format || '', quality: qItem?.quality || '' }).catch(() => {});
-      toast.success(`${data.title} descargado correctamente`);
-      processQueue();
-    });
-    const unsubError = listen('download-error', (data: { id: string; message: string }) => {
-      setActiveDownloads(prev => prev.filter(d => d.id !== data.id));
-      setDownloadQueue(prev => prev.map(d => d.id === data.id ? { ...d, status: 'error', errorMessage: data.message } : d));
-      const qItem = queueRef.current.find(d => d.id === data.id);
-      if (qItem) { qItem.status = 'error'; qItem.errorMessage = data.message; }
-      toast.error(`Error: ${data.message}`);
-      processQueue();
-    });
     const handleUrlReady = (e: CustomEvent) => {
       const newUrl = e.detail; setUrl(newUrl);
-      setTimeout(() => analyzeUrlWithRef(newUrl), 0);
+      setTimeout(() => analyzeUrlRef.current(newUrl), 0);
     };
     window.addEventListener('url-ready', handleUrlReady as EventListener);
-    return () => { unsubProgress(); unsubCompleted(); unsubError(); window.removeEventListener('url-ready', handleUrlReady as EventListener); };
+    return () => { window.removeEventListener('url-ready', handleUrlReady as EventListener); };
   }, []);
 
   const loadSettings = () => {
@@ -160,8 +129,9 @@ export const DownloaderPage: React.FC = () => {
     return u;
   };
 
-  const analyzeUrlWithRef = async (targetUrl: string) => {
-    const u = validateUrl(targetUrl); if (!u) return;
+  const analyzeUrl = useCallback(async (targetUrl?: string) => {
+    const u = validateUrl(targetUrl ?? url);
+    if (!u) return;
     setLoading(true);
     try {
       const cookieBrowser = localStorage.getItem('cookieBrowser') || 'none';
@@ -170,19 +140,11 @@ export const DownloaderPage: React.FC = () => {
       if (info.is_playlist && info.entries) setSelectedEntries(new Set(info.entries.map(e => e.id)));
     } catch (error: unknown) { toast.error(error instanceof Error ? error.message : 'Error al analizar la URL'); setVideoInfo(null); }
     finally { setLoading(false); }
-  };
+  }, [url]);
 
-  const analyzeUrl = async () => {
-    const u = validateUrl(url); if (!u) return;
-    setLoading(true);
-    try {
-      const cookieBrowser = localStorage.getItem('cookieBrowser') || 'none';
-      const info = await invoke<VideoInfo>('get_video_info', { url: u, cookieBrowser });
-      setVideoInfo(info); setTitle(info.title); setArtist(info.uploader); setAlbum('');
-      if (info.is_playlist && info.entries) setSelectedEntries(new Set(info.entries.map(e => e.id)));
-    } catch (error: unknown) { toast.error(error instanceof Error ? error.message : 'Error al analizar la URL'); setVideoInfo(null); }
-    finally { setLoading(false); }
-  };
+  // Ref para llamar analyzeUrl desde callbacks sin capturar el closure
+  const analyzeUrlRef = useRef(analyzeUrl);
+  analyzeUrlRef.current = analyzeUrl;
 
   const getFormatFromQuality = (q: string): string => {
     if (q.startsWith('video_')) return 'video';
@@ -200,31 +162,48 @@ export const DownloaderPage: React.FC = () => {
     const cookieBrowser = localStorage.getItem('cookieBrowser') || 'none';
     const embedCover = localStorage.getItem('embedCover') !== 'false';
     const embedMetadata = localStorage.getItem('embedMetadata') !== 'false';
-    const downloadId = Date.now().toString();
     const fmt = getFormatFromQuality(quality);
-    const q = getKbpsFromQuality(quality);
-    setActiveDownloads(prev => [...prev, { id: downloadId, title: title || videoInfo.title, progress: 0, speed: '0 KB/s', eta: '--:--' }]);
-    invoke('download_media', { id: downloadId, args: { url: videoInfo.url, format: fmt, quality: quality, codec: mediaType === 'video' ? codecPref : undefined, title: embedMetadata ? title : undefined, artist: embedMetadata ? artist : undefined, album: embedMetadata ? album : undefined, downloadPath, cookieBrowser, organize, embedCover } })
-      .catch(() => setActiveDownloads(prev => prev.filter(d => d.id !== downloadId)));
+
+    invoke('queue_add', {
+      title: embedMetadata && title ? title : videoInfo.title,
+      url: videoInfo.url,
+      format: fmt,
+      quality: quality,
+      codec: mediaType === 'video' ? codecPref : undefined,
+      download_path: downloadPath,
+      artist: embedMetadata ? artist : undefined,
+      album: embedMetadata ? album : undefined,
+      thumbnail: videoInfo.thumbnail,
+      cookie_browser: cookieBrowser,
+      embed_cover: embedCover
+    }).then(() => toast.success('Agregado a la cola'))
+      .catch((e: any) => toast.error(`Error al encolar: ${e.message}`));
+      
+    setVideoInfo(null);
+    setUrl('');
   };
 
   const handleDownloadPlaylist = async () => {
     if (!videoInfo?.entries) return;
     const selected = videoInfo.entries.filter(e => selectedEntries.has(e.id));
     if (selected.length === 0) { toast.error('Selecciona al menos un elemento'); return; }
-    const confirmed = await confirm(`Descargar ${selected.length} canciones?\n\nSe descargarán hasta ${MAX_CONCURRENT} a la vez.`);
-    if (!confirmed) return;
+    
     const cookieBrowser = localStorage.getItem('cookieBrowser') || 'none';
     const embedCover = localStorage.getItem('embedCover') !== 'false';
     const fmt = getFormatFromQuality(quality);
-    const q = getKbpsFromQuality(quality);
-    toast.success(`${selected.length} canciones agregadas a la cola`, { id: 'playlist-add' });
-    addToQueue(selected.map(e => ({
-      title: e.title, url: e.url, format: fmt, quality: quality,
+
+    invoke('queue_add_playlist', {
+      entries: selected,
+      format: fmt,
+      quality: quality,
       codec: mediaType === 'video' ? codecPref : undefined,
-      downloadPath, cookieBrowser, embedCover, organize, artist, album,
-      isPlaylist: true, playlistName: videoInfo.title,
-    })));
+      download_path: downloadPath,
+      playlist_title: videoInfo.title,
+      cookieBrowser: cookieBrowser,
+      embedCover: embedCover
+    }).then(() => toast.success(`${selected.length} canciones agregadas a la cola`))
+      .catch((e: any) => toast.error(`Error al encolar: ${e.message}`));
+      
     setVideoInfo(null); setUrl('');
   };
 
@@ -234,46 +213,7 @@ export const DownloaderPage: React.FC = () => {
     else setSelectedEntries(new Set(videoInfo.entries.map(e => e.id)));
   };
 
-  const processQueue = useCallback(() => {
-    const queue = queueRef.current;
-    const active = queue.filter(q => q.status === 'downloading').length;
-    if (active >= MAX_CONCURRENT) return;
-    const next = queue.find(q => q.status === 'queued');
-    if (!next) return;
-    setDownloadQueue(prev => prev.map(q => q.id === next.id ? { ...q, status: 'downloading' as QueueStatus } : q));
-    next.status = 'downloading';
-    invoke('download_media', {
-      id: next.id, args: {
-        url: next.url, format: next.format, quality: next.quality,
-        codec: next.format === 'video' ? (next as any).codec || codecPref : undefined,
-        title: next.artist ? next.title : undefined,
-        artist: next.artist || undefined,
-        album: next.album || undefined,
-        downloadPath: next.downloadPath, cookieBrowser: next.cookieBrowser,
-        organize: next.organize, embedCover: next.embedCover,
-        isPlaylist: next.isPlaylist, playlistName: next.playlistName,
-      }
-    }).catch(() => {});
-    setTimeout(() => processQueue(), 100);
-  }, []);
 
-  const addToQueue = useCallback((items: Omit<QueueItem, 'id' | 'status' | 'progress' | 'speed' | 'eta'>[]) => {
-    const newItems: QueueItem[] = items.map(item => ({
-      ...item,
-      id: Date.now().toString() + Math.random().toString(36).slice(2, 6),
-      status: 'queued' as QueueStatus,
-      progress: 0, speed: '0 KB/s', eta: '--:--',
-    }));
-    queueRef.current = [...queueRef.current, ...newItems];
-    setDownloadQueue(prev => [...prev, ...newItems]);
-    setTimeout(() => processQueue(), 50);
-  }, [processQueue]);
-
-  const formatDuration = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
 
   return (
     <div onDrop={handleDrop} onDragOver={handleDragOver} onDragLeave={handleDragLeave} style={{ position: 'relative', minHeight: '100%' }}>
@@ -303,7 +243,7 @@ export const DownloaderPage: React.FC = () => {
                 onFocus={e => { e.currentTarget.style.borderColor = 'oklch(var(--zen-sakura-base))'; e.currentTarget.style.boxShadow = '0 0 0 3px oklch(var(--zen-sakura-base) / 0.1)'; }}
                 onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.04)'; e.currentTarget.style.boxShadow = 'none'; }} />
             </div>
-            <button onClick={analyzeUrl} disabled={!url || loading}
+            <button onClick={() => analyzeUrl()} disabled={!url || loading}
               style={{ padding: '0 24px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg, oklch(var(--zen-sakura-light)), oklch(var(--zen-sakura-base)))', color: 'white', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer', opacity: (!url || loading) ? 0.5 : 1, transition: 'all 0.12s', display: 'flex', alignItems: 'center', gap: 8 }}>
               {loading ? <div className="w-4 h-4 rounded-full border-2 spin" style={{ borderColor: 'var(--text-label)', borderTopColor: 'white' }} /> : <Search size={15} />}
               {loading ? 'Analizando...' : 'Analizar'}
@@ -468,46 +408,7 @@ export const DownloaderPage: React.FC = () => {
         </motion.div>
       )}
 
-      {/* Active downloads / queue */}
-      <AnimatePresence>
-        {(activeDownloads.length > 0 || downloadQueue.length > 0) && (
-          <motion.div variants={itemAnim} initial="hidden" animate="show" className="space-y-2">
-            <h3 style={{ fontSize: '0.7rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6, color: 'var(--text-muted)' }}>
-              <Download size={12} /> Descargas
-              <span style={{ fontSize: '0.65rem', fontWeight: 400, color: 'var(--text-dim)' }}>
-                · {downloadQueue.filter(q => q.status === 'downloading').length} descargando
-                {downloadQueue.filter(q => q.status === 'queued').length > 0 && ` · ${downloadQueue.filter(q => q.status === 'queued').length} en cola`}
-                {downloadQueue.filter(q => q.status === 'completed').length > 0 && ` · ${downloadQueue.filter(q => q.status === 'completed').length} completadas`}
-              </span>
-            </h3>
-            {downloadQueue.map((item) => (
-              <motion.div key={item.id} layout
-                style={{ padding: '10px 14px', borderRadius: 8, background: item.status === 'error' ? 'rgba(239,68,68,0.06)' : 'var(--bg-card)', border: item.status === 'error' ? '1px solid rgba(239,68,68,0.15)' : 'var(--border-card)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                  <span style={{ fontSize: '0.78rem', fontWeight: 500, display: 'flex', alignItems: 'center', gap: 6, color: item.status === 'completed' ? 'var(--text-dim)' : item.status === 'error' ? '#f87171' : 'var(--text-input)' }}>
-                    {item.status === 'queued' && <span style={{ fontSize: '0.6rem', padding: '1px 6px', borderRadius: 4, fontWeight: 700, background: 'var(--bg-hover)', color: 'var(--text-muted)' }}>COLA</span>}
-                    {item.status === 'downloading' && <span style={{ fontSize: '0.6rem', padding: '1px 6px', borderRadius: 4, fontWeight: 700, background: 'oklch(var(--zen-sakura-base) / 0.12)', color: 'oklch(var(--zen-sakura-base))' }}>DL</span>}
-                    {item.status === 'completed' && <span style={{ fontSize: '0.7rem', color: '#22c55e' }}>✓</span>}
-                    {item.status === 'error' && <span style={{ fontSize: '0.7rem', color: '#f87171' }}>✗</span>}
-                    {item.title}
-                  </span>
-                  <span style={{ fontSize: '0.65rem', color: 'var(--text-dim)' }}>
-                    {item.status === 'queued' ? 'esperando...' : item.status === 'completed' ? 'completado' : item.status === 'error' ? item.errorMessage || 'error' : `${item.speed} · ${item.eta}`}
-                  </span>
-                </div>
-                {(item.status === 'downloading' || item.status === 'queued') && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <div style={{ flex: 1, height: 3, borderRadius: 2, background: 'rgba(255,255,255,0.04)' }}>
-                      <div className="h-full rounded-full transition-all duration-300" style={{ width: '100%', transform: `scaleX(${item.progress / 100})`, transformOrigin: 'left', background: item.status === 'queued' ? 'rgba(255,255,255,0.06)' : 'linear-gradient(90deg, oklch(var(--zen-sakura-light)), oklch(var(--zen-sakura-base)))' }} />
-                    </div>
-                    <span style={{ fontSize: '0.65rem', fontFamily: 'monospace', color: 'var(--text-label)' }}>{Math.round(item.progress)}%</span>
-                  </div>
-                )}
-              </motion.div>
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
+
     </motion.div>
     </div>
   );

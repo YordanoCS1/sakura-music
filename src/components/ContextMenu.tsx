@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 
 interface MenuItem {
   label: string;
@@ -23,7 +24,7 @@ export const ContextMenu: React.FC<Props> = ({ x, y, items, onClose }) => {
     return () => window.removeEventListener('mousedown', handle);
   }, [onClose]);
 
-  return (
+  const menuContent = (
     <div ref={ref}
       style={{ position: 'fixed', left: x, top: y, zIndex: 9999, minWidth: 160, padding: 4, borderRadius: 10, background: 'var(--bg-card)', border: 'var(--border-card)', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', backdropFilter: 'blur(16px)' }}>
       {items.map((item, i) => (
@@ -37,4 +38,6 @@ export const ContextMenu: React.FC<Props> = ({ x, y, items, onClose }) => {
       ))}
     </div>
   );
+
+  return createPortal(menuContent, document.body);
 };

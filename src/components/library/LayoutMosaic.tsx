@@ -4,6 +4,7 @@ import {
   Music, Search, Check, Trash2, Edit3, FolderOpen
 } from 'lucide-react';
 import type { LibraryLayoutProps } from './LayoutTypes';
+import { hashStr } from '../../utils/hash';
 
 const gradients = [
   'linear-gradient(135deg, #667eea, #764ba2)',
@@ -18,11 +19,7 @@ const gradients = [
   'linear-gradient(135deg, #f093fb, #f5576c)',
 ];
 
-function hashStr(s: string): number {
-  let h = 0;
-  for (let i = 0; i < s.length; i++) { h = ((h << 5) - h) + s.charCodeAt(i); h |= 0; }
-  return Math.abs(h);
-}
+
 
 interface TileProps {
   file: LibraryLayoutProps['filteredFiles'][0];

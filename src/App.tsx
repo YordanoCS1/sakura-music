@@ -8,8 +8,10 @@ import { ZenPlayer } from './components/ZenPlayer';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Skeleton } from './components/Skeleton';
 import { PlaybackProvider } from './contexts/PlaybackContext';
+import type { Song } from './contexts/PlaybackContext';
 import { invoke } from './bridge';
 import { Home, Download, Library, List, Search, Settings, Music, type LucideIcon } from 'lucide-react';
+import { usePlayerStore } from './store/usePlayerStore';
 
 const HomePage = lazy(() => import('./pages/HomePage').then(m => ({ default: m.HomePage })));
 const DownloaderPage = lazy(() => import('./pages/DownloaderPage').then(m => ({ default: m.DownloaderPage })));
@@ -19,10 +21,6 @@ const SearchPage = lazy(() => import('./pages/SearchPage').then(m => ({ default:
 const SettingsPage = lazy(() => import('./pages/SettingsPage').then(m => ({ default: m.SettingsPage })));
 
 type Page = 'home' | 'downloader' | 'library' | 'queue' | 'search' | 'settings';
-
-interface Song {
-  id: string; title: string; artist: string; cover?: string; duration: number; path: string;
-}
 
 const navItems: { id: Page; label: string; icon: LucideIcon; desc: string }[] = [
   { id: 'home', label: 'Inicio', icon: Home, desc: 'Panel principal' },
@@ -36,10 +34,15 @@ const navItems: { id: Page; label: string; icon: LucideIcon; desc: string }[] = 
 export const App: React.FC = () => {
   const [showSplash, setShowSplash] = useState(true);
   const [currentPage, setCurrentPage] = useState<Page>('home');
-  const [currentSong, setCurrentSong] = useState<Song | null>(null);
-  const [queue, setQueue] = useState<Song[]>([]);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [hoveredNav, setHoveredNav] = useState<string | null>(null);
+
+  const currentSong = usePlayerStore(s => s.currentSong);
+  const queue = usePlayerStore(s => s.queue);
+  const isPlaying = usePlayerStore(s => s.isPlaying);
+  const togglePlay = usePlayerStore(s => s.togglePlay);
+  const playNext = usePlayerStore(s => s.playNext);
+  const playPrevious = usePlayerStore(s => s.playPrevious);
+  const setQueue = usePlayerStore(s => s.setQueue);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') || 'sakura';
@@ -51,56 +54,59 @@ export const App: React.FC = () => {
     const handlePlaySong = (e: Event) => {
       const detail = (e as CustomEvent<{ tracks?: Song[]; id: string; title: string; artist: string; cover?: string; duration: number; path: string }>).detail;
       const { tracks, ...song } = detail;
-      setCurrentSong(song);
-      if (tracks) setQueue(tracks);
-      setIsPlaying(true);
+      if (tracks) {
+        setQueue(tracks, song);
+      } else {
+        setQueue([song], song);
+      }
       invoke('add_recent_song', { title: song.title, artist: song.artist, cover: song.cover, path: song.path });
     };
     window.addEventListener('play-song', handlePlaySong as EventListener);
     return () => window.removeEventListener('play-song', handlePlaySong as EventListener);
-  }, []);
+  }, [setQueue]);
 
   useEffect(() => {
-    const unsubTrayPlay = window.electronAPI?.on('tray-play-pause', () => setIsPlaying(p => !p));
-    const unsubTrayNext = window.electronAPI?.on('tray-next', () => { handleNextRef.current(); });
-    const unsubTrayPrev = window.electronAPI?.on('tray-previous', () => { handlePreviousRef.current(); });
-    const unsubNavigate = window.electronAPI?.on('navigate', (_e, page: Page) => setCurrentPage(page));
+    const unsubTrayPlay = window.electronAPI?.on('tray-play-pause', () => togglePlay());
+    const unsubTrayNext = window.electronAPI?.on('tray-next', () => { playNext(); });
+    const unsubTrayPrev = window.electronAPI?.on('tray-previous', () => { playPrevious(); });
+    const unsubNavigate = window.electronAPI?.on('navigate', (page: unknown) => setCurrentPage(page as Page));
     return () => { unsubTrayPlay?.(); unsubTrayNext?.(); unsubTrayPrev?.(); unsubNavigate?.(); };
-  }, []);
+  }, [togglePlay, playNext, playPrevious]);
 
   useEffect(() => { window.electronAPI?.send('tray:set-playing', isPlaying); }, [isPlaying]);
 
-  const handleNext = useCallback(() => {
-    if (!currentSong || queue.length === 0) return;
-    const idx = queue.findIndex(t => t.path === currentSong.path);
-    const next = queue[idx + 1] || queue[0];
-    setCurrentSong(next);
-    setIsPlaying(true);
-  }, [currentSong, queue]);
+  // Global keyboard shortcuts
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      const ctrl = e.ctrlKey || e.metaKey;
+      if (e.key === ' ' && !ctrl) { e.preventDefault(); togglePlay(); return; }
+      if (ctrl && e.key === 'ArrowRight') { e.preventDefault(); playNext(); return; }
+      if (ctrl && e.key === 'ArrowLeft') { e.preventDefault(); playPrevious(); return; }
+      if (ctrl && e.key === 'h') { e.preventDefault(); setCurrentPage('home'); return; }
+      if (ctrl && e.key === 'd') { e.preventDefault(); setCurrentPage('downloader'); return; }
+      if (ctrl && e.key === 'l') { e.preventDefault(); setCurrentPage('library'); return; }
+      if (ctrl && e.key === 'f') { e.preventDefault(); setCurrentPage('search'); return; }
+      if (ctrl && e.key === ',') { e.preventDefault(); setCurrentPage('settings'); return; }
+      if (ctrl && e.key === 'n') { e.preventDefault(); const pages: Page[] = ['home', 'search', 'downloader', 'library', 'queue', 'settings']; const idx = pages.indexOf(currentPage); setCurrentPage(pages[(idx + 1) % pages.length]); return; }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [currentPage, togglePlay, playNext, playPrevious]);
 
-  const handlePrevious = useCallback(() => {
-    if (!currentSong || queue.length === 0) return;
-    const idx = queue.findIndex(t => t.path === currentSong.path);
-    const prev = queue[idx - 1] || queue[queue.length - 1];
-    setCurrentSong(prev);
-    setIsPlaying(true);
-  }, [currentSong, queue]);
 
-  const togglePlay = useCallback(() => setIsPlaying(p => !p), []);
 
-  const handleNextRef = useRef(handleNext);
-  handleNextRef.current = handleNext;
-  const handlePreviousRef = useRef(handlePrevious);
-  handlePreviousRef.current = handlePrevious;
+  const navigateTo = useCallback((page: string) => setCurrentPage(page as Page), []);
 
   const pages: Record<Page, React.ReactNode> = useMemo(() => ({
-    home: <ErrorBoundary name="Home"><HomePage /></ErrorBoundary>,
+    home: <ErrorBoundary name="Home"><HomePage onNavigate={navigateTo} /></ErrorBoundary>,
     downloader: <ErrorBoundary name="Downloader"><DownloaderPage /></ErrorBoundary>,
     library: <ErrorBoundary name="Library"><LibraryPage /></ErrorBoundary>,
     queue: <ErrorBoundary name="Queue"><QueuePage /></ErrorBoundary>,
-    search: <ErrorBoundary name="Search"><SearchPage /></ErrorBoundary>,
+    search: <ErrorBoundary name="Search"><SearchPage onNavigate={navigateTo} /></ErrorBoundary>,
     settings: <ErrorBoundary name="Settings"><SettingsPage /></ErrorBoundary>,
-  }), []);
+  }), [navigateTo]);
 
   return (
     <PlaybackProvider>
@@ -158,8 +164,10 @@ export const App: React.FC = () => {
           <div className="flex-1 overflow-y-auto px-10 pb-28 pt-6">
             <AnimatePresence mode="wait">
               <motion.div key={currentPage}
-                initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}
-                transition={{ duration: 0.2, ease: 'easeOut' }}>
+                initial={{ opacity: 0, scale: 0.96, filter: 'blur(2px)' }}
+                animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, scale: 1.02, filter: 'blur(4px)' }}
+                transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}>
                 <Suspense fallback={<div className="p-8 space-y-4"><Skeleton width="60%" height={28} borderRadius={8} /><Skeleton width="40%" height={16} borderRadius={6} /><div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mt-6">{[1,2,3,4].map(i => <div key={i} className="rounded-xl p-4" style={{ background: 'var(--bg-card)', border: 'var(--border-card)' }}><div className="w-9 h-9 rounded-xl mb-3 animate-pulse" style={{ background: 'rgba(255,255,255,0.04)' }} /><div className="h-6 w-16 rounded mb-2 animate-pulse" style={{ background: 'rgba(255,255,255,0.04)' }} /><div className="h-3 w-20 rounded animate-pulse" style={{ background: 'rgba(255,255,255,0.03)' }} /></div>)}</div></div>}>
                   {pages[currentPage]}
                 </Suspense>
@@ -170,7 +178,7 @@ export const App: React.FC = () => {
       </div>
 
       <div className="skin-player">
-        <ZenPlayer currentSong={currentSong || undefined} isPlaying={isPlaying} onPlayPause={togglePlay} onNext={handleNext} onPrevious={handlePrevious} queue={queue} />
+        <ZenPlayer currentSong={currentSong || undefined} isPlaying={isPlaying} onPlayPause={togglePlay} onNext={playNext} onPrevious={playPrevious} queue={queue} />
       </div>
 
       <Toaster position="bottom-right" toastOptions={{

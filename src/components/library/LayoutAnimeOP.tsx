@@ -2,12 +2,9 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Music, Search, Trash2, Edit3, FolderOpen, Disc3, Sparkles } from 'lucide-react';
 import type { LibraryLayoutProps } from './LayoutTypes';
+import { hashStr } from '../../utils/hash';
 
-function hashStr(s: string): number {
-  let h = 0;
-  for (let i = 0; i < s.length; i++) { h = ((h << 5) - h) + s.charCodeAt(i); h |= 0; }
-  return Math.abs(h);
-}
+
 
 const PANEL_BORDERS = ['2px', '3px', '4px', '1px', '5px', '2px'];
 const ACCENT_COLORS = ['#ff4081', '#00e5ff', '#ffeb3b', '#76ff03', '#e040fb', '#ff6d00'];

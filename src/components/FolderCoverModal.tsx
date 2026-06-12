@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
 import { X, Search, Check, FolderOpen, Image, Download, RefreshCw, Disc3, Users, AlertTriangle } from 'lucide-react';
 import { invoke } from '../bridge';
@@ -99,7 +100,7 @@ export const FolderCoverModal: React.FC<Props> = ({ folderName, folderPath, onCl
     transition: 'border-color 0.15s',
   };
 
-  const tabBtn = (id: Tab, label: string, icon: React.ComponentType<{ size?: number }>) => {
+  const tabBtn = (id: Tab, label: string, icon: React.ComponentType<{ size?: number | string }>) => {
     const active = tab === id;
     return (
       <button onClick={() => { setTab(id); setSelectedUrl(null); if (id !== tab) setTimeout(doSearch, 0); }}
@@ -110,7 +111,7 @@ export const FolderCoverModal: React.FC<Props> = ({ folderName, folderPath, onCl
     );
   };
 
-  return (
+  const modalContent = (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, background: T.overlay, backdropFilter: 'blur(8px)' }}
       onClick={onClose}>
@@ -187,9 +188,9 @@ export const FolderCoverModal: React.FC<Props> = ({ folderName, folderPath, onCl
                           style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       )}
                       {/* Source badge */}
-                      {!broken && (c.source || (tab === 'album' && c.artist)) && (
+                      {!broken && (('source' in c && c.source) || (tab === 'album' && 'artist' in c && c.artist)) && (
                         <div style={{ position: 'absolute', bottom: 4, left: 4, right: 4, padding: '2px 5px', borderRadius: 4, background: 'rgba(0,0,0,0.7)', fontSize: '0.5rem', color: 'rgba(255,255,255,0.7)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'center' }}>
-                          {c.source || (tab === 'album' ? c.artist.substring(0, 30) : '')}
+                          {'source' in c ? c.source : (tab === 'album' && 'artist' in c ? (c as AlbumResult).artist.substring(0, 30) : '')}
                         </div>
                       )}
                       {active && (
@@ -218,10 +219,10 @@ export const FolderCoverModal: React.FC<Props> = ({ folderName, folderPath, onCl
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: '0.75rem', fontWeight: 600, color: T.textPrimary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {tab === 'album' ? selectedItem.album || '(sin título)' : selectedItem.name}
+                {tab === 'album' ? (selectedItem as AlbumResult).album || '(sin título)' : (selectedItem as ArtistResult).name}
               </div>
               <div style={{ fontSize: '0.62rem', color: T.textMuted }}>
-                {tab === 'album' ? selectedItem.artist : (selectedItem.source || '')}
+                {tab === 'album' ? (selectedItem as AlbumResult).artist : ((selectedItem as ArtistResult).source || '')}
               </div>
             </div>
             <button onClick={save} disabled={saving}
@@ -234,4 +235,6 @@ export const FolderCoverModal: React.FC<Props> = ({ folderName, folderPath, onCl
       </motion.div>
     </motion.div>
   );
+
+  return createPortal(modalContent, document.body);
 };

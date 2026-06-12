@@ -9,6 +9,7 @@
     "dev:electron": "wait-on tcp:5173 && electron .",
     "build": "vite build",
     "start": "electron .",
+    "test": "vitest run tests/unit",
     "test:e2e": "playwright test",
     "postinstall": "electron-builder install-app-deps"
   },
@@ -30,6 +31,8 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.60.0",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@types/fluent-ffmpeg": "^2.1.24",
     "@types/node": "^20.10.6",
     "@types/react": "^18.2.48",
@@ -39,11 +42,13 @@
     "concurrently": "^8.2.2",
     "electron": "^30.0.0",
     "electron-builder": "^24.9.1",
+    "jsdom": "^29.1.1",
     "playwright": "^1.60.0",
     "postcss": "^8.5.15",
     "tailwindcss": "^3.4.19",
     "typescript": "^5.3.3",
     "vite": "^5.0.11",
+    "vitest": "^4.1.8",
     "wait-on": "^7.2.0"
   },
   "build": {
@@ -66,7 +71,10 @@
       "allowToChangeInstallationDirectory": true
     },
     "linux": {
-      "target": ["AppImage", "deb"],
+      "target": [
+        "AppImage",
+        "deb"
+      ],
       "icon": "build/icons",
       "category": "Audio"
     }

@@ -28,6 +28,8 @@
   <img src="https://img.shields.io/badge/Vite-5-646CFF?logo=vite&logoColor=white" alt="Vite" />
   <img src="https://img.shields.io/badge/Tailwind-3-06B6D4?logo=tailwindcss&logoColor=white" alt="Tailwind" />
   <img src="https://img.shields.io/badge/Windows-ready-0078D4?logo=windows&logoColor=white" alt="Windows" />
+  <img src="https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white" alt="Vitest" />
+  <img src="https://img.shields.io/badge/Zustand-443E38?logo=react&logoColor=white" alt="Zustand" />
 </p>
 
 ---
@@ -48,12 +50,15 @@ https://github.com/user-attachments/assets/ee65e2a7-ca27-46a9-92f0-cb9f7ba3a2ec
         <li>Organización automática Artista/Álbum</li>
         <li>Soporte para cookies de navegador</li>
         <li>Actualización integrada de yt-dlp y ffmpeg</li>
+        <li><strong>Descarga directa desde resultados de búsqueda</strong></li>
+        <li>Botón "Descargar" con feedback visual (spinner + check)</li>
+        <li>Envío a cola desde resultados de búsqueda</li>
       </ul>
     </td>
     <td width="50%">
       <h3>📚 Biblioteca</h3>
       <ul>
-        <li>23 layouts visuales intercambiables</li>
+        <li>26 layouts visuales intercambiables</li>
         <li>Exploración por carpetas del sistema</li>
         <li>Editor de metadatos incorporado</li>
         <li>Portadas de álbumes</li>
@@ -70,16 +75,22 @@ https://github.com/user-attachments/assets/ee65e2a7-ca27-46a9-92f0-cb9f7ba3a2ec
         <li>Soporte para letras (LRC)</li>
         <li>Lista de reproducción dinámica</li>
         <li>Control desde bandeja del sistema</li>
+        <li><strong>Volumen inicial configurable</strong> desde Ajustes</li>
+        <li><strong>Atajos de teclado globales</strong> (10+ combinaciones)</li>
+        <li>Limpieza de memoria audio al cambiar de canción</li>
       </ul>
     </td>
     <td width="50%">
-      <h3>🎨 Temas</h3>
+      <h3>🎨 Temas & UI</h3>
       <ul>
-        <li>13 temas de color intercambiables</li>
+        <li>16 temas de color intercambiables</li>
         <li>Paletas OKLCH profesionales</li>
         <li>Transiciones suaves entre temas</li>
         <li>Estéticas: japonesa, china, retro, cyberpunk</li>
         <li>Tema aplicado en tiempo real sin recarga</li>
+        <li><strong>Partículas decorativas configurables por tema</strong></li>
+        <li>Página de Ajustes con 8 secciones organizadas</li>
+        <li><strong>Reset de configuración con confirmación</strong></li>
       </ul>
     </td>
   </tr>
@@ -104,7 +115,7 @@ npm run start         # Ejecutar con build existente
 
 ## 🎨 Layouts
 
-La biblioteca cuenta con **23 layouts visuales** que transforman por completo la experiencia de exploración musical. Cada uno tiene una disposición, animaciones y estética únicas.
+La biblioteca cuenta con **26 layouts visuales** que transforman por completo la experiencia de exploración musical. Cada uno tiene una disposición, animaciones y estética únicas.
 
 | # | Layout | Estilo | Descripción |
 |---|--------|--------|-------------|
@@ -131,6 +142,9 @@ La biblioteca cuenta con **23 layouts visuales** que transforman por completo la
 | 21 | **Dragón Celestial** | 🐉 | Dragón chino con nubes doradas |
 | 22 | **Festival** | 🏮 | Festival de linternas rojas con borlas |
 | 23 | **Jade** | 🟢 | Muro de jade tallado con nichos dorados |
+| 24 | **Vinilo** | 💿 | Discos de vinilo girando en el tornamesa |
+| 25 | **Casete** | 📼 | Cintas de casete retro en el estante |
+| 26 | **Estudio** | 🎛️ | Consola de grabación con rack de efectos |
 
 ---
 
@@ -186,12 +200,12 @@ Cada tema redefine completamente la paleta de color de la aplicación usando var
   </tr>
   <tr>
     <td><strong>Erudito</strong></td>
-    <td><code>#c0392b</code> · tinta · pergamino</td>
+    <td><code>#1a1a1a</code> · tinta · pergamino</td>
     <td>🖌️ Clásico, académico</td>
   </tr>
   <tr>
     <td><strong>Porcelana Azul</strong></td>
-    <td><code>#1a3a7a</code> · cobalto · marfil</td>
+    <td><code>#2a6a9a</code> · cobalto · marfil</td>
     <td>🏺 Ming, refinado</td>
   </tr>
   <tr>
@@ -201,13 +215,28 @@ Cada tema redefine completamente la paleta de color de la aplicación usando var
   </tr>
   <tr>
     <td><strong>Festival</strong></td>
-    <td><code>#c0392b</code> · rojo · dorado</td>
+    <td><code>#d4a017</code> · rojo · dorado</td>
     <td>🎉 Festivo, vibrante</td>
   </tr>
   <tr>
     <td><strong>Jade</strong></td>
     <td><code>#2d5a3a</code> · verde · oro</td>
     <td>🟢 Elegante, natural</td>
+  </tr>
+  <tr>
+    <td><strong>Bambú</strong></td>
+    <td><code>#4a7c59</code> · verde bosque</td>
+    <td>🎋 Sereno, natural</td>
+  </tr>
+  <tr>
+    <td><strong>Atardecer</strong></td>
+    <td><code>#e86a33</code> · naranja · dorado</td>
+    <td>🌅 Cálido, crepuscular</td>
+  </tr>
+  <tr>
+    <td><strong>Hielo</strong></td>
+    <td><code>#5bc0de</code> · azul cristal</td>
+    <td>❄️ Frío, puro</td>
   </tr>
 </table>
 
@@ -228,13 +257,27 @@ Cada tema redefine completamente la paleta de color de la aplicación usando var
 |------|-----------|-----------|
 | **Frontend** | React 19 + TypeScript | UI component-based |
 | **Build** | Vite 5 | Bundler rápido con HMR |
+| **Estado global** | Zustand | Estado del reproductor centralizado |
 | **Animaciones** | Framer Motion | Transiciones fluidas y gestos |
 | **Iconos** | Lucide React | Iconografía limpia y consistente |
 | **Estilos** | Tailwind CSS 3 + CSS custom properties | Diseño atómico + theming dinámico |
 | **Color** | OKLCH | Precisión cromática en los temas |
 | **Desktop** | Electron 33 | Aplicación de escritorio nativa |
 | **Descargas** | yt-dlp + fluent-ffmpeg | Motor de descarga y conversión |
-| **Testing** | Playwright | Tests E2E |
+| **Testing** | Vitest + @testing-library/react | Tests unitarios (13 tests) |
+| **E2E** | Playwright | Tests de flujos críticos |
+
+---
+
+## ⚡ Optimizaciones y calidad
+
+| Área | Mejora |
+|------|--------|
+| **Rendimiento** | `loadPath`, `updateBreadcrumbs`, `loadMetadataForFiles` envueltas en `useCallback` — evita renders innecesarios del layout |
+| **Estabilidad** | `loadTrending` con `try/catch` — evita unhandled promise rejection al cargar tendencias |
+| **Código** | Importación estática de `musicDir` en vez de `await import()` dinámico |
+| **Compatibilidad** | Normalización de rutas Windows (`replace(/\\/g, '/')`) — paths consistentes en todos los SO |
+| **Testing** | 13 tests unitarios (Vitest) para `hashStr`, `formatDuration` y `formatSize` |
 
 ---
 
@@ -264,12 +307,19 @@ Cada tema redefine completamente la paleta de color de la aplicación usando var
 │   └── taskbar-progress.js      # Progreso en barra de tareas
 ├── 📂 src/                      # 🎨 Frontend (renderer)
 │   ├── 📂 components/
-│   │   ├── 📂 library/          # 23 layouts visuales
+│   │   ├── 📂 library/          # 26 layouts visuales
 │   │   │   ├── LayoutGlass.tsx
 │   │   │   ├── LayoutCityPop.tsx
 │   │   │   ├── LayoutKawaii.tsx
 │   │   │   ├── LayoutJade.tsx
-│   │   │   └── ... (23 en total)
+│   │   │   ├── LayoutVinilo.tsx
+│   │   │   ├── LayoutCasete.tsx
+│   │   │   ├── LayoutEstudio.tsx
+│   │   │   └── ... (26 en total)
+│   │   ├── 📂 shared/           # Componentes reutilizables
+│   │   │   ├── SelectionBar.tsx
+│   │   │   ├── LoadingSpinner.tsx
+│   │   │   └── EmptyState.tsx
 │   │   ├── ZenPlayer.tsx        # Reproductor
 │   │   ├── InfoPanel.tsx        # Panel de metadatos
 │   │   ├── MetadataEditor.tsx   # Editor ID3
@@ -285,18 +335,25 @@ Cada tema redefine completamente la paleta de color de la aplicación usando var
 │   │   ├── SearchPage.tsx       # 🔍 Búsqueda
 │   │   ├── QueuePage.tsx        # 📋 Cola de reproducción
 │   │   └── HomePage.tsx         # 🏠 Inicio
+│   ├── 📂 store/
+│   │   └── usePlayerStore.ts    # Zustand store del reproductor
 │   ├── 📂 styles/
-│   │   ├── themes.css           # 13 temas completos (1700+ líneas)
+│   │   ├── themes.css           # 16 temas completos (1700+ líneas)
 │   │   └── index.css            # Estilos base y utilidades
 │   ├── 📂 utils/
+│   │   ├── hash.ts              # Hash determinístico para IDs
+│   │   ├── format.ts            # Formateo duración y tamaño
 │   │   └── lrc.ts               # Parseador de letras LRC
-│   ├── App.tsx                  # Root component
+│   ├── App.tsx                  # Root component (routing, atajos, reproductor)
 │   ├── bridge.ts                # Tipos IPC
 │   └── main.tsx                 # Entry point React
 ├── 📂 tests/
 │   ├── e2e/
 │   │   ├── critical-flows.spec.ts
 │   │   └── search.spec.js
+│   └── unit/
+│       ├── hash.test.ts          # 5 tests: hashStr determinístico
+│       └── format.test.ts        # 8 tests: formatDuration / formatSize
 ├── package.json
 ├── vite.config.ts
 └── README.md
@@ -313,6 +370,7 @@ Cada tema redefine completamente la paleta de color de la aplicación usando var
 | `npm run dev:electron` | Solo Electron (requiere build previo) |
 | `npm run build` | Build de producción (Vite) |
 | `npm run start` | Ejecuta Electron con build existente |
+| `npm run test` | Tests unitarios (Vitest) |
 | `npm run test:e2e` | Tests E2E con Playwright |
 
 ---
