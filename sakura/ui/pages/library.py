@@ -18,14 +18,16 @@ from PySide6.QtWidgets import (
     QListView,
     QListWidget,
     QListWidgetItem,
+    QMessageBox,
     QStackedWidget,
     QTableView,
     QVBoxLayout,
     QWidget,
 )
 
-from ...config import covers_dir, load_settings, music_dir, save_settings
+from ...config import covers_dir, load_settings, music_dir, save_settings, tag_history_dir
 from ...core.library import Track, extract_cover, load_track
+from ...core.tag_history import latest_manifest, revert_batch
 from .. import icons
 from .. import theme as th
 from ..covers import folder_cover, render_cover
@@ -132,6 +134,11 @@ class LibraryPage(Page):
         self.reload_button = IconButton("repeat", "Volver a escanear", 38)
         self.reload_button.clicked.connect(lambda: self.rescan())
         bar.addWidget(self.reload_button, 0)
+
+        self.undo_button = IconButton("restore", "Deshacer último lote", 38)
+        self.undo_button.clicked.connect(self._on_undo)
+        bar.addWidget(self.undo_button, 0)
+        self._update_undo_state()
 
         self.edit_button = TextButton("Editar metadatos", "ghost")
         self.edit_button.clicked.connect(self._on_edit)
@@ -425,6 +432,7 @@ class LibraryPage(Page):
         self._update_view_mode_buttons()
         self.open_button.refresh()
         self.reload_button.refresh()
+        self.undo_button.refresh()
         for button in self.view_buttons.values():
             button.refresh()
         self.detail.refresh()
@@ -638,6 +646,7 @@ class LibraryPage(Page):
             return  # cancelado: el editor no toco el archivo
 
         self._refresh_track(track_item, tags)
+        self._update_undo_state()
 
     def _on_batch_edit(self) -> None:
         """Aplica los mismos tags a todas las pistas marcadas."""
@@ -652,6 +661,35 @@ class LibraryPage(Page):
         if result.applied:
             self._refresh_all()
         self._show_message(result.text_summary)
+        self._update_undo_state()
+
+    def _on_undo(self) -> None:
+        """Restaura los tags previos del ultimo lote escrito."""
+        found = latest_manifest(tag_history_dir())
+        if found is None:
+            self._show_message("No hay ningún lote para deshacer")
+            self._update_undo_state()
+            return
+
+        batch, manifest_path = found
+        confirm = QMessageBox.question(
+            self,
+            "Deshacer último lote",
+            f"Se van a restaurar los tags anteriores de {batch.text_summary}.\n\n{batch.label}",
+        )
+        if confirm != QMessageBox.StandardButton.Yes:
+            return
+
+        result = revert_batch(batch)
+        if not result.errors:
+            manifest_path.unlink(missing_ok=True)
+        self._refresh_all()
+        self._show_message(result.text_summary)
+        self._update_undo_state()
+
+    def _update_undo_state(self) -> None:
+        """Habilita 'Deshacer' solo si hay un lote guardado."""
+        self.undo_button.setEnabled(latest_manifest(tag_history_dir()) is not None)
 
     def _tracks_album(self, track_item: Track) -> list[Track]:
         """Las otras pistas de la misma carpeta, para el 'Aplicar a todo el álbum'."""

@@ -16,6 +16,7 @@ sobre el "easy".
 from __future__ import annotations
 
 import base64
+import logging
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -23,6 +24,8 @@ import mutagen
 from mutagen import id3
 
 from .library import MAX_COVER_BYTES, UNKNOWN
+
+logger = logging.getLogger(__name__)
 
 # Formatos cuya escritura de portada es soportada.
 COVER_FORMATS = frozenset({".mp3", ".m4a", ".m4b", ".flac", ".opus", ".ogg", ".oga"})
@@ -240,14 +243,16 @@ def _open_easy(path: Path):
     """
     try:
         return mutagen.File(path, easy=True)
-    except Exception:
+    except Exception as exc:
+        logger.debug("No se pudo abrir %s (easy): %s", path, exc)
         return None
 
 
 def _open_native(path: Path):
     try:
         return mutagen.File(path)
-    except Exception:
+    except Exception as exc:
+        logger.debug("No se pudo abrir %s (nativo): %s", path, exc)
         return None
 
 

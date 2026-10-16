@@ -575,3 +575,84 @@ def test_nuevos_disenos_muestran_la_portada(page, tmp_path, mode, size, cover_po
     assert pixel.blue() > 120
     if mode == "discs":
         assert output.toImage().pixelColor(45, 35) != color
+
+
+# --- deshacer el ultimo lote --------------------------------------------------
+
+
+def _lote_guardo(tmp_path):
+    from sakura.core.tag_history import Change, TagBatch, now_iso
+
+    batch = TagBatch("l", now_iso(), [Change("a.mp3", {"genre": "Pop"}, {"genre": "Rock"})])
+    manifest = tmp_path / "hist" / "20200101-000000-abc.json"
+    manifest.parent.mkdir(parents=True)
+    manifest.write_text("{}", encoding="utf-8")
+    return batch, manifest
+
+
+def test_el_boton_deshacer_arranca_apagado_sin_lotes(page, monkeypatch) -> None:
+    import sakura.ui.pages.library as lib
+
+    monkeypatch.setattr(lib, "latest_manifest", lambda directory: None)
+
+    page._update_undo_state()
+
+    assert not page.undo_button.isEnabled()
+
+
+def test_sin_lote_para_deshacer_avisa(page, monkeypatch) -> None:
+    import sakura.ui.pages.library as lib
+
+    monkeypatch.setattr(lib, "latest_manifest", lambda directory: None)
+
+    page._on_undo()
+
+    assert "No hay ningún lote" in page.message.label.text()
+
+
+def test_deshacer_restaura_y_consume_el_manifiesto(page, monkeypatch, tmp_path) -> None:
+    from PySide6.QtWidgets import QMessageBox
+
+    import sakura.ui.pages.library as lib
+    from sakura.core.tag_history import RevertResult
+
+    batch, manifest = _lote_guardo(tmp_path)
+    llamadas = {"n": 0}
+
+    def fake_latest(directory):
+        llamadas["n"] += 1
+        return (batch, manifest) if llamadas["n"] == 1 else None
+
+    monkeypatch.setattr(lib, "latest_manifest", fake_latest)
+    monkeypatch.setattr(lib, "revert_batch", lambda b: RevertResult(restored=2))
+    monkeypatch.setattr(
+        QMessageBox, "question", lambda *a, **k: QMessageBox.StandardButton.Yes
+    )
+    refrescos: list[str] = []
+    monkeypatch.setattr(page, "_refresh_all", lambda: refrescos.append("si"))
+
+    page._on_undo()
+
+    assert refrescos == ["si"]
+    assert not manifest.exists(), "el manifiesto se consume al deshacer"
+    assert "2 pistas restauradas" in page.message.label.text()
+    assert not page.undo_button.isEnabled()
+
+
+def test_deshacer_cancelado_no_toca_el_manifiesto(page, monkeypatch, tmp_path) -> None:
+    from PySide6.QtWidgets import QMessageBox
+
+    import sakura.ui.pages.library as lib
+
+    batch, manifest = _lote_guardo(tmp_path)
+    monkeypatch.setattr(lib, "latest_manifest", lambda directory: (batch, manifest))
+    revertidos: list[object] = []
+    monkeypatch.setattr(lib, "revert_batch", lambda b: revertidos.append(b))
+    monkeypatch.setattr(
+        QMessageBox, "question", lambda *a, **k: QMessageBox.StandardButton.No
+    )
+
+    page._on_undo()
+
+    assert not revertidos, "cancelar no puede revertir nada"
+    assert manifest.exists()

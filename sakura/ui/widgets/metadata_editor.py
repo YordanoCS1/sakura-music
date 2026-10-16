@@ -26,8 +26,10 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from ...config import tag_history_dir
 from ...core.library import Track
 from ...core.metadata import (
+    TEXT_FIELDS,
     MetadataError,
     TrackTags,
     read_cover,
@@ -38,6 +40,7 @@ from ...core.metadata import (
     write_tags,
 )
 from ...core.metadata_sources import Candidate
+from ...core.tag_history import TagBatch, make_change, now_iso, save_manifest
 from ..covers import render_cover
 from ..services.metadata_search import MetadataSearch, apply_album
 from ..services.thumbnails import ThumbnailLoader, cache_path
@@ -548,6 +551,11 @@ class MetadataEditor(QDialog):
         tags = self.tags_current()
 
         try:
+            before = read_tags(self.path)
+        except MetadataError:
+            before = None
+
+        try:
             write_tags(self.path, tags)
 
             if self._cover_removed:
@@ -558,7 +566,27 @@ class MetadataEditor(QDialog):
             self._error(str(exc))
             return
 
+        self._record_history(before, tags)
         self.accept()
+
+    def _record_history(self, before: TrackTags | None, tags: TrackTags) -> None:
+        """Guarda el manifiesto del cambio para poder deshacerlo despues.
+
+        Una edicion suelta es un lote de una pista, para que "Deshacer ultimo
+        lote" tambien la alcance.
+        """
+        if before is None:
+            return
+        after = {field_name: getattr(tags, field_name) for field_name in TEXT_FIELDS}
+        change = make_change(self.path, before.as_text_mapping(), after)
+        if change is None:
+            return
+        batch = TagBatch(
+            label=f"Edición de {self.path.name}",
+            created_at=now_iso(),
+            changes=[change],
+        )
+        save_manifest(batch, tag_history_dir())
 
     # --- catalogo ------------------------------------------------------------
 

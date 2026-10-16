@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import logging
 import re
 from dataclasses import dataclass
 from fnmatch import fnmatch
@@ -16,6 +17,8 @@ from pathlib import Path
 import mutagen
 
 from .text import normalize, without_parentesis
+
+logger = logging.getLogger(__name__)
 
 # Extensiones que la app reconoce como pistas. `mutagen.File` solo devuelve un
 # objeto para las que sabe leer.
@@ -322,7 +325,8 @@ def load_track(path: Path) -> Track | None:
     """
     try:
         audio = mutagen.File(path, easy=True)
-    except Exception:
+    except Exception as exc:
+        logger.warning("No se pudo leer el audio de %s: %s", path, exc)
         return None
 
     if audio is None:
@@ -381,7 +385,8 @@ def extract_cover(path: Path, covers_root: Path) -> Path | None:
     """
     try:
         audio = mutagen.File(path)
-    except Exception:
+    except Exception as exc:
+        logger.warning("No se pudo extraer la portada de %s: %s", path, exc)
         return None
 
     data = _cover_bytes(audio)

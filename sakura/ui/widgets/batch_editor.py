@@ -12,6 +12,7 @@ borrarlo. Borrar un álbum entero por accident es un trabajo largo de deshacer.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from pathlib import Path
 
 from PySide6.QtWidgets import (
     QCheckBox,
@@ -25,12 +26,14 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from ...config import tag_history_dir
 from ...core.library import Track
 from ...core.metadata import (
     MetadataError,
     read_tags,
     update_text_tags,
 )
+from ...core.tag_history import TagBatch, make_change, now_iso, save_manifest
 from .. import theme as th
 from .buttons import TextButton
 
@@ -56,6 +59,10 @@ class BatchResult:
     applied: int = 0
     errors: list[str] = field(default_factory=list)
     omitidas: int = 0
+    # El lote con los valores previos, para poder deshacerlo. `manifest` es la
+    # ruta donde quedo guardado, o None si no habia cambios o no se pidio.
+    batch: TagBatch | None = None
+    manifest: Path | None = None
 
     @property
     def text_summary(self) -> str:
@@ -74,16 +81,29 @@ def changes_batch(field_map: dict[str, str]) -> dict[str, str]:
     return {field_name: value.strip() for field_name, value in field_map.items() if value.strip()}
 
 
-def applying_tags_a_batch(tracks: list[Track], changes: dict[str, str]) -> BatchResult:
+def applying_tags_a_batch(
+    tracks: list[Track],
+    changes: dict[str, str],
+    history_dir: Path | None = None,
+) -> BatchResult:
     """Aplica los mismos cambios a varias pistas.
 
     Va fuera de la UI a proposito: son dos lecturas de mutagen por archivo y con
     una seleccion grande el hilo de la interfaz se congela.
+
+    Si se pasa `history_dir`, guarda un manifiesto con los valores previos para
+    poder deshacer el lote.
     """
     result = BatchResult()
     clean = changes_batch(changes)
     if not clean:
         return result
+
+    batch = TagBatch(
+        label=f"Lote de {len(tracks)} pistas",
+        created_at=now_iso(),
+        changes=[],
+    )
 
     for track_item in tracks:
         if track_item.path is None:
@@ -106,6 +126,13 @@ def applying_tags_a_batch(tracks: list[Track], changes: dict[str, str]) -> Batch
             continue
         result.applied += 1
 
+        change = make_change(track_item.path, before.as_text_mapping(), clean)
+        if change is not None:
+            batch.changes.append(change)
+
+    result.batch = batch
+    if history_dir is not None:
+        result.manifest = save_manifest(batch, history_dir)
     return result
 
 
@@ -212,7 +239,9 @@ class BatchEditDialog(QDialog):
             )
             return
 
-        result = applying_tags_a_batch(self._tracks, changes)
+        result = applying_tags_a_batch(
+            self._tracks, changes, history_dir=tag_history_dir()
+        )
         self._result = result
         self.summary.setText(result.text_summary)
         self.summary.setVisible(True)
@@ -252,4 +281,6 @@ def open_edicion_batch(tracks: list[Track], parent=None) -> BatchResult | None:
         applied=dialog._result.applied,
         errors=dialog._result.errors,
         omitidas=dialog._result.omitidas,
+        batch=dialog._result.batch,
+        manifest=dialog._result.manifest,
     )

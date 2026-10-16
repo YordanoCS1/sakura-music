@@ -185,6 +185,13 @@ def download_queue_file() -> Path:
     return data_dir() / "download_queue.json"
 
 
+def tag_history_dir() -> Path:
+    """Manifiestos de cambios de tags, para deshacer un lote."""
+    path = data_dir() / "Historial"
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+
+
 def load_settings() -> dict:
     """Ajustes guardados, mezclados con los valores por defecto.
 
