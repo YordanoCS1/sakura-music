@@ -9,7 +9,7 @@ from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
 
 from ...core.library import Track
 from .. import theme as th
-from ..covers import folder_cover, render_cover
+from ..covers import CoverCache, folder_cover, render_cover
 
 
 class TrackDetail(QWidget):
@@ -18,7 +18,7 @@ class TrackDetail(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setFixedWidth(236)
-        self._covers: dict[Path, Path | None] = {}
+        self._covers: dict[Path, Path | None] = CoverCache()
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(16, 4, 8, 16)

@@ -7,10 +7,12 @@ porque a simple vista no se nota.
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
 from sakura.ui import theme as th
-from sakura.ui.covers import render_cover
+from sakura.ui.covers import CoverCache, folder_cover, render_cover
 
 SIZE = 120
 
@@ -97,3 +99,46 @@ def test_el_marco_usa_el_color_del_tema(qapp, cover) -> None:
     assert abs(pixel.red() - border.red()) < 40, "el marco no parece el del tema"
     assert abs(pixel.green() - border.green()) < 40
     assert abs(pixel.blue() - border.blue()) < 40
+
+
+# --- cache de portadas por carpeta --------------------------------------------
+
+
+def test_la_cache_no_crece_sin_fin() -> None:
+    cache = CoverCache(maxsize=3)
+    for n in range(5):
+        cache[Path(f"/{n}")] = None
+
+    assert len(cache) == 3
+    assert Path("/0") not in cache
+    assert Path("/4") in cache
+
+
+def test_la_cache_tira_lo_usado_hace_mas_tiempo() -> None:
+    cache = CoverCache(maxsize=2)
+    cache[Path("/a")] = None
+    cache[Path("/b")] = None
+    _ = cache[Path("/a")]  # consultarlo lo vuelve el mas reciente
+    cache[Path("/c")] = None
+
+    assert Path("/a") in cache
+    assert Path("/b") not in cache
+    assert Path("/c") in cache
+
+
+def test_folder_cover_resuelve_el_listado_una_sola_vez(monkeypatch) -> None:
+    from sakura.ui import covers
+
+    llamadas: list[Path] = []
+
+    def fake(folder: Path):
+        llamadas.append(folder)
+        return None
+
+    monkeypatch.setattr(covers, "find_folder_cover", fake)
+    cache = CoverCache()
+
+    folder_cover(Path("/x"), cache)
+    folder_cover(Path("/x"), cache)
+
+    assert llamadas == [Path("/x")]

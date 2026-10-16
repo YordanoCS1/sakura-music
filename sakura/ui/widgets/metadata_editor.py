@@ -4,11 +4,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from PySide6.QtCore import QBuffer, QIODevice, QSize, Qt
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import (
     QApplication,
-    QComboBox,
     QDialog,
     QFileDialog,
     QFrame,
@@ -16,8 +15,6 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QLineEdit,
-    QListWidget,
-    QListWidgetItem,
     QMessageBox,
     QPushButton,
     QScrollArea,
@@ -46,24 +43,19 @@ from ..services.metadata_search import MetadataSearch, apply_album
 from ..services.thumbnails import ThumbnailLoader, cache_path
 from ..widgets.buttons import TextButton
 from .elided import ElidedLabel
+from .metadata_artwork import (
+    IMAGE_FILTER,
+    MetadataCoverView,
+    paint_thumbnail,
+    pixmap_bytes,
+    size_text,
+)
+from .metadata_catalog import CandidateRow, CatalogPanel, make_result_item
 
-# 190 px en vez de 220: con el panel deTags completo, 220 hacia que el campo
-# 'Nº de pista' quedara fuera de la vista en pantallas de 800 de alto.
-COVER_SIZE = 190
 SOURCE_LABELS = {
     "itunes": "APPLE MUSIC · ITUNES",
     "deezer": "DEEZER",
 }
-
-IMAGE_FILTER = "Imágenes (*.jpg *.jpeg *.png *.webp *.bmp);;Todos (*)"
-
-
-def _size_text(bytes_: int) -> str:
-    if bytes_ < 1024:
-        return f"{bytes_} B"
-    if bytes_ < 1024 * 1024:
-        return f"{bytes_ // 1024} KB"
-    return f"{bytes_ / (1024 * 1024):.1f} MB"
 
 
 class MetadataEditor(QDialog):
@@ -130,15 +122,32 @@ class MetadataEditor(QDialog):
         self.editar_view.setWidget(self.editar_container)
         self.views.addWidget(self.editar_view)
 
-        self.catalog_view = QWidget()
-        catalog_layout = QVBoxLayout(self.catalog_view)
-        catalog_layout.setContentsMargins(0, 0, 0, 0)
-        catalog_layout.setSpacing(14)
-        catalog_layout.addWidget(self._bar_search())
-        catalog_layout.addWidget(self._block_results(), 1)
+        self.catalog_view = CatalogPanel()
+        self._alias_catalog()
+        self._connect_catalog()
         self.views.addWidget(self.catalog_view)
         root.addWidget(self.views, 1)
         root.addLayout(self._footer())
+
+    def _alias_catalog(self) -> None:
+        """Deja a mano en el editor los widgets del panel que se usan afuera."""
+        panel = self.catalog_view
+        self.platform_box = panel.platform_box
+        self.search_box = panel.search_box
+        self.artist_search_box = panel.artist_search_box
+        self.search_btn = panel.search_btn
+        self.list = panel.list
+        self.results_title = panel.results_title
+        self.source_badge = panel.source_badge
+        self.search_status = panel.search_status
+        self.use_btn = panel.use_btn
+
+    def _connect_catalog(self) -> None:
+        self.search_box.returnPressed.connect(self._search)
+        self.search_btn.clicked.connect(self._search)
+        self.list.itemDoubleClicked.connect(self._use_candidate)
+        self.list.itemSelectionChanged.connect(self._selection_candidate)
+        self.use_btn.clicked.connect(lambda: self._use_candidate())
 
     def _file_current(self) -> QHBoxLayout:
         """Una sola linea: qué pista es y dónde está.
@@ -177,10 +186,7 @@ class MetadataEditor(QDialog):
         layout.setContentsMargins(18, 16, 18, 16)
         layout.setSpacing(18)
 
-        self.cover = QLabel()
-        self.cover.setFixedSize(COVER_SIZE, COVER_SIZE)
-        self.cover.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.cover.setObjectName("MetadataCover")
+        self.cover = MetadataCoverView()
         layout.addWidget(self.cover, 0, Qt.AlignmentFlag.AlignVCenter)
 
         identity = QVBoxLayout()
@@ -282,110 +288,6 @@ class MetadataEditor(QDialog):
         form.addStretch(1)
         return panel
 
-    def _bar_search(self) -> QWidget:
-        """Panel de búsqueda con proveedor visible antes y durante la consulta."""
-        panel = QFrame()
-        panel.setObjectName("MetadataSearchPanel")
-        layout = QVBoxLayout(panel)
-        layout.setContentsMargins(16, 14, 16, 14)
-        layout.setSpacing(10)
-
-        header = QHBoxLayout()
-        header.setSpacing(8)
-        heading = QVBoxLayout()
-        heading.setSpacing(3)
-        overline = QLabel("03  /  CATÁLOGO")
-        overline.setObjectName("MetadataEyebrow")
-        title = QLabel("Encuentra la versión correcta")
-        title.setObjectName("MetadataSectionTitle")
-        heading.addWidget(overline)
-        heading.addWidget(title)
-        header.addLayout(heading)
-        header.addStretch(1)
-
-        platform_label = QLabel("Catálogo")
-        platform_label.setObjectName("FieldLabel")
-        header.addWidget(platform_label)
-        self.platform_box = QComboBox()
-        self.platform_box.addItem("Automático · iTunes y Deezer", "auto")
-        self.platform_box.addItem("Apple Music · iTunes", "itunes")
-        self.platform_box.addItem("Deezer", "deezer")
-        self.platform_box.setMinimumWidth(230)
-        self.platform_box.setMinimumHeight(38)
-        header.addWidget(self.platform_box)
-        layout.addLayout(header)
-
-        row = QHBoxLayout()
-        row.setSpacing(10)
-        self.search_box = QLineEdit()
-        self.search_box.setObjectName("SearchInput")
-        self.search_box.setPlaceholderText("Título de la canción")
-        self.search_box.returnPressed.connect(self._search)
-        self.search_box.setMinimumHeight(42)
-        row.addWidget(self.search_box, 2)
-
-        self.artist_search_box = QLineEdit()
-        self.artist_search_box.setObjectName("SearchInput")
-        self.artist_search_box.setPlaceholderText("Artista (opcional)")
-        self.artist_search_box.setMinimumHeight(42)
-        row.addWidget(self.artist_search_box, 1)
-
-        self.search_btn = TextButton("Buscar catálogo", "accent")
-        self.search_btn.clicked.connect(self._search)
-        self.search_btn.setMinimumWidth(148)
-        row.addWidget(self.search_btn)
-        layout.addLayout(row)
-        return panel
-
-    def _block_results(self) -> QWidget:
-        """Lista de candidatos encontrados."""
-        holder = QFrame()
-        holder.setObjectName("MetadataResultsPanel")
-
-        layout = QVBoxLayout(holder)
-        layout.setContentsMargins(14, 14, 14, 14)
-        layout.setSpacing(8)
-
-        header = QHBoxLayout()
-        heading = QVBoxLayout()
-        heading.setSpacing(2)
-        title = QLabel("Resultados")
-        title.setObjectName("MetadataSectionTitle")
-        self.results_title = QLabel("Elige un catálogo y busca una canción")
-        self.results_title.setObjectName("PageSubtitle")
-        heading.addWidget(title)
-        heading.addWidget(self.results_title)
-        header.addLayout(heading, 1)
-
-        self.source_badge = QLabel("SIN BÚSQUEDA")
-        self.source_badge.setObjectName("MetadataSourceBadge")
-        self.source_badge.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        header.addWidget(self.source_badge, 0, Qt.AlignmentFlag.AlignRight)
-        layout.addLayout(header)
-
-        self.search_status = QLabel(
-            "La búsqueda automática combina ambos catálogos y muestra la portada de cada resultado."
-        )
-        self.search_status.setObjectName("MetadataHint")
-        self.search_status.setWordWrap(True)
-        layout.addWidget(self.search_status)
-
-        self.list = QListWidget()
-        self.list.setObjectName("MetadataResultsList")
-        self.list.setSpacing(3)
-        self.list.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
-        self.list.setUniformItemSizes(True)
-        self.list.itemDoubleClicked.connect(self._use_candidate)
-        self.list.itemSelectionChanged.connect(self._selection_candidate)
-        layout.addWidget(self.list, 1)
-
-        self.use_btn = TextButton("Usar datos seleccionados", "ghost")
-        self.use_btn.clicked.connect(lambda: self._use_candidate())
-        self.use_btn.setEnabled(False)
-        layout.addWidget(self.use_btn)
-
-        return holder
-
     def _footer(self) -> QHBoxLayout:
         footer = QHBoxLayout()
         footer.setSpacing(10)
@@ -480,27 +382,17 @@ class MetadataEditor(QDialog):
     # --- portada ------------------------------------------------------------
 
     def _paint_cover(self) -> None:
-        ratio = self.cover.devicePixelRatioF()
-        lado_pixeles = round(COVER_SIZE * ratio)
         if self._cover_removed or not self._cover_bytes:
-            cover = render_cover(None, lado_pixeles)
-            cover.setDevicePixelRatio(ratio)
-            self.cover.setPixmap(cover)
+            self.cover.show_placeholder()
             self.cover_status.setText(
                 "Portada quitada" if self._cover_removed else "Sin portada incrustada"
             )
             self._state("Sin portada" if self._cover_removed else "")
             return
 
-        pixmap = render_cover(self._cover_bytes, lado_pixeles)
-        if not pixmap.isNull():
-            pixmap.setDevicePixelRatio(ratio)
-            self.cover.setPixmap(pixmap)
-            self.cover_status.setText(f"Portada lista · {_size_text(len(self._cover_bytes))}")
-            self._state(f"Portada · {_size_text(len(self._cover_bytes))}")
-        else:
-            self._cover_bytes = None
-            self._paint_cover()
+        self.cover.show_bytes(self._cover_bytes)
+        self.cover_status.setText(f"Portada lista · {size_text(len(self._cover_bytes))}")
+        self._state(f"Portada · {size_text(len(self._cover_bytes))}")
 
     def _choose_image(self) -> None:
         chosen = QFileDialog.getOpenFileName(
@@ -655,51 +547,11 @@ class MetadataEditor(QDialog):
 
         for candidate in candidates:
             source_name = SOURCE_LABELS.get(candidate.source, candidate.source.upper())
-            album = candidate.album or "Álbum desconocido"
-            year_track = []
-            if candidate.year:
-                year_track.append(candidate.year)
-            if candidate.track_number:
-                track = f"Pista {candidate.track_number}"
-                if candidate.track_total:
-                    track += f"/{candidate.track_total}"
-                year_track.append(track)
-            details = " · ".join(
-                part for part in (candidate.artist, album, " / ".join(year_track)) if part
-            )
-            item = QListWidgetItem("")
-            item.setData(Qt.ItemDataRole.UserRole, candidate)
-            item.setToolTip(f"{candidate.title}\n{candidate.subtitle}\nOrigen: {source_name}")
-            item.setSizeHint(QSize(0, 72))
+            item = make_result_item(candidate, source_name)
             self.list.addItem(item)
-            row = QWidget(self.list)
-            row_layout = QHBoxLayout(row)
-            row_layout.setContentsMargins(5, 3, 5, 3)
-            row_layout.setSpacing(10)
-            artwork = QLabel()
-            artwork.setFixedSize(52, 52)
-            artwork.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            artwork.setObjectName("Card")
-            row_layout.addWidget(artwork)
-            labels = QVBoxLayout()
-            labels.setSpacing(3)
-            source_label = QLabel(source_name)
-            source_label.setObjectName("FieldLabel")
-            source_label.setProperty("metadataResultRole", "source")
-            title_label = QLabel(candidate.title)
-            title_label.setObjectName("CardTitle")
-            title_label.setProperty("metadataResultRole", "title")
-            title_label.setWordWrap(False)
-            details_label = QLabel(details or candidate.subtitle)
-            details_label.setObjectName("PageSubtitle")
-            details_label.setProperty("metadataResultRole", "details")
-            details_label.setWordWrap(False)
-            labels.addWidget(source_label)
-            labels.addWidget(title_label)
-            labels.addWidget(details_label)
-            row_layout.addLayout(labels, 1)
+            row = CandidateRow(candidate, source_name, self.list)
             self.list.setItemWidget(item, row)
-            self._set_result_thumbnail(candidate.cover_url, artwork)
+            self._set_result_thumbnail(candidate.cover_url, row.artwork)
 
         self.results_title.setText(f"{len(candidates)} resultados")
         sources = {candidate.source for candidate in candidates}
@@ -757,20 +609,20 @@ class MetadataEditor(QDialog):
         path_cover = cache_path(candidate.cover_url) if candidate.cover_url else None
         pixmap = QPixmap(str(path_cover)) if path_cover and path_cover.is_file() else None
         if candidate.cover_url and pixmap is not None and not pixmap.isNull():
-            self._preview_artwork_bytes = self._pixmap_bytes(pixmap)
-            self._show_image_candidate(pixmap)
+            self._preview_artwork_bytes = pixmap_bytes(pixmap)
+            self.cover.show_pixmap(pixmap)
             self.cover_status.setText("Vista previa de portada del catálogo")
         elif candidate.cover_url and candidate.cover_url in self._artwork_pixmaps:
             pixmap = self._artwork_pixmaps[candidate.cover_url]
-            self._preview_artwork_bytes = self._pixmap_bytes(pixmap)
-            self._show_image_candidate(pixmap)
+            self._preview_artwork_bytes = pixmap_bytes(pixmap)
+            self.cover.show_pixmap(pixmap)
             self.cover_status.setText("Vista previa de portada del catálogo")
         elif candidate.cover_url:
-            self.cover.setPixmap(render_cover(None, COVER_SIZE))
+            self.cover.show_placeholder()
             self.cover_status.setText("Cargando portada del catálogo…")
             detail += " · cargando portada…"
         else:
-            self.cover.setPixmap(render_cover(None, COVER_SIZE))
+            self.cover.show_placeholder()
             self.cover_status.setText("El catálogo no ofrece portada para esta pista")
             detail += " · sin portada en el catálogo"
         self._state(detail)
@@ -801,7 +653,7 @@ class MetadataEditor(QDialog):
                 if pixmap.isNull():
                     pixmap = self._artwork_pixmaps.get(candidate.cover_url, QPixmap())
                 if not pixmap.isNull():
-                    data = self._pixmap_bytes(pixmap)
+                    data = pixmap_bytes(pixmap)
             if data is not None:
                 self._use_cover_candidate(candidate.cover_url, data)
             else:
@@ -823,7 +675,7 @@ class MetadataEditor(QDialog):
         self._thumbnail_labels.setdefault(url, []).append(label)
         pixmap = self._artwork_pixmaps.get(url)
         if pixmap is not None:
-            self._paint_miniatura(label, pixmap)
+            paint_thumbnail(label, pixmap)
         else:
             self._request_thumbnail(url)
 
@@ -837,21 +689,16 @@ class MetadataEditor(QDialog):
         self.thumbnails.request(url, file_path)
 
     def _on_thumbnail_loaded(self, url: str, pixmap: QPixmap) -> None:
-        miniatura = pixmap.scaled(
-            QSize(52, 52),
-            Qt.AspectRatioMode.KeepAspectRatio,
-            Qt.TransformationMode.SmoothTransformation,
-        )
         self._artwork_pixmaps[url] = QPixmap(pixmap)
         for label in self._thumbnail_labels.pop(url, []):
-            self._paint_miniatura(label, miniatura)
-        data = self._pixmap_bytes(pixmap) if url in (
+            paint_thumbnail(label, pixmap)
+        data = pixmap_bytes(pixmap) if url in (
             self._preview_cover_url,
             self._chosen_cover_url,
         ) else None
         if url == self._preview_cover_url:
             self._preview_artwork_bytes = data
-            self._show_image_candidate(pixmap)
+            self.cover.show_pixmap(pixmap)
             self.cover_status.setText("Vista previa de portada del catálogo")
         if url == self._chosen_cover_url and data:
             self._use_cover_candidate(url, data)
@@ -867,36 +714,6 @@ class MetadataEditor(QDialog):
         self._paint_cover()
         self._state(f"No se pudo cargar la portada ({razon}); se conservará la portada actual.")
 
-    @staticmethod
-    def _pixmap_bytes(pixmap: QPixmap) -> bytes:
-        buffer = QBuffer()
-        if not buffer.open(QIODevice.OpenModeFlag.WriteOnly):
-            return b""
-        if not pixmap.save(buffer, "PNG"):
-            return b""
-        return bytes(buffer.data())
-
-    @staticmethod
-    def _paint_miniatura(label: QLabel, pixmap: QPixmap) -> None:
-        label.setPixmap(
-            pixmap.scaled(
-                label.size(),
-                Qt.AspectRatioMode.KeepAspectRatio,
-                Qt.TransformationMode.SmoothTransformation,
-            )
-        )
-
-    def _show_image_candidate(self, pixmap: QPixmap) -> None:
-        ratio = self.cover.devicePixelRatioF()
-        size = QSize(round(self.cover.width() * ratio), round(self.cover.height() * ratio))
-        display_pixmap = pixmap.scaled(
-            size,
-            Qt.AspectRatioMode.KeepAspectRatio,
-            Qt.TransformationMode.SmoothTransformation,
-        )
-        display_pixmap.setDevicePixelRatio(ratio)
-        self.cover.setPixmap(display_pixmap)
-
     def _use_cover_candidate(self, url: str, data: bytes) -> None:
         if url != self._chosen_cover_url:
             return
@@ -907,7 +724,7 @@ class MetadataEditor(QDialog):
         self.save.setEnabled(True)
         pixmap = QPixmap()
         if pixmap.loadFromData(data):
-            self._show_image_candidate(pixmap)
+            self.cover.show_pixmap(pixmap)
         self.cover_status.setText("Portada del catálogo lista para guardar")
         origin = self._candidate.source if self._candidate else "Catálogo"
         self._state(f"{origin}: portada lista para guardar.")

@@ -8,6 +8,7 @@ oscuro parecia un hole en la ventana.
 
 from __future__ import annotations
 
+from collections import OrderedDict
 from pathlib import Path
 
 from PySide6.QtCore import QRectF, Qt
@@ -16,6 +17,34 @@ from PySide6.QtGui import QColor, QPainter, QPainterPath, QPen, QPixmap
 from ..core.library import find_folder_cover
 from . import icons
 from . import theme as th
+
+# Cuantas carpetas se recuerdan. Una biblioteca puede tener miles; con el tope
+# se descartan las que no se usan hace mas tiempo en vez de crecer sin fin.
+COVER_CACHE_MAX = 512
+
+
+class CoverCache(OrderedDict):
+    """Cache de portada por carpeta con tope y descarte LRU.
+
+    `folder_cover` guarda el resultado de recorrer cada directorio, pero un
+    `dict` comun se queda con todas las carpetas de la biblioteca. Al pasarse
+    del tope se tira la entrada usada hace mas tiempo.
+    """
+
+    def __init__(self, maxsize: int = COVER_CACHE_MAX):
+        super().__init__()
+        self._maxsize = maxsize
+
+    def __getitem__(self, folder: Path) -> Path | None:
+        value = super().__getitem__(folder)
+        self.move_to_end(folder)
+        return value
+
+    def __setitem__(self, folder: Path, value: Path | None) -> None:
+        super().__setitem__(folder, value)
+        self.move_to_end(folder)
+        while len(self) > self._maxsize:
+            self.popitem(last=False)
 
 
 def folder_cover(folder: Path, cache: dict[Path, Path | None]) -> Path | None:

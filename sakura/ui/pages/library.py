@@ -4,23 +4,15 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from PySide6.QtCore import QSize, Qt, QTimer, Signal
-from PySide6.QtGui import (
-    QIcon,
-)
+from PySide6.QtCore import Qt, QTimer, Signal
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
-    QAbstractItemView,
     QFileDialog,
     QHBoxLayout,
-    QHeaderView,
     QLabel,
-    QLineEdit,
     QListView,
-    QListWidget,
     QListWidgetItem,
     QMessageBox,
-    QStackedWidget,
-    QTableView,
     QVBoxLayout,
     QWidget,
 )
@@ -30,13 +22,15 @@ from ...core.library import Track, extract_cover, load_track
 from ...core.tag_history import latest_manifest, revert_batch
 from .. import icons
 from .. import theme as th
-from ..covers import folder_cover, render_cover
+from ..covers import CoverCache, folder_cover, render_cover
 from ..models.track_model import COLUMNS, STRETCH_COLUMN, TrackFilterProxy, TrackTableModel
 from ..services.library import LibraryRefresher, LibraryScanner
 from ..widgets.batch_editor import open_edicion_batch
-from ..widgets.buttons import IconButton, TextButton
+from ..widgets.buttons import TextButton
+from ..widgets.library_folders import LibraryFolderPanel
+from ..widgets.library_toolbar import LibraryToolbar
+from ..widgets.library_views import LibraryViewStack
 from ..widgets.metadata_editor import open_editor
-from ..widgets.track_delegates import TrackGridDelegate, TrackShowcaseDelegate
 from ..widgets.track_detail import TrackDetail
 from ..widgets.track_info import TrackInfoDialog
 from .base import Page
@@ -58,7 +52,7 @@ class LibraryPage(Page):
         if self.view_mode not in ("table", "grid", "discs", "carousel"):
             self.view_mode = "table"
         self._syncing_selection = False
-        self._covers: dict[Path, Path | None] = {}
+        self._covers: dict[Path, Path | None] = CoverCache()
         self._library_root: Path | None = None
         self._current_folder: Path | None = None
         self._review_mode = False
@@ -84,76 +78,10 @@ class LibraryPage(Page):
     # --- interfaz -----------------------------------------------------------
 
     def _build(self) -> None:
-        controles = QWidget()
-        bar = QHBoxLayout(controles)
-        bar.setContentsMargins(0, 0, 0, 10)
-        bar.setSpacing(10)
-
-        self.filter_box = QLineEdit()
-        self.filter_box.setObjectName("SearchInput")
-        self.filter_box.setPlaceholderText(
-            "Buscar canciones en toda la biblioteca..."
-        )
-        self.filter_box.setClearButtonEnabled(True)
-        self.filter_box.setMaximumWidth(420)
-        self.filter_box.setMinimumWidth(260)
-        self.filter_box.textChanged.connect(self._on_filter)
-        bar.addWidget(self.filter_box)
-
-        self.review_filter_btn = TextButton("Ver toda la biblioteca", "ghost")
-        self.review_filter_btn.setVisible(False)
-        self.review_filter_btn.clicked.connect(lambda: self.set_review_filter(""))
-        bar.addWidget(self.review_filter_btn, 0)
-
-        self.stats = QLabel("")
-        self.stats.setObjectName("EmptyState")
-        bar.addSpacing(8)
-        bar.addWidget(self.stats, 1)
-
-        # Diseños alternativos para explorar las pistas.
-        self.btn_view_table = IconButton("list", "Vista en tabla", 38)
-        self.btn_view_table.clicked.connect(lambda: self.set_view_mode("table"))
-        bar.addWidget(self.btn_view_table, 0)
-
-        self.btn_view_grid = IconButton("grid", "Vista en tarjetas", 38)
-        self.btn_view_grid.clicked.connect(lambda: self.set_view_mode("grid"))
-        bar.addWidget(self.btn_view_grid, 0)
-
-        self.btn_view_discs = IconButton("disc", "Vista de discos", 38)
-        self.btn_view_discs.clicked.connect(lambda: self.set_view_mode("discs"))
-        bar.addWidget(self.btn_view_discs, 0)
-
-        self.btn_view_carousel = IconButton("music", "Vista carrusel", 38)
-        self.btn_view_carousel.clicked.connect(lambda: self.set_view_mode("carousel"))
-        bar.addWidget(self.btn_view_carousel, 0)
-
-        self.open_button = IconButton("folder", "Cambiar carpeta", 38)
-        self.open_button.clicked.connect(self._on_pick_folder)
-        bar.addWidget(self.open_button, 0)
-
-        self.reload_button = IconButton("repeat", "Volver a escanear", 38)
-        self.reload_button.clicked.connect(lambda: self.rescan())
-        bar.addWidget(self.reload_button, 0)
-
-        self.undo_button = IconButton("restore", "Deshacer último lote", 38)
-        self.undo_button.clicked.connect(self._on_undo)
-        bar.addWidget(self.undo_button, 0)
-        self._update_undo_state()
-
-        self.edit_button = TextButton("Editar metadatos", "ghost")
-        self.edit_button.clicked.connect(self._on_edit)
-        self.edit_button.setEnabled(False)
-        bar.addWidget(self.edit_button, 0)
-
-        # Con varias pistas marcadas el boton anterior pasa a ser el de lote:
-        # editar de a una con diez seleccionadas no es lo que se quiere.
-        self.batch_button = TextButton("Editar en lote", "accent")
-        self.batch_button.clicked.connect(self._on_batch_edit)
-        self.batch_button.setEnabled(False)
-        self.batch_button.setVisible(False)
-        bar.addWidget(self.batch_button, 0)
-
-        self.content.addWidget(controles)
+        self.toolbar = LibraryToolbar()
+        self._alias_toolbar()
+        self._connect_toolbar()
+        self.content.addWidget(self.toolbar)
 
         body = QWidget()
         body_layout = QHBoxLayout(body)
@@ -178,48 +106,10 @@ class LibraryPage(Page):
         navegacion_layout.addWidget(self.folder_location, 1)
         library_layout.addWidget(navegacion)
 
-        self.folder_panel = QWidget()
-        folder_panel_layout = QVBoxLayout(self.folder_panel)
-        folder_panel_layout.setContentsMargins(0, 0, 0, 0)
-        folder_panel_layout.setSpacing(4)
-        folder_heading = QWidget()
-        folder_heading_layout = QHBoxLayout(folder_heading)
-        folder_heading_layout.setContentsMargins(0, 0, 0, 0)
-        folder_heading_layout.setSpacing(8)
-        self.folder_heading_label = QLabel("Carpetas")
-        folder_heading_layout.addWidget(self.folder_heading_label)
-        folder_heading_layout.addStretch(1)
-        self.open_folder_button = TextButton("Abrir carpeta", "ghost")
-        self.open_folder_button.setEnabled(False)
-        self.open_folder_button.clicked.connect(self._open_selected_folder)
-        folder_heading_layout.addWidget(self.open_folder_button)
-        folder_panel_layout.addWidget(folder_heading)
-
-        self.folder_list = QListWidget()
-        self.folder_list.setObjectName("LibraryFolderGrid")
-        self.folder_list.setViewMode(QListView.ViewMode.IconMode)
-        self.folder_list.setResizeMode(QListView.ResizeMode.Adjust)
-        self.folder_list.setMovement(QListView.Movement.Static)
-        self.folder_list.setWrapping(True)
-        self.folder_list.setWordWrap(True)
-        self.folder_list.setIconSize(QSize(56, 56))
-        self.folder_list.setGridSize(QSize(156, 104))
-        self.folder_list.setSpacing(4)
-        self.folder_list.setMaximumHeight(176)
-        self.folder_list.setHorizontalScrollBarPolicy(
-            Qt.ScrollBarPolicy.ScrollBarAlwaysOff
-        )
-        self.folder_list.setVerticalScrollMode(
-            QAbstractItemView.ScrollMode.ScrollPerPixel
-        )
-        self.folder_list.itemSelectionChanged.connect(
-            lambda: self.open_folder_button.setEnabled(
-                self.folder_list.currentItem() is not None
-            )
-        )
+        self.folder_panel = LibraryFolderPanel()
+        self.folder_list = self.folder_panel.folder_list
         self.folder_list.itemActivated.connect(self._activate_folder_item)
-        folder_panel_layout.addWidget(self.folder_list)
-        self.folder_panel.setVisible(False)
+        self.folder_panel.open_button.clicked.connect(self._open_selected_folder)
         library_layout.addWidget(self.folder_panel)
 
         self.tracks_heading = QLabel("Canciones")
@@ -227,116 +117,9 @@ class LibraryPage(Page):
         library_layout.addWidget(self.tracks_heading)
 
         # Stack de vistas: tabla, tarjetas, discos y carrusel horizontal.
-        self.view_stack = QStackedWidget()
-
-        # 1. Tabla
-        self.table = QTableView()
-        self.table.setModel(self.proxy)
-        self.table.setObjectName("TrackTable")
-        self.table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
-        self.table.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
-        self.table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
-        self.table.setAlternatingRowColors(True)
-        self.table.setShowGrid(False)
-        self.table.setWordWrap(False)
-        self.table.verticalHeader().setVisible(False)
-        self.table.verticalHeader().setDefaultSectionSize(52)
-        self.table.setIconSize(QSize(40, 40))
-        self.table.setSortingEnabled(True)
-        self.table.setHorizontalScrollMode(
-            QAbstractItemView.ScrollMode.ScrollPerPixel
-        )
-        self.table.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
-        self.table.selectionModel().selectionChanged.connect(self._on_selection)
-
-        header = self.table.horizontalHeader()
-        header.setHighlightSections(False)
-        header.setMinimumSectionSize(44)
-
-        for idx, (_, width, _) in enumerate(COLUMNS):
-            is_stretch = idx == STRETCH_COLUMN
-            resize_mode = (
-                QHeaderView.ResizeMode.Stretch
-                if is_stretch
-                else QHeaderView.ResizeMode.Interactive
-            )
-            header.setSectionResizeMode(idx, resize_mode)
-            if not is_stretch:
-                self.table.setColumnWidth(idx, width)
-
-        self.table.doubleClicked.connect(lambda _index: self._on_info())
-        self.view_stack.addWidget(self.table)
-
-        # 2. Cuadrícula / Galería de Tarjetas
-        self.grid_view = QListView()
-        self.grid_view.setObjectName("TrackGrid")
-        self.grid_view.setModel(self.proxy)
-        self.grid_delegate = TrackGridDelegate(self)
-        self.grid_view.setItemDelegate(self.grid_delegate)
-        self.grid_view.setViewMode(QListView.ViewMode.IconMode)
-        self.grid_view.setResizeMode(QListView.ResizeMode.Adjust)
-        self.grid_view.setWrapping(True)
-        self.grid_view.setSpacing(10)
-        self.grid_view.setUniformItemSizes(True)
-        self.grid_view.setMovement(QListView.Movement.Static)
-        self.grid_view.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.grid_view.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
-        self.grid_view.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
-        self.grid_view.selectionModel().selectionChanged.connect(self._on_grid_selection)
-        self.grid_view.doubleClicked.connect(lambda _index: self._on_info())
-        self.view_stack.addWidget(self.grid_view)
-
-        self.discs_view = self._create_showcase_view("discs")
-        self.discs_delegate = TrackShowcaseDelegate("discs", self)
-        self.discs_view.setItemDelegate(self.discs_delegate)
-        self.view_stack.addWidget(self.discs_view)
-
-        self.carousel_view = self._create_showcase_view("carousel")
-        self.carousel_delegate = TrackShowcaseDelegate("carousel", self)
-        self.carousel_view.setItemDelegate(self.carousel_delegate)
-        self.carousel_view.setViewMode(QListView.ViewMode.ListMode)
-        self.carousel_view.setFlow(QListView.Flow.LeftToRight)
-        self.carousel_view.setWrapping(False)
-        self.carousel_view.setSpacing(12)
-        self.carousel_view.setHorizontalScrollBarPolicy(
-            Qt.ScrollBarPolicy.ScrollBarAsNeeded
-        )
-        self.carousel_view.setVerticalScrollBarPolicy(
-            Qt.ScrollBarPolicy.ScrollBarAlwaysOff
-        )
-        self.carousel_view.setHorizontalScrollMode(
-            QAbstractItemView.ScrollMode.ScrollPerPixel
-        )
-        self.carousel_view.setVerticalScrollMode(
-            QAbstractItemView.ScrollMode.ScrollPerPixel
-        )
-        self.view_stack.addWidget(self.carousel_view)
-
-        self.card_views = {
-            "grid": self.grid_view,
-            "discs": self.discs_view,
-            "carousel": self.carousel_view,
-        }
-        self.card_delegates = {
-            "grid": self.grid_delegate,
-            "discs": self.discs_delegate,
-            "carousel": self.carousel_delegate,
-        }
-        self.view_buttons = {
-            "table": self.btn_view_table,
-            "grid": self.btn_view_grid,
-            "discs": self.btn_view_discs,
-            "carousel": self.btn_view_carousel,
-        }
-        for mode, view in self.card_views.items():
-            if mode != "grid":
-                view.selectionModel().selectionChanged.connect(
-                    lambda *_args, selected_view=view: self._on_card_selection(
-                        selected_view
-                    )
-                )
-            view.doubleClicked.connect(lambda _index: self._on_info())
-
+        self.view_stack = LibraryViewStack(self.proxy)
+        self._alias_views()
+        self._connect_views()
         library_layout.addWidget(self.view_stack, 1)
         body_layout.addWidget(library, 1)
 
@@ -348,21 +131,57 @@ class LibraryPage(Page):
         self.content.addWidget(self.message)
 
         self.set_view_mode(self.view_mode, save=False)
+        self._update_undo_state()
 
-    def _create_showcase_view(self, mode: str) -> QListView:
-        view = QListView()
-        view.setObjectName(f"Track{mode.title()}")
-        view.setModel(self.proxy)
-        view.setViewMode(QListView.ViewMode.IconMode)
-        view.setResizeMode(QListView.ResizeMode.Adjust)
-        view.setWrapping(True)
-        view.setSpacing(10)
-        view.setUniformItemSizes(True)
-        view.setMovement(QListView.Movement.Static)
-        view.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        view.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
-        view.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
-        return view
+    def _alias_toolbar(self) -> None:
+        """Deja a mano en la pagina los widgets de la barra que se usan afuera."""
+        bar = self.toolbar
+        self.filter_box = bar.filter_box
+        self.stats = bar.stats
+        self.review_filter_btn = bar.review_filter_btn
+        self.edit_button = bar.edit_button
+        self.batch_button = bar.batch_button
+        self.undo_button = bar.undo_button
+        self.view_buttons = bar.view_buttons
+
+    def _connect_toolbar(self) -> None:
+        bar = self.toolbar
+        bar.filter_box.textChanged.connect(self._on_filter)
+        bar.review_filter_btn.clicked.connect(lambda: self.set_review_filter(""))
+        for mode, button in bar.view_buttons.items():
+            button.clicked.connect(lambda _checked=False, m=mode: self.set_view_mode(m))
+        bar.open_button.clicked.connect(self._on_pick_folder)
+        bar.reload_button.clicked.connect(lambda: self.rescan())
+        bar.undo_button.clicked.connect(self._on_undo)
+        bar.edit_button.clicked.connect(self._on_edit)
+        bar.batch_button.clicked.connect(self._on_batch_edit)
+
+    def _alias_views(self) -> None:
+        """Deja a mano en la pagina las vistas y delegates que se usan afuera."""
+        stack = self.view_stack
+        self.table = stack.table
+        self.grid_view = stack.grid_view
+        self.discs_view = stack.discs_view
+        self.carousel_view = stack.carousel_view
+        self.grid_delegate = stack.grid_delegate
+        self.discs_delegate = stack.discs_delegate
+        self.carousel_delegate = stack.carousel_delegate
+        self.card_views = stack.card_views
+        self.card_delegates = stack.card_delegates
+
+    def _connect_views(self) -> None:
+        self.table.selectionModel().selectionChanged.connect(self._on_selection)
+        self.table.doubleClicked.connect(lambda _index: self._on_info())
+        self.grid_view.selectionModel().selectionChanged.connect(self._on_grid_selection)
+        self.grid_view.doubleClicked.connect(lambda _index: self._on_info())
+        for mode, view in self.card_views.items():
+            if mode != "grid":
+                view.selectionModel().selectionChanged.connect(
+                    lambda *_args, selected_view=view: self._on_card_selection(
+                        selected_view
+                    )
+                )
+            view.doubleClicked.connect(lambda _index: self._on_info())
 
     def set_view_mode(self, mode: str, save: bool = True) -> None:
         """Alterna entre los diseños disponibles para la biblioteca."""
@@ -371,9 +190,8 @@ class LibraryPage(Page):
         if mode != self.view_mode:
             self._clear_selections()
         self.view_mode = mode
-        index = ("table", "grid", "discs", "carousel").index(self.view_mode)
-        self.view_stack.setCurrentIndex(index)
-        self._update_view_mode_buttons()
+        self.view_stack.set_mode(mode)
+        self.toolbar.set_active_view(mode)
         if save:
             save_settings({"library_view": self.view_mode})
         self._on_selection()
@@ -390,28 +208,16 @@ class LibraryPage(Page):
         self.discs_delegate.set_rotation(self._disc_rotation)
         self.discs_view.viewport().update()
 
-    def _update_view_mode_buttons(self) -> None:
-        t = th.active()
-        active_style = (
-            f"background: {t.surface_hover}; border: 1px solid {t.accent}; "
-            f"border-radius: {t.radius_sm}px;"
-        )
-        for mode, button in self.view_buttons.items():
-            button.setStyleSheet(active_style if mode == self.view_mode else "")
-
     def _clear_selections(self) -> None:
-        self.table.clearSelection()
-        for view in self.card_views.values():
-            view.clearSelection()
+        self.view_stack.clear_selections()
         self.detail.set_track(None)
         self._sync_edit_buttons(None)
 
     def _active_card_view(self) -> QListView | None:
-        return self.card_views.get(self.view_mode)
+        return self.view_stack.active_card_view()
 
     def _clear_showcase_caches(self) -> None:
-        for delegate in self.card_delegates.values():
-            delegate.clear_cache()
+        self.view_stack.clear_caches()
 
     def apply_theme_to_table(self) -> None:
         t = th.active()
@@ -426,15 +232,10 @@ class LibraryPage(Page):
             f"QTableView::item {{ padding: 0 10px; border: none; }}"
             f"QTableCornerButton::section {{ background: {t.bg}; border: none; }}"
         )
-        self._clear_showcase_caches()
-        for view in self.card_views.values():
-            view.viewport().update()
-        self._update_view_mode_buttons()
-        self.open_button.refresh()
-        self.reload_button.refresh()
-        self.undo_button.refresh()
-        for button in self.view_buttons.values():
-            button.refresh()
+        self.view_stack.clear_caches()
+        self.view_stack.update_viewports()
+        self.toolbar.set_active_view(self.view_mode)
+        self.toolbar.refresh()
         self.detail.refresh()
         self._populate_folder_list()
 

@@ -18,7 +18,7 @@ from PySide6.QtWidgets import QStyle, QStyledItemDelegate, QStyleOptionViewItem
 
 from ...core.library import Track
 from .. import theme as th
-from ..covers import folder_cover, render_cover
+from ..covers import CoverCache, folder_cover, render_cover
 
 
 class TrackGridDelegate(QStyledItemDelegate):
@@ -31,7 +31,7 @@ class TrackGridDelegate(QStyledItemDelegate):
     def __init__(self, parent=None):
         super().__init__(parent)
         self._cover_cache: dict[tuple[str, str], QPixmap] = {}
-        self._folder_covers: dict[Path, Path | None] = {}
+        self._folder_covers: dict[Path, Path | None] = CoverCache()
 
     def clear_cache(self) -> None:
         self._cover_cache.clear()
@@ -189,7 +189,7 @@ class TrackShowcaseDelegate(QStyledItemDelegate):
         self._cover_cache: dict[tuple[str, str], QPixmap] = {}
         self._vinyl_cache: dict[tuple[str, str, int], QPixmap] = {}
         self._resolved_covers: dict[Path, Path | None] = {}
-        self._folder_covers: dict[Path, Path | None] = {}
+        self._folder_covers: dict[Path, Path | None] = CoverCache()
 
     def set_rotation(self, degrees: int) -> None:
         self.rotation = degrees % 360

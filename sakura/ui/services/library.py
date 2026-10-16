@@ -6,7 +6,9 @@ de la UI congelaría la ventana.
 
 from __future__ import annotations
 
+import os
 import threading
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import replace
 from pathlib import Path
 
@@ -28,6 +30,11 @@ from ...core.library import (
 
 BATCH_SIZE = 150
 
+# Leer tags es I/O de disco con bastante parsing en Python. Con demasiados
+# hilos el disco golpea sin ganar nada; con unos pocos el primer escaneo de
+# miles de pistas baja de minutos a segundos.
+SCAN_WORKERS = max(2, min(8, os.cpu_count() or 4))
+
 
 class _ScanWorker(QThread):
     """Recorre `root` y emite las pistas por tandas."""
@@ -42,12 +49,16 @@ class _ScanWorker(QThread):
         covers_root: Path,
         with_covers: bool = True,
         parent: QObject | None = None,
+        workers: int | None = None,
     ):
         super().__init__(parent)
         self._root = root
         self._covers_root = covers_root
         self._with_covers = with_covers
+        self._workers = workers or SCAN_WORKERS
         self._cancelled = threading.Event()
+        self._covers_folder: dict[Path, Path] = {}
+        self._lyrics_indices: dict[Path, dict[str, Path]] = {}
 
     def cancel(self) -> None:
         self._cancelled.set()
@@ -61,36 +72,50 @@ class _ScanWorker(QThread):
 
         # Las portadas y las letras se resuelven una vez por carpeta, no una
         # vez por pista: son lecturas del mismo directorio repetidas 200 veces.
-        covers_folder = (
-            folder_covers(self._root, paths) if self._with_covers else {}
-        )
-        indices_letters = lyrics_indexes(self._root, paths)
+        if self._with_covers:
+            self._covers_folder = folder_covers(self._root, paths)
+        self._lyrics_indices = lyrics_indexes(self._root, paths)
 
         track_items: list[Track] = []
         chunk: list[Track] = []
 
-        for file_path in paths:
-            if self._cancelled.is_set():
-                return
+        # El trabajo se lanza en ventanas acotadas en vez de mandar las miles de
+        # pistas de una: con `Executor.map` todos los futures se crean de golpe y
+        # una cancelacion tendria que esperar a que corran igual.
+        window = max(BATCH_SIZE, self._workers * 4)
+        with ThreadPoolExecutor(max_workers=self._workers) as pool:
+            for start in range(0, len(paths), window):
+                if self._cancelled.is_set():
+                    return
 
-            track_item = load_track(file_path)
-            if track_item is None:
-                continue
+                batch_paths = paths[start : start + window]
+                for track_item in pool.map(self._load_one, batch_paths):
+                    if self._cancelled.is_set():
+                        return
+                    if track_item is None:
+                        continue
 
-            track_item.cover_path = self._resolver_cover(file_path, covers_folder)
-            track_item.lyrics_path = find_lyrics(file_path, indices_letters.get(file_path.parent))
-
-            track_items.append(track_item)
-            chunk.append(track_item)
-
-            if len(chunk) >= BATCH_SIZE:
-                self.batch_ready.emit(chunk)
-                chunk = []
+                    track_items.append(track_item)
+                    chunk.append(track_item)
+                    if len(chunk) >= BATCH_SIZE:
+                        self.batch_ready.emit(chunk)
+                        chunk = []
 
         if chunk:
             self.batch_ready.emit(chunk)
 
         self.scan_finished.emit(len(track_items), summarize(track_items))
+
+    def _load_one(self, file_path: Path) -> Track | None:
+        """Lee una pista y le cuelga la portada y las letras. Corre en un hilo."""
+        track_item = load_track(file_path)
+        if track_item is None:
+            return None
+
+        track_item.cover_path = self._resolver_cover(file_path, self._covers_folder)
+        lyrics = self._lyrics_indices.get(file_path.parent)
+        track_item.lyrics_path = find_lyrics(file_path, lyrics)
+        return track_item
 
     def _resolver_cover(
         self, file_path: Path, covers_folder: dict[Path, Path]
@@ -244,10 +269,17 @@ class _RefreshWorker(QThread):
     refreshed = Signal(int)
     failed = Signal(str)
 
-    def __init__(self, paths: list[Path], covers: Path, parent: QObject | None = None):
+    def __init__(
+        self,
+        paths: list[Path],
+        covers: Path,
+        parent: QObject | None = None,
+        workers: int | None = None,
+    ):
         super().__init__(parent)
         self._paths = paths
         self._covers = covers
+        self._workers = workers or SCAN_WORKERS
         self._cancelled = threading.Event()
 
     def cancel(self) -> None:
@@ -256,33 +288,40 @@ class _RefreshWorker(QThread):
     def run(self) -> None:
         leidas: list[tuple[Path, Track]] = []
 
-        for file_path in self._paths:
-            if self._cancelled.is_set():
-                break
+        window = max(BATCH_SIZE, self._workers * 4)
+        with ThreadPoolExecutor(max_workers=self._workers) as pool:
+            for start in range(0, len(self._paths), window):
+                if self._cancelled.is_set():
+                    break
 
-            try:
-                track_item = load_track(file_path)
-            except OSError as exc:
-                self.failed.emit(str(exc))
-                return
+                block = self._paths[start : start + window]
+                for loaded in pool.map(self._refresh_one, block):
+                    if self._cancelled.is_set():
+                        break
+                    if loaded is None:
+                        continue
 
-            if track_item is None:
-                continue
-
-            try:
-                track_item.cover_path = extract_cover(file_path, self._covers)
-            except OSError:
-                track_item.cover_path = None  # la pista sigue siendo válida sin portada
-
-            leidas.append((file_path, track_item))
-            if len(leidas) >= BATCH_SIZE:
-                self.batch_ready.emit(leidas)
-                leidas = []
+                    leidas.append(loaded)
+                    if len(leidas) >= BATCH_SIZE:
+                        self.batch_ready.emit(leidas)
+                        leidas = []
 
         if leidas:
             self.batch_ready.emit(leidas)
 
         self.refreshed.emit(len(self._paths))
+
+    def _refresh_one(self, file_path: Path) -> tuple[Path, Track] | None:
+        """Relee una pista del disco. Corre en un hilo."""
+        track_item = load_track(file_path)
+        if track_item is None:
+            return None
+
+        try:
+            track_item.cover_path = extract_cover(file_path, self._covers)
+        except OSError:
+            track_item.cover_path = None  # la pista sigue siendo válida sin portada
+        return file_path, track_item
 
 
 class LibraryRefresher(QObject):
