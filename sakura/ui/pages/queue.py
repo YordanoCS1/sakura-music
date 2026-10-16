@@ -206,17 +206,17 @@ class QueuePage(Page):
         self.stats.setObjectName("EmptyState")
         bar.addWidget(self.stats, 1)
 
-        self.cancel_button = TextButton("Cancelar descargas", "danger")
+        self.cancel_button = TextButton("Cancelar descargas", "danger", icon="close")
         self.cancel_button.clicked.connect(self._on_cancel_clicked)
         self.cancel_button.setEnabled(False)
         bar.addWidget(self.cancel_button, 0)
 
-        self.retry_button = TextButton("Reintentar errores", "accent")
+        self.retry_button = TextButton("Reintentar errores", "accent", icon="refresh-cw")
         self.retry_button.clicked.connect(self.retry_requested)
         self.retry_button.setEnabled(False)
         bar.addWidget(self.retry_button, 0)
 
-        self.clear_button = TextButton("Limpiar terminados", "ghost")
+        self.clear_button = TextButton("Limpiar terminados", "ghost", icon="trash")
         self.clear_button.clicked.connect(self._on_clear_clicked)
         self.clear_button.setEnabled(False)
         bar.addWidget(self.clear_button, 0)

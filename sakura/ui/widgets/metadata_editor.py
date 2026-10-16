@@ -216,15 +216,15 @@ class MetadataEditor(QDialog):
         actions = QVBoxLayout(actions_panel)
         actions.setContentsMargins(0, 0, 0, 0)
         actions.setSpacing(7)
-        self.catalog_btn = TextButton("Buscar en catálogo", "accent")
+        self.catalog_btn = TextButton("Buscar en catálogo", "accent", icon="search")
         self.catalog_btn.clicked.connect(self._open_catalog)
         actions.addWidget(self.catalog_btn)
 
-        self.change_cover = TextButton("Elegir imagen", "ghost")
+        self.change_cover = TextButton("Elegir imagen", "ghost", icon="download")
         self.change_cover.clicked.connect(self._choose_image)
         actions.addWidget(self.change_cover)
 
-        self.clear_cover = TextButton("Quitar portada", "ghost")
+        self.clear_cover = TextButton("Quitar portada", "ghost", icon="trash")
         self.clear_cover.clicked.connect(self._remove_cover)
         actions.addWidget(self.clear_cover)
         # Sin stretch interno: la columna se centra contra la portada para no
@@ -303,16 +303,16 @@ class MetadataEditor(QDialog):
         self.album_btn.setVisible(False)
         footer.addWidget(self.album_btn)
 
-        self.back_btn = TextButton("Volver a metadatos", "ghost")
+        self.back_btn = TextButton("Volver a metadatos", "ghost", icon="arrow-left")
         self.back_btn.clicked.connect(self._back_editor)
         self.back_btn.setVisible(False)
         footer.addWidget(self.back_btn)
 
-        self.cancel_btn = TextButton("Cancelar", "ghost")
+        self.cancel_btn = TextButton("Cancelar", "ghost", icon="close")
         self.cancel_btn.clicked.connect(self.reject)
         footer.addWidget(self.cancel_btn)
 
-        self.save = TextButton("Guardar cambios", "accent")
+        self.save = TextButton("Guardar cambios", "accent", icon="check")
         self.save_btn = self.save
         self.save.clicked.connect(self._save)
         footer.addWidget(self.save)

@@ -37,7 +37,7 @@ class LibraryToolbar(QWidget):
         self.filter_box.setMinimumWidth(260)
         bar.addWidget(self.filter_box)
 
-        self.review_filter_btn = TextButton("Ver toda la biblioteca", "ghost")
+        self.review_filter_btn = TextButton("Ver toda la biblioteca", "ghost", icon="list")
         self.review_filter_btn.setVisible(False)
         bar.addWidget(self.review_filter_btn, 0)
 
@@ -61,13 +61,13 @@ class LibraryToolbar(QWidget):
         self.undo_button = IconButton("restore", "Deshacer último lote", 38)
         bar.addWidget(self.undo_button, 0)
 
-        self.edit_button = TextButton("Editar metadatos", "ghost")
+        self.edit_button = TextButton("Editar metadatos", "ghost", icon="edit")
         self.edit_button.setEnabled(False)
         bar.addWidget(self.edit_button, 0)
 
         # Con varias pistas marcadas el boton anterior pasa a ser el de lote:
         # editar de a una con diez seleccionadas no es lo que se quiere.
-        self.batch_button = TextButton("Editar en lote", "accent")
+        self.batch_button = TextButton("Editar en lote", "accent", icon="edit")
         self.batch_button.setEnabled(False)
         self.batch_button.setVisible(False)
         bar.addWidget(self.batch_button, 0)

@@ -97,7 +97,7 @@ class LibraryPage(Page):
         navegacion_layout = QHBoxLayout(navegacion)
         navegacion_layout.setContentsMargins(0, 0, 0, 0)
         navegacion_layout.setSpacing(8)
-        self.up_folder_button = TextButton("Volver", "ghost")
+        self.up_folder_button = TextButton("Volver", "ghost", icon="arrow-left")
         self.up_folder_button.clicked.connect(self._open_parent_folder)
         self.up_folder_button.setVisible(False)
         navegacion_layout.addWidget(self.up_folder_button, 0)

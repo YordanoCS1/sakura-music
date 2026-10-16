@@ -116,11 +116,11 @@ class TrackInfoDialog(QDialog):
         self.state.setObjectName("EmptyState")
         footer.addWidget(self.state, 1)
 
-        close = TextButton("Cerrar", "ghost")
+        close = TextButton("Cerrar", "ghost", icon="close")
         close.clicked.connect(self.reject)
         footer.addWidget(close)
 
-        self.editar = TextButton("Editar metadatos", "accent")
+        self.editar = TextButton("Editar metadatos", "accent", icon="edit")
         self.editar.clicked.connect(self._editar)
         footer.addWidget(self.editar)
         return footer

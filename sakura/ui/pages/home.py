@@ -199,7 +199,7 @@ class ActionCard(QWidget):
         self.detail.setObjectName("EmptyState")
         self.detail.setWordWrap(True)
 
-        self.button = TextButton("Abrir", "ghost")
+        self.button = TextButton("Abrir", "ghost", icon=icon_name)
         self.button.clicked.connect(self.clicked)
 
         layout.addWidget(self.detail)
@@ -249,7 +249,7 @@ class HomePage(Page):
         self.without_tags = QLabel("")
         self.without_tags.setObjectName("Callout")
         self.without_tags.setWordWrap(True)
-        self.tags_btn = TextButton("Revisar", "ghost")
+        self.tags_btn = TextButton("Revisar", "ghost", icon="edit")
         self.tags_btn.clicked.connect(
             lambda: self.library_review_requested.emit("untagged")
         )
@@ -264,7 +264,7 @@ class HomePage(Page):
         self.without_cover = QLabel("")
         self.without_cover.setObjectName("Callout")
         self.without_cover.setWordWrap(True)
-        self.covers_btn = TextButton("Revisar", "ghost")
+        self.covers_btn = TextButton("Revisar", "ghost", icon="info")
         self.covers_btn.clicked.connect(
             lambda: self.library_review_requested.emit("missing_cover")
         )
@@ -278,7 +278,7 @@ class HomePage(Page):
         self.duplicadas = QLabel("")
         self.duplicadas.setObjectName("Callout")
         self.duplicadas.setWordWrap(True)
-        self.duplicadas_btn = TextButton("Revisar", "ghost")
+        self.duplicadas_btn = TextButton("Revisar", "ghost", icon="alert-triangle")
         self.duplicadas_btn.clicked.connect(
             lambda: self.library_review_requested.emit("duplicates")
         )
@@ -314,7 +314,7 @@ class HomePage(Page):
         self.downloads_alerta = QLabel("")
         self.downloads_alerta.setObjectName("Callout")
         self.downloads_alerta.setWordWrap(True)
-        self.downloads_btn = TextButton("Ver cola", "ghost")
+        self.downloads_btn = TextButton("Ver cola", "ghost", icon="queue")
         self.downloads_btn.clicked.connect(self.queue_requested)
         downloads = QHBoxLayout()
         downloads.setContentsMargins(0, 4, 0, 0)

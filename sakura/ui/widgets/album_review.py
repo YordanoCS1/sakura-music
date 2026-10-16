@@ -121,21 +121,21 @@ class AlbumReviewDialog(QDialog):
         footer = QHBoxLayout()
         footer.setSpacing(10)
 
-        self.all = TextButton("Marcar todas", "ghost")
+        self.all = TextButton("Marcar todas", "ghost", icon="check")
         self.all.clicked.connect(lambda: self._mark_all(True))
         footer.addWidget(self.all)
 
-        self.ninguna = TextButton("Desmarcar", "ghost")
+        self.ninguna = TextButton("Desmarcar", "ghost", icon="close")
         self.ninguna.clicked.connect(lambda: self._mark_all(False))
         footer.addWidget(self.ninguna)
 
         footer.addStretch(1)
 
-        self.cancel = TextButton("Cancelar", "ghost")
+        self.cancel = TextButton("Cancelar", "ghost", icon="close")
         self.cancel.clicked.connect(self.reject)
         footer.addWidget(self.cancel)
 
-        self.confirmar = TextButton("Descargar lo elegido", "accent")
+        self.confirmar = TextButton("Descargar lo elegido", "accent", icon="cloud-download")
         self.confirmar.setDefault(True)
         self.confirmar.clicked.connect(self._confirmar)
         footer.addWidget(self.confirmar)

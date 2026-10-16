@@ -172,7 +172,7 @@ class SettingsPage(Page):
         concurrent_row.setFixedWidth(CONTROL_W)
 
         # 6. Carpeta de biblioteca
-        library_btn = TextButton("Cambiar…", "ghost")
+        library_btn = TextButton("Cambiar…", "ghost", icon="folder-open")
         library_btn.clicked.connect(self._on_pick_library_folder)
         saved_library = self.settings.get("library_folder") or str(library_dir())
         self.library_folder_label = ElidedLabel(saved_library)
@@ -190,7 +190,7 @@ class SettingsPage(Page):
         library_row.setFixedWidth(CONTROL_W)
 
         # 7. Carpeta de descargas
-        downloads_btn = TextButton("Cambiar…", "ghost")
+        downloads_btn = TextButton("Cambiar…", "ghost", icon="folder-open")
         downloads_btn.clicked.connect(self._on_pick_downloads_folder)
         saved_downloads = self.settings.get("downloads_folder") or str(downloads_target_dir())
         self.downloads_folder_label = ElidedLabel(saved_downloads)
@@ -262,7 +262,7 @@ class SettingsPage(Page):
             cover_box,
         )
 
-        self.update_tools_btn = TextButton("Actualizar yt-dlp y FFmpeg", "ghost")
+        self.update_tools_btn = TextButton("Actualizar yt-dlp y FFmpeg", "ghost", icon="refresh-cw")
         self.update_tools_btn.clicked.connect(self._on_update_tools)
         self.tool_update_status = QLabel("")
         self.tool_update_status.setObjectName("PageSubtitle")

@@ -206,11 +206,11 @@ class BatchEditDialog(QDialog):
         footer.addWidget(self.select_all)
         footer.addStretch(1)
 
-        cancel = TextButton("Cancelar", "ghost")
+        cancel = TextButton("Cancelar", "ghost", icon="close")
         cancel.clicked.connect(self.reject)
         footer.addWidget(cancel)
 
-        self.apply = TextButton("Aplicar a las pistas", "accent")
+        self.apply = TextButton("Aplicar a las pistas", "accent", icon="check")
         self.apply.setDefault(True)
         self.apply.clicked.connect(self._apply)
         footer.addWidget(self.apply)

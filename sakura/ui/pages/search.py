@@ -114,21 +114,21 @@ class SearchPage(Page):
         self._format_combo.currentIndexChanged.connect(self._on_format_combo_changed)
         layout.addWidget(self._format_combo, 0)
 
-        self._dl_all_btn = TextButton("Descargar todo", "accent")
+        self._dl_all_btn = TextButton("Descargar todo", "accent", icon="cloud-download")
         self._dl_all_btn.clicked.connect(self._on_download_all)
         self._dl_all_btn.setVisible(False)
         layout.addWidget(self._dl_all_btn, 0)
 
         # Un album del catalogo trae los tags correctos (año, género, pista), que
         # una busqueda suelta no puede dar. Se resuelve aparte y se revisa antes.
-        self._album_btn = TextButton("Traer álbum del catálogo", "ghost")
+        self._album_btn = TextButton("Traer álbum del catálogo", "ghost", icon="disc")
         self._album_btn.clicked.connect(self._on_album_from_catalog)
         self._album_btn.setVisible(False)
         layout.addWidget(self._album_btn, 0)
 
         # Por nombre no se sabe qué disco querés. Con el artista se ve la
         # discografía entera y se elige de la lista.
-        self._artist_btn = TextButton("Ver albums del artista", "ghost")
+        self._artist_btn = TextButton("Ver albums del artista", "ghost", icon="user")
         self._artist_btn.clicked.connect(self._on_artist_from_catalog)
         self._artist_btn.setVisible(False)
         layout.addWidget(self._artist_btn, 0)

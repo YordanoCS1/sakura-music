@@ -36,7 +36,7 @@ class LibraryFolderPanel(QWidget):
         self.heading_label = QLabel("Carpetas")
         heading_layout.addWidget(self.heading_label)
         heading_layout.addStretch(1)
-        self.open_button = TextButton("Abrir carpeta", "ghost")
+        self.open_button = TextButton("Abrir carpeta", "ghost", icon="folder-open")
         self.open_button.setEnabled(False)
         heading_layout.addWidget(self.open_button)
         layout.addWidget(heading)

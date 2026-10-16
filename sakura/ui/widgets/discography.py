@@ -132,11 +132,11 @@ class DiscographyDialog(QDialog):
         footer.setSpacing(10)
         footer.addStretch(1)
 
-        cancel = TextButton("Cancelar", "ghost")
+        cancel = TextButton("Cancelar", "ghost", icon="close")
         cancel.clicked.connect(self.reject)
         footer.addWidget(cancel)
 
-        self.fetch = TextButton("Traer el álbum", "accent")
+        self.fetch = TextButton("Traer el álbum", "accent", icon="cloud-download")
         self.fetch.setDefault(True)
         self.fetch.clicked.connect(self._choose_selected)
         footer.addWidget(self.fetch)

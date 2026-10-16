@@ -141,7 +141,7 @@ class CatalogPanel(QWidget):
         self.artist_search_box.setMinimumHeight(42)
         row.addWidget(self.artist_search_box, 1)
 
-        self.search_btn = TextButton("Buscar catálogo", "accent")
+        self.search_btn = TextButton("Buscar catálogo", "accent", icon="search")
         self.search_btn.setMinimumWidth(148)
         row.addWidget(self.search_btn)
         layout.addLayout(row)
@@ -186,7 +186,7 @@ class CatalogPanel(QWidget):
         self.list.setUniformItemSizes(True)
         layout.addWidget(self.list, 1)
 
-        self.use_btn = TextButton("Usar datos seleccionados", "ghost")
+        self.use_btn = TextButton("Usar datos seleccionados", "ghost", icon="check")
         self.use_btn.setEnabled(False)
         layout.addWidget(self.use_btn)
 
