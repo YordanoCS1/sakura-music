@@ -1,0 +1,658 @@
+"""Generador del stylesheet completo a partir de los tokens del tema."""
+
+from __future__ import annotations
+
+from .tokens import FONT_STACK, Theme, px, tint
+
+
+def build_qss(t: Theme) -> str:
+    """Genera el stylesheet completo de la aplicacion desde los tokens."""
+    return f"""
+* {{
+    font-family: {FONT_STACK};
+    outline: none;
+}}
+
+QWidget {{
+    background: transparent;
+    color: {t.text};
+}}
+
+QToolTip {{
+    background: {t.surface_alt};
+    color: {t.text};
+    border: 1px solid {t.border};
+    border-radius: {t.radius_sm}px;
+    padding: {px(t, 5)} {px(t, 9)};
+}}
+
+/* ---------- fondo global ---------- */
+#Root {{
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+        stop:0 {t.bg}, stop:0.7 {t.surface}, stop:1 {t.surface_alt});
+}}
+
+/* Los dialogos son ventanas de primer nivel: no heredan el fondo de la ventana
+   principal y salen blancos con texto claro encima. */
+QDialog {{
+    background: {t.bg};
+}}
+
+/* ---------- barra de titulo ---------- */
+#TitleBar {{
+    background: rgba(0,0,0,0);
+    border-bottom: 1px solid {t.border};
+}}
+#TitleBarTitle {{
+    color: {t.text_muted};
+    font-size: 12px;
+    font-weight: 600;
+}}
+
+/* ---------- sidebar ---------- */
+#Sidebar {{
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+        stop:0 {t.surface}, stop:1 {t.surface_alt});
+    border: 1px solid {t.border};
+    border-left: none;
+    border-top: none;
+    border-bottom: none;
+    border-top-right-radius: {t.radius + 12}px;
+    border-bottom-right-radius: {t.radius + 12}px;
+    padding-top: 4px;
+}}
+
+QPushButton#NavButton {{
+    background: transparent;
+    color: {t.text_dim};
+    border: 1px solid transparent;
+    border-radius: {t.radius}px;
+    padding: {px(t, 10)} {px(t, 14)};
+    font-size: 13px;
+    font-weight: 600;
+    text-align: left;
+    /* Sin `transition`: es CSS, no QSS. Qt lo rechaza con "Unknown property"
+       en cada boton de la barra lateral, Filling the console on each repaint. */
+}}
+QPushButton#NavButton:hover {{
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+        stop:0 {t.surface_hover}, stop:1 {t.surface_alt});
+    color: {t.text};
+    border-color: {t.border};
+}}
+QPushButton#NavButton:checked {{
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+        stop:0 {tint(t.surface_alt, t.accent, 0.18)}, stop:1 {tint(t.bg, t.accent, 0.15)});
+    color: {t.accent};
+    border-color: {tint(t.accent, t.bg, 0.35)};
+}}
+
+#SidebarSection {{
+    color: {t.text_muted};
+    font-size: 11px;
+    font-weight: 700;
+    padding: 0 {px(t, 14)};
+    letter-spacing: 0.6px;
+}}
+
+/* ---------- barra superior ---------- */
+#TopBar {{
+    background: {t.bg};
+}}
+QLineEdit#SearchInput {{
+    background: {t.surface_alt};
+    border: 1px solid {t.border};
+    border-radius: {t.radius_pill}px;
+    padding: {px(t, 8)} {px(t, 16)};
+    color: {t.text};
+    font-size: 13px;
+}}
+QLineEdit#SearchInput:focus {{
+    border: 1px solid {t.accent};
+}}
+QLineEdit#SearchInput::placeholder {{
+    color: {t.text_muted};
+}}
+
+/* ---------- contenido ---------- */
+#PageHeader {{
+    color: {t.text};
+    font-size: 26px;
+    font-weight: 800;
+}}
+#PageSubtitle {{
+    color: {t.text_dim};
+    font-size: 13px;
+}}
+
+/* ---------- area central ---------- */
+#ScrollArea, #Page {{
+    background: {t.bg};
+}}
+#ScrollArea > QWidget > QWidget {{
+    background: transparent;
+}}
+
+/* ---------- progreso ---------- */
+QProgressBar {{
+    background: {t.surface_hover};
+    border: none;
+    border-radius: 2px;
+    max-height: 4px;
+    min-height: 4px;
+}}
+QProgressBar::chunk {{
+    background: {t.accent};
+    border-radius: 2px;
+}}
+QProgressBar#ProgressInverted::chunk {{
+    background: {t.success};
+}}
+
+/* ---------- botones ---------- */
+QPushButton#IconButton {{
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: {t.radius_pill}px;
+    padding: {px(t, 6)};
+}}
+QPushButton#IconButton:hover {{
+    background: {t.surface_hover};
+    border-color: {t.border};
+}}
+QPushButton#IconButton:disabled {{
+    background: transparent;
+}}
+QPushButton#IconButton:disabled * {{
+    color: {t.text_muted};
+}}
+
+QPushButton#PlayButton {{
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+        stop:0 {t.text}, stop:1 {t.text_dim});
+    border: 1px solid {t.border};
+    border-radius: {t.radius_pill}px;
+    padding: {px(t, 10)};
+}}
+QPushButton#PlayButton:hover {{
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+        stop:0 {t.accent}, stop:1 {t.accent_hover});
+    border-color: {t.accent};
+}}
+
+QPushButton#AccentButton {{
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+        stop:0 {t.accent}, stop:1 {t.accent_hover});
+    color: {t.accent_text};
+    border: 1px solid {tint(t.accent, t.bg, 0.35)};
+    border-radius: {t.radius}px;
+    padding: {px(t, 10)} {px(t, 20)};
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.2px;
+}}
+QPushButton#AccentButton:hover {{
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+        stop:0 {t.accent_hover}, stop:1 {t.accent});
+    border-color: {t.accent};
+}}
+
+QPushButton#GhostButton {{
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+        stop:0 {t.surface_alt}, stop:1 {t.surface});
+    color: {t.text_dim};
+    border: 1px solid {t.border};
+    border-radius: {t.radius}px;
+    padding: {px(t, 8)} {px(t, 14)};
+    font-size: 12px;
+    font-weight: 700;
+}}
+QPushButton#GhostButton:hover {{
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+        stop:0 {t.surface_hover}, stop:1 {t.surface_alt});
+    color: {t.text};
+    border-color: {t.accent};
+}}
+
+QPushButton#DangerButton {{
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+        stop:0 {tint(t.bg, t.danger, 0.15)}, stop:1 {tint(t.surface, t.danger, 0.18)});
+    color: {t.danger};
+    border: 1px solid {t.danger};
+    border-radius: {t.radius}px;
+    padding: {px(t, 8)} {px(t, 14)};
+    font-size: 12px;
+    font-weight: 700;
+}}
+QPushButton#DangerButton:hover {{
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+        stop:0 {t.danger}, stop:1 {tint(t.danger, t.bg, 0.10)});
+    color: {t.bg};
+}}
+
+/* ---------- estados de la cola de descargas ----------
+   Chips con fondo tenue y texto del color: un bloque solido saturado se leia
+   como una alerta, no como un estado. */
+#Badge {{
+    border-radius: {t.radius_pill}px;
+    padding: {px(t, 3)} {px(t, 10)};
+    font-size: 11px;
+    font-weight: 700;
+}}
+#BadgePending {{
+    background: {t.surface_hover};
+    color: {t.text_dim};
+}}
+#BadgeActive {{
+    background: {tint(t.bg, t.warning, 0.18)};
+    color: {t.warning};
+}}
+#BadgeDone {{
+    background: {tint(t.bg, t.success, 0.18)};
+    color: {t.success};
+}}
+#BadgeFailed {{
+    background: {tint(t.bg, t.danger, 0.18)};
+    color: {t.danger};
+}}
+#RowDanger {{
+    background: {t.surface_alt};
+    border-left: 2px solid {t.danger};
+}}
+
+/* ---------- scrollbar ---------- */
+QScrollBar:vertical {{
+    background: transparent;
+    width: 10px;
+    margin: 0;
+}}
+QScrollBar::handle:vertical {{
+    background: {t.surface_hover};
+    border-radius: 5px;
+    min-height: 40px;
+}}
+QScrollBar::handle:vertical:hover {{
+    background: {t.border};
+}}
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {{
+    height: 0;
+}}
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {{
+    background: transparent;
+}}
+
+/* ---------- listas y cuadricula ---------- */
+QListWidget {{
+    background: {t.bg};
+    border: 1px solid {t.border};
+    border-radius: {t.radius}px;
+    color: {t.text};
+    font-size: 12px;
+    padding: {px(t, 4)};
+}}
+QListWidget::item {{
+    border-radius: {t.radius_sm}px;
+    padding: {px(t, 6)} {px(t, 10)};
+    margin: 1px 0;
+}}
+QListWidget::item:hover {{
+background: {t.surface_hover};
+}}
+QListWidget::item:selected {{
+background: {t.selection};
+color: {t.selection_text};
+}}
+
+QListView#TrackGrid {{
+    background: {t.bg};
+    border: none;
+    color: {t.text};
+    outline: none;
+    padding: {px(t, 6)};
+}}
+QListView#TrackGrid::item {{
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 4px;
+}}
+QListView#TrackGrid::item:selected {{
+    background: transparent;
+    border: none;
+}}
+
+/* La lista de carpetas de la biblioteca. Vivia en un `setStyleSheet` de la
+   pagina y Qt se quejaba en cada repintado: al tener hoja propia, cascada con
+   los ancestros, el parser la rechazaba. Acá la resuelve el QSS global. */
+QListWidget#LibraryFolderGrid {{
+    background: {t.surface};
+    border: 1px solid {t.border};
+    border-radius: {t.radius}px;
+    color: {t.text};
+    outline: none;
+}}
+QListWidget#LibraryFolderGrid::item {{
+    border-radius: {t.radius_sm}px;
+    padding: {px(t, 4)};
+    margin: {px(t, 2)};
+}}
+QListWidget#LibraryFolderGrid::item:hover {{
+    background: {t.surface_hover};
+    border-radius: {t.radius_sm}px;
+}}
+QListWidget#LibraryFolderGrid::item:selected {{
+    background: {t.selection};
+    color: {t.selection_text};
+}}
+
+/* ---------- tabla de la biblioteca ---------- */
+QTableView {{
+background: {t.bg};
+alternate-background-color: {t.surface};
+border: none;
+gridline-color: transparent;
+color: {t.text};
+selection-background-color: {t.selection};
+selection-color: {t.selection_text};
+font-size: 13px;
+}}
+QTableView::item {{
+padding: 0 {px(t, 10)};
+border: none;
+}}
+QTableView::item:hover {{
+background: {t.surface_hover};
+}}
+QTableView::item:selected {{
+background: {t.selection};
+color: {t.selection_text};
+}}
+QHeaderView::section {{
+    background: {t.bg};
+    color: {t.text_muted};
+    border: none;
+    border-bottom: 1px solid {t.border};
+    padding: {px(t, 8)} {px(t, 10)};
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}}
+QTableCornerButton::section {{
+    background: {t.bg};
+    border: none;
+}}
+
+/* ---------- separadores / varios ---------- */
+#Divider {{
+    background: {t.border};
+    max-height: 1px;
+    min-height: 1px;
+    border: none;
+}}
+#EmptyState {{
+    color: {t.text_muted};
+    font-size: 13px;
+}}
+#Card {{
+background: {t.surface_alt};
+border: 1px solid {t.border};
+border-radius: {t.radius}px;
+}}
+#CardTitle {{
+color: {t.text};
+font-size: 14px;
+font-weight: 700;
+}}
+
+/* ---------- inicio y dashboard de musica ---------- */
+#HeroBanner {{
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+        stop:0 {tint(t.surface_alt, t.accent, 0.30)},
+        stop:0.45 {t.surface_alt},
+        stop:1 {t.surface});
+    border: 1px solid {tint(t.border, t.accent, 0.30)};
+    border-radius: {t.radius + 8}px;
+    padding: 4px;
+}}
+#HeroTitle {{
+    color: {t.text};
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+}}
+#HeroSubtitle {{
+    color: {t.text_dim};
+    font-size: 13px;
+    line-height: 1.4;
+}}
+#HeroBadge {{
+    color: {t.accent};
+    background: {tint(t.bg, t.accent, 0.18)};
+    border: 1px solid {t.accent};
+    border-radius: {t.radius_pill}px;
+    padding: 5px 12px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.9px;
+}}
+#HeroPill {{
+    color: {t.text};
+    background: {tint(t.bg, t.accent, 0.12)};
+    border: 1px solid {t.border};
+    border-radius: {t.radius_pill}px;
+    padding: 5px 10px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+}}
+#HeroVisual {{
+    background: qradialgradient(cx:1, cy:0.5, radius:1,
+        stop:0 {tint(t.accent, t.bg, 0.45)},
+        stop:0.5 {tint(t.accent, t.surface_alt, 0.18)},
+        stop:1 transparent);
+    border: 1px solid {tint(t.border, t.accent, 0.25)};
+    border-radius: {t.radius}px;
+}}
+
+#StatTile {{
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+        stop:0 {t.surface_alt}, stop:1 {t.surface});
+    border: 1px solid {t.border};
+    border-radius: {t.radius}px;
+}}
+#StatTile:hover {{
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+        stop:0 {t.surface_hover}, stop:1 {t.surface_alt});
+    border: 1px solid {t.accent};
+}}
+#Card {{
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+        stop:0 {t.surface_alt}, stop:1 {t.surface});
+    border: 1px solid {t.border};
+    border-radius: {t.radius}px;
+}}
+#Card:hover {{
+    border: 1px solid {t.accent};
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+        stop:0 {t.surface_hover}, stop:1 {t.surface_alt});
+}}
+#CardIcon {{
+    background: {tint(t.bg, t.accent, 0.15)};
+    border: 1px solid {tint(t.accent, t.bg, 0.40)};
+    border-radius: 12px;
+}}
+#StatValue {{
+    color: {t.text};
+    font-size: 26px;
+    font-weight: 800;
+}}
+#StatLabel {{
+    color: {t.text_muted};
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}}
+
+/* ---------- barra de navegacion en capsula (TopNav) ---------- */
+QPushButton#NavPill {{
+    background: transparent;
+    color: {t.text_dim};
+    border: 1px solid transparent;
+    border-radius: {t.radius_pill}px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 600;
+}}
+QPushButton#NavPill:hover {{
+    background: {t.surface_hover};
+    color: {t.text};
+    border: 1px solid {t.border};
+}}
+QPushButton#NavPill:checked {{
+    background: {t.surface_alt};
+    color: {t.accent};
+    border: 1px solid {t.accent};
+}}
+
+#Callout {{
+    color: {t.text_dim};
+    font-size: 13px;
+    background: {t.surface_alt};
+    border: 1px solid {t.border};
+    border-radius: {t.radius}px;
+    padding: {px(t, 12)} {px(t, 14)};
+}}
+#FieldLabel {{
+    color: {t.text_muted};
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+}}
+
+/* ---------- editor musical de metadatos ---------- */
+#MetadataEyebrow {{
+    color: {t.accent};
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.1px;
+}}
+#MetadataTrackTitle {{
+    color: {t.text};
+    font-size: 26px;
+    font-weight: 800;
+}}
+#MetadataPageTitle {{
+    color: {t.text};
+    font-size: 20px;
+    font-weight: 800;
+}}
+#MetadataTrackArtist, #MetadataHint, #MetadataPath {{
+    color: {t.text_dim};
+    font-size: 12px;
+}}
+#MetadataPath {{
+    background: {t.surface_alt};
+    border: 1px solid {t.border};
+    border-radius: {t.radius_pill}px;
+    padding: 8px 12px;
+}}
+#MetadataArtworkPanel {{
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+        stop:0 {tint(t.surface_alt, t.accent, 0.24)},
+        stop:0.55 {t.surface_alt},
+        stop:1 {t.surface});
+    border: 1px solid {tint(t.border, t.accent, 0.5)};
+    border-radius: {t.radius + 8}px;
+}}
+#MetadataCover {{
+    background: {t.bg};
+    border: 1px solid {t.border};
+    border-radius: {t.radius}px;
+}}
+#MetadataFormPanel {{
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+        stop:0 {t.surface}, stop:1 {t.surface_alt});
+    border: 1px solid {t.border};
+    border-radius: {t.radius + 8}px;
+}}
+#MetadataSearchPanel {{
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+        stop:0 {tint(t.surface_alt, t.accent, 0.12)}, stop:1 {t.surface});
+    border: 1px solid {tint(t.border, t.accent, 0.30)};
+    border-radius: {t.radius + 4}px;
+}}
+#MetadataResultsPanel {{
+    background: {t.surface};
+    border: 1px solid {t.border};
+    border-radius: {t.radius + 6}px;
+}}
+#MetadataResultsList {{
+    background: {t.bg};
+    border: 1px solid {t.border};
+    border-radius: {t.radius}px;
+    padding: 5px;
+}}
+#MetadataResultsList::item {{
+    border-radius: {t.radius_sm}px;
+    margin: 2px 0;
+    padding: 3px;
+}}
+#MetadataSourceBadge {{
+    color: {t.accent};
+    background: {tint(t.surface_alt, t.accent, 0.14)};
+    border: 1px solid {tint(t.accent, t.border, 0.35)};
+    border-radius: {t.radius_pill}px;
+    padding: 6px 10px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+}}
+#MetadataSectionTitle {{
+    color: {t.text};
+    font-size: 17px;
+    font-weight: 800;
+}}
+#MetadataDivider {{
+    background: {tint(t.border, t.accent, 0.32)};
+    border: none;
+}}
+QLineEdit#MetadataField {{
+    background: {t.surface_alt};
+    border: 1px solid {t.border};
+    border-radius: {t.radius_sm + 2}px;
+    padding: 8px 12px;
+    color: {t.text};
+    font-size: 13px;
+}}
+QLineEdit#MetadataField:focus {{
+    border: 1px solid {t.accent};
+    background: {tint(t.surface_alt, t.accent, 0.08)};
+}}
+QLineEdit#MetadataField::placeholder {{
+    color: {t.text_muted};
+}}
+
+/* ---------- menus desplegables ---------- */
+QMenu {{
+    background: {t.surface};
+    color: {t.text};
+    border: 1px solid {t.border};
+    border-radius: {t.radius}px;
+    padding: {px(t, 6)};
+}}
+QMenu::item {{
+    background: transparent;
+    padding: {px(t, 6)} {px(t, 14)};
+    border-radius: 4px;
+    font-size: 12px;
+}}
+QMenu::item:selected {{
+    background: {t.surface_hover};
+    color: {t.accent};
+}}
+QMenu::separator {{
+    height: 1px;
+    background: {t.border};
+    margin: 4px 6px;
+}}
+"""

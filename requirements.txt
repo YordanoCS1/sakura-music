@@ -1,0 +1,7 @@
+# Dependencias de ejecución de Sakura Music.
+PySide6>=6.8
+yt-dlp>=2024.12.13
+mutagen>=1.47
+
+# Las herramientas de desarrollo (pytest, ruff) viven en el extra `dev`
+# de pyproject.toml: `pip install -e .[dev]`.

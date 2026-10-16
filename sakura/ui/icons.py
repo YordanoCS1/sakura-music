@@ -1,0 +1,214 @@
+"""Iconos vectoriales.
+
+Markup de Lucide (licencia ISC, viewBox 24x24) renderizado con QtSvg. El SVG
+se arma en memoria a partir de `_PATHS`, asi que no hay archivos sueltos que
+acompañar al ejecutable.
+"""
+
+from __future__ import annotations
+
+from PySide6.QtCore import QRectF, Qt
+from PySide6.QtGui import QColor, QIcon, QPainter, QPixmap
+from PySide6.QtSvg import QSvgRenderer
+
+from . import sakura
+
+# Nombres que no son SVG de Lucide sino la flor de la marca. Se resuelven con
+# `QPainter` (ver `sakura.py`): una sakura de 5 petalos queda mejor como
+# Bezier que comprimida en un viewBox de 24x24.
+_SAKURA = frozenset({"sakura"})
+
+# Cada entrada es una lista de subpaths en coordenadas 0..24.
+_PATHS: dict[str, tuple[str, ...]] = {
+    "home": ("M3 9.5 12 2l9 7.5V20a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z", "M9 22v-9h6v9"),
+    "search": ("M20.5 11a8.5 8.5 0 1 1-17 0 8.5 8.5 0 0 1 17 0z", "M16.5 16.5 21 21"),
+    "library": ("M4 4v16", "M8.5 6v14", "M13 6v14", "M17.5 4v16"),
+    "queue": (
+        "M21 15V6",
+        "M18.5 18a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z",
+        "M12 12H3",
+        "M16 6 3 12",
+        "M16 12H3",
+        "M16 18H3",
+    ),
+    "settings": (
+        "M21 4h-7",
+        "M10 4H3",
+        "M21 12h-9",
+        "M8 12H3",
+        "M21 20h-5",
+        "M12 20H3",
+        "M14 2v4",
+        "M8 10v4",
+        "M16 18v4",
+    ),
+    "folder": (
+        "M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z",
+    ),
+    "play": ("M6 3.5 20 12 6 20.5z",),
+    "pause": ("M6.5 4h3.5v16H6.5z", "M14 4h3.5v16H14z"),
+    "prev": ("M18.5 19 9 12l9.5-7z", "M5 19V5"),
+    "next": ("M5.5 5 15 12l-9.5 7z", "M19 5v14"),
+    "volume": (
+        "M11 4.7a.7.7 0 0 0-1.2-.5L6.4 7.6A1.4 1.4 0 0 1 5.4 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.4a1.4 1.4 0 0 1 1 .4l3.4 3.4a.7.7 0 0 0 1.2-.5z",
+        "M16 9.5a4.5 4.5 0 0 1 0 5",
+        "M19.4 6.6a9 9 0 0 1 0 10.8",
+    ),
+    "mute": (
+        "M11 4.7a.7.7 0 0 0-1.2-.5L6.4 7.6A1.4 1.4 0 0 1 5.4 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.4a1.4 1.4 0 0 1 1 .4l3.4 3.4a.7.7 0 0 0 1.2-.5z",
+        "m22 9-6 6",
+        "m16 9 6 6",
+    ),
+    "repeat": (
+        "m17 2 4 4-4 4",
+        "M3 11v-1a4 4 0 0 1 4-4h14",
+        "m7 22-4-4 4-4",
+        "M21 13v1a4 4 0 0 1-4 4H3",
+    ),
+    "shuffle": (
+        "M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.8-1.1 2-1.7 3.3-1.7H22",
+        "m18 2 4 4-4 4",
+        "M2 6h1.9c1.5 0 2.9.9 3.6 2.2",
+        "M22 18h-5.9c-1.3 0-2.6-.7-3.3-1.8l-.5-.8",
+        "m18 14 4 4-4 4",
+    ),
+    "heart": (
+        "M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2"
+        "-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7z",
+    ),
+    "download": ("M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", "m7 10 5 5 5-5", "M12 15V3"),
+    "music": ("M9 18V5l12-2v13", "M6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6z", "M18 19a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"),
+    "close": ("M18 6 6 18", "m6 6 12 12"),
+    "minus": ("M5 12h14",),
+    "maximize": ("M5 5h14v14H5z",),
+    "restore": ("M15 3h6v6", "M9 21H3v-6", "M21 3l-7 7", "M3 21l7-7"),
+    "trash": ("M4 7h16", "M10 11v6", "M14 11v6", "M6 7l1 13h10l1-13", "M9 7V4h6v3"),
+    "edit": ("M12 20h9", "M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"),
+    "plus": ("M12 5v14", "M5 12h14"),
+    "video": ("m22 7-6 5 6 5V7z", "M2 5h14v14H2z"),
+    "more-vertical": (
+        "M12 13a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z",
+        "M12 6a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z",
+        "M12 20a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z",
+    ),
+    "grid": ("M3 3h7v7H3z", "M14 3h7v7h-7z", "M14 14h7v7h-7z", "M3 14h7v7H3z"),
+    "list": (
+        "M8 6h13",
+        "M8 12h13",
+        "M8 18h13",
+        "M3 6h.01",
+        "M3 12h.01",
+        "M3 18h.01",
+    ),
+    "palette": (
+        "M13.5 2a8.5 8.5 0 0 0-8.5 8.5c0 1.25.27 2.44.75 3.5.34.75.08 1.63-.58 2.12A3.5 3.5 0 0 0 9 22h3a9 9 0 0 0 9-9c0-6.08-4.92-11-11-11z",
+        "M13.5 6.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0z",
+        "M17.5 10.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0z",
+        "M8.5 7.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0z",
+        "M6.5 11.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0z",
+    ),
+    "disc": (
+        "M22 12A10 10 0 1 1 2 12a10 10 0 0 1 20 0z",
+        "M14 12a2 2 0 1 1-4 0 2 2 0 0 1 4 0z",
+    ),
+    "user": (
+        "M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2",
+        "M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0z",
+    ),
+    "clock": (
+        "M22 12A10 10 0 1 1 2 12a10 10 0 0 1 20 0z",
+        "M12 6v6l4 2",
+    ),
+    "sparkles": (
+        "m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z",
+    ),
+}
+
+
+# Iconos que se dibujan rellenos en vez de contornados.
+# Solo los que son solidos de verdad: play, pause, prev y next son triangulos.
+# `maximize` NO va aca: es un cuadrado y llenado sale como un bloque negro.
+_FILLED = {"play", "pause", "prev", "next"}
+
+_SVG_CACHE: dict[tuple, QSvgRenderer] = {}
+
+# Tope de renderers cacheados. La clave lleva el color, y el color cambia con
+# cada tema y con cada estado (normal / deshabilitado), asi que sin tope la
+# cache solo crece: cada tema nuevo deja su juego de SVG parseado para siempre.
+MAX_CACHE = 256
+
+
+def _renderer(name: str, color: str, stroke: float) -> QSvgRenderer:
+    """SVG cacheado por (icono, color, grosor)."""
+    key = (name, color, stroke)
+    if key not in _SVG_CACHE:
+        if len(_SVG_CACHE) >= MAX_CACHE:
+            _SVG_CACHE.clear()
+        filled = name in _FILLED
+        if filled:
+            paint = f'fill="{color}" stroke="none"'
+        else:
+            paint = (
+                f'fill="none" stroke="{color}" stroke-width="{stroke}"'
+                ' stroke-linecap="round" stroke-linejoin="round"'
+            )
+        body = "".join(f'<path d="{d}"/>' for d in _PATHS[name])
+        svg = (
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" '
+            f"{paint}>{body}</svg>"
+        )
+        renderer = QSvgRenderer()
+        # `load` con bytes: el constructor con str no es valido en PySide6.
+        renderer.load(svg.encode("utf-8"))
+        _SVG_CACHE[key] = renderer
+    return _SVG_CACHE[key]
+
+
+def render(name: str, color: str, size: int, stroke: float = 2.0) -> QPixmap:
+    """Dibuja el icono `name` en un pixmap logico de `size`x`size`."""
+    if name in _SAKURA:
+        return sakura.render(color, size)
+    if name not in _PATHS:
+        raise KeyError(f"icono desconocido: {name!r}")
+
+    ratio = 2  # retina
+    px = QPixmap(size * ratio, size * ratio)
+    px.setDevicePixelRatio(ratio)
+    px.fill(Qt.GlobalColor.transparent)
+
+    renderer = _renderer(name, color, stroke)
+    painter = QPainter(px)
+    painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
+    renderer.render(painter, QRectF(0, 0, size, size))
+    painter.end()
+    return px
+
+
+_render = render
+
+
+def icon(
+    name: str,
+    color: str,
+    size: int = 20,
+    stroke: float = 2.0,
+    dimmed: str | None = None,
+) -> QIcon:
+    """QIcon con estados Normal y Disabled, para que QSS pueda atenuarla."""
+    if name in _SAKURA:
+        return sakura.icon(color, size, dimmed=dimmed)
+    if name not in _PATHS:
+        raise KeyError(f"icono desconocido: {name!r}")
+
+    result = QIcon()
+    result.addPixmap(_render(name, color, size, stroke), QIcon.Mode.Normal, QIcon.State.Off)
+
+    disabled = QColor(dimmed) if dimmed else QColor(color)
+    if not dimmed:
+        disabled.setAlpha(110)
+    result.addPixmap(
+        _render(name, disabled.name(QColor.NameFormat.HexArgb), size, stroke),
+        QIcon.Mode.Disabled,
+        QIcon.State.Off,
+    )
+    return result
