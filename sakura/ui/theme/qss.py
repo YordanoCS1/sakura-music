@@ -374,6 +374,9 @@ QPushButton#SegmentButton:hover {{
 QPushButton#SegmentButton:checked {{
     background: {tint(t.surface_alt, t.accent, 0.32)};
 }}
+QPushButton#SegmentButton[segmentKind="text"] {{
+    padding: 5px 16px;
+}}
 #Breadcrumb {{
     color: {t.text_dim};
     font-size: 13px;

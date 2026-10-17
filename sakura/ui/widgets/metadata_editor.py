@@ -194,12 +194,15 @@ class MetadataEditor(QDialog):
         toggle.setObjectName("SegmentedControl")
         row = QHBoxLayout(toggle)
         row.setContentsMargins(4, 4, 4, 4)
-        row.setSpacing(2)
+        row.setSpacing(6)
 
         self.edit_tab = QPushButton("Metadatos")
         self.catalog_tab = QPushButton("Catálogo")
         for button in (self.edit_tab, self.catalog_tab):
             button.setObjectName("SegmentButton")
+            # Marca las pastillas de texto para darles aire lateral; los botones
+            # con icono de la biblioteca usan el mismo objectName sin padding.
+            button.setProperty("segmentKind", "text")
             button.setCheckable(True)
             button.setCursor(Qt.CursorShape.PointingHandCursor)
             button.setMinimumHeight(30)
