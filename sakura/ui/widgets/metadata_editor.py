@@ -41,7 +41,7 @@ from ...core.tag_history import TagBatch, make_change, now_iso, save_manifest
 from ..covers import render_cover
 from ..services.metadata_search import MetadataSearch, apply_album
 from ..services.thumbnails import ThumbnailLoader, cache_path
-from ..widgets.buttons import TextButton
+from ..widgets.buttons import IconButton, TextButton
 from .elided import ElidedLabel
 from .metadata_artwork import (
     IMAGE_FILTER,
@@ -81,6 +81,9 @@ class MetadataEditor(QDialog):
         self._artwork_pixmaps: dict[str, QPixmap] = {}
         self._preview_artwork_bytes: bytes | None = None
         self._thumbnail_labels: dict[str, list[QLabel]] = {}
+        self._original_tags: dict[str, str] = {}
+        self._original_cover_bytes: bytes | None = None
+        self._field_labels: dict[str, QLabel] = {}
 
         self.setWindowTitle("Editar metadatos")
         self.setModal(True)
@@ -117,8 +120,15 @@ class MetadataEditor(QDialog):
         self.editar_layout = QVBoxLayout(self.editar_container)
         self.editar_layout.setContentsMargins(0, 0, 0, 0)
         self.editar_layout.setSpacing(12)
-        self.editar_layout.addWidget(self._block_cover())
-        self.editar_layout.addWidget(self._block_tags(), 1)
+        # Dos columnas: la portada como ficha y el formulario con el resto del
+        # ancho. El layout de arriba sigue siendo vertical (`TopToBottom`).
+        columns = QWidget()
+        columns_layout = QHBoxLayout(columns)
+        columns_layout.setContentsMargins(0, 0, 0, 0)
+        columns_layout.setSpacing(14)
+        columns_layout.addWidget(self._block_cover(), 0, Qt.AlignmentFlag.AlignTop)
+        columns_layout.addWidget(self._block_tags(), 1)
+        self.editar_layout.addWidget(columns)
         self.editar_view.setWidget(self.editar_container)
         self.views.addWidget(self.editar_view)
 
@@ -150,10 +160,10 @@ class MetadataEditor(QDialog):
         self.use_btn.clicked.connect(lambda: self._use_candidate())
 
     def _file_current(self) -> QHBoxLayout:
-        """Una sola linea: qué pista es y dónde está.
+        """Una sola linea: qué pista es, dónde está y qué vista se ve.
 
-        Antes eran tres lineas de texto de marca ('SAKURA MUSIC / TRACK STUDIO',
-        'Personaliza tu biblioteca', una bajada) mas la ruta. Compitian con el
+        Antes eran tres lineas de marca ('SAKURA MUSIC / TRACK STUDIO',
+        'Personaliza tu biblioteca', una bajada) mas la ruta. Competitian con el
         título real de la pista, que es lo único que importa al abrir el editor.
         """
         header = QHBoxLayout()
@@ -170,66 +180,84 @@ class MetadataEditor(QDialog):
         self.path_label.setToolTip("La ruta del archivo en tu biblioteca")
         texts.addWidget(self.path_label)
         header.addLayout(texts, 1)
+
+        header.addWidget(self._view_toggle(), 0, Qt.AlignmentFlag.AlignVCenter)
         return header
 
-    def _block_cover(self) -> QWidget:
-        """Portada, nombre de la pista y las acciones, en fila.
+    def _view_toggle(self) -> QWidget:
+        """Control segmentado para saltar entre metadatos y catálogo.
 
-        El ancho lo fija la portada (fija) y no el texto de al lado: las
-        etiquetas no(envuelven y no imponen minimo, asi que el panel se deja
-        encoger y el formulario aprovecha el ancho sobrante.
+        Reemplaza al "Volver a metadatos" del pie: la vuelta está a la vista
+        todo el tiempo, no al final de una lista larga de resultados.
+        """
+        toggle = QFrame()
+        toggle.setObjectName("SegmentedControl")
+        row = QHBoxLayout(toggle)
+        row.setContentsMargins(4, 4, 4, 4)
+        row.setSpacing(2)
+
+        self.edit_tab = QPushButton("Metadatos")
+        self.catalog_tab = QPushButton("Catálogo")
+        for button in (self.edit_tab, self.catalog_tab):
+            button.setObjectName("SegmentButton")
+            button.setCheckable(True)
+            button.setCursor(Qt.CursorShape.PointingHandCursor)
+            button.setMinimumHeight(30)
+            row.addWidget(button)
+
+        self.edit_tab.clicked.connect(self._back_editor)
+        self.catalog_tab.clicked.connect(self._open_catalog)
+        self.edit_tab.setChecked(True)
+        return toggle
+
+    def _block_cover(self) -> QWidget:
+        """La portada como ficha vertical: imagen, identidad y acciones.
+
+        El ancho fijo deja el formulario con el espacio sobrante; antes el texto
+        y los tres botones de al lado estiraban el hero y estrangulaban los
+        campos. Ahora solo "Buscar en catálogo" lleva peso; elegir y quitar
+        imagen son iconos.
         """
         holder = QFrame()
         holder.setObjectName("MetadataArtworkPanel")
+        holder.setFixedWidth(250)
 
-        layout = QHBoxLayout(holder)
-        layout.setContentsMargins(18, 16, 18, 16)
-        layout.setSpacing(18)
+        layout = QVBoxLayout(holder)
+        layout.setContentsMargins(16, 16, 16, 16)
+        layout.setSpacing(10)
 
         self.cover = MetadataCoverView()
-        layout.addWidget(self.cover, 0, Qt.AlignmentFlag.AlignVCenter)
+        layout.addWidget(self.cover, 0, Qt.AlignmentFlag.AlignHCenter)
 
-        identity = QVBoxLayout()
-        identity.setSpacing(5)
-        # La portada fija marca la altura del panel (220 px). Centro el bloque de
-        # texto con stretch arriba y abajo para que no quede pegado al techo ni
-        # un hueco muerto al pie; antes solo empujaba hacia abajo.
-        identity.addStretch(1)
         self.track_title = ElidedLabel("Editando tu música")
         self.track_title.setObjectName("MetadataTrackTitle")
-        identity.addWidget(self.track_title)
+        layout.addWidget(self.track_title)
 
         self.track_artist = ElidedLabel("Ajusta la portada y los detalles")
         self.track_artist.setObjectName("MetadataTrackArtist")
-        identity.addWidget(self.track_artist)
+        layout.addWidget(self.track_artist)
 
         self.cover_status = QLabel("La portada se guardará junto con los metadatos.")
         self.cover_status.setObjectName("MetadataHint")
         self.cover_status.setWordWrap(True)
-        identity.addWidget(self.cover_status)
-        identity.addStretch(1)
-        layout.addLayout(identity, 1)
+        layout.addWidget(self.cover_status)
+        layout.addStretch(1)
 
-        # Acciones en columna pero sin estirar: antes tenian un `addStretch` que
-        # empujaba los botones hacia arriba y dejaba un hueco debajo.
-        actions_panel = QWidget()
-        actions = QVBoxLayout(actions_panel)
-        actions.setContentsMargins(0, 0, 0, 0)
-        actions.setSpacing(7)
         self.catalog_btn = TextButton("Buscar en catálogo", "accent", icon="search")
         self.catalog_btn.clicked.connect(self._open_catalog)
-        actions.addWidget(self.catalog_btn)
+        layout.addWidget(self.catalog_btn)
 
-        self.change_cover = TextButton("Elegir imagen", "ghost", icon="download")
+        actions = QHBoxLayout()
+        actions.setSpacing(8)
+        actions.addStretch(1)
+        self.change_cover = IconButton("download", "Elegir imagen", 38)
         self.change_cover.clicked.connect(self._choose_image)
         actions.addWidget(self.change_cover)
-
-        self.clear_cover = TextButton("Quitar portada", "ghost", icon="trash")
+        self.clear_cover = IconButton("trash", "Quitar portada", 38)
         self.clear_cover.clicked.connect(self._remove_cover)
         actions.addWidget(self.clear_cover)
-        # Sin stretch interno: la columna se centra contra la portada para no
-        # dejar espacio sobrante arriba ni abajo.
-        layout.addWidget(actions_panel, 0, Qt.AlignmentFlag.AlignVCenter)
+        actions.addStretch(1)
+        layout.addLayout(actions)
         return holder
 
     def _block_tags(self) -> QWidget:
@@ -237,71 +265,97 @@ class MetadataEditor(QDialog):
         panel.setObjectName("MetadataFormPanel")
         form = QVBoxLayout(panel)
         form.setContentsMargins(18, 14, 18, 14)
-        form.setSpacing(10)
+        form.setSpacing(14)
 
-        # Encabezado de seccion: dos lineas de texto y un separador. Antes eran
-        # tres bloques (overline, titulo, bajada) y el divisor, que empujaban los
-        # campos para abajo sin decir nada util.
-        heading = QLabel("Información de la pista")
-        heading.setObjectName("MetadataSectionTitle")
-        form.addWidget(heading)
-
-        divider = QFrame()
-        divider.setObjectName("MetadataDivider")
-        divider.setFixedHeight(1)
-        form.addWidget(divider)
-
-        fields = QGridLayout()
-        fields.setHorizontalSpacing(14)
-        fields.setVerticalSpacing(8)
-        self.field_map: dict[str, QLineEdit] = {}
-        field_specs = (
-            ("title", "Título", 0, 0, 1),
-            ("artist", "Artista", 0, 1, 1),
-            ("album", "Álbum", 1, 0, 1),
-            ("albumartist", "Artista del álbum", 1, 1, 1),
-            ("year", "Año", 2, 0, 1),
-            ("genre", "Género", 2, 1, 1),
-            ("track_number", "Nº de pista", 3, 0, 2),
+        # Campos agrupados por sentido: antes eran siete en una rejilla plana sin
+        # jerarquía, con "Nº de pista" ocupando dos columnas de la nada.
+        groups = (
+            (
+                "Identidad",
+                (
+                    ("title", "Título"),
+                    ("artist", "Artista"),
+                    ("albumartist", "Artista del álbum"),
+                ),
+            ),
+            (
+                "Álbum",
+                (
+                    ("album", "Álbum"),
+                    ("year", "Año"),
+                    ("track_number", "Nº de pista"),
+                ),
+            ),
+            ("Clasificación", (("genre", "Género"),)),
         )
-        for field_name, tag, row_index, col_index, width in field_specs:
-            field = QWidget()
-            field_layout = QVBoxLayout(field)
-            field_layout.setContentsMargins(0, 0, 0, 0)
-            field_layout.setSpacing(5)
 
-            label_widget = QLabel(tag)
-            label_widget.setObjectName("FieldLabel")
-
-            editor = QLineEdit()
-            editor.setObjectName("MetadataField")
-            editor.setMinimumHeight(38)
-            self.field_map[field_name] = editor
-
-            field_layout.addWidget(label_widget)
-            field_layout.addWidget(editor)
-            fields.addWidget(field, row_index, col_index, 1, width)
-
-        fields.setColumnStretch(0, 1)
-        fields.setColumnStretch(1, 1)
-        form.addLayout(fields)
+        self.field_map: dict[str, QLineEdit] = {}
+        for group_name, fields in groups:
+            form.addWidget(self._group(panel, group_name, fields))
         form.addStretch(1)
         return panel
+
+    def _group(self, parent: QWidget, group_name: str, fields) -> QWidget:
+        group = QWidget(parent)
+        layout = QVBoxLayout(group)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(8)
+
+        header = QHBoxLayout()
+        title = QLabel(group_name)
+        title.setObjectName("MetadataGroupTitle")
+        header.addWidget(title)
+        header.addStretch(1)
+        # "Aplicar a todo el álbum" vive con el álbum, no perdido en el pie.
+        if group_name == "Álbum":
+            self.album_btn = QPushButton("Aplicar a todo el álbum")
+            self.album_btn.setObjectName("GhostButton")
+            self.album_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+            self.album_btn.clicked.connect(self._apply_album)
+            self.album_btn.setVisible(False)
+            header.addWidget(self.album_btn)
+        layout.addLayout(header)
+
+        grid = QGridLayout()
+        grid.setHorizontalSpacing(14)
+        grid.setVerticalSpacing(8)
+        grid.setColumnStretch(0, 1)
+        grid.setColumnStretch(1, 1)
+        for index, (field_name, tag) in enumerate(fields):
+            grid.addWidget(self._field(tag, field_name), index // 2, index % 2)
+        layout.addLayout(grid)
+        return group
+
+    def _field(self, tag: str, field_name: str) -> QWidget:
+        field = QWidget()
+        field_layout = QVBoxLayout(field)
+        field_layout.setContentsMargins(0, 0, 0, 0)
+        field_layout.setSpacing(5)
+
+        label_widget = QLabel(tag)
+        label_widget.setObjectName("FieldLabel")
+        self._field_labels[field_name] = label_widget
+
+        editor = QLineEdit()
+        editor.setObjectName("MetadataField")
+        editor.setMinimumHeight(38)
+        self.field_map[field_name] = editor
+
+        field_layout.addWidget(label_widget)
+        field_layout.addWidget(editor)
+        return field
 
     def _footer(self) -> QHBoxLayout:
         footer = QHBoxLayout()
         footer.setSpacing(10)
 
+        self.dirty_label = QLabel("")
+        self.dirty_label.setObjectName("MetadataDirty")
+        footer.addWidget(self.dirty_label)
+
         self.state = QLabel("")
         self.state.setObjectName("EmptyState")
         footer.addWidget(self.state, 1)
-
-        self.album_btn = QPushButton("Aplicar a todo el álbum")
-        self.album_btn.setObjectName("GhostButton")
-        self.album_btn.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.album_btn.clicked.connect(self._apply_album)
-        self.album_btn.setVisible(False)
-        footer.addWidget(self.album_btn)
 
         self.back_btn = TextButton("Volver a metadatos", "ghost", icon="arrow-left")
         self.back_btn.clicked.connect(self._back_editor)
@@ -320,6 +374,8 @@ class MetadataEditor(QDialog):
 
     def _show_view_current(self) -> None:
         in_editor = self.views.currentWidget() == self.editar_view
+        self.edit_tab.setChecked(in_editor)
+        self.catalog_tab.setChecked(not in_editor)
         self.back_btn.setVisible(not in_editor)
         self.cancel_btn.setVisible(in_editor)
         self.save_btn.setVisible(in_editor)
@@ -358,18 +414,58 @@ class MetadataEditor(QDialog):
         for field_name, editor in self.field_map.items():
             editor.setText(getattr(tags, field_name, "") or "")
             editor.setPlaceholderText(self.path.stem if field_name == "title" else "")
-            if field_name in {"title", "artist"}:
-                editor.textChanged.connect(self._update_identidad)
+
+        # Las conexiones van despues de cargar: si no, cada `setText` marcaria el
+        # campo como modificado antes de que exista la referencia original.
+        self._original_tags = {
+            field_name: editor.text().strip()
+            for field_name, editor in self.field_map.items()
+        }
+        for editor in self.field_map.values():
+            editor.textChanged.connect(self._update_identidad)
+            editor.textChanged.connect(self._update_dirty)
 
         self._update_identidad()
         self._cover_bytes = read_cover(self.path)
+        self._original_cover_bytes = self._cover_bytes
         self._paint_cover()
+        self._update_dirty()
 
     def _update_identidad(self, *_args) -> None:
         title_text = self.field_map["title"].text().strip() or self.path.stem
         artist_name = self.field_map["artist"].text().strip()
         self.track_title.setText(title_text)
         self.track_artist.setText(artist_name or "Edita la portada y los detalles de esta pista")
+
+    def _update_dirty(self, *_args) -> None:
+        """Marca los campos tocados y resume los cambios sin guardar."""
+        changed = {
+            field_name
+            for field_name, editor in self.field_map.items()
+            if editor.text().strip() != self._original_tags.get(field_name, "")
+        }
+        for field_name, label in self._field_labels.items():
+            self._mark_modified(label, field_name in changed)
+            self._mark_modified(self.field_map[field_name], field_name in changed)
+
+        cover_dirty = self._cover_removed or (
+            self._cover_bytes != self._original_cover_bytes
+        )
+        total = len(changed) + (1 if cover_dirty else 0)
+        if total == 0:
+            self.dirty_label.setText("")
+        elif total == 1:
+            self.dirty_label.setText("1 cambio sin guardar")
+        else:
+            self.dirty_label.setText(f"{total} cambios sin guardar")
+
+    @staticmethod
+    def _mark_modified(widget: QWidget, modified: bool) -> None:
+        if widget.property("modified") == modified:
+            return
+        widget.setProperty("modified", modified)
+        widget.style().unpolish(widget)
+        widget.style().polish(widget)
 
     def tags_current(self) -> TrackTags:
         return TrackTags(
@@ -414,6 +510,7 @@ class MetadataEditor(QDialog):
         self.save.setEnabled(True)
         self._mime = mime
         self._paint_cover()
+        self._update_dirty()
 
     def _remove_cover(self) -> None:
         self._cover_bytes = None
@@ -422,6 +519,7 @@ class MetadataEditor(QDialog):
         self._cover_request_pending = False
         self.save.setEnabled(True)
         self._paint_cover()
+        self._update_dirty()
 
     # --- guardar ------------------------------------------------------------
 
@@ -728,6 +826,7 @@ class MetadataEditor(QDialog):
         self.cover_status.setText("Portada del catálogo lista para guardar")
         origin = self._candidate.source if self._candidate else "Catálogo"
         self._state(f"{origin}: portada lista para guardar.")
+        self._update_dirty()
 
     def _apply_album(self) -> None:
         """Escribe los tags de todo el álbum de la carpeta, no solo esta pista."""

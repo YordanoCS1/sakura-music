@@ -106,7 +106,7 @@ class CatalogPanel(QWidget):
         header.setSpacing(8)
         heading = QVBoxLayout()
         heading.setSpacing(3)
-        overline = QLabel("03  /  CATÁLOGO")
+        overline = QLabel("CATÁLOGO")
         overline.setObjectName("MetadataEyebrow")
         title = QLabel("Encuentra la versión correcta")
         title.setObjectName("MetadataSectionTitle")

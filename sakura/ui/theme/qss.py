@@ -620,11 +620,8 @@ QPushButton#NavPill:checked {{
     padding: 8px 12px;
 }}
 #MetadataArtworkPanel {{
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-        stop:0 {tint(t.surface_alt, t.accent, 0.24)},
-        stop:0.55 {t.surface_alt},
-        stop:1 {t.surface});
-    border: 1px solid {tint(t.border, t.accent, 0.5)};
+    background: {t.surface_alt};
+    border: 1px solid {tint(t.border, t.accent, 0.40)};
     border-radius: {t.radius + 8}px;
 }}
 #MetadataCover {{
@@ -660,6 +657,13 @@ QPushButton#NavPill:checked {{
     margin: 2px 0;
     padding: 3px;
 }}
+#MetadataResultsList::item:hover {{
+    background: {t.surface_hover};
+}}
+#MetadataResultsList::item:selected {{
+    background: {t.selection};
+    color: {t.selection_text};
+}}
 #MetadataSourceBadge {{
     color: {t.accent};
     background: {tint(t.surface_alt, t.accent, 0.14)};
@@ -693,6 +697,23 @@ QLineEdit#MetadataField:focus {{
 }}
 QLineEdit#MetadataField::placeholder {{
     color: {t.text_muted};
+}}
+#MetadataGroupTitle {{
+    color: {t.text_muted};
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+}}
+#MetadataDirty {{
+    color: {t.accent};
+    font-size: 12px;
+    font-weight: 700;
+}}
+QLabel#FieldLabel[modified="true"] {{
+    color: {t.accent};
+}}
+QLineEdit#MetadataField[modified="true"] {{
+    border: 1px solid {tint(t.border, t.accent, 0.55)};
 }}
 
 /* ---------- menus desplegables ---------- */
