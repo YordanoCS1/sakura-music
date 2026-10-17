@@ -560,6 +560,28 @@ font-size: {fs('body_sm')};
 font-weight: 700;
 }}
 
+/* ---------- tarjeta de resultado de busqueda ---------- */
+#ResultCard {{
+    background: {t.surface_alt};
+    border: 1px solid {t.border};
+    border-radius: {t.radius}px;
+}}
+#ResultCard:hover {{
+    background: {t.surface_hover};
+    border-color: {t.accent};
+}}
+#ResultCardTitle {{
+    color: {t.text};
+    font-size: {fs('body_sm')};
+    font-weight: 600;
+    background: transparent;
+}}
+#ResultCardMeta {{
+    color: {t.text_muted};
+    font-size: {fs('micro')};
+    background: transparent;
+}}
+
 /* ---------- inicio y dashboard de musica ---------- */
 #HeroBanner {{
     background: qlineargradient(x1:0, y1:0, x2:1, y2:1,

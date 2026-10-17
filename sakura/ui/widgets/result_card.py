@@ -14,8 +14,8 @@ from .. import icons
 from .. import theme as th
 from ..widgets.buttons import IconButton
 
-THUMB_W = 68
-THUMB_H = 50
+THUMB_W = 76
+THUMB_H = 56
 
 # Ancho del numero de fila segun cuantos digitos tiene, para que playlists de
 # 200 temas alineen igual que las de 5.
@@ -29,7 +29,7 @@ class ResultCard(QFrame):
 
     def __init__(self, result: SearchResult, index: int | None = None, parent=None):
         super().__init__(parent)
-        self.setObjectName("Card")
+        self.setObjectName("ResultCard")
         self.result = result
         self.setFixedHeight(76)
 
@@ -56,9 +56,11 @@ class ResultCard(QFrame):
         texts.setContentsMargins(0, 0, 0, 0)
 
         self.title = QLabel(_elide_middle(result.title, 58))
+        self.title.setObjectName("ResultCardTitle")
         self.title.setToolTip(result.title)
 
         self.meta = QLabel(f"{result.uploader} · {result.duration_text}")
+        self.meta.setObjectName("ResultCardMeta")
 
         texts.addStretch(1)
         texts.addWidget(self.title)
@@ -93,7 +95,7 @@ class ResultCard(QFrame):
         menu = QMenu(self)
 
         # Sección Audio
-        audio_header = QAction("🎵 Audio", menu)
+        audio_header = QAction("Audio", menu)
         audio_header.setEnabled(False)
         menu.addAction(audio_header)
 
@@ -105,7 +107,7 @@ class ResultCard(QFrame):
         menu.addSeparator()
 
         # Sección Video
-        video_header = QAction("🎬 Video (MP4)", menu)
+        video_header = QAction("Video (MP4)", menu)
         video_header.setEnabled(False)
         menu.addAction(video_header)
 
@@ -194,12 +196,12 @@ class ResultCard(QFrame):
         )
 
     def refresh(self, theme=None) -> None:
-        """Recolorea la tarjeta tras un cambio de tema."""
+        """Recolorea la tarjeta tras un cambio de tema.
+
+        El titulo y el canal los pinta el QSS; el numero de fila es inline, asi
+        que hay que repintarlo a mano (y por eso acepta un tema explicito).
+        """
         t = theme or th.active()
-        self.title.setStyleSheet(f"color: {t.text}; font-size: 13px; font-weight: 600;")
-        self.meta.setStyleSheet(
-            f"color: {t.text_muted}; font-size: 11px; background: transparent;"
-        )
         if self.ordinal is not None:
             self.ordinal.setStyleSheet(
                 f"color: {t.text_muted}; font-size: 13px; font-weight: 700;"

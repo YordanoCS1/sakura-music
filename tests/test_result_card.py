@@ -63,6 +63,17 @@ def test_la_fila_sigue_teniendo_el_boton_de_descarga(qapp, result) -> None:
     assert card.options_button is not None
 
 
+def test_la_tarjeta_usa_las_clases_del_tema(qapp, result) -> None:
+    """El titulo y el canal los pinta el QSS, no un estilo en linea."""
+    card = ResultCard(result)
+
+    assert card.objectName() == "ResultCard"
+    assert card.title.objectName() == "ResultCardTitle"
+    assert card.meta.objectName() == "ResultCardMeta"
+    assert card.title.styleSheet() == ""
+    assert card.meta.styleSheet() == ""
+
+
 def test_el_numero_se_recuadra_al_cambiar_de_tema(qapp, result) -> None:
     """Sin esto el ordinal queda con el color del tema anterior."""
     from sakura.ui import theme as th
