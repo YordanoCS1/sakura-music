@@ -263,6 +263,14 @@ def test_si_no_confirma_no_se_cancela_nada(window, monkeypatch) -> None:
     assert mostrados == []
 
 
+def test_los_controles_de_ventana_no_toman_foco(window) -> None:
+    """Sin esto el primer boton quedaba con un anillo de foco al abrir."""
+    for control in (window.titlebar._min, window.titlebar._max, window.titlebar._close):
+        assert control.property("winControl") is True
+        assert control.focusPolicy() == Qt.FocusPolicy.NoFocus
+        assert control.graphicsEffect() is None
+
+
 def test_maximizar_y_restaurar_cambia_el_icono(window) -> None:
     """El boton alterna entre 'maximize' y 'restore' segun el estado real."""
     window.showNormal()

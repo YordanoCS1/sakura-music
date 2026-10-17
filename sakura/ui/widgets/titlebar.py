@@ -2,13 +2,17 @@
 
 from __future__ import annotations
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QSize, Qt
 from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel
 
 from .. import theme as th
 from .buttons import IconButton
 
-BUTTON_W = 44
+# Ancho de cada boton de ventana. Pegados y a sangre contra el borde derecho,
+# como en las ventanas nativas.
+BUTTON_W = 46
+# El glifo es chico aunque el boton ocupe toda la altura de la barra.
+ICON_SIZE = 16
 
 
 class TitleBar(QFrame):
@@ -22,27 +26,38 @@ class TitleBar(QFrame):
         self.setFixedHeight(th.active().titlebar_h)
 
         layout = QHBoxLayout(self)
-        layout.setContentsMargins(18, 0, 6, 0)
-        layout.setSpacing(2)
+        layout.setContentsMargins(18, 0, 0, 0)
+        layout.setSpacing(0)
 
         self.title = QLabel(window.windowTitle())
         self.title.setObjectName("TitleBarTitle")
         layout.addWidget(self.title)
         layout.addStretch(1)
 
-        self._min = IconButton("minus", "Minimizar", 40, parent=self)
+        self._min = self._make_control("minus", "Minimizar")
         self._min.clicked.connect(self._window.showMinimized)
-        self._max = IconButton("maximize", "Maximizar", 40, parent=self)
+        self._max = self._make_control("maximize", "Maximizar")
         self._max.clicked.connect(self._toggle_maximize)
-        self._close = IconButton("close", "Cerrar", 40, parent=self)
+        self._close = self._make_control("close", "Cerrar")
         self._close.setProperty("variant", "close")
         self._close.clicked.connect(self._window.close)
 
         for btn in (self._min, self._max, self._close):
-            btn.setFixedWidth(BUTTON_W)
             layout.addWidget(btn)
 
         self.refresh()
+
+    def _make_control(self, icon_name: str, tooltip: str) -> IconButton:
+        """Boton de ventana: cuadrado, a sangre, sin foco ni sombra."""
+        button = IconButton(icon_name, tooltip, th.active().titlebar_h, parent=self)
+        button.setProperty("winControl", True)
+        button.setFixedWidth(BUTTON_W)
+        button.setIconSize(QSize(ICON_SIZE, ICON_SIZE))
+        button.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        button.setCursor(Qt.CursorShape.ArrowCursor)
+        button.setGraphicsEffect(None)
+        button.refresh()
+        return button
 
     def _toggle_maximize(self) -> None:
         if self._window.isMaximized():
@@ -59,6 +74,8 @@ class TitleBar(QFrame):
     def refresh(self) -> None:
         t = th.active()
         self.setFixedHeight(t.titlebar_h)
+        for btn in (self._min, self._max, self._close):
+            btn.setFixedHeight(t.titlebar_h)
         name = "restore" if self._window.isMaximized() else "maximize"
         self._max.set_icon_name(name)
         self._apply_background(self.underMouse())

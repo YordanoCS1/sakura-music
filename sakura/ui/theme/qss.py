@@ -46,6 +46,20 @@ QDialog {{
 #TitleBar[hovered="true"] {{
     background: {t.surface_alt};
 }}
+/* Controles de ventana: cuadrados a sangre, hover tenue y cerrar en rojo. */
+QPushButton#IconButton[winControl="true"] {{
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+}}
+QPushButton#IconButton[winControl="true"]:hover {{
+    background: {t.surface_hover};
+    border: none;
+}}
+QPushButton#IconButton[winControl="true"][variant="close"]:hover {{
+    background: {t.danger};
+}}
 QPushButton#IconButton[variant="close"]:hover {{
     background: {t.danger};
 }}

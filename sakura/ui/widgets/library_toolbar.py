@@ -67,7 +67,7 @@ class LibraryToolbar(QWidget):
         self.reload_button = IconButton("repeat", "Volver a escanear", 38)
         bar.addWidget(self.reload_button, 0)
 
-        self.undo_button = IconButton("restore", "Deshacer último lote", 38)
+        self.undo_button = IconButton("undo", "Deshacer último lote", 38)
         bar.addWidget(self.undo_button, 0)
 
     def _separator(self) -> QFrame:
