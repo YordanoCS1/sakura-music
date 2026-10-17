@@ -97,7 +97,20 @@ QPushButton#NavButton:checked {{
 
 /* ---------- barra superior ---------- */
 #TopBar {{
-    background: {t.bg};
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 {t.surface}, stop:1 {t.bg});
+    border-bottom: 1px solid {t.border};
+}}
+#BrandTitle {{
+    color: {t.text};
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: -0.2px;
+}}
+#NavCapsule {{
+    background: {t.surface_alt};
+    border: 1px solid {t.border};
+    border-radius: {t.radius_pill}px;
 }}
 QLineEdit#SearchInput {{
     background: {t.surface_alt};
@@ -563,8 +576,8 @@ font-weight: 700;
 QPushButton#NavPill {{
     background: transparent;
     color: {t.text_dim};
-    border: 1px solid transparent;
-    border-radius: {t.radius_pill}px;
+    border: none;
+    border-radius: {t.radius_sm + 2}px;
     padding: 6px 14px;
     font-size: 13px;
     font-weight: 600;
@@ -572,12 +585,10 @@ QPushButton#NavPill {{
 QPushButton#NavPill:hover {{
     background: {t.surface_hover};
     color: {t.text};
-    border: 1px solid {t.border};
 }}
 QPushButton#NavPill:checked {{
-    background: {t.surface_alt};
+    background: {tint(t.surface_alt, t.accent, 0.35)};
     color: {t.accent};
-    border: 1px solid {t.accent};
 }}
 
 #Callout {{
