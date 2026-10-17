@@ -305,9 +305,36 @@ QPushButton#SegmentButton:focus {{
     background: {tint(t.bg, t.danger, 0.18)};
     color: {t.danger};
 }}
-#RowDanger {{
+#QueueControls {{
     background: {t.surface_alt};
-    border-left: 2px solid {t.danger};
+    border: 1px solid {t.border};
+    border-radius: {t.radius}px;
+}}
+#QueueStats {{
+    color: {t.text_dim};
+    font-size: {fs('body_sm')};
+    font-weight: 600;
+}}
+#JobRow {{
+    background: {t.surface_alt};
+    border: 1px solid {t.border};
+    border-radius: {t.radius}px;
+}}
+#JobRow[failed="true"] {{
+    border-left: 3px solid {t.danger};
+}}
+#JobDetail {{
+    color: {t.text_muted};
+    font-size: {fs('micro')};
+    background: transparent;
+}}
+QProgressBar#Progress, QProgressBar#ProgressInverted {{
+    min-height: 6px;
+    max-height: 6px;
+    border-radius: 3px;
+}}
+QProgressBar#Progress::chunk, QProgressBar#ProgressInverted::chunk {{
+    border-radius: 3px;
 }}
 
 /* ---------- scrollbar ---------- */

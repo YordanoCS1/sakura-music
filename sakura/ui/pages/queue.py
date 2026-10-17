@@ -3,7 +3,14 @@
 from __future__ import annotations
 
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtWidgets import QHBoxLayout, QLabel, QProgressBar, QVBoxLayout, QWidget
+from PySide6.QtWidgets import (
+    QHBoxLayout,
+    QLabel,
+    QProgressBar,
+    QSizePolicy,
+    QVBoxLayout,
+    QWidget,
+)
 
 from ...core.models import DownloadJob, JobStatus
 from .. import theme as th
@@ -44,9 +51,14 @@ class JobRow(QWidget):
     def __init__(self, job: DownloadJob, index: int | None = None, parent=None):
         super().__init__(parent)
         self.job = job
+        self.setObjectName("JobRow")
+        # Un QWidget puro ignora el fondo del QSS sin este atributo.
+        self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
+        # Alto natural: sin esto, con pocas filas el layout las estira.
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
         layout = QHBoxLayout(self)
-        layout.setContentsMargins(12, 10, 12, 10)
+        layout.setContentsMargins(14, 12, 14, 12)
         layout.setSpacing(16)
 
         self.ordinal: QLabel | None = None
@@ -64,6 +76,9 @@ class JobRow(QWidget):
         self.title = QLabel(_shorten(job.title, 60))
         self.title.setToolTip(job.title)
         self.title.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
+        # Un QLabel normal pide el ancho completo del texto como minimo y, con un
+        # titulo largo, empujaria el badge y el boton fuera de la tarjeta.
+        self.title.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred)
 
         bar_row = QHBoxLayout()
         bar_row.setSpacing(12)
@@ -71,9 +86,10 @@ class JobRow(QWidget):
 
         self.progress = QProgressBar()
         self.progress.setTextVisible(False)
-        self.progress.setFixedHeight(4)
+        self.progress.setFixedHeight(6)
 
         self.detail = QLabel("")
+        self.detail.setObjectName("JobDetail")
         self.detail.setFixedWidth(132)
         self.detail.setAlignment(
             Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter
@@ -102,7 +118,7 @@ class JobRow(QWidget):
         self.refresh()
 
     def _retry(self) -> None:
-        """Avisa a quien带孩子 de la vista: el gestor es el que reencola."""
+        """Avisa a quien escucha de la vista: el gestor es el que reencola."""
         self.retry_requested.emit(self.job)
 
     def refresh(self, theme=None) -> None:
@@ -112,14 +128,19 @@ class JobRow(QWidget):
 
         color = t.danger if job.status is JobStatus.FAILED else t.text
         self.title.setStyleSheet(f"color: {color}; font-size: 13px; font-weight: 600;")
-        self.detail.setStyleSheet(
-            f"color: {t.text_muted}; font-size: 11px; background: transparent;"
-        )
         if self.ordinal is not None:
             self.ordinal.setStyleSheet(
                 f"color: {t.text_muted}; font-size: 13px; font-weight: 700;"
                 " background: transparent;"
             )
+
+        # La fila de error se marca con el borde izquierdo en rojo (QSS). El
+        # cambio de propiedad obliga a repintar la hoja de estilo.
+        failed = job.status is JobStatus.FAILED
+        if failed != self.property("failed"):
+            self.setProperty("failed", failed)
+            self.style().unpolish(self)
+            self.style().polish(self)
 
         # La barra se mantiene visible en todos los estados (pista vacia si no
         # aplica) para que las filas compartan la misma geometria.
@@ -205,14 +226,20 @@ class QueuePage(Page):
         self._message.set_action("Buscar música", icon="search")
         self._message.action_clicked.connect(self.search_requested)
         self.content.addWidget(self._message)
+        # Arranca vacia: la cabecera de resumen recien aparece con trabajos.
+        self._sync_stats()
 
     def _build_controls(self) -> None:
         controles = QWidget()
+        controles.setObjectName("QueueControls")
+        controles.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
+        controles.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         bar = QHBoxLayout(controles)
-        bar.setContentsMargins(0, 0, 0, 4)
+        bar.setContentsMargins(14, 10, 14, 10)
+        bar.setSpacing(10)
 
         self.stats = QLabel("")
-        self.stats.setObjectName("EmptyState")
+        self.stats.setObjectName("QueueStats")
         bar.addWidget(self.stats, 1)
 
         self.cancel_button = TextButton("Cancelar descargas", "danger", icon="close")
@@ -231,6 +258,7 @@ class QueuePage(Page):
         bar.addWidget(self.clear_button, 0)
 
         self.content.addWidget(controles)
+        self._controls = controles
 
     def _on_clear_clicked(self) -> None:
         """Un solo camino: limpia la vista y avisa para que se vacie el gestor."""
@@ -277,6 +305,8 @@ class QueuePage(Page):
 
     def _sync_stats(self) -> None:
         """'3 listas de 7 · 1 con error' para saber cuantas descargas terminó."""
+        # La cabecera solo tiene sentido con trabajos: en la cola vacia estorba.
+        self._controls.setVisible(bool(self._rows))
         if not self._rows:
             self.stats.setText("")
             return

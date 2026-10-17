@@ -138,6 +138,37 @@ def test_el_badge_de_saltado_dice_que_ya_estaba(page) -> None:
     assert page._rows[id(job)].badge.text() == "Ya estaba"
 
 
+def test_la_cabecera_solo_aparece_con_trabajos(page) -> None:
+    """En la cola vacia manda el estado vacio, no la barra de acciones."""
+    assert page._controls.isHidden() is True
+
+    job = job_item(status=JobStatus.DONE)
+    page.add_job(job)
+    assert page._controls.isHidden() is False
+
+    page.clear_finished()
+    assert page._controls.isHidden() is True
+
+
+def test_las_filas_son_tarjetas(page) -> None:
+    job = job_item("x")
+    page.add_job(job)
+    row_index = page._rows[id(job)]
+
+    assert row_index.objectName() == "JobRow"
+    assert row_index.detail.objectName() == "JobDetail"
+
+
+def test_la_fila_de_error_se_marca_para_qss(page) -> None:
+    fallado = job_item("cae", JobStatus.FAILED)
+    listo = job_item("ok", JobStatus.DONE)
+    page.add_job(fallado)
+    page.add_job(listo)
+
+    assert page._rows[id(fallado)].property("failed") is True
+    assert page._rows[id(listo)].property("failed") is False
+
+
 # --- reintento por fila -------------------------------------------------------
 
 
