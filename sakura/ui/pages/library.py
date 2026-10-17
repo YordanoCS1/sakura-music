@@ -28,6 +28,7 @@ from ..services.library import LibraryRefresher, LibraryScanner
 from ..widgets.batch_editor import open_edicion_batch
 from ..widgets.buttons import TextButton
 from ..widgets.library_folders import LibraryFolderPanel
+from ..widgets.library_selection import LibrarySelectionBar
 from ..widgets.library_toolbar import LibraryToolbar
 from ..widgets.library_views import LibraryViewStack
 from ..widgets.metadata_editor import open_editor
@@ -83,6 +84,11 @@ class LibraryPage(Page):
         self._connect_toolbar()
         self.content.addWidget(self.toolbar)
 
+        self.selection_bar = LibrarySelectionBar()
+        self._alias_selection()
+        self._connect_selection()
+        self.content.addWidget(self.selection_bar)
+
         body = QWidget()
         body_layout = QHBoxLayout(body)
         body_layout.setContentsMargins(0, 0, 0, 0)
@@ -93,6 +99,7 @@ class LibraryPage(Page):
         library_layout.setContentsMargins(0, 0, 0, 0)
         library_layout.setSpacing(10)
 
+        # Navegacion: volver + migas de pan, que reemplazan el titulo suelto.
         navegacion = QWidget()
         navegacion_layout = QHBoxLayout(navegacion)
         navegacion_layout.setContentsMargins(0, 0, 0, 0)
@@ -102,19 +109,14 @@ class LibraryPage(Page):
         self.up_folder_button.setVisible(False)
         navegacion_layout.addWidget(self.up_folder_button, 0)
         self.folder_location = QLabel("Biblioteca")
-        self.folder_location.setObjectName("PageSubtitle")
+        self.folder_location.setObjectName("Breadcrumb")
         navegacion_layout.addWidget(self.folder_location, 1)
         library_layout.addWidget(navegacion)
 
         self.folder_panel = LibraryFolderPanel()
         self.folder_list = self.folder_panel.folder_list
-        self.folder_list.itemActivated.connect(self._activate_folder_item)
-        self.folder_panel.open_button.clicked.connect(self._open_selected_folder)
+        self.folder_list.itemClicked.connect(self._activate_folder_item)
         library_layout.addWidget(self.folder_panel)
-
-        self.tracks_heading = QLabel("Canciones")
-        self.tracks_heading.setObjectName("PageSubtitle")
-        library_layout.addWidget(self.tracks_heading)
 
         # Stack de vistas: tabla, tarjetas, discos y carrusel horizontal.
         self.view_stack = LibraryViewStack(self.proxy)
@@ -139,10 +141,13 @@ class LibraryPage(Page):
         self.filter_box = bar.filter_box
         self.stats = bar.stats
         self.review_filter_btn = bar.review_filter_btn
-        self.edit_button = bar.edit_button
-        self.batch_button = bar.batch_button
         self.undo_button = bar.undo_button
         self.view_buttons = bar.view_buttons
+
+    def _alias_selection(self) -> None:
+        bar = self.selection_bar
+        self.edit_button = bar.edit_button
+        self.batch_button = bar.batch_button
 
     def _connect_toolbar(self) -> None:
         bar = self.toolbar
@@ -153,8 +158,12 @@ class LibraryPage(Page):
         bar.open_button.clicked.connect(self._on_pick_folder)
         bar.reload_button.clicked.connect(lambda: self.rescan())
         bar.undo_button.clicked.connect(self._on_undo)
+
+    def _connect_selection(self) -> None:
+        bar = self.selection_bar
         bar.edit_button.clicked.connect(self._on_edit)
         bar.batch_button.clicked.connect(self._on_batch_edit)
+        bar.clear_button.clicked.connect(self._clear_selections)
 
     def _alias_views(self) -> None:
         """Deja a mano en la pagina las vistas y delegates que se usan afuera."""
@@ -221,21 +230,24 @@ class LibraryPage(Page):
 
     def apply_theme_to_table(self) -> None:
         t = th.active()
+        selection_bg = th.tint(t.surface, t.accent, 0.18)
         self.table.setStyleSheet(
             f"QTableView {{ background: {t.bg}; alternate-background-color: {t.surface};"
             f" border: none; gridline-color: transparent; color: {t.text};"
-            f" selection-background-color: {t.selection};"
-            f" selection-color: {t.selection_text}; font-size: 13px; }}"
+            f" selection-background-color: {selection_bg};"
+            f" selection-color: {t.text}; font-size: 13px; }}"
             f"QHeaderView::section {{ background: {t.bg}; color: {t.text_muted};"
             f" border: none; border-bottom: 1px solid {t.border}; padding: 8px 10px;"
             f" font-size: 11px; font-weight: 700; letter-spacing: 0.5px; }}"
             f"QTableView::item {{ padding: 0 10px; border: none; }}"
+            f"QTableView::item:hover {{ background: {t.surface_hover}; }}"
             f"QTableCornerButton::section {{ background: {t.bg}; border: none; }}"
         )
         self.view_stack.clear_caches()
         self.view_stack.update_viewports()
         self.toolbar.set_active_view(self.view_mode)
         self.toolbar.refresh()
+        self.selection_bar.refresh()
         self.detail.refresh()
         self._populate_folder_list()
 
@@ -390,6 +402,7 @@ class LibraryPage(Page):
         self.edit_button.setEnabled(track_item is not None)
         self.batch_button.setVisible(marked > 1)
         self.batch_button.setEnabled(marked > 1)
+        self.selection_bar.set_selection(marked)
 
     def selected_tracks(self) -> list[Track]:
         """Todas las pistas marcadas, en el orden en que se ven."""
@@ -575,11 +588,6 @@ class LibraryPage(Page):
         self.subtitle.setText(chosen)
         self.rescan(Path(chosen))
 
-    def _open_selected_folder(self) -> None:
-        item = self.folder_list.currentItem()
-        if item is not None:
-            self._activate_folder_item(item)
-
     def _activate_folder_item(self, item: QListWidgetItem) -> None:
         folder = item.data(Qt.ItemDataRole.UserRole)
         if isinstance(folder, Path):
@@ -633,16 +641,7 @@ class LibraryPage(Page):
         self.folder_location.setText(
             "Toda la biblioteca"
             if self.proxy.query or self._review_mode
-            else " / ".join(location)
-        )
-        self.tracks_heading.setText(
-            "Resultados de búsqueda"
-            if self.proxy.query
-            else (
-                "Resultados de revisión"
-                if self._review_mode
-                else "Canciones en esta carpeta"
-            )
+            else "  ›  ".join(location)  # noqa: RUF001
         )
         self.proxy.set_folder_filter(
             current
@@ -692,19 +691,19 @@ class LibraryPage(Page):
             if cover is None:
                 cover = folder_cover(folder, self._covers)
             folder_icon = (
-                QIcon(render_cover(cover, 56))
+                QIcon(render_cover(cover, 28))
                 if cover and cover.is_file()
-                else icons.icon("folder", t.accent, 42)
+                else icons.icon("folder", t.accent, 22)
             )
             item = QListWidgetItem(
                 folder_icon,
-                f"{folder.name}\n{len(tracks)} pistas",
+                f"{folder.name} · {len(tracks)} pistas",
             )
-            item.setTextAlignment(Qt.AlignmentFlag.AlignHCenter)
+            item.setTextAlignment(
+                Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
+            )
             item.setData(Qt.ItemDataRole.UserRole, folder)
-            item.setToolTip(
-                f"{folder.name}\n{len(tracks)} pistas\nDoble clic para abrir"
-            )
+            item.setToolTip(f"{folder.name}\n{len(tracks)} pistas\nClic para abrir")
             self.folder_list.addItem(item)
 
         self.folder_panel.setVisible(bool(children))

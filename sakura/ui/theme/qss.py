@@ -321,28 +321,91 @@ QListView#TrackGrid::item:selected {{
     border: none;
 }}
 
-/* La lista de carpetas de la biblioteca. Vivia en un `setStyleSheet` de la
-   pagina y Qt se quejaba en cada repintado: al tener hoja propia, cascada con
-   los ancestros, el parser la rechazaba. Acá la resuelve el QSS global. */
+/* Franja de subcarpetas como chips en una sola linea. */
 QListWidget#LibraryFolderGrid {{
-    background: {t.surface};
-    border: 1px solid {t.border};
-    border-radius: {t.radius}px;
-    color: {t.text};
+    background: transparent;
+    border: none;
+    color: {t.text_dim};
     outline: none;
 }}
 QListWidget#LibraryFolderGrid::item {{
-    border-radius: {t.radius_sm}px;
-    padding: {px(t, 4)};
-    margin: {px(t, 2)};
+    background: {t.surface_alt};
+    border: 1px solid {t.border};
+    border-radius: {t.radius_pill}px;
+    padding: {px(t, 4)} {px(t, 12)};
+    margin: {px(t, 3)};
 }}
 QListWidget#LibraryFolderGrid::item:hover {{
     background: {t.surface_hover};
-    border-radius: {t.radius_sm}px;
+    border-color: {tint(t.border, t.accent, 0.45)};
+    color: {t.text};
 }}
 QListWidget#LibraryFolderGrid::item:selected {{
     background: {t.selection};
+    border-color: {tint(t.border, t.accent, 0.6)};
     color: {t.selection_text};
+}}
+
+/* ---------- barra, seleccion y detalle de la biblioteca ---------- */
+#LibraryToolbar {{
+    background: transparent;
+}}
+#ToolbarSeparator {{
+    background: {t.border};
+    border: none;
+}}
+#ToolbarStats {{
+    color: {t.text_muted};
+    font-size: 12px;
+}}
+#SegmentedControl {{
+    background: {t.surface_alt};
+    border: 1px solid {t.border};
+    border-radius: {t.radius_pill}px;
+}}
+QPushButton#SegmentButton {{
+    background: transparent;
+    border: none;
+    border-radius: {t.radius_sm}px;
+}}
+QPushButton#SegmentButton:hover {{
+    background: {t.surface_hover};
+}}
+QPushButton#SegmentButton:checked {{
+    background: {tint(t.surface_alt, t.accent, 0.32)};
+}}
+#Breadcrumb {{
+    color: {t.text_dim};
+    font-size: 13px;
+    font-weight: 700;
+}}
+#SelectionBar {{
+    background: {tint(t.surface, t.accent, 0.10)};
+    border: 1px solid {tint(t.border, t.accent, 0.35)};
+    border-radius: {t.radius}px;
+}}
+#SelectionCount {{
+    color: {t.text};
+    font-size: 13px;
+    font-weight: 700;
+}}
+#TagChip {{
+    color: {t.text_dim};
+    background: {t.surface_alt};
+    border: 1px solid {t.border};
+    border-radius: {t.radius_pill}px;
+    padding: {px(t, 3)} {px(t, 8)};
+    font-size: 11px;
+}}
+#DetailTitle {{
+    color: {t.text};
+    font-size: 15px;
+    font-weight: 700;
+}}
+#DetailCover {{
+    background: {t.surface_alt};
+    border: 1px solid {t.border};
+    border-radius: {t.radius}px;
 }}
 
 /* ---------- tabla de la biblioteca ---------- */

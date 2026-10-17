@@ -1,10 +1,20 @@
-"""Barra de la Biblioteca: filtro, contadores, vistas y acciones."""
+"""Barra de la Biblioteca: filtro, contadores, vistas y acciones.
+
+Dos zonas separadas por un divisor: a la izquierda el filtro y el contador, a
+la derecha el control de vista y las acciones. Las acciones de edicion no viven
+aca: aparecen en la barra contextual al marcar pistas (`library_selection.py`).
+"""
 
 from __future__ import annotations
 
-from PySide6.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QWidget
+from PySide6.QtWidgets import (
+    QFrame,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QWidget,
+)
 
-from .. import theme as th
 from .buttons import IconButton, TextButton
 
 # Cada forma de ver las pistas y su boton. El orden fija el indice en el stack.
@@ -17,18 +27,16 @@ VIEW_SPECS = (
 
 
 class LibraryToolbar(QWidget):
-    """Barra superior con el filtro, los contadores y los botones de accion.
-
-    Vive aparte de la pagina para que `library.py` no arme la veintena de
-    widgets de la barra: solo conecta sus senales.
-    """
+    """Barra superior con el filtro, los contadores, las vistas y las acciones."""
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.setObjectName("LibraryToolbar")
         bar = QHBoxLayout(self)
         bar.setContentsMargins(0, 0, 0, 10)
         bar.setSpacing(10)
 
+        # --- zona izquierda: filtro y contador -----------------------------
         self.filter_box = QLineEdit()
         self.filter_box.setObjectName("SearchInput")
         self.filter_box.setPlaceholderText("Buscar canciones en toda la biblioteca...")
@@ -42,15 +50,16 @@ class LibraryToolbar(QWidget):
         bar.addWidget(self.review_filter_btn, 0)
 
         self.stats = QLabel("")
-        self.stats.setObjectName("EmptyState")
-        bar.addSpacing(8)
+        self.stats.setObjectName("ToolbarStats")
+        bar.addSpacing(4)
         bar.addWidget(self.stats, 1)
 
-        self.view_buttons: dict[str, IconButton] = {}
-        for mode, icon_name, tooltip in VIEW_SPECS:
-            button = IconButton(icon_name, tooltip, 38)
-            bar.addWidget(button, 0)
-            self.view_buttons[mode] = button
+        # --- zona derecha: vistas y acciones -------------------------------
+        bar.addWidget(self._separator())
+
+        bar.addWidget(self._view_group(), 0)
+
+        bar.addWidget(self._separator())
 
         self.open_button = IconButton("folder", "Cambiar carpeta", 38)
         bar.addWidget(self.open_button, 0)
@@ -61,26 +70,35 @@ class LibraryToolbar(QWidget):
         self.undo_button = IconButton("restore", "Deshacer último lote", 38)
         bar.addWidget(self.undo_button, 0)
 
-        self.edit_button = TextButton("Editar metadatos", "ghost", icon="edit")
-        self.edit_button.setEnabled(False)
-        bar.addWidget(self.edit_button, 0)
+    def _separator(self) -> QFrame:
+        sep = QFrame()
+        sep.setObjectName("ToolbarSeparator")
+        sep.setFixedWidth(1)
+        sep.setFixedHeight(22)
+        return sep
 
-        # Con varias pistas marcadas el boton anterior pasa a ser el de lote:
-        # editar de a una con diez seleccionadas no es lo que se quiere.
-        self.batch_button = TextButton("Editar en lote", "accent", icon="edit")
-        self.batch_button.setEnabled(False)
-        self.batch_button.setVisible(False)
-        bar.addWidget(self.batch_button, 0)
+    def _view_group(self) -> QWidget:
+        """Los cuatro disenos como un control segmentado, no botones sueltos."""
+        group = QFrame()
+        group.setObjectName("SegmentedControl")
+        layout = QHBoxLayout(group)
+        layout.setContentsMargins(4, 4, 4, 4)
+        layout.setSpacing(2)
+
+        self.view_buttons: dict[str, IconButton] = {}
+        for mode, icon_name, tooltip in VIEW_SPECS:
+            button = IconButton(icon_name, tooltip, 32)
+            button.setObjectName("SegmentButton")
+            button.setCheckable(True)
+            button.setGraphicsEffect(None)
+            layout.addWidget(button)
+            self.view_buttons[mode] = button
+        return group
 
     def set_active_view(self, mode: str) -> None:
         """Marca el boton de la vista activa."""
-        t = th.active()
-        active_style = (
-            f"background: {t.surface_hover}; border: 1px solid {t.accent}; "
-            f"border-radius: {t.radius_sm}px;"
-        )
         for name, button in self.view_buttons.items():
-            button.setStyleSheet(active_style if name == mode else "")
+            button.setChecked(name == mode)
 
     def refresh(self) -> None:
         """Recolorea los botones con icono tras un cambio de tema."""
