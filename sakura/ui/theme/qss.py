@@ -505,6 +505,19 @@ QTableCornerButton::section {{
     min-height: 1px;
     border: none;
 }}
+#MessageBlock {{
+    background: transparent;
+}}
+#EmptyIcon {{
+    background: {t.surface_alt};
+    border: 1px solid {t.border};
+    border-radius: 32px;
+}}
+#EmptyTitle {{
+    color: {t.text};
+    font-size: {fs('heading')};
+    font-weight: 700;
+}}
 #EmptyState {{
     color: {t.text_muted};
     font-size: {fs('label')};

@@ -120,6 +120,9 @@ class MainWindow(QWidget):
         self.page_map["queue"].cancel_requested.connect(self._on_cancel_all)
         self.page_map["queue"].retry_requested.connect(self._on_retry_failed)
         self.page_map["queue"].retry_one_requested.connect(self._on_retry_one)
+        # Los estados vacios de Cola y Biblioteca llevan a Buscar.
+        self.page_map["queue"].search_requested.connect(self._ir_a_search)
+        self.page_map["library"].search_requested.connect(self._ir_a_search)
 
         home = self.page_map["home"]
         home.card_search.clicked.connect(lambda: self.show_page("search"))

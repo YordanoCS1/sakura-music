@@ -41,6 +41,8 @@ class LibraryPage(Page):
     """Escanea la carpeta de musica y lista todo lo que encuentre."""
 
     review_data_changed = Signal()
+    # El estado vacio ofrece saltar a Buscar para llenar la biblioteca.
+    search_requested = Signal()
 
     def __init__(self, parent=None):
         super().__init__("Biblioteca", "Tu música local", parent)
@@ -130,6 +132,7 @@ class LibraryPage(Page):
         self.content.addWidget(body, 1)
 
         self.message = self.empty_state("")
+        self.message.action_clicked.connect(self.search_requested)
         self.content.addWidget(self.message)
 
         self.set_view_mode(self.view_mode, save=False)
@@ -260,7 +263,11 @@ class LibraryPage(Page):
     def rescan(self, folder: Path | None = None) -> None:
         root = folder or self.library_folder()
         if not root.is_dir():
-            self._show_message(f"La carpeta no existe: {root}")
+            self._show_message(
+                f"La carpeta no existe: {root}",
+                title="No se encontró la carpeta",
+                icon="folder",
+            )
             return
 
         root = root.resolve()
@@ -291,7 +298,10 @@ class LibraryPage(Page):
             self._update_folder_navigation()
             self._show_message(
                 f"No hay música en {self.library_folder()}\n\n"
-                "Descargá algo desde Buscar y aparecerá acá."
+                "Descargá algo desde Buscar y aparecerá acá.",
+                title="Tu biblioteca está vacía",
+                icon="music",
+                action="Buscar música",
             )
             self._set_stats("")
             return
@@ -312,7 +322,11 @@ class LibraryPage(Page):
 
     def _on_failed(self, message: str) -> None:
         self.table.setSortingEnabled(True)
-        self._show_message(f"No se pudo escanear: {message}")
+        self._show_message(
+            f"No se pudo escanear: {message}",
+            title="No se pudo escanear la biblioteca",
+            icon="alert-triangle",
+        )
         self._set_stats("")
 
     # --- filtros y seleccion -----------------------------------------------
@@ -543,7 +557,11 @@ class LibraryPage(Page):
 
     def _on_refresh_failed(self, message: str) -> None:
         self.table.setSortingEnabled(True)
-        self._show_message(f"No se pudo actualizar la biblioteca: {message}")
+        self._show_message(
+            f"No se pudo actualizar la biblioteca: {message}",
+            title="No se pudo actualizar",
+            icon="alert-triangle",
+        )
         self._update_filtered_stats()
         self.review_data_changed.emit()
 
@@ -710,11 +728,16 @@ class LibraryPage(Page):
 
     # --- utilidades ---------------------------------------------------------
 
-    def _show_message(self, text: str) -> None:
+    def _show_message(
+        self, text: str, title: str = "", icon: str = "", action: str = ""
+    ) -> None:
         if not text:
             self.message.setVisible(False)
             return
         self.message.set_text(text)
+        self.message.set_title(title)
+        self.message.set_icon(icon)
+        self.message.set_action(action, icon="search" if action else "")
         self.message.setVisible(True)
 
     def _set_stats(self, text: str) -> None:
@@ -723,6 +746,7 @@ class LibraryPage(Page):
     def refresh(self) -> None:
         """Recolorea tras un cambio de tema."""
         self.apply_theme_to_table()
+        self.message.refresh()
 
     def showEvent(self, event) -> None:
         """Escanea la primera vez que se abre la pagina."""

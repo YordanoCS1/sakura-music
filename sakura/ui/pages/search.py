@@ -84,7 +84,11 @@ class SearchPage(Page):
         self._toolbar.setVisible(False)
         self.content.addWidget(self._toolbar)
 
-        self._message = self.empty_state("Escribe algo para buscar música o videos.")
+        self._message = self.empty_state(
+            "Escribí un título, un artista, una URL o una playlist de YouTube.",
+            title="Busca música o videos",
+            icon="search",
+        )
         self.content.addWidget(self._message)
 
     # --- barra de herramientas y selector de calidad ------------------------
@@ -166,7 +170,11 @@ class SearchPage(Page):
             self.search_service.cancel()
             self.playlist_resolver.cancel()
             self._clear_cards()
-            self._show_message("Escribe algo para buscar música o videos.")
+            self._show_message(
+                "Escribí un título, un artista, una URL o una playlist de YouTube.",
+                title="Busca música o videos",
+                icon="search",
+            )
             self._toolbar.setVisible(False)
             return
 
@@ -247,7 +255,11 @@ class SearchPage(Page):
 
     def _on_search_finished(self, count: int) -> None:
         if count == 0:
-            self._show_message("Sin resultados para esa búsqueda.")
+            self._show_message(
+                "Probá con otro nombre o pegá un enlace de YouTube.",
+                title="Sin resultados",
+                icon="search",
+            )
             self._set_status("")
         else:
             self._set_status(f"{count} resultado{'s' if count != 1 else ''}")
@@ -273,7 +285,11 @@ class SearchPage(Page):
         self._artist_btn.setVisible(False)
 
         if total == 0:
-            self._show_message(self._message_playlist_empty())
+            self._show_message(
+                self._message_playlist_empty(),
+                title="La playlist no tiene descargables",
+                icon="alert-triangle",
+            )
             return
 
         self._show_message("")
@@ -351,7 +367,11 @@ class SearchPage(Page):
     def _on_album_failed(self, message: str) -> None:
         self._album_btn.setEnabled(True)
         self._set_status("")
-        self._show_message(f"No se pudo traer el álbum: {message}")
+        self._show_message(
+            f"No se pudo traer el álbum: {message}",
+            title="No se pudo traer el álbum",
+            icon="alert-triangle",
+        )
 
     # --- artista y discografia ------------------------------------------------
 
@@ -372,7 +392,11 @@ class SearchPage(Page):
         self._artist_btn.setEnabled(True)
         if not artists:
             self._set_status("")
-            self._show_message("El catálogo no encontró ese artista.")
+            self._show_message(
+                "El catálogo no encontró ese artista.",
+                title="Sin resultados",
+                icon="search",
+            )
             return
 
         self._artists = list(artists)
@@ -391,7 +415,11 @@ class SearchPage(Page):
         self._disc_albums = list(albums)
         if not albums:
             self._set_status("")
-            self._show_message("El catálogo no tiene álbumes de ese artista.")
+            self._show_message(
+                "El catálogo no tiene álbumes de ese artista.",
+                title="Sin resultados",
+                icon="search",
+            )
             return
 
         album = open_discography(artist_name, albums, self)
@@ -412,12 +440,20 @@ class SearchPage(Page):
     def _on_artist_failed(self, message: str) -> None:
         self._artist_btn.setEnabled(True)
         self._set_status("")
-        self._show_message(f"No se pudo buscar el artista: {message}")
+        self._show_message(
+            f"No se pudo buscar el artista: {message}",
+            title="No se pudo buscar el artista",
+            icon="alert-triangle",
+        )
 
     # --- error ---------------------------------------------------------------
 
     def _on_failed(self, message: str) -> None:
-        self._show_message(f"No se pudo buscar: {message}")
+        self._show_message(
+            f"No se pudo buscar: {message}",
+            title="No se pudo buscar",
+            icon="alert-triangle",
+        )
         self._set_status("")
 
     # --- utilidades ----------------------------------------------------------
@@ -434,11 +470,13 @@ class SearchPage(Page):
                 widget.setParent(None)
                 widget.deleteLater()
 
-    def _show_message(self, text: str) -> None:
+    def _show_message(self, text: str, title: str = "", icon: str = "") -> None:
         """Muestra u oculta el placeholder sin recrear el layout."""
         self._message.setVisible(bool(text))
         if text:
             self._message.set_text(text)
+            self._message.set_title(title)
+            self._message.set_icon(icon)
 
     def _set_status(self, text: str) -> None:
         self._status.setText(text)
@@ -446,6 +484,7 @@ class SearchPage(Page):
     def refresh(self) -> None:
         """Recolorea las tarjetas y controles tras un cambio de tema."""
         t = th.active()
+        self._message.refresh()
         self._fmt_label.setStyleSheet(f"color: {t.text_dim}; font-size: 12px; font-weight: 600;")
         self._format_combo.setStyleSheet(
             f"QComboBox {{ background: {t.surface_alt}; color: {t.text};"

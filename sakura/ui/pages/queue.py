@@ -181,6 +181,8 @@ class QueuePage(Page):
     # La vista se limpia sola; quien escuche esto saca los trabajos del gestor.
     # Estaba conectado dos veces al mismo boton, una acá y otra en MainWindow.
     clear_requested = Signal()
+    # El estado vacio ofrece saltar a Buscar, que es de donde se encola.
+    search_requested = Signal()
     # La vista no puede matar procesos: solo avisa y el MainWindow cancela.
     cancel_requested = Signal()
     # Reintento de una sola fila, con el trabajo que se quiere repetir.
@@ -194,7 +196,14 @@ class QueuePage(Page):
         # ver "6, 7, 8" dice exactamente cuales quedan.
         self._enqueued = 0
         self._build_controls()
-        self._message = MessageBlock("La cola está vacía.")
+        self._message = MessageBlock(
+            "Las descargas que encoles desde Buscar van a aparecer acá, "
+            "con su progreso y su estado."
+        )
+        self._message.set_title("Todavía no hay descargas")
+        self._message.set_icon("cloud-download")
+        self._message.set_action("Buscar música", icon="search")
+        self._message.action_clicked.connect(self.search_requested)
         self.content.addWidget(self._message)
 
     def _build_controls(self) -> None:
@@ -312,6 +321,7 @@ class QueuePage(Page):
         """
         for row in self._rows.values():
             row.refresh()
+        self._message.refresh()
         self._sync_buttons()
         self._sync_stats()
 
