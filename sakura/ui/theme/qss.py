@@ -719,6 +719,72 @@ QLineEdit#MetadataField[modified="true"] {{
     border: 1px solid {tint(t.border, t.accent, 0.55)};
 }}
 
+/* ---------- ajustes ---------- */
+/* Las preferencias se agrupan en tarjetas con encabezado para que la pagina no
+   sea una lista plana; los controles toman su color del tema por objectName. */
+#SettingsCard {{
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+        stop:0 {t.surface_alt}, stop:1 {t.surface});
+    border: 1px solid {t.border};
+    border-radius: {t.radius + 6}px;
+}}
+#SettingsSection {{
+    color: {t.text};
+    font-size: 15px;
+    font-weight: 800;
+}}
+#SettingTitle {{
+    color: {t.text};
+    font-size: 13px;
+    font-weight: 700;
+}}
+#SettingsRowIcon {{
+    background: transparent;
+    border: none;
+}}
+QComboBox#SettingsControl {{
+    background: {t.surface_alt};
+    color: {t.text};
+    border: 1px solid {t.border};
+    border-radius: {t.radius_sm + 2}px;
+    padding: {px(t, 8)} {px(t, 12)};
+    font-size: 13px;
+}}
+QComboBox#SettingsControl:hover {{
+    background: {t.surface_hover};
+    border-color: {t.accent};
+}}
+QComboBox#SettingsControl:focus {{
+    border: 1px solid {t.accent};
+}}
+QComboBox#SettingsControl QAbstractItemView {{
+    background: {t.surface_alt};
+    color: {t.text};
+    selection-background-color: {t.accent};
+    selection-color: {t.accent_text};
+    border: 1px solid {t.border};
+    padding: {px(t, 4)};
+}}
+QCheckBox#SettingsCheck {{
+    color: {t.text};
+    font-size: 13px;
+    spacing: 8px;
+}}
+QCheckBox#SettingsCheck::indicator {{
+    width: 18px;
+    height: 18px;
+    border: 1px solid {t.border};
+    border-radius: {t.radius_sm}px;
+    background: {t.surface_alt};
+}}
+QCheckBox#SettingsCheck::indicator:hover {{
+    border-color: {t.accent};
+}}
+QCheckBox#SettingsCheck::indicator:checked {{
+    background: {t.accent};
+    border-color: {t.accent};
+}}
+
 /* ---------- menus desplegables ---------- */
 QMenu {{
     background: {t.surface};

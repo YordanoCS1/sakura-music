@@ -1,4 +1,10 @@
-"""Pagina de ajustes: formato de descarga, carpetas de biblioteca y descargas."""
+"""Pagina de ajustes: formato de descarga, carpetas de biblioteca y descargas.
+
+Las preferencias se agrupan en tarjetas tematicas (Apariencia, Descargas,
+Biblioteca, Herramientas) para que una lista de nueve filas no se lea como una
+sola columna plana. El color de los controles sale del QSS por objectName, no de
+estilos en linea: asi el tema activo manda y no queda nada pegado al cambiar.
+"""
 
 from __future__ import annotations
 
@@ -9,6 +15,7 @@ from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
     QFileDialog,
+    QFrame,
     QHBoxLayout,
     QLabel,
     QVBoxLayout,
@@ -24,6 +31,7 @@ from ...core.tools import (
     build_ytdlp_update_command,
     cookies_navegador,
 )
+from .. import icons
 from .. import theme as th
 from ..services.downloader import DownloadManager
 from ..services.process import ProcessRunner
@@ -43,21 +51,35 @@ DEFAULT_CONCURRENT = DownloadManager.MAX_CONCURRENT
 
 
 class SettingRow(QWidget):
-    """Una fila: titulo, descripcion y control a la derecha."""
+    """Una fila: icono, titulo, descripcion y control a la derecha."""
 
-    def __init__(self, title: str, description: str, control: QWidget, parent=None):
+    def __init__(
+        self,
+        title: str,
+        description: str,
+        control: QWidget,
+        icon_name: str | None = None,
+        parent=None,
+    ):
         super().__init__(parent)
+        self._icon_name = icon_name
+
         layout = QHBoxLayout(self)
-        layout.setContentsMargins(0, 10, 0, 10)
-        layout.setSpacing(20)
+        layout.setContentsMargins(0, 12, 0, 12)
+        layout.setSpacing(16)
+
+        self.icon: QLabel | None = None
+        if icon_name:
+            self.icon = QLabel()
+            self.icon.setObjectName("SettingsRowIcon")
+            self.icon.setFixedSize(22, 22)
+            layout.addWidget(self.icon, 0, Qt.AlignmentFlag.AlignVCenter)
 
         texts = QVBoxLayout()
         texts.setSpacing(3)
 
         self.label = QLabel(title)
-        self.label.setStyleSheet(
-            f"color: {th.active().text}; font-size: 13px; font-weight: 700;"
-        )
+        self.label.setObjectName("SettingTitle")
         self.hint = QLabel(description)
         self.hint.setObjectName("PageSubtitle")
         self.hint.setWordWrap(True)
@@ -65,12 +87,57 @@ class SettingRow(QWidget):
         texts.addWidget(self.label)
         texts.addWidget(self.hint)
         layout.addLayout(texts, 1)
-        layout.addWidget(control, 0)
+        layout.addWidget(control, 0, Qt.AlignmentFlag.AlignVCenter)
+        self.refresh()
 
     def refresh(self) -> None:
-        self.label.setStyleSheet(
-            f"color: {th.active().text}; font-size: 13px; font-weight: 700;"
-        )
+        """Recolorea el icono tras un cambio de tema."""
+        if self.icon is not None and self._icon_name:
+            self.icon.setPixmap(icons.render(self._icon_name, th.active().text_muted, 18))
+
+
+class SettingsCard(QFrame):
+    """Tarjeta de ajustes: encabezado con icono y filas separadas por lineas."""
+
+    def __init__(self, title: str, icon_name: str, parent=None):
+        super().__init__(parent)
+        self.setObjectName("SettingsCard")
+        self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
+        self._icon_name = icon_name
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(22, 16, 22, 6)
+        layout.setSpacing(0)
+
+        head = QHBoxLayout()
+        head.setSpacing(10)
+        self.icon = QLabel()
+        self.icon.setFixedSize(20, 20)
+        self.title = QLabel(title)
+        self.title.setObjectName("SettingsSection")
+        head.addWidget(self.icon, 0, Qt.AlignmentFlag.AlignVCenter)
+        head.addWidget(self.title, 0, Qt.AlignmentFlag.AlignVCenter)
+        head.addStretch(1)
+        layout.addLayout(head)
+        layout.addSpacing(10)
+
+        self._rows = QVBoxLayout()
+        self._rows.setContentsMargins(0, 0, 0, 0)
+        self._rows.setSpacing(0)
+        layout.addLayout(self._rows)
+        self.refresh()
+
+    def add_row(self, row: QWidget) -> None:
+        """Agrega una fila, con un separador fino salvo en la primera."""
+        if self._rows.count():
+            divider = QFrame()
+            divider.setObjectName("Divider")
+            divider.setFixedHeight(1)
+            self._rows.addWidget(divider)
+        self._rows.addWidget(row)
+
+    def refresh(self) -> None:
+        self.icon.setPixmap(icons.render(self._icon_name, th.active().accent, 18))
 
 
 class SettingsPage(Page):
@@ -88,9 +155,11 @@ class SettingsPage(Page):
         super().__init__("Ajustes", "Preferencias de la aplicación", parent)
         self.settings = load_settings()
         self._rows: list[SettingRow] = []
+        self._cards: list[SettingsCard] = []
 
         # 1. Tema visual
         theme_box = QComboBox()
+        theme_box.setObjectName("SettingsControl")
         for theme in th.THEME_LIST:
             theme_box.addItem(theme.name, theme.id)
         theme_box.setCurrentIndex(self._theme_index_of(self.settings.get("theme", "modern")))
@@ -100,6 +169,7 @@ class SettingsPage(Page):
 
         # 2. Disposición de navegación
         nav_box = QComboBox()
+        nav_box.setObjectName("SettingsControl")
         nav_options = [
             ("Barra Superior en Cápsula (Pantalla completa)", "top"),
             ("Dock Lateral Compacto (Iconos verticales)", "dock"),
@@ -116,6 +186,7 @@ class SettingsPage(Page):
 
         # 3. Formato de descarga
         format_box = QComboBox()
+        format_box.setObjectName("SettingsControl")
         for fmt in FORMATS:
             format_box.addItem(fmt.label, fmt.id)
         format_box.setCurrentIndex(self._format_index_of(self.settings["audio_format"]))
@@ -125,6 +196,7 @@ class SettingsPage(Page):
 
         # 4. Cookies de YouTube
         cookie_box = QComboBox()
+        cookie_box.setObjectName("SettingsControl")
         cookie_box.addItem("No usar cookies", "")
         for browser, label in (
             ("chrome", "Google Chrome"),
@@ -144,6 +216,7 @@ class SettingsPage(Page):
 
         # 5. Descargas simultáneas
         concurrent_box = QComboBox()
+        concurrent_box.setObjectName("SettingsControl")
         for count in range(MIN_CONCURRENT, MAX_CONCURRENT + 1):
             concurrent_box.addItem(
                 "Una a la vez" if count == 1 else f"{count} a la vez", count
@@ -207,49 +280,57 @@ class SettingsPage(Page):
         downloads_layout.addWidget(downloads_btn)
         downloads_row.setFixedWidth(CONTROL_W)
 
-        # Añadir filas al contenido
+        # Filas agrupadas por tema
         row_theme = SettingRow(
             "Tema visual y estilo",
             "Personaliza los colores, contrastes y atmósfera general de Sakura Music.",
             theme_box,
+            "palette",
         )
         row_nav = SettingRow(
             "Disposición de navegación",
             "Elige entre barra superior para maximizar el ancho para tus canciones, "
             "o dock lateral.",
             nav_box,
+            "grid",
         )
         row_formato = SettingRow(
             "Formato y calidad de descarga",
             "Elige si descargar solo audio (Opus original, m4a, mp3) o video MP4 "
             "en la resolución deseada (1080p+, 1080p, 720p, 480p, 360p).",
             format_box,
+            "music",
         )
         row_concurrent = SettingRow(
             "Descargas simultáneas",
             "Cuántas descargas corren a la vez. Con cookies de navegador siempre "
             "es una: dos procesos pelearían la misma base de cookies.",
             concurrent_row,
+            "list",
         )
         row_cookies = SettingRow(
             "Cookies de YouTube",
             "Usa la sesión de un navegador para videos con restricción de edad o acceso. "
             "Sakura no almacena tus cookies.",
             cookie_box,
+            "user",
         )
         row_library = SettingRow(
             "Carpeta de biblioteca",
             "De dónde lee y escanea tu música local Sakura Music.",
             library_row,
+            "folder-open",
         )
         row_downloads = SettingRow(
             "Carpeta de descargas",
             "Dónde se guardan las canciones y videos descargados.",
             downloads_row,
+            "cloud-download",
         )
 
         # 8. Portada de carpeta
         cover_box = QCheckBox("Escribir folder.jpg en la carpeta del álbum")
+        cover_box.setObjectName("SettingsCheck")
         cover_box.setChecked(bool(self.settings.get("write_folder_cover", True)))
         cover_box.setFixedWidth(CONTROL_W)
         cover_box.toggled.connect(self._on_folder_cover_toggled)
@@ -260,6 +341,7 @@ class SettingsPage(Page):
             "Deja un folder.jpg junto al álbum para que los reproductores externos "
             "muestren la carátula sin abrir cada archivo.",
             cover_box,
+            "disc",
         )
 
         self.update_tools_btn = TextButton("Actualizar yt-dlp y FFmpeg", "ghost", icon="refresh-cw")
@@ -278,6 +360,7 @@ class SettingsPage(Page):
             "Herramientas de descarga",
             "Actualiza yt-dlp con pip y FFmpeg con winget en Windows.",
             update_control,
+            "refresh-cw",
         )
 
         self._rows = [
@@ -291,8 +374,16 @@ class SettingsPage(Page):
             row_tools,
             row_cover,
         ]
-        for row in self._rows:
-            self.content.addWidget(row)
+
+        # Tarjetas: agrupan las filas por tema para dar jerarquia a la pagina.
+        self._add_card("Apariencia", "palette", [row_theme, row_nav])
+        self._add_card(
+            "Descargas",
+            "download",
+            [row_formato, row_concurrent, row_cookies, row_cover],
+        )
+        self._add_card("Biblioteca", "folder", [row_library, row_downloads])
+        self._add_card("Herramientas", "refresh-cw", [row_tools])
 
         self._update_runner = ProcessRunner(self)
         self._update_runner.line.connect(self._on_update_output)
@@ -305,6 +396,13 @@ class SettingsPage(Page):
 
         self.content.addStretch(1)
         self.refresh()
+
+    def _add_card(self, title: str, icon_name: str, rows: list[SettingRow]) -> None:
+        card = SettingsCard(title, icon_name)
+        for row in rows:
+            card.add_row(row)
+        self._cards.append(card)
+        self.content.addWidget(card)
 
     # --- tema ----------------------------------------------------------------
 
@@ -457,23 +555,9 @@ class SettingsPage(Page):
         self.library_folder_label.setText(path_str)
 
     def refresh(self) -> None:
-        """Recolorea las filas tras un cambio de tema."""
-        t = th.active()
-        combo_style = (
-            f"QComboBox {{ background: {t.surface_alt}; color: {t.text};"
-            f" border: 1px solid {t.border}; border-radius: {t.radius}px;"
-            " padding: 8px 12px; font-size: 13px; }"
-            f"QComboBox:hover {{ background: {t.surface_hover}; border: 1px solid {t.accent}; }}"
-            f"QComboBox QAbstractItemView {{ background: {t.surface_alt};"
-            f" color: {t.text}; selection-background-color: {t.accent};"
-            f" selection-color: {t.accent_text};"
-            f" border: 1px solid {t.border}; padding: 4px; }}"
-        )
-        self.theme_box.setStyleSheet(combo_style)
-        self.nav_box.setStyleSheet(combo_style)
-        self.format_box.setStyleSheet(combo_style)
-        self.concurrent_box.setStyleSheet(combo_style)
-        self.cookie_box.setStyleSheet(combo_style)
+        """Recolorea las tarjetas y filas tras un cambio de tema."""
         self._update_aviso_concurrentes()
+        for card in self._cards:
+            card.refresh()
         for row in self._rows:
             row.refresh()
