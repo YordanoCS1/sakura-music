@@ -13,8 +13,22 @@ from .config import load_settings
 from .ui import sakura
 from .ui import theme as th
 from .ui.main_window import MainWindow
+from .ui.splash import SakuraSplash
 
 APP_NAME = "Sakura Music"
+
+
+def _splash_enabled() -> bool:
+    """La animacion de arranque es opt-out y no corre sin pantalla real.
+
+    `SAKURA_NO_SPLASH=1` la salta (util al depurar) y con `QT_QPA_PLATFORM`
+    offscreen no tiene sentido mostrar una ventana decorativa.
+    """
+    import os
+
+    if os.environ.get("SAKURA_NO_SPLASH"):
+        return False
+    return os.environ.get("QT_QPA_PLATFORM", "").lower() != "offscreen"
 
 
 def _app_icon(color: str, background: str = "#121625") -> QIcon:
@@ -66,8 +80,18 @@ def main() -> int:
     app.setStyleSheet(th.build_qss(theme))
     app.setWindowIcon(_app_icon(theme.accent, theme.surface))
 
+    # La flor florece mientras se arma la ventana: cubre el tiempo de arranque
+    # con algo de la marca en vez de un cuadro en blanco.
+    splash = SakuraSplash(theme) if _splash_enabled() else None
+    if splash is not None:
+        splash.show()
+        app.processEvents()
+
     window = MainWindow()
     window.show()
+
+    if splash is not None:
+        splash.release(window)
 
     codigo = app.exec()
 
