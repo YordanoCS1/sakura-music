@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from .tokens import FONT_STACK, Theme, px, tint
+from .tokens import FONT_STACK, Theme, fs, px, tint
 
 
 def build_qss(t: Theme) -> str:
@@ -43,9 +43,15 @@ QDialog {{
     background: rgba(0,0,0,0);
     border-bottom: 1px solid {t.border};
 }}
+#TitleBar[hovered="true"] {{
+    background: {t.surface_alt};
+}}
+QPushButton#IconButton[variant="close"]:hover {{
+    background: {t.danger};
+}}
 #TitleBarTitle {{
     color: {t.text_muted};
-    font-size: 12px;
+    font-size: {fs('caption')};
     font-weight: 600;
 }}
 
@@ -68,7 +74,7 @@ QPushButton#NavButton {{
     border: 1px solid transparent;
     border-radius: {t.radius}px;
     padding: {px(t, 10)} {px(t, 14)};
-    font-size: 13px;
+    font-size: {fs('label')};
     font-weight: 600;
     text-align: left;
     /* Sin `transition`: es CSS, no QSS. Qt lo rechaza con "Unknown property"
@@ -85,11 +91,25 @@ QPushButton#NavButton:checked {{
         stop:0 {tint(t.surface_alt, t.accent, 0.18)}, stop:1 {tint(t.bg, t.accent, 0.15)});
     color: {t.accent};
     border-color: {tint(t.accent, t.bg, 0.35)};
+    border-left: 3px solid {t.accent};
+    padding-left: {px(t, 12)};
+}}
+QPushButton#NavButton[slim="true"] {{
+    text-align: center;
+    padding: {px(t, 8)};
+}}
+
+#SidebarBrandSubtitle {{
+    color: {t.text_muted};
+    font-size: {fs('nano')};
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    background: transparent;
 }}
 
 #SidebarSection {{
     color: {t.text_muted};
-    font-size: 11px;
+    font-size: {fs('micro')};
     font-weight: 700;
     padding: 0 {px(t, 14)};
     letter-spacing: 0.6px;
@@ -103,7 +123,7 @@ QPushButton#NavButton:checked {{
 }}
 #BrandTitle {{
     color: {t.text};
-    font-size: 16px;
+    font-size: {fs('lead')};
     font-weight: 800;
     letter-spacing: -0.2px;
 }}
@@ -118,7 +138,7 @@ QLineEdit#SearchInput {{
     border-radius: {t.radius_pill}px;
     padding: {px(t, 8)} {px(t, 16)};
     color: {t.text};
-    font-size: 13px;
+    font-size: {fs('label')};
 }}
 QLineEdit#SearchInput:focus {{
     border: 1px solid {t.accent};
@@ -130,12 +150,12 @@ QLineEdit#SearchInput::placeholder {{
 /* ---------- contenido ---------- */
 #PageHeader {{
     color: {t.text};
-    font-size: 26px;
+    font-size: {fs('display')};
     font-weight: 800;
 }}
 #PageSubtitle {{
     color: {t.text_dim};
-    font-size: 13px;
+    font-size: {fs('label')};
 }}
 
 /* ---------- area central ---------- */
@@ -200,7 +220,7 @@ QPushButton#AccentButton {{
     border: 1px solid {tint(t.accent, t.bg, 0.35)};
     border-radius: {t.radius}px;
     padding: {px(t, 10)} {px(t, 20)};
-    font-size: 13px;
+    font-size: {fs('label')};
     font-weight: 800;
     letter-spacing: 0.2px;
 }}
@@ -217,7 +237,7 @@ QPushButton#GhostButton {{
     border: 1px solid {t.border};
     border-radius: {t.radius}px;
     padding: {px(t, 8)} {px(t, 14)};
-    font-size: 12px;
+    font-size: {fs('caption')};
     font-weight: 700;
 }}
 QPushButton#GhostButton:hover {{
@@ -234,7 +254,7 @@ QPushButton#DangerButton {{
     border: 1px solid {t.danger};
     border-radius: {t.radius}px;
     padding: {px(t, 8)} {px(t, 14)};
-    font-size: 12px;
+    font-size: {fs('caption')};
     font-weight: 700;
 }}
 QPushButton#DangerButton:hover {{
@@ -243,13 +263,30 @@ QPushButton#DangerButton:hover {{
     color: {t.bg};
 }}
 
+/* ---------- foco (navegacion por teclado) ---------- */
+/* Sin un anillo visible, moverse con Tab por la app es a ciegas. */
+QPushButton#AccentButton:focus,
+QPushButton#GhostButton:focus,
+QPushButton#DangerButton:focus {{
+    border: 1px solid {t.accent};
+}}
+QPushButton#IconButton:focus {{
+    background: {t.surface_hover};
+    border-color: {t.accent};
+}}
+QPushButton#NavPill:focus,
+QPushButton#NavButton:focus,
+QPushButton#SegmentButton:focus {{
+    border: 1px solid {t.accent};
+}}
+
 /* ---------- estados de la cola de descargas ----------
    Chips con fondo tenue y texto del color: un bloque solido saturado se leia
    como una alerta, no como un estado. */
 #Badge {{
     border-radius: {t.radius_pill}px;
     padding: {px(t, 3)} {px(t, 10)};
-    font-size: 11px;
+    font-size: {fs('micro')};
     font-weight: 700;
 }}
 #BadgePending {{
@@ -300,7 +337,7 @@ QListWidget {{
     border: 1px solid {t.border};
     border-radius: {t.radius}px;
     color: {t.text};
-    font-size: 12px;
+    font-size: {fs('caption')};
     padding: {px(t, 4)};
 }}
 QListWidget::item {{
@@ -369,7 +406,7 @@ QListWidget#LibraryFolderGrid::item:selected {{
 }}
 #ToolbarStats {{
     color: {t.text_muted};
-    font-size: 12px;
+    font-size: {fs('caption')};
 }}
 #SegmentedControl {{
     background: {t.surface_alt};
@@ -392,7 +429,7 @@ QPushButton#SegmentButton[segmentKind="text"] {{
 }}
 #Breadcrumb {{
     color: {t.text_dim};
-    font-size: 13px;
+    font-size: {fs('label')};
     font-weight: 700;
 }}
 #SelectionBar {{
@@ -402,7 +439,7 @@ QPushButton#SegmentButton[segmentKind="text"] {{
 }}
 #SelectionCount {{
     color: {t.text};
-    font-size: 13px;
+    font-size: {fs('label')};
     font-weight: 700;
 }}
 #TagChip {{
@@ -411,11 +448,11 @@ QPushButton#SegmentButton[segmentKind="text"] {{
     border: 1px solid {t.border};
     border-radius: {t.radius_pill}px;
     padding: {px(t, 3)} {px(t, 8)};
-    font-size: 11px;
+    font-size: {fs('micro')};
 }}
 #DetailTitle {{
     color: {t.text};
-    font-size: 15px;
+    font-size: {fs('body')};
     font-weight: 700;
 }}
 #DetailCover {{
@@ -433,7 +470,7 @@ gridline-color: transparent;
 color: {t.text};
 selection-background-color: {t.selection};
 selection-color: {t.selection_text};
-font-size: 13px;
+font-size: {fs('label')};
 }}
 QTableView::item {{
 padding: 0 {px(t, 10)};
@@ -452,7 +489,7 @@ QHeaderView::section {{
     border: none;
     border-bottom: 1px solid {t.border};
     padding: {px(t, 8)} {px(t, 10)};
-    font-size: 11px;
+    font-size: {fs('micro')};
     font-weight: 700;
     letter-spacing: 0.5px;
 }}
@@ -470,7 +507,7 @@ QTableCornerButton::section {{
 }}
 #EmptyState {{
     color: {t.text_muted};
-    font-size: 13px;
+    font-size: {fs('label')};
 }}
 #Card {{
 background: {t.surface_alt};
@@ -479,7 +516,7 @@ border-radius: {t.radius}px;
 }}
 #CardTitle {{
 color: {t.text};
-font-size: 14px;
+font-size: {fs('body_sm')};
 font-weight: 700;
 }}
 
@@ -495,13 +532,13 @@ font-weight: 700;
 }}
 #HeroTitle {{
     color: {t.text};
-    font-size: 22px;
+    font-size: {fs('title')};
     font-weight: 800;
     letter-spacing: -0.3px;
 }}
 #HeroSubtitle {{
     color: {t.text_dim};
-    font-size: 13px;
+    font-size: {fs('label')};
     line-height: 1.4;
 }}
 #HeroBadge {{
@@ -510,7 +547,7 @@ font-weight: 700;
     border: 1px solid {t.accent};
     border-radius: {t.radius_pill}px;
     padding: 5px 12px;
-    font-size: 10px;
+    font-size: {fs('nano')};
     font-weight: 800;
     letter-spacing: 0.9px;
 }}
@@ -520,7 +557,7 @@ font-weight: 700;
     border: 1px solid {t.border};
     border-radius: {t.radius_pill}px;
     padding: 5px 10px;
-    font-size: 10px;
+    font-size: {fs('nano')};
     font-weight: 700;
     letter-spacing: 0.8px;
 }}
@@ -562,12 +599,12 @@ font-weight: 700;
 }}
 #StatValue {{
     color: {t.text};
-    font-size: 26px;
+    font-size: {fs('display')};
     font-weight: 800;
 }}
 #StatLabel {{
     color: {t.text_muted};
-    font-size: 11px;
+    font-size: {fs('micro')};
     font-weight: 700;
     letter-spacing: 0.5px;
 }}
@@ -579,7 +616,7 @@ QPushButton#NavPill {{
     border: none;
     border-radius: {t.radius_sm + 2}px;
     padding: 6px 14px;
-    font-size: 13px;
+    font-size: {fs('label')};
     font-weight: 600;
 }}
 QPushButton#NavPill:hover {{
@@ -593,7 +630,7 @@ QPushButton#NavPill:checked {{
 
 #Callout {{
     color: {t.text_dim};
-    font-size: 13px;
+    font-size: {fs('label')};
     background: {t.surface_alt};
     border: 1px solid {t.border};
     border-radius: {t.radius}px;
@@ -601,7 +638,7 @@ QPushButton#NavPill:checked {{
 }}
 #FieldLabel {{
     color: {t.text_muted};
-    font-size: 11px;
+    font-size: {fs('micro')};
     font-weight: 700;
     letter-spacing: 0.4px;
 }}
@@ -609,23 +646,23 @@ QPushButton#NavPill:checked {{
 /* ---------- editor musical de metadatos ---------- */
 #MetadataEyebrow {{
     color: {t.accent};
-    font-size: 10px;
+    font-size: {fs('nano')};
     font-weight: 800;
     letter-spacing: 1.1px;
 }}
 #MetadataTrackTitle {{
     color: {t.text};
-    font-size: 26px;
+    font-size: {fs('display')};
     font-weight: 800;
 }}
 #MetadataPageTitle {{
     color: {t.text};
-    font-size: 20px;
+    font-size: {fs('heading')};
     font-weight: 800;
 }}
 #MetadataTrackArtist, #MetadataHint, #MetadataPath {{
     color: {t.text_dim};
-    font-size: 12px;
+    font-size: {fs('caption')};
 }}
 #MetadataPath {{
     background: {t.surface_alt};
@@ -684,13 +721,13 @@ QPushButton#NavPill:checked {{
     border: 1px solid {tint(t.accent, t.border, 0.35)};
     border-radius: {t.radius_pill}px;
     padding: 6px 10px;
-    font-size: 10px;
+    font-size: {fs('nano')};
     font-weight: 800;
     letter-spacing: 0.6px;
 }}
 #MetadataSectionTitle {{
     color: {t.text};
-    font-size: 17px;
+    font-size: {fs('subhead')};
     font-weight: 800;
 }}
 #MetadataDivider {{
@@ -703,7 +740,7 @@ QLineEdit#MetadataField {{
     border-radius: {t.radius_sm + 2}px;
     padding: 8px 12px;
     color: {t.text};
-    font-size: 13px;
+    font-size: {fs('label')};
 }}
 QLineEdit#MetadataField:focus {{
     border: 1px solid {t.accent};
@@ -714,13 +751,13 @@ QLineEdit#MetadataField::placeholder {{
 }}
 #MetadataGroupTitle {{
     color: {t.text_muted};
-    font-size: 11px;
+    font-size: {fs('micro')};
     font-weight: 800;
     letter-spacing: 0.6px;
 }}
 #MetadataDirty {{
     color: {t.accent};
-    font-size: 12px;
+    font-size: {fs('caption')};
     font-weight: 700;
 }}
 QLabel#FieldLabel[modified="true"] {{
@@ -741,12 +778,12 @@ QLineEdit#MetadataField[modified="true"] {{
 }}
 #SettingsSection {{
     color: {t.text};
-    font-size: 15px;
+    font-size: {fs('body')};
     font-weight: 800;
 }}
 #SettingTitle {{
     color: {t.text};
-    font-size: 13px;
+    font-size: {fs('label')};
     font-weight: 700;
 }}
 #SettingsRowIcon {{
@@ -759,7 +796,7 @@ QComboBox#SettingsControl {{
     border: 1px solid {t.border};
     border-radius: {t.radius_sm + 2}px;
     padding: {px(t, 8)} {px(t, 12)};
-    font-size: 13px;
+    font-size: {fs('label')};
 }}
 QComboBox#SettingsControl:hover {{
     background: {t.surface_hover};
@@ -778,7 +815,7 @@ QComboBox#SettingsControl QAbstractItemView {{
 }}
 QCheckBox#SettingsCheck {{
     color: {t.text};
-    font-size: 13px;
+    font-size: {fs('label')};
     spacing: 8px;
 }}
 QCheckBox#SettingsCheck::indicator {{
@@ -808,7 +845,7 @@ QMenu::item {{
     background: transparent;
     padding: {px(t, 6)} {px(t, 14)};
     border-radius: 4px;
-    font-size: 12px;
+    font-size: {fs('caption')};
 }}
 QMenu::item:selected {{
     background: {t.surface_hover};

@@ -86,6 +86,28 @@ class Theme:
         )
 
 
+# Escala tipografica. Los tamanos salen de aca y no escritos a mano en el QSS:
+# ajustar la jerarquia de toda la app es cambiar un solo mapa.
+FONT_SIZES: dict[str, int] = {
+    "display": 26,
+    "title": 22,
+    "heading": 20,
+    "subhead": 17,
+    "lead": 16,
+    "body": 15,
+    "body_sm": 14,
+    "label": 13,
+    "caption": 12,
+    "micro": 11,
+    "nano": 10,
+}
+
+
+def fs(name: str) -> str:
+    """Tamano de fuente por rol, ya en px para inyectar en el QSS."""
+    return f"{FONT_SIZES[name]}px"
+
+
 def tint(base: str, color: str, alpha: float) -> str:
     """Mezcla `color` sobre `base` con opacidad `alpha`.
 

@@ -85,6 +85,7 @@ class Sidebar(QFrame):
 
         self._brand_title = QLabel("Sakura Music")
         self._brand_subtitle = QLabel("Gestor y descargador")
+        self._brand_subtitle.setObjectName("SidebarBrandSubtitle")
         self._recolor_brand()
 
         header_row = QHBoxLayout()
@@ -100,12 +101,10 @@ class Sidebar(QFrame):
     def _recolor_brand(self) -> None:
         t = th.active()
         self._brand_icon.setPixmap(sakura.render(t.accent, 24))
+        # El titulo va en linea porque `test_theme_switch` comprueba que cambie
+        # de color en vivo; el subtitulo lo pinta el QSS por objectName.
         self._brand_title.setStyleSheet(
             f"color: {t.text}; font-size: 15px; font-weight: 800; background: transparent;"
-        )
-        self._brand_subtitle.setStyleSheet(
-            f"color: {t.text_muted}; font-size: 10px; font-weight: 600;"
-            "letter-spacing: 0.5px; background: transparent;"
         )
 
     def _section(self, label: str) -> QLabel:
@@ -139,10 +138,11 @@ class Sidebar(QFrame):
         for button in (*self._buttons.values(), self._settings_button):
             label = button.property("label")
             button.setText("" if slim else f"  {label}")
-            if slim:
-                button.setStyleSheet("text-align: center; padding: 8px;")
-            else:
-                button.setStyleSheet("")
+            # El modo compacto se pinta por propiedad en el QSS, no en linea:
+            # asi el tema manda y no queda un estilo pegado al cambiar.
+            button.setProperty("slim", slim)
+            button.style().unpolish(button)
+            button.style().polish(button)
             self._recolor(button)
 
     def select(self, page: str) -> None:

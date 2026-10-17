@@ -13,6 +13,7 @@ from ..core.formats import AudioFormat, get_format
 from ..core.library import summarize
 from ..core.models import DownloadJob, DownloadSummary, JobStatus, summarize_downloads
 from . import theme as th
+from .motion import animations_enabled
 from .pages import HomePage, LibraryPage, QueuePage, SearchPage, SettingsPage
 from .services import DownloadManager, LibraryReviewScanner
 from .widgets import Sidebar, TitleBar
@@ -453,6 +454,26 @@ class MainWindow(QWidget):
         self.titlebar.set_title("")
         if key == "search":
             self.topbar.focus_search()
+        if animations_enabled():
+            self._fade_in(page)
+
+    def _fade_in(self, page) -> None:
+        """Fundido breve al entrar a una pagina. Se salta en offscreen."""
+        from PySide6.QtCore import QEasingCurve, QPropertyAnimation
+        from PySide6.QtWidgets import QGraphicsOpacityEffect
+
+        effect = QGraphicsOpacityEffect(page)
+        page.setGraphicsEffect(effect)
+        anim = QPropertyAnimation(effect, b"opacity", self)
+        anim.setDuration(180)
+        anim.setStartValue(0.0)
+        anim.setEndValue(1.0)
+        anim.setEasingCurve(QEasingCurve.Type.OutCubic)
+        anim.finished.connect(lambda: page.setGraphicsEffect(None))
+        # Se guarda la referencia: sin esto el recolector se lleva la animacion a
+        # mitad de camino.
+        self._page_anim = anim
+        anim.start()
 
     def _register_shortcuts(self) -> None:
         for keys, slot in (

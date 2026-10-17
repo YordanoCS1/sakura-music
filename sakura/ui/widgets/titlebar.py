@@ -35,6 +35,7 @@ class TitleBar(QFrame):
         self._max = IconButton("maximize", "Maximizar", 40, parent=self)
         self._max.clicked.connect(self._toggle_maximize)
         self._close = IconButton("close", "Cerrar", 40, parent=self)
+        self._close.setProperty("variant", "close")
         self._close.clicked.connect(self._window.close)
 
         for btn in (self._min, self._max, self._close):
@@ -60,12 +61,6 @@ class TitleBar(QFrame):
         self.setFixedHeight(t.titlebar_h)
         name = "restore" if self._window.isMaximized() else "maximize"
         self._max.set_icon_name(name)
-        # El rojo de cerrar sale del tema: escrito a mano no seguia a Nord ni a
-        # Catppuccin, que tienen su propio `danger`.
-        self._close.setStyleSheet(
-            "QPushButton#IconButton:hover {"
-            f" background: {t.danger}; border-radius: {t.radius_sm}px; }}"
-        )
         self._apply_background(self.underMouse())
 
     # --- arrastre de ventana -------------------------------------------------
@@ -97,10 +92,10 @@ class TitleBar(QFrame):
     def _apply_background(self, active: bool) -> None:
         """Fondo aclarado con el mouse encima, del tema activo.
 
-        Lo usa tambien `refresh()`: cambiar de tema con el mouse sobre la barra
-        dejaba pegado el color del tema anterior hasta el proximo `enterEvent`.
+        Se hace por propiedad + `polish` en vez de `setStyleSheet`: el QSS del
+        tema decide el color, asi que cambiar de tema con el mouse sobre la barra
+        no deja pegado el color anterior.
         """
-        if active:
-            self.setStyleSheet(f"#TitleBar {{ background: {th.active().surface_alt}; }}")
-        else:
-            self.setStyleSheet("")
+        self.setProperty("hovered", active)
+        self.style().unpolish(self)
+        self.style().polish(self)
