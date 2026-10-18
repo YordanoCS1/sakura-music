@@ -517,12 +517,11 @@ class CoverCardDelegate(QStyledItemDelegate):
 
 
 class TrackScrollDelegate(CoverCardDelegate):
-    """Rollo de estilo chino: panel ancho con sello, filete de tinta y brillo."""
+    """Rollo de estilo chino: paisaje a tinta, portada en luna y sello."""
 
     CARD_W = 640
-    CARD_H = 168
-    COVER = 132
-    SPINE_W = 4
+    CARD_H = 176
+    COVER = 126
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -569,59 +568,85 @@ class TrackScrollDelegate(CoverCardDelegate):
         else:
             borde = QPen(QColor(theme.border), 1)
         painter.setPen(borde)
-        fondo = QLinearGradient(card.x(), card.y(), card.x(), card.bottom())
-        fondo.setColorAt(0.0, QColor(fill))
-        fondo.setColorAt(1.0, QColor(th.tint(fill, theme.bg, 0.35)))
-        painter.setBrush(fondo)
+        painter.setBrush(QColor(fill))
         painter.drawRoundedRect(card, radius, radius)
 
-        # Rodillo del rollo (轴) a la izquierda: tenue en reposo, encendido con el foco.
-        rodillo = QColor(theme.accent)
-        rodillo.setAlpha(255 if selected else (175 if hovered else 70))
-        painter.setPen(Qt.PenStyle.NoPen)
-        painter.setBrush(rodillo)
-        rod_x = card.x() + 15
-        painter.drawRoundedRect(
-            QRectF(
-                rod_x - self.SPINE_W / 2,
-                card.y() + 30,
-                self.SPINE_W,
-                card.height() - 60,
-            ),
-            2,
-            2,
-        )
-        for cap_y in (card.y() + 24, card.bottom() - 30):
-            painter.drawRoundedRect(QRectF(rod_x - 5, cap_y, 10, self.SPINE_W), 2, 2)
-
-        cover_x = card.x() + 32
-        cover_y = card.y() + (card.height() - self.COVER) / 2
-        painter.drawPixmap(int(cover_x), int(cover_y), self._cover(track_item, self.COVER, theme))
-        painter.setPen(QPen(QColor(theme.border), 1))
-        painter.setBrush(Qt.BrushStyle.NoBrush)
-        painter.drawRect(int(cover_x), int(cover_y), self.COVER, self.COVER)
-
-        self._draw_seal(
-            painter, theme, QRectF(cover_x - 9, cover_y + self.COVER - 31, 34, 34), index.row() + 1
-        )
-
-        self._draw_text_block(painter, theme, track_item, card, index, selected, hovered)
-
-        # Brillo tenue que recorre el panel (animacion del temporizador).
-        path = QPainterPath()
-        path.addRoundedRect(card, radius, radius)
+        # Paisaje a tinta tras el texto, recortado al panel.
+        card_path = QPainterPath()
+        card_path.addRoundedRect(card, radius, radius)
         painter.save()
-        painter.setClipPath(path)
+        painter.setClipPath(card_path)
+        self._ink_mountains(
+            painter,
+            QRectF(card.x() + card.width() * 0.42, card.y(), card.width() * 0.58, card.height()),
+            theme.text,
+            selected or hovered,
+        )
         sheen = card.x() + ((self._phase * 7) % (card.width() + 320)) - 160
         grad = QLinearGradient(sheen - 95, card.y(), sheen + 95, card.bottom())
         grad.setColorAt(0.0, QColor(255, 255, 255, 0))
-        grad.setColorAt(0.5, QColor(255, 255, 255, 15))
+        grad.setColorAt(0.5, QColor(255, 255, 255, 12))
         grad.setColorAt(1.0, QColor(255, 255, 255, 0))
         painter.setPen(Qt.PenStyle.NoPen)
         painter.setBrush(grad)
         painter.drawRect(card)
         painter.restore()
 
+        # Portada en luna (月洞门): circulo con doble anillo.
+        d = self.COVER
+        cx = card.x() + 38
+        cy = card.y() + (card.height() - d) / 2
+        center = QPointF(cx + d / 2, cy + d / 2)
+        painter.save()
+        clip = QPainterPath()
+        clip.addEllipse(center, d / 2, d / 2)
+        painter.setClipPath(clip)
+        painter.drawPixmap(int(cx), int(cy), self._cover(track_item, d, theme))
+        painter.restore()
+        painter.setPen(QPen(QColor(theme.accent), 2))
+        painter.setBrush(Qt.BrushStyle.NoBrush)
+        painter.drawEllipse(center, d / 2, d / 2)
+        ring = QColor(theme.border)
+        painter.setPen(QPen(ring, 1))
+        painter.drawEllipse(center, d / 2 - 4, d / 2 - 4)
+
+        self._draw_text_block(
+            painter, theme, track_item, card, index, cx + d + 30, selected, hovered
+        )
+        self._draw_seal(
+            painter, theme, QRectF(card.right() - 58, card.bottom() - 58, 34, 34), index.row() + 1
+        )
+
+        painter.restore()
+
+    @staticmethod
+    def _ink_mountains(painter: QPainter, rect: QRectF, ink: str, active: bool) -> None:
+        """Silueta de montanas a tinta con degradado, al fondo del panel."""
+        painter.save()
+        painter.setClipRect(rect)
+        painter.setPen(Qt.PenStyle.NoPen)
+        grad = QLinearGradient(rect.x(), rect.top(), rect.x(), rect.bottom())
+        alto, bajo = (32, 84) if active else (24, 66)
+        for stop, alpha in ((0.0, 0), (0.55, alto), (1.0, bajo)):
+            color = QColor(ink)
+            color.setAlpha(alpha)
+            grad.setColorAt(stop, color)
+        painter.setBrush(grad)
+        path = QPainterPath()
+        path.moveTo(rect.x(), rect.bottom())
+        for fx, fy in (
+            (0.00, 0.60),
+            (0.16, 0.32),
+            (0.30, 0.50),
+            (0.46, 0.22),
+            (0.62, 0.46),
+            (0.78, 0.34),
+            (1.00, 0.56),
+        ):
+            path.lineTo(rect.x() + fx * rect.width(), rect.y() + fy * rect.height())
+        path.lineTo(rect.right(), rect.bottom())
+        path.closeSubpath()
+        painter.drawPath(path)
         painter.restore()
 
     @staticmethod
@@ -655,26 +680,23 @@ class TrackScrollDelegate(CoverCardDelegate):
         track_item: Track,
         card: QRectF,
         index: QModelIndex,
+        text_x: float,
         selected: bool,
         hovered: bool,
     ) -> None:
-        divider_x = int(card.right() - 128)
-        text_x = int(card.x() + 32 + TrackScrollDelegate.COVER + 26)
-        text_w = max(40, divider_x - text_x - 22)
         heading = theme.heading_family or th.SERIF_STACK
+        text_w = max(40, int(card.right() - text_x - 92))
 
         eyebrow_font = painter.font()
         eyebrow_font.setPixelSize(11)
         eyebrow_font.setBold(True)
         eyebrow_font.setFamily(heading)
-        eyebrow_font.setLetterSpacing(
-            QFont.SpacingType.AbsoluteSpacing, 2.0
-        )
+        eyebrow_font.setLetterSpacing(QFont.SpacingType.AbsoluteSpacing, 2.0)
         painter.setFont(eyebrow_font)
         painter.setPen(QColor(theme.accent))
         painter.drawText(
-            text_x,
-            int(card.y() + 38),
+            int(text_x),
+            int(card.y() + 36),
             text_w,
             14,
             Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter,
@@ -682,15 +704,15 @@ class TrackScrollDelegate(CoverCardDelegate):
         )
 
         title_font = painter.font()
-        title_font.setPixelSize(20)
+        title_font.setPixelSize(21)
         title_font.setBold(True)
         title_font.setFamily(heading)
         title_font.setLetterSpacing(QFont.SpacingType.AbsoluteSpacing, 0.0)
         painter.setFont(title_font)
         painter.setPen(QColor(theme.text))
         painter.drawText(
-            text_x,
-            int(card.y() + 56),
+            int(text_x),
+            int(card.y() + 52),
             text_w,
             28,
             Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter,
@@ -699,12 +721,20 @@ class TrackScrollDelegate(CoverCardDelegate):
             ),
         )
 
-        # Filete de tinta que crece con el foco.
-        rule_w = 104 if (selected or hovered) else 68
+        # Pincelada bajo el titulo: crece con el foco.
+        stroke_w = 128 if (selected or hovered) else 92
         ink = QColor(theme.accent)
-        ink.setAlpha(255 if (selected or hovered) else 200)
-        painter.setPen(QPen(ink, 2))
-        painter.drawLine(text_x, int(card.y() + 88), text_x + rule_w, int(card.y() + 88))
+        ink.setAlpha(255 if (selected or hovered) else 205)
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.setBrush(ink)
+        brush = QPainterPath()
+        y = card.y() + 84
+        brush.moveTo(text_x, y)
+        brush.lineTo(text_x + stroke_w, y)
+        brush.lineTo(text_x + stroke_w, y + 3)
+        brush.lineTo(text_x, y + 6)
+        brush.closeSubpath()
+        painter.drawPath(brush)
 
         artist_font = painter.font()
         artist_font.setPixelSize(13)
@@ -713,7 +743,7 @@ class TrackScrollDelegate(CoverCardDelegate):
         painter.setFont(artist_font)
         painter.setPen(QColor(theme.text_dim))
         painter.drawText(
-            text_x,
+            int(text_x),
             int(card.y() + 94),
             text_w,
             16,
@@ -726,13 +756,14 @@ class TrackScrollDelegate(CoverCardDelegate):
         meta = track_item.album or track_item.extension.upper()
         if track_item.year:
             meta = f"{meta} · {track_item.year}"
+        meta = f"{meta} · {track_item.duration_text}"
         meta_font = painter.font()
         meta_font.setPixelSize(11)
         meta_font.setBold(False)
         painter.setFont(meta_font)
         painter.setPen(QColor(theme.text_muted))
         painter.drawText(
-            text_x,
+            int(text_x),
             int(card.y() + 116),
             text_w,
             14,
@@ -741,61 +772,6 @@ class TrackScrollDelegate(CoverCardDelegate):
                 meta, Qt.TextElideMode.ElideRight, text_w
             ),
         )
-
-        TrackScrollDelegate._draw_side_column(
-            painter, theme, track_item, card, divider_x, selected, hovered
-        )
-
-    @staticmethod
-    def _draw_side_column(
-        painter: QPainter,
-        theme,
-        track_item: Track,
-        card: QRectF,
-        divider_x: int,
-        selected: bool,
-        hovered: bool,
-    ) -> None:
-        """Columna derecha: filete vertical, duracion y sello de formato."""
-        hair = QColor(theme.border)
-        hair.setAlpha(120)
-        painter.setPen(QPen(hair, 1))
-        painter.drawLine(divider_x, int(card.y() + 30), divider_x, int(card.bottom() - 30))
-
-        col_w = card.right() - divider_x
-
-        dur_font = painter.font()
-        dur_font.setPixelSize(17)
-        dur_font.setBold(True)
-        dur_font.setFamily(theme.heading_family or th.SERIF_STACK)
-        dur_font.setLetterSpacing(QFont.SpacingType.AbsoluteSpacing, 0.5)
-        painter.setFont(dur_font)
-        painter.setPen(QColor(theme.text if (selected or hovered) else theme.text_dim))
-        painter.drawText(
-            int(divider_x),
-            int(card.y() + 44),
-            int(col_w),
-            22,
-            Qt.AlignmentFlag.AlignCenter,
-            track_item.duration_text,
-        )
-
-        badge = track_item.extension.upper()
-        badge_font = painter.font()
-        badge_font.setPixelSize(10)
-        badge_font.setBold(True)
-        badge_font.setLetterSpacing(QFont.SpacingType.AbsoluteSpacing, 1.0)
-        painter.setFont(badge_font)
-        box_w = float(QFontMetrics(badge_font).horizontalAdvance(badge) + 20)
-        box_h = 20.0
-        box = QRectF(
-            divider_x + (col_w - box_w) / 2, card.y() + 78, box_w, box_h
-        )
-        painter.setPen(QPen(QColor(th.tint(theme.border, theme.accent, 0.55)), 1))
-        painter.setBrush(QColor(th.tint(theme.surface, theme.accent, 0.22)))
-        painter.drawRoundedRect(box, box_h / 2, box_h / 2)
-        painter.setPen(QColor(theme.accent))
-        painter.drawText(box, Qt.AlignmentFlag.AlignCenter, badge)
 
 
 class TrackPolaroidDelegate(CoverCardDelegate):
