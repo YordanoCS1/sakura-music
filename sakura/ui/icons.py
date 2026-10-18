@@ -243,21 +243,6 @@ def _rasterize(svg: bytes, size: int, color: str | None, ratio: int = 2) -> QPix
     return px
 
 
-def svg_body_pixmap(
-    body: str,
-    size: int,
-    color: str | None = None,
-    width: int = 24,
-    height: int = 24,
-) -> QPixmap | None:
-    """Pixmap de un `body` SVG suelto (como los que sirve Iconify)."""
-    svg = (
-        '<svg xmlns="http://www.w3.org/2000/svg" '
-        f'viewBox="0 0 {width} {height}">{body}</svg>'
-    ).encode()
-    return _rasterize(svg, size, color)
-
-
 def _load_source(path: str) -> QPixmap | None:
     """Carga el archivo de override: rasteriza SVG, o lee el PNG tal cual.
 

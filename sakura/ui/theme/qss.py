@@ -999,33 +999,4 @@ QPushButton#IconSlot:checked {{
     border: 1px solid {t.border};
     border-radius: {t.radius}px;
 }}
-#IconBrowser {{
-    background: {t.surface_alt};
-    border: 1px solid {t.border};
-    border-radius: {t.radius + 6}px;
-}}
-QLineEdit#IconSearch {{
-    background: {t.surface};
-    color: {t.text};
-    border: 1px solid {t.border};
-    border-radius: {t.radius_sm + 2}px;
-    padding: {px(t, 7)} {px(t, 12)};
-    font-size: {fs('label')};
-}}
-QLineEdit#IconSearch:focus {{
-    border: 1px solid {t.accent};
-}}
-#IconResults {{
-    background: transparent;
-    border: none;
-}}
-QPushButton#IconResult {{
-    background: {t.surface};
-    border: 1px solid {t.border};
-    border-radius: {t.radius_sm}px;
-}}
-QPushButton#IconResult:hover {{
-    background: {t.surface_hover};
-    border-color: {t.accent};
-}}
 """

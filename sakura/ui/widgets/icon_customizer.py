@@ -1,10 +1,10 @@
 """Personalizacion de iconos, con vista previa en vivo.
 
 En vez de escribir rutas en el codigo, acá se elige por cada icono un PNG/SVG
-propio o uno bajado de la API de Iconify, y se guarda en `config.json`. Como
-cada pestaña y cada boton pide su icono por nombre, un override alcanza a todos
-los lugares donde se use, sin tocarlos uno por uno. El panel de la derecha
-simula el chrome de la app para ver el resultado antes de cerrar el dialogo.
+propio y se guarda en `config.json`. Como cada pestaña y cada boton pide su
+icono por nombre, un override alcanza a todos los lugares donde se use, sin
+tocarlos uno por uno. El panel de la derecha simula el chrome de la app para ver
+el resultado antes de cerrar el dialogo.
 """
 
 from __future__ import annotations
@@ -19,10 +19,8 @@ from PySide6.QtWidgets import (
     QDialog,
     QFileDialog,
     QFrame,
-    QGridLayout,
     QHBoxLayout,
     QLabel,
-    QLineEdit,
     QMessageBox,
     QPushButton,
     QScrollArea,
@@ -31,10 +29,8 @@ from PySide6.QtWidgets import (
 )
 
 from ...config import icons_dir, save_settings
-from ...core.icon_api import IconHit
 from .. import icons
 from .. import theme as th
-from ..services.icon_library import IconLibrary
 from .buttons import TextButton
 from .elided import ElidedLabel
 
@@ -97,20 +93,6 @@ def store_icon(name: str, source: str) -> str:
     if origin.resolve() != destino.resolve():
         shutil.copy2(origin, destino)
     return str(destino)
-
-
-def store_icon_bytes(name: str, data: bytes, suffix: str = ".svg") -> str:
-    """Guarda bytes (por ejemplo un SVG bajado de Iconify) con nombre estable."""
-    destino = _destino(name, suffix)
-    destino.write_bytes(data)
-    return str(destino)
-
-
-def _svg_document(body: str, width: int, height: int) -> bytes:
-    return (
-        '<svg xmlns="http://www.w3.org/2000/svg" '
-        f'viewBox="0 0 {width} {height}">{body}</svg>'
-    ).encode()
 
 
 def _label_of(name: str) -> str:
@@ -217,7 +199,7 @@ class _MockPreview(QFrame):
 
 
 class IconCustomizerDialog(QDialog):
-    """Elige un PNG por icono y previsualiza el cambio mientras se edita."""
+    """Elige un PNG/SVG por icono y previsualiza el cambio mientras se edita."""
 
     changed = Signal()
 
@@ -229,23 +211,9 @@ class IconCustomizerDialog(QDialog):
         self.resize(900, 640)
 
         self._buttons: dict[str, QPushButton] = {}
-        self._result_buttons: dict[str, QPushButton] = {}
-        self._hits: dict[str, IconHit] = {}
-        self._bodies: dict[str, tuple[str, int, int]] = {}
         self._current = ICON_SLOTS[0][0]
         self._build()
-
-        self._library = IconLibrary(self)
-        self._library.results_found.connect(self._on_results)
-        self._library.previews_ready.connect(self._on_previews)
-        self._library.failed.connect(self._on_online_failed)
-
         self._select(self._current)
-
-    def done(self, result: int) -> None:
-        """Corta la red antes de cerrar: un `QThread` vivo no se puede destruir."""
-        self._library.shutdown()
-        super().done(result)
 
     # --- construccion --------------------------------------------------------
 
@@ -257,8 +225,9 @@ class IconCustomizerDialog(QDialog):
         title = QLabel("Personalizar iconos")
         title.setObjectName("SettingsSection")
         hint = QLabel(
-            "Elegí un PNG/SVG propio o buscá entre más de 200.000 iconos gratis "
-            "(Iconify). Se aplica al instante; el ícono original queda como respaldo."
+            "Elegí un PNG o SVG propio para reemplazar cualquier ícono de pestañas, "
+            "barra de título y botones. Se aplica al instante; el original queda "
+            "como respaldo."
         )
         hint.setObjectName("PageSubtitle")
         hint.setWordWrap(True)
@@ -349,7 +318,7 @@ class IconCustomizerDialog(QDialog):
 
         actions = QVBoxLayout()
         actions.setSpacing(8)
-        self.pick_btn = TextButton("Elegir PNG…", "accent", icon="download")
+        self.pick_btn = TextButton("Elegir imagen…", "accent", icon="download")
         self.pick_btn.clicked.connect(self._on_pick)
         self.restore_btn = TextButton("Restaurar", "ghost", icon="undo")
         self.restore_btn.clicked.connect(lambda: self._on_restore(self._current))
@@ -358,53 +327,8 @@ class IconCustomizerDialog(QDialog):
         controls_layout.addLayout(actions, 0)
 
         layout.addWidget(controls)
-        layout.addWidget(self._build_browser(), 1)
+        layout.addStretch(1)
         return panel
-
-    def _build_browser(self) -> QFrame:
-        box = QFrame()
-        box.setObjectName("IconBrowser")
-        box.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
-        layout = QVBoxLayout(box)
-        layout.setContentsMargins(18, 14, 18, 14)
-        layout.setSpacing(10)
-
-        head = QHBoxLayout()
-        head.setSpacing(8)
-        caption = QLabel("Buscar en línea")
-        caption.setObjectName("IconPreviewCaption")
-        self.search_input = QLineEdit()
-        self.search_input.setObjectName("IconSearch")
-        self.search_input.setPlaceholderText("ej. heart, play, cloud, disk…")
-        self.search_input.returnPressed.connect(self._on_search)
-        self.search_btn = TextButton("Buscar", "ghost", icon="search")
-        self.search_btn.clicked.connect(self._on_search)
-        head.addWidget(caption)
-        head.addWidget(self.search_input, 1)
-        head.addWidget(self.search_btn)
-        layout.addLayout(head)
-
-        self.online_status = QLabel(
-            "Los resultados se aplican al ícono seleccionado. Prueba: heart, play, cloud."
-        )
-        self.online_status.setObjectName("PageSubtitle")
-        self.online_status.setWordWrap(True)
-        layout.addWidget(self.online_status)
-
-        area = QScrollArea()
-        area.setObjectName("IconResults")
-        area.setWidgetResizable(True)
-        area.setFrameShape(QFrame.Shape.NoFrame)
-        area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        area.setMinimumHeight(150)
-
-        self._grid_host = QWidget()
-        self._grid = QGridLayout(self._grid_host)
-        self._grid.setContentsMargins(0, 0, 0, 0)
-        self._grid.setSpacing(6)
-        area.setWidget(self._grid_host)
-        layout.addWidget(area, 1)
-        return box
 
     def _build_footer(self) -> QWidget:
         footer = QWidget()
@@ -459,7 +383,7 @@ class IconCustomizerDialog(QDialog):
         self.changed.emit()
 
     def _apply_icon(self, name: str, source: str, tint: bool) -> bool:
-        """Aplica un archivo, guarda una copia estable y avisa. False si es ilegible."""
+        """Aplica el archivo, guarda una copia estable y avisa. False si es ilegible."""
         if not icons.set_override(name, source, tint):
             QMessageBox.warning(
                 self, "Imagen no válida", "No se pudo leer la imagen elegida."
@@ -471,18 +395,6 @@ class IconCustomizerDialog(QDialog):
             estable = source
         if estable != source:
             icons.set_override(name, estable, tint)
-        self._commit()
-        return True
-
-    def _apply_bytes(self, name: str, data: bytes, tint: bool) -> bool:
-        """Aplica un SVG ya en memoria (por ejemplo uno bajado de Iconify)."""
-        try:
-            ruta = store_icon_bytes(name, data)
-        except OSError:
-            QMessageBox.warning(self, "No se pudo guardar", "No se pudo guardar el icono.")
-            return False
-        if not icons.set_override(name, ruta, tint):
-            return False
         self._commit()
         return True
 
@@ -509,77 +421,3 @@ class IconCustomizerDialog(QDialog):
     def _on_restore_all(self) -> None:
         icons.clear_overrides()
         self._commit()
-
-    # --- busqueda en linea ---------------------------------------------------
-
-    def _on_search(self) -> None:
-        query = self.search_input.text().strip()
-        if not query:
-            return
-        self.online_status.setText(f"Buscando «{query}»…")
-        self._limpiar_resultados()
-        self._library.search(query)
-
-    def _limpiar_resultados(self) -> None:
-        self._result_buttons.clear()
-        self._hits.clear()
-        self._bodies.clear()
-        while self._grid.count():
-            item = self._grid.takeAt(0)
-            widget = item.widget()
-            if widget is not None:
-                widget.deleteLater()
-
-    def _on_results(self, hits: list[IconHit]) -> None:
-        self._limpiar_resultados()
-        self.online_status.setText(
-            f"{len(hits)} resultados. Elegí uno para aplicarlo a «{_label_of(self._current)}»."
-        )
-        columnas = 8
-        for index, hit in enumerate(hits):
-            tile = QPushButton()
-            tile.setObjectName("IconResult")
-            tile.setCursor(Qt.CursorShape.PointingHandCursor)
-            tile.setFixedSize(44, 44)
-            tile.setIconSize(QSize(26, 26))
-            titulo = f"{hit.id}\n{hit.collection.name}"
-            if hit.collection.license:
-                titulo += f" · {hit.collection.license}"
-            if not hit.collection.tintable:
-                titulo += "\n(set a color: no se tiñe)"
-            tile.setToolTip(titulo)
-            tile.clicked.connect(lambda _=False, h=hit: self._apply_online(h))
-            self._result_buttons[hit.id] = tile
-            self._hits[hit.id] = hit
-            self._grid.addWidget(tile, index // columnas, index % columnas)
-        self._grid_host.adjustSize()
-        self._library.previews(hits)
-
-    def _on_previews(self, previews: dict[str, tuple[str, int, int]]) -> None:
-        self._bodies.update(previews)
-        t = th.active()
-        for icon_id, (body, width, height) in previews.items():
-            tile = self._result_buttons.get(icon_id)
-            hit = self._hits.get(icon_id)
-            if tile is None or hit is None:
-                continue
-            color = t.text if hit.collection.tintable else None
-            pixmap = icons.svg_body_pixmap(body, 26, color=color, width=width, height=height)
-            if pixmap is not None:
-                tile.setIcon(pixmap)
-                tile.setIconSize(QSize(26, 26))
-
-    def _apply_online(self, hit: IconHit) -> None:
-        data = self._bodies.get(hit.id)
-        if not data:
-            return
-        body, width, height = data
-        # Un set a color no se tine: se perderia su paleta.
-        tint = self.tint_check.isChecked() and hit.collection.tintable
-        if self._apply_bytes(self._current, _svg_document(body, width, height), tint):
-            self.online_status.setText(
-                f"Aplicado {hit.id} · {hit.collection.name} a «{_label_of(self._current)}»."
-            )
-
-    def _on_online_failed(self, message: str) -> None:
-        self.online_status.setText(message)
