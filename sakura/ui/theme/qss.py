@@ -984,6 +984,11 @@ QPushButton#IconSlot:checked {{
     color: {t.text_dim};
     font-size: {fs('micro')};
 }}
+#IconPreviewBrand {{
+    color: {t.text};
+    font-size: {fs('label')};
+    font-weight: 800;
+}}
 #IconControls {{
     background: {t.surface_alt};
     border: 1px solid {t.border};

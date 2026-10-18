@@ -13,7 +13,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from .. import icons, sakura
+from .. import icons
 from .. import theme as th
 
 NAV_ITEMS: list[tuple[str, str]] = [
@@ -100,7 +100,8 @@ class Sidebar(QFrame):
 
     def _recolor_brand(self) -> None:
         t = th.active()
-        self._brand_icon.setPixmap(sakura.render(t.accent, 24))
+        # Va por `icons` para que el logo tambien respete un PNG personalizado.
+        self._brand_icon.setPixmap(icons.render("sakura", t.accent, 24))
         # El titulo va en linea porque `test_theme_switch` comprueba que cambie
         # de color en vivo; el subtitulo lo pinta el QSS por objectName.
         self._brand_title.setStyleSheet(

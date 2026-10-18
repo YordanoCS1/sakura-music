@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from PySide6.QtCore import QObject, Qt, Signal
 from PySide6.QtGui import QColor, QPainter, QPixmap
 from PySide6.QtWidgets import QMessageBox
 
-from sakura.config import load_settings
+from sakura.config import icons_dir, load_settings
 from sakura.ui import icons
 from sakura.ui.pages.settings import SettingsPage
 from sakura.ui.widgets.icon_customizer import ICON_SLOTS, IconCustomizerDialog
@@ -38,8 +40,24 @@ def test_elegir_un_png_lo_aplica_y_persiste(qapp, tmp_path) -> None:
     assert dialog._apply_png("home", ruta, False)
 
     assert icons.has_override("home")
-    assert load_settings()["icon_overrides"]["home"]["path"] == ruta
+    guardado = load_settings()["icon_overrides"]["home"]["path"]
+    assert guardado == str(icons_dir() / "home.png")
+    assert Path(guardado).exists()
     assert avisos == [True]
+
+
+def test_el_png_se_copia_a_la_carpeta_de_datos(qapp, tmp_path) -> None:
+    """Mover o borrar el original no debe romper el icono personalizado."""
+    dialog = IconCustomizerDialog()
+    ruta = _png(tmp_path)
+
+    dialog._apply_png("search", ruta, False)
+    Path(ruta).unlink()
+
+    guardado = load_settings()["icon_overrides"]["search"]["path"]
+    assert Path(guardado).exists()
+    icons.load_overrides(load_settings()["icon_overrides"])
+    assert icons.has_override("search")
 
 
 def test_el_tinte_se_guarda_por_icono(qapp, tmp_path) -> None:

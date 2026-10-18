@@ -9,6 +9,9 @@ antes de cerrar el dialogo.
 
 from __future__ import annotations
 
+import shutil
+from pathlib import Path
+
 from PySide6.QtCore import QSize, Qt, Signal
 from PySide6.QtWidgets import (
     QButtonGroup,
@@ -25,21 +28,26 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from ...config import save_settings
+from ...config import icons_dir, save_settings
 from .. import icons
 from .. import theme as th
 from .buttons import TextButton
 from .elided import ElidedLabel
 
-# Iconos que el usuario puede reemplazar: las pestañas de navegacion y las
-# acciones que mas se ven. El primer elemento es el nombre en `icons._PATHS`, el
-# segundo la etiqueta y el tercero el grupo donde se muestra.
+# Iconos que el usuario puede reemplazar: las pestañas de navegacion, el logo,
+# los controles de la barra de titulo y las acciones que mas se ven. El primer
+# elemento es el nombre en `icons`, el segundo la etiqueta y el tercero el grupo.
 ICON_SLOTS: list[tuple[str, str, str]] = [
     ("home", "Inicio", "nav"),
     ("search", "Buscar", "nav"),
     ("library", "Biblioteca", "nav"),
     ("queue", "Cola", "nav"),
     ("settings", "Ajustes", "nav"),
+    ("sakura", "Logo Sakura", "brand"),
+    ("minus", "Minimizar", "window"),
+    ("maximize", "Maximizar", "window"),
+    ("restore", "Restaurar ventana", "window"),
+    ("close", "Cerrar", "window"),
     ("download", "Descargar", "action"),
     ("cloud-download", "Descargar todo", "action"),
     ("edit", "Editar", "action"),
@@ -49,7 +57,6 @@ ICON_SLOTS: list[tuple[str, str, str]] = [
     ("folder-open", "Abrir carpeta", "action"),
     ("more-vertical", "Más opciones", "action"),
     ("check", "Confirmar", "action"),
-    ("close", "Cerrar", "action"),
     ("music", "Música", "action"),
     ("disc", "Álbum", "action"),
     ("user", "Artista", "action"),
@@ -57,10 +64,33 @@ ICON_SLOTS: list[tuple[str, str, str]] = [
 
 _GROUPS: list[tuple[str, str]] = [
     ("nav", "Navegación"),
+    ("brand", "Marca"),
+    ("window", "Barra de título"),
     ("action", "Acciones"),
 ]
 
+# Acciones de la barra de titulo que se muestran en el mock.
+_WINDOW_ICONS: tuple[str, ...] = ("minus", "maximize", "restore", "close")
+
 _WIDTH = 250
+
+
+def store_png(name: str, source: str) -> str:
+    """Copia el PNG a la carpeta de datos y devuelve la ruta estable.
+
+    Reemplaza cualquier copia previa del mismo icono (aunque cambie de
+    extension) para no dejar restos, y evita copiarse sobre si misma cuando el
+    origen ya es la copia guardada.
+    """
+    origin = Path(source)
+    destino_dir = icons_dir()
+    suffix = origin.suffix.lower() or ".png"
+    for viejo in destino_dir.glob(f"{name}.*"):
+        viejo.unlink(missing_ok=True)
+    destino = destino_dir / f"{name}{suffix}"
+    if origin.resolve() != destino.resolve():
+        shutil.copy2(origin, destino)
+    return str(destino)
 
 
 def _label_of(name: str) -> str:
@@ -86,6 +116,30 @@ class _MockPreview(QFrame):
         caption.setObjectName("IconPreviewCaption")
         layout.addWidget(caption)
 
+        brand = QHBoxLayout()
+        brand.setSpacing(8)
+        self._brand = QLabel()
+        self._brand.setFixedSize(24, 24)
+        self._brand.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        brand_name = QLabel("Sakura Music")
+        brand_name.setObjectName("IconPreviewBrand")
+        brand.addWidget(self._brand)
+        brand.addWidget(brand_name)
+        brand.addStretch(1)
+        self._window: dict[str, QLabel] = {}
+        for name in _WINDOW_ICONS:
+            picto = QLabel()
+            picto.setFixedSize(20, 20)
+            picto.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            self._window[name] = picto
+            brand.addWidget(picto)
+        layout.addLayout(brand)
+
+        divider = QFrame()
+        divider.setObjectName("Divider")
+        divider.setFixedHeight(1)
+        layout.addWidget(divider)
+
         nav = QHBoxLayout()
         nav.setSpacing(16)
         self._nav: dict[str, QLabel] = {}
@@ -109,10 +163,10 @@ class _MockPreview(QFrame):
         nav.addStretch(1)
         layout.addLayout(nav)
 
-        divider = QFrame()
-        divider.setObjectName("Divider")
-        divider.setFixedHeight(1)
-        layout.addWidget(divider)
+        divider2 = QFrame()
+        divider2.setObjectName("Divider")
+        divider2.setFixedHeight(1)
+        layout.addWidget(divider2)
 
         row = QHBoxLayout()
         row.setSpacing(10)
@@ -131,6 +185,10 @@ class _MockPreview(QFrame):
     def refresh(self, selected: str = "") -> None:
         """Repinta el mock con los colores del tema y los overrides actuales."""
         t = th.active()
+        self._brand.setPixmap(icons.render("sakura", t.accent, 24))
+        for name, picto in self._window.items():
+            color = t.accent if name == selected else t.text_dim
+            picto.setPixmap(icons.render(name, color, 18))
         for name, picto in self._nav.items():
             color = t.accent if name == selected else t.text_dim
             picto.setPixmap(icons.render(name, color, 20))
@@ -316,13 +374,19 @@ class IconCustomizerDialog(QDialog):
 
     # --- acciones ------------------------------------------------------------
 
-    def _apply_png(self, name: str, path: str, tint: bool) -> bool:
-        """Aplica el PNG, guarda y avisa. Devuelve False si no se pudo leer."""
-        if not icons.set_override(name, path, tint):
+    def _apply_png(self, name: str, source: str, tint: bool) -> bool:
+        """Aplica el PNG, guarda una copia estable y avisa. False si es ilegible."""
+        if not icons.set_override(name, source, tint):
             QMessageBox.warning(
                 self, "Imagen no válida", "No se pudo leer la imagen elegida."
             )
             return False
+        try:
+            estable = store_png(name, source)
+        except OSError:
+            estable = source
+        if estable != source:
+            icons.set_override(name, estable, tint)
         self._save()
         self.refresh()
         self.changed.emit()

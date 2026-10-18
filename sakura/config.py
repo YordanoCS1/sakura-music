@@ -180,6 +180,17 @@ def covers_dir() -> Path:
     return path
 
 
+def icons_dir() -> Path:
+    """Copia estable de los PNG elegidos en Ajustes.
+
+    Se guarda acá en vez de apuntar al archivo original: si el usuario mueve o
+    borra su PNG, la personalización no se rompe.
+    """
+    path = data_dir() / "Iconos"
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+
+
 def config_file() -> Path:
     return data_dir() / "config.json"
 
