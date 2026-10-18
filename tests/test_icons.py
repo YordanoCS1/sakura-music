@@ -84,3 +84,73 @@ def test_todo_icono_definido_se_puede_dibujar(qapp) -> None:
 def test_icono_desconocido_falla(qapp) -> None:
     with pytest.raises(KeyError):
         icons.icon("no-existe", "#FFFFFF")
+
+
+# --- overrides por PNG -------------------------------------------------------
+
+
+def _png_cuadrado(tmp_path, color: str = "white") -> str:
+    """Guarda un cuadrado relleno y devuelve su ruta."""
+    from PySide6.QtCore import Qt
+    from PySide6.QtGui import QColor, QPainter, QPixmap
+
+    path = tmp_path / f"cuadrado-{color}.png"
+    px = QPixmap(64, 64)
+    px.fill(Qt.GlobalColor.transparent)
+    painter = QPainter(px)
+    painter.fillRect(4, 4, 56, 56, QColor(color))
+    painter.end()
+    px.save(str(path))
+    return str(path)
+
+
+def test_un_override_con_tinte_toma_el_color_pedido(qapp, tmp_path) -> None:
+    assert icons.set_override("home", _png_cuadrado(tmp_path), tint=True)
+
+    centro = icons.render("home", "#FF0000", 24).toImage().pixelColor(24, 24)
+
+    assert centro.red() > 200
+    assert centro.green() < 60
+    assert centro.blue() < 60
+
+
+def test_un_override_sin_tinte_respeta_el_png(qapp, tmp_path) -> None:
+    icons.set_override("home", _png_cuadrado(tmp_path), tint=False)
+
+    centro = icons.render("home", "#FF0000", 24).toImage().pixelColor(24, 24)
+
+    assert centro.red() > 200 and centro.green() > 200 and centro.blue() > 200
+
+
+def test_al_limpiar_el_override_vuelve_el_vector(qapp, tmp_path) -> None:
+    icons.set_override("home", _png_cuadrado(tmp_path), tint=False)
+    assert icons.has_override("home")
+
+    icons.clear_override("home")
+
+    assert not icons.has_override("home")
+    assert icons.render("home", "#FFFFFF", 48).width() == 96
+    assert not icons.icon("home", "#FFFFFF").isNull()
+
+
+def test_los_overrides_van_y_vuelven_de_config(qapp, tmp_path) -> None:
+    icons.set_override("search", _png_cuadrado(tmp_path), tint=True)
+    specs = icons.override_specs()
+
+    icons.clear_overrides()
+    assert not icons.has_override("search")
+
+    icons.load_overrides(specs)
+
+    assert icons.has_override("search")
+    assert icons.override_specs()["search"]["tint"] is True
+
+
+def test_un_png_ilegible_se_ignora(qapp, tmp_path) -> None:
+    faltante = str(tmp_path / "no-existe.png")
+
+    assert icons.set_override("home", faltante, tint=False) is False
+
+    icons.load_overrides({"home": {"path": faltante, "tint": True}})
+
+    assert not icons.has_override("home")

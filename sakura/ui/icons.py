@@ -168,6 +168,81 @@ _SVG_CACHE: dict[tuple, QSvgRenderer] = {}
 # cache solo crece: cada tema nuevo deja su juego de SVG parseado para siempre.
 MAX_CACHE = 256
 
+# Overrides elegidos por el usuario desde Ajustes. Cada entrada reemplaza al
+# vector por nombre en toda la app, asi que no hay que tocar cada widget: basta
+# con que el icono se pida por su nombre. `tint` decide si el PNG se pinta con el
+# color que pide cada widget (el acento del tema, el texto, etc.) en vez de
+# respetar su color original.
+_OVERRIDES: dict[str, dict] = {}
+
+
+def has_override(name: str) -> bool:
+    return name in _OVERRIDES
+
+
+def override_specs() -> dict[str, dict]:
+    """Copia serializable del estado actual, para guardar en `config.json`."""
+    return {
+        name: {"path": spec["path"], "tint": spec["tint"]}
+        for name, spec in _OVERRIDES.items()
+    }
+
+
+def set_override(name: str, path: str, tint: bool = False) -> bool:
+    """Usa el PNG de `path` para el icono `name`. False si no se pudo leer."""
+    pixmap = QPixmap(str(path))
+    if pixmap.isNull():
+        return False
+    _OVERRIDES[name] = {"path": str(path), "tint": bool(tint), "pixmap": pixmap}
+    return True
+
+
+def clear_override(name: str) -> None:
+    _OVERRIDES.pop(name, None)
+
+
+def clear_overrides() -> None:
+    _OVERRIDES.clear()
+
+
+def load_overrides(specs: dict | None) -> None:
+    """Carga los overrides guardados. Un PNG faltante o ilegible se ignora."""
+    clear_overrides()
+    for name, spec in (specs or {}).items():
+        if isinstance(spec, dict) and spec.get("path"):
+            set_override(name, str(spec["path"]), bool(spec.get("tint", False)))
+
+
+def _render_override(name: str, color: str, size: int) -> QPixmap:
+    """Dibuja el PNG elegido centrado y, si corresponde, teñido con `color`."""
+    spec = _OVERRIDES[name]
+    ratio = 2
+    side = size * ratio
+    scaled = spec["pixmap"].scaled(
+        side,
+        side,
+        Qt.AspectRatioMode.KeepAspectRatio,
+        Qt.TransformationMode.SmoothTransformation,
+    )
+    if spec["tint"]:
+        # `SourceIn` reemplaza el color dejando intacta la silueta del PNG.
+        tinted = QPixmap(scaled.size())
+        tinted.fill(Qt.GlobalColor.transparent)
+        painter = QPainter(tinted)
+        painter.drawPixmap(0, 0, scaled)
+        painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_SourceIn)
+        painter.fillRect(tinted.rect(), QColor(color))
+        painter.end()
+        scaled = tinted
+
+    px = QPixmap(side, side)
+    px.setDevicePixelRatio(ratio)
+    px.fill(Qt.GlobalColor.transparent)
+    painter = QPainter(px)
+    painter.drawPixmap((side - scaled.width()) // 2, (side - scaled.height()) // 2, scaled)
+    painter.end()
+    return px
+
 
 def _renderer(name: str, color: str, stroke: float) -> QSvgRenderer:
     """SVG cacheado por (icono, color, grosor)."""
@@ -197,6 +272,8 @@ def _renderer(name: str, color: str, stroke: float) -> QSvgRenderer:
 
 def render(name: str, color: str, size: int, stroke: float = 2.0) -> QPixmap:
     """Dibuja el icono `name` en un pixmap logico de `size`x`size`."""
+    if name in _OVERRIDES:
+        return _render_override(name, color, size)
     if name in _SAKURA:
         return sakura.render(color, size)
     if name not in _PATHS:
@@ -226,6 +303,20 @@ def icon(
     dimmed: str | None = None,
 ) -> QIcon:
     """QIcon con estados Normal y Disabled, para que QSS pueda atenuarla."""
+    if name in _OVERRIDES:
+        result = QIcon()
+        result.addPixmap(
+            _render_override(name, color, size), QIcon.Mode.Normal, QIcon.State.Off
+        )
+        disabled = QColor(dimmed) if dimmed else QColor(color)
+        if not dimmed:
+            disabled.setAlpha(110)
+        result.addPixmap(
+            _render_override(name, disabled.name(QColor.NameFormat.HexArgb), size),
+            QIcon.Mode.Disabled,
+            QIcon.State.Off,
+        )
+        return result
     if name in _SAKURA:
         return sakura.icon(color, size, dimmed=dimmed)
     if name not in _PATHS:

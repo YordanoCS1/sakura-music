@@ -150,6 +150,7 @@ class SettingsPage(Page):
     downloads_folder_changed = Signal(str) # ruta de descargas
     max_concurrent_changed = Signal(int)  # descargas simultaneas
     folder_cover_changed = Signal(bool)  # escribir folder.jpg
+    icons_changed = Signal()  # cambio un icono personalizado (PNG)
 
     def __init__(self, parent=None):
         super().__init__("Ajustes", "Preferencias de la aplicación", parent)
@@ -294,6 +295,15 @@ class SettingsPage(Page):
             nav_box,
             "grid",
         )
+        self.icons_btn = TextButton("Personalizar…", "ghost", icon="sparkles")
+        self.icons_btn.clicked.connect(self._on_customize_icons)
+        row_icons = SettingRow(
+            "Iconos de la interfaz",
+            "Reemplazá las pestañas y botones con tus propios PNG. Podés teñirlos "
+            "con el color del tema y ver el resultado antes de aplicarlo.",
+            self.icons_btn,
+            "palette",
+        )
         row_formato = SettingRow(
             "Formato y calidad de descarga",
             "Elige si descargar solo audio (Opus original, m4a, mp3) o video MP4 "
@@ -366,6 +376,7 @@ class SettingsPage(Page):
         self._rows = [
             row_theme,
             row_nav,
+            row_icons,
             row_formato,
             row_concurrent,
             row_cookies,
@@ -376,7 +387,7 @@ class SettingsPage(Page):
         ]
 
         # Tarjetas: agrupan las filas por tema para dar jerarquia a la pagina.
-        self._add_card("Apariencia", "palette", [row_theme, row_nav])
+        self._add_card("Apariencia", "palette", [row_theme, row_nav, row_icons])
         self._add_card(
             "Descargas",
             "download",
@@ -421,6 +432,19 @@ class SettingsPage(Page):
         self.settings["nav_layout"] = nav_mode
         save_settings({"nav_layout": nav_mode})
         self.nav_layout_changed.emit(nav_mode)
+
+    def _on_customize_icons(self) -> None:
+        """Abre el estudio de iconos; reenvía cada cambio para repintar la app."""
+        dialog = self._make_icons_dialog()
+        dialog.exec()
+        dialog.deleteLater()
+
+    def _make_icons_dialog(self):
+        from ..widgets.icon_customizer import IconCustomizerDialog
+
+        dialog = IconCustomizerDialog(self)
+        dialog.changed.connect(self.icons_changed.emit)
+        return dialog
 
     # --- formato -------------------------------------------------------------
 

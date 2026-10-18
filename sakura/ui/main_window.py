@@ -112,6 +112,7 @@ class MainWindow(QWidget):
         self.page_map["settings"].max_concurrent_changed.connect(self._on_max_concurrent_changed)
         self.page_map["settings"].library_folder_changed.connect(self._on_library_folder_changed)
         self.page_map["settings"].downloads_folder_changed.connect(self._on_downloads_folder_changed)
+        self.page_map["settings"].icons_changed.connect(self.refresh_theme)
         self.topbar.page_selected.connect(self.show_page)
         self.topbar.search_changed.connect(self._on_search_changed)
         self.topbar.download_clicked.connect(self._ir_a_search)

@@ -10,7 +10,7 @@ from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication
 
 from .config import load_settings
-from .ui import sakura
+from .ui import icons, sakura
 from .ui import theme as th
 from .ui.main_window import MainWindow
 from .ui.splash import SakuraSplash
@@ -79,6 +79,10 @@ def main() -> int:
     th.set_active(theme)
     app.setStyleSheet(th.build_qss(theme))
     app.setWindowIcon(_app_icon(theme.accent, theme.surface))
+
+    # Los PNG elegidos en Ajustes reemplazan a los iconos por nombre en toda la
+    # UI. Se cargan antes de armar la ventana, que ya construye los del lateral.
+    icons.load_overrides(load_settings().get("icon_overrides", {}))
 
     # La flor florece mientras se arma la ventana: cubre el tiempo de arranque
     # con algo de la marca en vez de un cuadro en blanco.

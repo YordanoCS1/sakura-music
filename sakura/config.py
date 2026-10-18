@@ -33,6 +33,9 @@ DEFAULTS: dict[str, object] = {
     "theme": "modern",
     "library_view": "table",
     "nav_layout": "sidebar",
+    # PNG con los que el usuario reemplaza iconos de la UI, por nombre de icono.
+    # Cada valor es {"path": ruta del PNG, "tint": si se tiñe con el tema}.
+    "icon_overrides": {},
 }
 
 

@@ -932,4 +932,66 @@ QMenu::separator {{
     background: {t.border};
     margin: 4px 6px;
 }}
+
+/* ---------- estudio de iconos ---------- */
+/* El dialogo donde se reemplazan iconos por PNG: lista a la izquierda y un mock
+   del chrome a la derecha que se repinta en vivo. */
+#IconStudio {{
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+        stop:0 {t.bg}, stop:1 {t.surface});
+}}
+#IconSlotList {{
+    background: transparent;
+    border: none;
+}}
+QPushButton#IconSlot {{
+    background: transparent;
+    color: {t.text_dim};
+    border: 1px solid transparent;
+    border-radius: {t.radius}px;
+    padding: {px(t, 8)} {px(t, 12)};
+    font-size: {fs('label')};
+    font-weight: 600;
+    text-align: left;
+}}
+QPushButton#IconSlot:hover {{
+    background: {t.surface_hover};
+    color: {t.text};
+}}
+QPushButton#IconSlot:checked {{
+    background: {tint(t.surface_alt, t.accent, 0.18)};
+    color: {t.accent};
+    border-color: {tint(t.accent, t.bg, 0.35)};
+    border-left: 3px solid {t.accent};
+}}
+#IconSlotGroup {{
+    color: {t.text_muted};
+    font-size: {fs('caption')};
+    font-weight: 800;
+}}
+#IconPreview {{
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+        stop:0 {t.surface_alt}, stop:1 {t.surface});
+    border: 1px solid {t.border};
+    border-radius: {t.radius + 6}px;
+}}
+#IconPreviewCaption {{
+    color: {t.text_muted};
+    font-size: {fs('caption')};
+    font-weight: 700;
+}}
+#IconPreviewLabel {{
+    color: {t.text_dim};
+    font-size: {fs('micro')};
+}}
+#IconControls {{
+    background: {t.surface_alt};
+    border: 1px solid {t.border};
+    border-radius: {t.radius + 6}px;
+}}
+#IconPickPreview {{
+    background: {t.surface};
+    border: 1px solid {t.border};
+    border-radius: {t.radius}px;
+}}
 """

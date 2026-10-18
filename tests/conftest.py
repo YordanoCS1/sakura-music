@@ -54,3 +54,17 @@ def app_dir_aislada(app_dir: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     # dejado, y `test_main_window` fallaba solo en la suite completa.
     config.download_queue_file().unlink(missing_ok=True)
     return app_dir
+
+
+@pytest.fixture(autouse=True)
+def iconos_sin_overrides() -> None:
+    """Los overrides de iconos son estado global del modulo: no deben filtrarse.
+
+    Un test que reemplace un icono por un PNG dejaria su override puesto para el
+    siguiente, y cualquier test que compare pixmaps fallaria por un motivo ajeno.
+    """
+    from sakura.ui import icons
+
+    icons.clear_overrides()
+    yield
+    icons.clear_overrides()
