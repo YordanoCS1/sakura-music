@@ -283,8 +283,9 @@ class SettingsPage(Page):
 
         # Filas agrupadas por tema
         row_theme = SettingRow(
-            "Tema visual y estilo",
-            "Personaliza los colores, contrastes y atmósfera general de Sakura Music.",
+            "Tema y diseño",
+            "Elige un diseño completo: no solo cambia los colores, también la forma "
+            "(esquinas, bordes), el espaciado y la tipografía de toda la app.",
             theme_box,
             "palette",
         )

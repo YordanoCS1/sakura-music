@@ -2,11 +2,30 @@
 
 from __future__ import annotations
 
-from .tokens import FONT_STACK, Theme, fs, px, tint
+from .tokens import (
+    FONT_STACK,
+    Theme,
+    app_bg,
+    bar_fill,
+    card_fill,
+    edge,
+    fs,
+    heading_rules,
+    px,
+    tint,
+)
 
 
 def build_qss(t: Theme) -> str:
     """Genera el stylesheet completo de la aplicacion desde los tokens."""
+    bord = edge(t)
+    root = app_bg(t)
+    sidebar = bar_fill(t, t.surface, t.surface_alt)
+    topbar = bar_fill(t, t.surface, t.bg, vertical=True)
+    card = card_fill(t)
+    card_hover = card_fill(t, t.surface_hover, t.surface_alt)
+    form_panel = card_fill(t, t.surface, t.surface_alt)
+    extra = heading_rules(t)
     return f"""
 * {{
     font-family: {FONT_STACK};
@@ -21,15 +40,14 @@ QWidget {{
 QToolTip {{
     background: {t.surface_alt};
     color: {t.text};
-    border: 1px solid {t.border};
+    border: {bord};
     border-radius: {t.radius_sm}px;
     padding: {px(t, 5)} {px(t, 9)};
 }}
 
 /* ---------- fondo global ---------- */
 #Root {{
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-        stop:0 {t.bg}, stop:0.7 {t.surface}, stop:1 {t.surface_alt});
+    background: {root};
 }}
 
 /* Los dialogos son ventanas de primer nivel: no heredan el fondo de la ventana
@@ -41,7 +59,7 @@ QDialog {{
 /* ---------- barra de titulo ---------- */
 #TitleBar {{
     background: rgba(0,0,0,0);
-    border-bottom: 1px solid {t.border};
+    border-bottom: {bord};
 }}
 #TitleBar[hovered="true"] {{
     background: {t.surface_alt};
@@ -71,9 +89,8 @@ QPushButton#IconButton[variant="close"]:hover {{
 
 /* ---------- sidebar ---------- */
 #Sidebar {{
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-        stop:0 {t.surface}, stop:1 {t.surface_alt});
-    border: 1px solid {t.border};
+    background: {sidebar};
+    border: {bord};
     border-left: none;
     border-top: none;
     border-bottom: none;
@@ -131,9 +148,8 @@ QPushButton#NavButton[slim="true"] {{
 
 /* ---------- barra superior ---------- */
 #TopBar {{
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-        stop:0 {t.surface}, stop:1 {t.bg});
-    border-bottom: 1px solid {t.border};
+    background: {topbar};
+    border-bottom: {bord};
 }}
 #BrandTitle {{
     color: {t.text};
@@ -143,12 +159,12 @@ QPushButton#NavButton[slim="true"] {{
 }}
 #NavCapsule {{
     background: {t.surface_alt};
-    border: 1px solid {t.border};
+    border: {bord};
     border-radius: {t.radius_pill}px;
 }}
 QLineEdit#SearchInput {{
     background: {t.surface_alt};
-    border: 1px solid {t.border};
+    border: {bord};
     border-radius: {t.radius_pill}px;
     padding: {px(t, 8)} {px(t, 16)};
     color: {t.text};
@@ -217,7 +233,7 @@ QPushButton#IconButton:disabled * {{
 QPushButton#PlayButton {{
     background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
         stop:0 {t.text}, stop:1 {t.text_dim});
-    border: 1px solid {t.border};
+    border: {bord};
     border-radius: {t.radius_pill}px;
     padding: {px(t, 10)};
 }}
@@ -248,7 +264,7 @@ QPushButton#GhostButton {{
     background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
         stop:0 {t.surface_alt}, stop:1 {t.surface});
     color: {t.text_dim};
-    border: 1px solid {t.border};
+    border: {bord};
     border-radius: {t.radius}px;
     padding: {px(t, 8)} {px(t, 14)};
     font-size: {fs('caption')};
@@ -321,7 +337,7 @@ QPushButton#SegmentButton:focus {{
 }}
 #QueueControls {{
     background: {t.surface_alt};
-    border: 1px solid {t.border};
+    border: {bord};
     border-radius: {t.radius}px;
 }}
 #QueueStats {{
@@ -331,7 +347,7 @@ QPushButton#SegmentButton:focus {{
 }}
 #JobRow {{
     background: {t.surface_alt};
-    border: 1px solid {t.border};
+    border: {bord};
     border-radius: {t.radius}px;
 }}
 #JobRow[failed="true"] {{
@@ -375,7 +391,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {{
 /* ---------- listas y cuadricula ---------- */
 QListWidget {{
     background: {t.bg};
-    border: 1px solid {t.border};
+    border: {bord};
     border-radius: {t.radius}px;
     color: {t.text};
     font-size: {fs('caption')};
@@ -421,7 +437,7 @@ QListWidget#LibraryFolderGrid {{
 }}
 QListWidget#LibraryFolderGrid::item {{
     background: {t.surface_alt};
-    border: 1px solid {t.border};
+    border: {bord};
     border-radius: {t.radius_pill}px;
     padding: {px(t, 4)} {px(t, 12)};
     margin: {px(t, 3)};
@@ -451,7 +467,7 @@ QListWidget#LibraryFolderGrid::item:selected {{
 }}
 #SegmentedControl {{
     background: {t.surface_alt};
-    border: 1px solid {t.border};
+    border: {bord};
     border-radius: {t.radius_pill}px;
 }}
 QPushButton#SegmentButton {{
@@ -486,7 +502,7 @@ QPushButton#SegmentButton[segmentKind="text"] {{
 #TagChip {{
     color: {t.text_dim};
     background: {t.surface_alt};
-    border: 1px solid {t.border};
+    border: {bord};
     border-radius: {t.radius_pill}px;
     padding: {px(t, 3)} {px(t, 8)};
     font-size: {fs('micro')};
@@ -498,7 +514,7 @@ QPushButton#SegmentButton[segmentKind="text"] {{
 }}
 #DetailCover {{
     background: {t.surface_alt};
-    border: 1px solid {t.border};
+    border: {bord};
     border-radius: {t.radius}px;
 }}
 
@@ -528,7 +544,7 @@ QHeaderView::section {{
     background: {t.bg};
     color: {t.text_muted};
     border: none;
-    border-bottom: 1px solid {t.border};
+    border-bottom: {bord};
     padding: {px(t, 8)} {px(t, 10)};
     font-size: {fs('micro')};
     font-weight: 700;
@@ -551,7 +567,7 @@ QTableCornerButton::section {{
 }}
 #EmptyIcon {{
     background: {t.surface_alt};
-    border: 1px solid {t.border};
+    border: {bord};
     border-radius: 32px;
 }}
 #EmptyTitle {{
@@ -565,7 +581,7 @@ QTableCornerButton::section {{
 }}
 #Card {{
 background: {t.surface_alt};
-border: 1px solid {t.border};
+border: {bord};
 border-radius: {t.radius}px;
 }}
 #CardTitle {{
@@ -577,7 +593,7 @@ font-weight: 700;
 /* ---------- tarjeta de resultado de busqueda ---------- */
 #ResultCard {{
     background: {t.surface_alt};
-    border: 1px solid {t.border};
+    border: {bord};
     border-radius: {t.radius}px;
 }}
 #ResultCard:hover {{
@@ -630,7 +646,7 @@ font-weight: 700;
 #HeroPill {{
     color: {t.text};
     background: {tint(t.bg, t.accent, 0.12)};
-    border: 1px solid {t.border};
+    border: {bord};
     border-radius: {t.radius_pill}px;
     padding: 5px 10px;
     font-size: {fs('nano')};
@@ -647,26 +663,22 @@ font-weight: 700;
 }}
 
 #StatTile {{
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-        stop:0 {t.surface_alt}, stop:1 {t.surface});
-    border: 1px solid {t.border};
+    background: {card};
+    border: {bord};
     border-radius: {t.radius}px;
 }}
 #StatTile:hover {{
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-        stop:0 {t.surface_hover}, stop:1 {t.surface_alt});
+    background: {card_hover};
     border: 1px solid {t.accent};
 }}
 #Card {{
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-        stop:0 {t.surface_alt}, stop:1 {t.surface});
-    border: 1px solid {t.border};
+    background: {card};
+    border: {bord};
     border-radius: {t.radius}px;
 }}
 #Card:hover {{
     border: 1px solid {t.accent};
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-        stop:0 {t.surface_hover}, stop:1 {t.surface_alt});
+    background: {card_hover};
 }}
 #CardIcon {{
     background: {tint(t.bg, t.accent, 0.15)};
@@ -708,7 +720,7 @@ QPushButton#NavPill:checked {{
     color: {t.text_dim};
     font-size: {fs('label')};
     background: {t.surface_alt};
-    border: 1px solid {t.border};
+    border: {bord};
     border-radius: {t.radius}px;
     padding: {px(t, 12)} {px(t, 14)};
 }}
@@ -742,7 +754,7 @@ QPushButton#NavPill:checked {{
 }}
 #MetadataPath {{
     background: {t.surface_alt};
-    border: 1px solid {t.border};
+    border: {bord};
     border-radius: {t.radius_pill}px;
     padding: 8px 12px;
 }}
@@ -753,13 +765,12 @@ QPushButton#NavPill:checked {{
 }}
 #MetadataCover {{
     background: {t.bg};
-    border: 1px solid {t.border};
+    border: {bord};
     border-radius: {t.radius}px;
 }}
 #MetadataFormPanel {{
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-        stop:0 {t.surface}, stop:1 {t.surface_alt});
-    border: 1px solid {t.border};
+    background: {form_panel};
+    border: {bord};
     border-radius: {t.radius + 8}px;
 }}
 #MetadataSearchPanel {{
@@ -770,12 +781,12 @@ QPushButton#NavPill:checked {{
 }}
 #MetadataResultsPanel {{
     background: {t.surface};
-    border: 1px solid {t.border};
+    border: {bord};
     border-radius: {t.radius + 6}px;
 }}
 #MetadataResultsList {{
     background: {t.bg};
-    border: 1px solid {t.border};
+    border: {bord};
     border-radius: {t.radius}px;
     padding: 5px;
 }}
@@ -812,7 +823,7 @@ QPushButton#NavPill:checked {{
 }}
 QLineEdit#MetadataField {{
     background: {t.surface_alt};
-    border: 1px solid {t.border};
+    border: {bord};
     border-radius: {t.radius_sm + 2}px;
     padding: 8px 12px;
     color: {t.text};
@@ -847,9 +858,8 @@ QLineEdit#MetadataField[modified="true"] {{
 /* Las preferencias se agrupan en tarjetas con encabezado para que la pagina no
    sea una lista plana; los controles toman su color del tema por objectName. */
 #SettingsCard {{
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-        stop:0 {t.surface_alt}, stop:1 {t.surface});
-    border: 1px solid {t.border};
+    background: {card};
+    border: {bord};
     border-radius: {t.radius + 6}px;
 }}
 #SettingsSection {{
@@ -869,7 +879,7 @@ QLineEdit#MetadataField[modified="true"] {{
 QComboBox#SettingsControl {{
     background: {t.surface_alt};
     color: {t.text};
-    border: 1px solid {t.border};
+    border: {bord};
     border-radius: {t.radius_sm + 2}px;
     padding: {px(t, 8)} {px(t, 12)};
     font-size: {fs('label')};
@@ -886,7 +896,7 @@ QComboBox#SettingsControl QAbstractItemView {{
     color: {t.text};
     selection-background-color: {t.accent};
     selection-color: {t.accent_text};
-    border: 1px solid {t.border};
+    border: {bord};
     padding: {px(t, 4)};
 }}
 QCheckBox#SettingsCheck {{
@@ -897,7 +907,7 @@ QCheckBox#SettingsCheck {{
 QCheckBox#SettingsCheck::indicator {{
     width: 18px;
     height: 18px;
-    border: 1px solid {t.border};
+    border: {bord};
     border-radius: {t.radius_sm}px;
     background: {t.surface_alt};
 }}
@@ -913,7 +923,7 @@ QCheckBox#SettingsCheck::indicator:checked {{
 QMenu {{
     background: {t.surface};
     color: {t.text};
-    border: 1px solid {t.border};
+    border: {bord};
     border-radius: {t.radius}px;
     padding: {px(t, 6)};
 }}
@@ -970,9 +980,8 @@ QPushButton#IconSlot:checked {{
     font-weight: 800;
 }}
 #IconPreview {{
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-        stop:0 {t.surface_alt}, stop:1 {t.surface});
-    border: 1px solid {t.border};
+    background: {card};
+    border: {bord};
     border-radius: {t.radius + 6}px;
 }}
 #IconPreviewCaption {{
@@ -991,12 +1000,12 @@ QPushButton#IconSlot:checked {{
 }}
 #IconControls {{
     background: {t.surface_alt};
-    border: 1px solid {t.border};
+    border: {bord};
     border-radius: {t.radius + 6}px;
 }}
 #IconPickPreview {{
     background: {t.surface};
-    border: 1px solid {t.border};
+    border: {bord};
     border-radius: {t.radius}px;
 }}
-"""
+{extra}"""

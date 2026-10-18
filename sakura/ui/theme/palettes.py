@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-from .tokens import Theme, tint
+from .tokens import SERIF_STACK, Theme, tint
 
 # 1. Sakura Dark (Tema por defecto): oscuro moderno, acento sakura.
 MODERN = Theme(
     id="modern",
-    name="Sakura Glow",
+    name="Sakura Premium",
     bg="#090812",
     surface="#121625",
     surface_alt="#1A1F2F",
@@ -34,7 +34,7 @@ MODERN = Theme(
 # 2. Sakura Light: fondo claro y limpio, tonos pastel y florales.
 SAKURA_LIGHT = Theme(
     id="sakura_light",
-    name="Sakura Light",
+    name="Sakura Light Airy",
     bg="#FFF7FA",
     surface="#FFFFFF",
     surface_alt="#FCEEF3",
@@ -52,10 +52,10 @@ SAKURA_LIGHT = Theme(
     success="#16A048",
     warning="#D07206",
 
-    # Forma: mas blando, se ve_values Calculations.
-    radius=12,
-    radius_sm=7,
-    density=1.0,
+    # Forma: claro, redondeado y con mas aire (Light Airy).
+    radius=14,
+    radius_sm=8,
+    density=1.06,
 )
 
 # 3. Cyberpunk: atmósfera synthwave nocturna con acento neón cian.
@@ -220,9 +220,189 @@ SUNSET = Theme(
     density=1.0,
 )
 
+# --- diseños temáticos: cambian forma y estructura, no solo el color ---------
+# Un "diseño" es un preset completo: paleta mas tokens de forma (bordes, planos,
+# tipografia). Como el QSS se arma de los tokens, agregar uno nuevo es agregar
+# datos; ningun widget se toca.
+
+# 9. Editorial Warm: papel cálido, titulares serif, plano y con mucho aire.
+EDITORIAL = Theme(
+    id="editorial",
+    name="Editorial Warm",
+    bg="#FAF4EC",
+    surface="#FFFDF9",
+    surface_alt="#F1E7DA",
+    surface_hover="#E7D9C6",
+    border="#D8C6AD",
+    text="#2A2118",
+    text_dim="#6A5B49",
+    text_muted="#8C7C66",
+    accent="#B4551F",
+    accent_hover="#CE6A2E",
+    accent_text="#FFFDF9",
+    selection=tint("#FAF4EC", "#B4551F", 0.20),
+    selection_text="#2A2118",
+    danger="#B03A2E",
+    success="#4C7A34",
+    warning="#8A6508",
+
+    # Forma: plano (sin degradados), borde fino, titular serif y aireado.
+    radius=6,
+    radius_sm=4,
+    density=1.12,
+    flat=True,
+    heading_family=SERIF_STACK,
+)
+
+# 10. Wuxia Ink: papel de arroz, tinta y sello bermellón; esquinas de pincel.
+WUXIA = Theme(
+    id="wuxia",
+    name="Wuxia Ink 武侠",
+    bg="#F3EAD4",
+    surface="#FBF6E7",
+    surface_alt="#E9DCBE",
+    surface_hover="#DECCA8",
+    border="#C4B187",
+    text="#211D15",
+    text_dim="#5B5240",
+    text_muted="#857A5F",
+    accent="#A3241C",
+    accent_hover="#C13026",
+    accent_text="#FBF6E7",
+    selection=tint("#F3EAD4", "#A3241C", 0.20),
+    selection_text="#211D15",
+    danger="#8C1D18",
+    success="#3F6B4A",
+    warning="#8A6508",
+
+    # Forma: esquinas casi rectas (trazo de pincel) y titulares serif.
+    radius=2,
+    radius_sm=1,
+    density=1.0,
+    heading_family=SERIF_STACK,
+)
+
+# 11. Fauna: bosque profundo y ámbar, plano y natural.
+FAUNA = Theme(
+    id="fauna",
+    name="Fauna Silvestre",
+    bg="#0E1510",
+    surface="#16211A",
+    surface_alt="#1F2E23",
+    surface_hover="#2A3D2F",
+    border="#3A5240",
+    text="#EAF3EA",
+    text_dim="#A9C1AC",
+    text_muted="#7C9782",
+    accent="#D2A24B",
+    accent_hover="#E3B662",
+    accent_text="#1A1409",
+    selection=tint("#0E1510", "#D2A24B", 0.20),
+    selection_text="#EAF3EA",
+    danger="#E0776A",
+    success="#6FBF73",
+    warning="#E0B44A",
+
+    # Forma: plano, sobrio, con curvas suaves.
+    radius=8,
+    radius_sm=5,
+    density=1.0,
+    flat=True,
+)
+
+# 12. Fauna de Chile: arena de Atacama y azul de los Andes.
+CHILE = Theme(
+    id="chile",
+    name="Fauna de Chile",
+    bg="#F2ECE0",
+    surface="#FFFDF7",
+    surface_alt="#E6DDCA",
+    surface_hover="#D9CDB4",
+    border="#C6B99C",
+    text="#241F17",
+    text_dim="#5F5744",
+    text_muted="#786E54",
+    accent="#1E6FA8",
+    accent_hover="#2C86C4",
+    accent_text="#FFFFFF",
+    selection=tint("#F2ECE0", "#1E6FA8", 0.20),
+    selection_text="#241F17",
+    danger="#B23A2E",
+    success="#2F7D57",
+    warning="#8A6508",
+
+    # Forma: claro y terroso, curvas medias.
+    radius=10,
+    radius_sm=6,
+    density=1.02,
+)
+
+# 13. Anime Pop: noche violeta con acento magenta neón, muy redondeado.
+ANIME = Theme(
+    id="anime",
+    name="Anime Pop",
+    bg="#160B24",
+    surface="#20103A",
+    surface_alt="#2C1750",
+    surface_hover="#3B2066",
+    border="#4C2C80",
+    text="#F4EAFF",
+    text_dim="#C2A8EC",
+    text_muted="#8E78B8",
+    accent="#FF5CC8",
+    accent_hover="#FF83D6",
+    accent_text="#2A0A22",
+    selection=tint("#160B24", "#FF5CC8", 0.20),
+    selection_text="#F4EAFF",
+    danger="#FF5A76",
+    success="#55E0A6",
+    warning="#FFC24B",
+
+    # Forma: muy redondeado y con aires de burbuja.
+    radius=18,
+    radius_sm=10,
+    density=1.04,
+)
+
+# 14. Pocket Monsters: rojo Poké y amarillo eléctrico sobre claro, titulares en
+# mayúscula para el aire de videojuego.
+POKEMON = Theme(
+    id="pokemon",
+    name="Pocket Monsters",
+    bg="#F4F4F0",
+    surface="#FFFFFF",
+    surface_alt="#E9E9E3",
+    surface_hover="#DCDCD2",
+    border="#C4C4B8",
+    text="#1E1E1E",
+    text_dim="#545454",
+    text_muted="#7C7C7C",
+    accent="#E01212",
+    accent_hover="#F53B3B",
+    accent_text="#FFFFFF",
+    selection=tint("#F4F4F0", "#E01212", 0.20),
+    selection_text="#1E1E1E",
+    danger="#C81E1E",
+    success="#217A36",
+    warning="#A97C00",
+
+    # Forma: curvas juguetonas, contornos marcados y titulares en mayuscula.
+    radius=14,
+    radius_sm=8,
+    density=1.0,
+    border_w=2,
+    headings_uppercase=True,
+)
+
 THEME_LIST: list[Theme] = [
     MODERN,
     SAKURA_LIGHT,
+    EDITORIAL,
+    WUXIA,
+    FAUNA,
+    CHILE,
+    ANIME,
+    POKEMON,
     CYBERPUNK,
     NORD,
     OLED,

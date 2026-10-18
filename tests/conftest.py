@@ -68,3 +68,25 @@ def iconos_sin_overrides() -> None:
     icons.clear_overrides()
     yield
     icons.clear_overrides()
+
+
+@pytest.fixture(autouse=True)
+def tema_activo_aislado() -> None:
+    """El tema activo y el QSS global no pueden filtrarse entre tests.
+
+    Varios tests aplican disenos en vivo sobre la `QApplication`. Si uno deja
+    activo un diseno con titulares en mayuscula o serif, tanto el QSS como las
+    metricas de texto del siguiente test cambian y aparecen fallas ajenas. Se
+    restaura el estado previo (que suele ser sin QSS) y no uno fijo.
+    """
+    from PySide6.QtWidgets import QApplication
+
+    from sakura.ui import theme as th
+
+    app = QApplication.instance()
+    original = th.active()
+    qss = app.styleSheet() if app is not None else ""
+    yield
+    th.set_active(original)
+    if app is not None:
+        app.setStyleSheet(qss)

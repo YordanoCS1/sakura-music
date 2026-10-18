@@ -9,35 +9,49 @@ El paquete separa tres cosas: los tokens (`tokens`), las paletas concretas
 """
 
 from .palettes import (
+    ANIME,
     CATPPUCCIN,
+    CHILE,
     CYBERPUNK,
+    EDITORIAL,
     EMERALD,
+    FAUNA,
     MODERN,
     NORD,
     OLED,
+    POKEMON,
     SAKURA_LIGHT,
     SUNSET,
     THEME_LIST,
     THEMES,
+    WUXIA,
     active,
     get_theme,
     set_active,
 )
 from .qss import build_qss
-from .tokens import FONT_STACK, Theme, px, tint
+from .tokens import FONT_STACK, SERIF_STACK, Theme, px, tint
 
 __all__ = [
+    "ANIME",
     "CATPPUCCIN",
+    "CHILE",
     "CYBERPUNK",
+    "EDITORIAL",
     "EMERALD",
+    "FAUNA",
     "FONT_STACK",
     "MODERN",
+    "MONO_STACK",
     "NORD",
     "OLED",
+    "POKEMON",
     "SAKURA_LIGHT",
+    "SERIF_STACK",
     "SUNSET",
     "THEMES",
     "THEME_LIST",
+    "WUXIA",
     "Theme",
     "active",
     "build_qss",
