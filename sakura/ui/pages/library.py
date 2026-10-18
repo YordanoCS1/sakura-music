@@ -30,7 +30,7 @@ from ..widgets.buttons import TextButton
 from ..widgets.library_folders import LibraryFolderPanel
 from ..widgets.library_selection import LibrarySelectionBar
 from ..widgets.library_toolbar import LibraryToolbar
-from ..widgets.library_views import LibraryViewStack
+from ..widgets.library_views import VIEW_ORDER, LibraryViewStack
 from ..widgets.metadata_editor import open_editor
 from ..widgets.track_detail import TrackDetail
 from ..widgets.track_info import TrackInfoDialog
@@ -52,7 +52,7 @@ class LibraryPage(Page):
         self.proxy.setSourceModel(self.model)
 
         self.view_mode = str(load_settings().get("library_view", "table"))
-        if self.view_mode not in ("table", "grid", "discs", "carousel"):
+        if self.view_mode not in VIEW_ORDER:
             self.view_mode = "table"
         self._syncing_selection = False
         self._covers: dict[Path, Path | None] = CoverCache()
@@ -172,12 +172,13 @@ class LibraryPage(Page):
         """Deja a mano en la pagina las vistas y delegates que se usan afuera."""
         stack = self.view_stack
         self.table = stack.table
-        self.grid_view = stack.grid_view
-        self.discs_view = stack.discs_view
-        self.carousel_view = stack.carousel_view
-        self.grid_delegate = stack.grid_delegate
-        self.discs_delegate = stack.discs_delegate
-        self.carousel_delegate = stack.carousel_delegate
+        for mode in VIEW_ORDER:
+            if mode == "table":
+                continue
+            view = stack.card_views[mode]
+            delegate = stack.card_delegates[mode]
+            setattr(self, f"{mode}_view", view)
+            setattr(self, f"{mode}_delegate", delegate)
         self.card_views = stack.card_views
         self.card_delegates = stack.card_delegates
 

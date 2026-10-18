@@ -460,3 +460,432 @@ class TrackShowcaseDelegate(QStyledItemDelegate):
         painter.drawText(x, y + 44, width, 16, Qt.AlignmentFlag.AlignVCenter, album)
 
 
+# --- vistas nuevas: rollo, polaroid, ficha, librero y muro de posters ---------
+
+_DIGITOS_CN = "零一二三四五六七八九"
+
+
+def chapter_label(number: int) -> str:
+    """Numero de capitulo en chino (1 -> '卷一', 10 -> '卷十', 21 -> '卷二十一')."""
+    if number <= 0:
+        return "卷"
+    if number > 99:
+        return f"卷{number}"
+    if number <= 10:
+        texto = "十" if number == 10 else _DIGITOS_CN[number]
+    elif number < 20:
+        texto = "十" + _DIGITOS_CN[number % 10]
+    elif number % 10 == 0:
+        texto = _DIGITOS_CN[number // 10] + "十"
+    else:
+        texto = _DIGITOS_CN[number // 10] + "十" + _DIGITOS_CN[number % 10]
+    return f"卷{texto}"
+
+
+class CoverCardDelegate(QStyledItemDelegate):
+    """Base de las vistas de tarjetas: resuelve y cachea la portada de cada pista."""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._cover_cache: dict[tuple[str, str], QPixmap] = {}
+        self._folder_covers: dict[Path, Path | None] = CoverCache()
+
+    def clear_cache(self) -> None:
+        self._cover_cache.clear()
+        self._folder_covers.clear()
+
+    def _cover_path(self, track_item: Track) -> Path | None:
+        cover_path = track_item.cover_path
+        if not cover_path or not cover_path.exists():
+            cover_path = folder_cover(track_item.path.parent, self._folder_covers)
+        return cover_path
+
+    def _cover(self, track_item: Track, size: int, theme) -> QPixmap:
+        cover_path = self._cover_path(track_item)
+        key = (f"{cover_path or ''}:{size}", theme.id)
+        pixmap = self._cover_cache.get(key)
+        if pixmap is None:
+            pixmap = render_cover(
+                cover_path if cover_path and cover_path.exists() else None, size
+            )
+            if len(self._cover_cache) >= 400:
+                self._cover_cache.clear()
+            self._cover_cache[key] = pixmap
+        return pixmap
+
+
+class TrackWuxiaDelegate(CoverCardDelegate):
+    """Rollo (卷轴): una tarjeta centrada por pista, numerada como capitulos."""
+
+    CARD_W = 460
+    CARD_H = 216
+    COVER = 150
+
+    def sizeHint(self, option: QStyleOptionViewItem, index: QModelIndex) -> QSize:
+        return QSize(self.CARD_W, self.CARD_H)
+
+    def paint(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex) -> None:
+        track_item: Track | None = index.data(Qt.ItemDataRole.UserRole)
+        if track_item is None:
+            return
+
+        painter.save()
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
+        painter.setRenderHint(QPainter.RenderHint.TextAntialiasing, True)
+
+        theme = th.active()
+        rect = option.rect
+        width = float(min(self.CARD_W - 20, max(240, rect.width() - 40)))
+        card = QRectF(rect.center().x() - width / 2, rect.y() + 10, width, self.CARD_H - 22)
+
+        selected = bool(option.state & QStyle.StateFlag.State_Selected)
+        hovered = bool(option.state & QStyle.StateFlag.State_MouseOver)
+        fill = theme.selection if selected else (
+            theme.surface_hover if hovered else theme.surface_alt
+        )
+        painter.setPen(
+            QPen(QColor(theme.accent if selected else theme.border), 2 if selected else 1)
+        )
+        painter.setBrush(QColor(fill))
+        painter.drawRoundedRect(card, float(theme.radius), float(theme.radius))
+
+        # Sello del capitulo, arriba a la izquierda.
+        seal = QRectF(card.x() + 16, card.y() + 14, 76, 26)
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.setBrush(QColor(theme.accent))
+        painter.drawRoundedRect(seal, 13, 13)
+        seal_font = painter.font()
+        seal_font.setPixelSize(12)
+        seal_font.setBold(True)
+        painter.setFont(seal_font)
+        painter.setPen(QColor(theme.accent_text))
+        painter.drawText(seal, Qt.AlignmentFlag.AlignCenter, chapter_label(index.row() + 1))
+
+        # Portada, a la izquierda.
+        cover_x = card.x() + 16
+        cover_y = card.y() + 30
+        painter.drawPixmap(
+            int(cover_x), int(cover_y), self._cover(track_item, self.COVER, theme)
+        )
+
+        # Titulo (serif), artista y album, a la derecha.
+        text_x = int(cover_x + self.COVER + 18)
+        text_w = max(20, int(card.right() - text_x - 16))
+        heading = theme.heading_family or th.SERIF_STACK
+
+        title_font = painter.font()
+        title_font.setPixelSize(17)
+        title_font.setBold(True)
+        title_font.setFamily(heading)
+        painter.setFont(title_font)
+        painter.setPen(QColor(theme.text))
+        painter.drawText(
+            text_x,
+            int(card.y() + 34),
+            text_w,
+            44,
+            Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter,
+            QFontMetrics(title_font).elidedText(
+                track_item.title, Qt.TextElideMode.ElideRight, text_w
+            ),
+        )
+
+        artist_font = painter.font()
+        artist_font.setPixelSize(12)
+        artist_font.setBold(False)
+        artist_font.setFamily(heading)
+        painter.setFont(artist_font)
+        painter.setPen(QColor(theme.text_dim))
+        painter.drawText(
+            text_x,
+            int(card.y() + 84),
+            text_w,
+            18,
+            Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter,
+            QFontMetrics(artist_font).elidedText(
+                track_item.artist, Qt.TextElideMode.ElideRight, text_w
+            ),
+        )
+
+        album_font = painter.font()
+        album_font.setPixelSize(11)
+        painter.setFont(album_font)
+        painter.setPen(QColor(theme.text_muted))
+        painter.drawText(
+            text_x,
+            int(card.y() + 108),
+            text_w,
+            16,
+            Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter,
+            QFontMetrics(album_font).elidedText(
+                track_item.album or track_item.extension.upper(),
+                Qt.TextElideMode.ElideRight,
+                text_w,
+            ),
+        )
+
+        painter.restore()
+
+
+class TrackPolaroidDelegate(CoverCardDelegate):
+    """Album de fotos: cada pista es una polaroid con marco claro y pie de foto."""
+
+    CARD_W = 202
+    CARD_H = 254
+    FRAME = 12
+
+    def sizeHint(self, option: QStyleOptionViewItem, index: QModelIndex) -> QSize:
+        return QSize(self.CARD_W, self.CARD_H)
+
+    def paint(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex) -> None:
+        track_item: Track | None = index.data(Qt.ItemDataRole.UserRole)
+        if track_item is None:
+            return
+
+        painter.save()
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
+        painter.setRenderHint(QPainter.RenderHint.TextAntialiasing, True)
+        painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform, True)
+
+        theme = th.active()
+        rect = option.rect
+        card = QRectF(rect.x() + 8, rect.y() + 8, rect.width() - 16, rect.height() - 16)
+        selected = bool(option.state & QStyle.StateFlag.State_Selected)
+        hovered = bool(option.state & QStyle.StateFlag.State_MouseOver)
+
+        # Sombra proyectada.
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.setBrush(QColor(0, 0, 0, 70))
+        painter.drawRoundedRect(card.translated(3, 4), 4, 4)
+
+        frame_fill = theme.selection if selected else (
+            theme.surface_hover if hovered else theme.surface
+        )
+        painter.setPen(QPen(QColor(theme.accent if selected else theme.border), 1))
+        painter.setBrush(QColor(frame_fill))
+        painter.drawRoundedRect(card, 4, 4)
+
+        photo = int(card.width() - 2 * self.FRAME)
+        photo_x = card.x() + self.FRAME
+        photo_y = card.y() + self.FRAME
+        painter.drawPixmap(int(photo_x), int(photo_y), self._cover(track_item, photo, theme))
+        painter.setPen(QPen(QColor(theme.border), 1))
+        painter.setBrush(Qt.BrushStyle.NoBrush)
+        painter.drawRect(int(photo_x), int(photo_y), photo, photo)
+
+        caption_font = painter.font()
+        caption_font.setPixelSize(12)
+        caption_font.setBold(True)
+        caption_font.setFamily(theme.heading_family or th.SERIF_STACK)
+        painter.setFont(caption_font)
+        painter.setPen(QColor(theme.text))
+        caption_w = int(card.width() - 20)
+        painter.drawText(
+            int(card.x() + 10),
+            int(photo_y + photo + 8),
+            caption_w,
+            22,
+            Qt.AlignmentFlag.AlignCenter,
+            QFontMetrics(caption_font).elidedText(
+                track_item.title, Qt.TextElideMode.ElideRight, caption_w
+            ),
+        )
+
+        painter.restore()
+
+
+class TrackCatalogDelegate(CoverCardDelegate):
+    """Ficha de catalogo: mini-portada a la izquierda y datos etiquetados."""
+
+    CARD_W = 424
+    CARD_H = 118
+    COVER = 80
+    LABEL_W = 62
+
+    def sizeHint(self, option: QStyleOptionViewItem, index: QModelIndex) -> QSize:
+        return QSize(self.CARD_W, self.CARD_H)
+
+    def paint(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex) -> None:
+        track_item: Track | None = index.data(Qt.ItemDataRole.UserRole)
+        if track_item is None:
+            return
+
+        painter.save()
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
+        painter.setRenderHint(QPainter.RenderHint.TextAntialiasing, True)
+
+        theme = th.active()
+        rect = option.rect
+        card = QRectF(rect.x() + 5, rect.y() + 5, rect.width() - 10, rect.height() - 10)
+        selected = bool(option.state & QStyle.StateFlag.State_Selected)
+        hovered = bool(option.state & QStyle.StateFlag.State_MouseOver)
+
+        fill = theme.selection if selected else (
+            theme.surface_hover if hovered else theme.surface_alt
+        )
+        painter.setPen(
+            QPen(QColor(theme.accent if selected else theme.border), 2 if selected else 1)
+        )
+        painter.setBrush(QColor(fill))
+        painter.drawRoundedRect(card, float(theme.radius_sm), float(theme.radius_sm))
+
+        cover_x = card.x() + 14
+        cover_y = card.center().y() - self.COVER / 2
+        painter.drawPixmap(int(cover_x), int(cover_y), self._cover(track_item, self.COVER, theme))
+        painter.setPen(QPen(QColor(theme.border), 1))
+        painter.setBrush(Qt.BrushStyle.NoBrush)
+        painter.drawRect(int(cover_x), int(cover_y), self.COVER, self.COVER)
+
+        label_x = int(cover_x + self.COVER + 16)
+        value_x = label_x + self.LABEL_W
+        value_w = max(20, int(card.right() - value_x - 12))
+
+        label_font = painter.font()
+        label_font.setPixelSize(9)
+        label_font.setBold(True)
+        painter.setFont(label_font)
+        painter.setPen(QColor(theme.text_muted))
+
+        value_font = painter.font()
+        value_font.setPixelSize(12)
+        value_font.setBold(False)
+        value_fm = QFontMetrics(value_font)
+
+        rows = (
+            ("TÍTULO", track_item.title),
+            ("ARTISTA", track_item.artist),
+            ("ÁLBUM", track_item.album or "—"),
+            ("AÑO", str(track_item.year) if track_item.year else "—"),
+        )
+        for i, (label, value) in enumerate(rows):
+            y = int(card.y() + 12 + i * 23)
+            painter.setFont(label_font)
+            painter.setPen(QColor(theme.text_muted))
+            painter.drawText(
+                label_x, y, self.LABEL_W, 18,
+                Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter,
+                label,
+            )
+            painter.setFont(value_font)
+            painter.setPen(QColor(theme.text))
+            painter.drawText(
+                value_x, y, value_w, 18,
+                Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter,
+                value_fm.elidedText(value, Qt.TextElideMode.ElideRight, value_w),
+            )
+
+        painter.restore()
+
+
+class TrackShelfDelegate(CoverCardDelegate):
+    """Librero: portadas apoyadas sobre una balda continua."""
+
+    CARD_W = 150
+    CARD_H = 188
+    COVER = 116
+    PLANK = 7
+
+    def sizeHint(self, option: QStyleOptionViewItem, index: QModelIndex) -> QSize:
+        return QSize(self.CARD_W, self.CARD_H)
+
+    def paint(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex) -> None:
+        track_item: Track | None = index.data(Qt.ItemDataRole.UserRole)
+        if track_item is None:
+            return
+
+        painter.save()
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
+        painter.setRenderHint(QPainter.RenderHint.TextAntialiasing, True)
+        painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform, True)
+
+        theme = th.active()
+        rect = option.rect
+        selected = bool(option.state & QStyle.StateFlag.State_Selected)
+        hovered = bool(option.state & QStyle.StateFlag.State_MouseOver)
+
+        plank_y = rect.bottom() - self.PLANK - 3
+        cover_x = rect.center().x() - self.COVER / 2
+        cover_y = plank_y - self.COVER
+
+        # La balda va a lo ancho del item: sin separacion entre items, las de una
+        # misma fila se leen como un estante continuo.
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.setBrush(QColor(theme.accent if selected else theme.border))
+        painter.drawRoundedRect(
+            QRectF(rect.x(), plank_y, rect.width(), self.PLANK), 3, 3
+        )
+
+        # Sombra contra la balda y luego la portada.
+        painter.setBrush(QColor(0, 0, 0, 80))
+        painter.drawRect(int(cover_x) + 3, int(cover_y) + 5, self.COVER, self.COVER)
+        painter.drawPixmap(int(cover_x), int(cover_y), self._cover(track_item, self.COVER, theme))
+        painter.setPen(
+            QPen(
+                QColor(theme.accent if selected or hovered else theme.border),
+                2 if selected else 1,
+            )
+        )
+        painter.setBrush(Qt.BrushStyle.NoBrush)
+        painter.drawRect(int(cover_x), int(cover_y), self.COVER, self.COVER)
+
+        title_font = painter.font()
+        title_font.setPixelSize(11)
+        title_font.setBold(True)
+        title_font.setFamily(theme.heading_family or th.SERIF_STACK)
+        painter.setFont(title_font)
+        painter.setPen(QColor(theme.text_dim))
+        title_w = int(rect.width() - 16)
+        painter.drawText(
+            int(rect.x() + 8),
+            int(rect.y() + 4),
+            title_w,
+            18,
+            Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter,
+            QFontMetrics(title_font).elidedText(
+                track_item.title, Qt.TextElideMode.ElideRight, title_w
+            ),
+        )
+
+        painter.restore()
+
+
+class TrackPosterDelegate(CoverCardDelegate):
+    """Muro de posters: portadas grandes levemente giradas que se superponen."""
+
+    CARD_W = 208
+    CARD_H = 208
+    COVER = 186
+
+    def sizeHint(self, option: QStyleOptionViewItem, index: QModelIndex) -> QSize:
+        return QSize(self.CARD_W, self.CARD_H)
+
+    def paint(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex) -> None:
+        track_item: Track | None = index.data(Qt.ItemDataRole.UserRole)
+        if track_item is None:
+            return
+
+        painter.save()
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
+        painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform, True)
+
+        theme = th.active()
+        selected = bool(option.state & QStyle.StateFlag.State_Selected)
+        # Giro determinista: el mismo indice siempre cae en el mismo angulo.
+        angle = ((index.row() * 37) % 9) - 4
+
+        painter.translate(option.rect.center())
+        painter.rotate(angle)
+
+        cover = QRectF(-self.COVER / 2, -self.COVER / 2, self.COVER, self.COVER)
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.setBrush(QColor(0, 0, 0, 85))
+        painter.drawRoundedRect(cover.translated(4, 5), 3, 3)
+        painter.drawPixmap(cover.toRect(), self._cover(track_item, self.COVER, theme))
+        painter.setPen(
+            QPen(QColor(theme.accent if selected else theme.border), 3 if selected else 1)
+        )
+        painter.setBrush(Qt.BrushStyle.NoBrush)
+        painter.drawRect(cover)
+
+        painter.restore()
+
