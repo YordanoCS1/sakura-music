@@ -25,10 +25,11 @@ MODERN = Theme(
     success="#4ADEA1",
     warning="#FFB454",
 
-    # Forma: más premium y envolvente.
+    # Forma: más premium y envolvente, con la barra lateral clásica.
     radius=14,
     radius_sm=8,
     density=1.02,
+    shell="sidebar",
 )
 
 # 2. Sakura Light: fondo claro y limpio, tonos pastel y florales.
@@ -52,10 +53,11 @@ SAKURA_LIGHT = Theme(
     success="#16A048",
     warning="#D07206",
 
-    # Forma: claro, redondeado y con mas aire (Light Airy).
+    # Forma: claro, redondeado y con mas aire (Light Airy), navegación arriba.
     radius=14,
     radius_sm=8,
     density=1.06,
+    shell="top",
 )
 
 # 3. Cyberpunk: atmósfera synthwave nocturna con acento neón cian.
@@ -79,10 +81,11 @@ CYBERPUNK = Theme(
     success="#00FF9D",
     warning="#FFE600",
 
-    # Forma: angular y denso, acentos neón.
+    # Forma: angular y denso, acentos neón, navegación arriba.
     radius=3,
     radius_sm=2,
     density=0.88,
+    shell="top",
 )
 
 # 4. Nord: paleta ártica polar, elegante y reposada.
@@ -110,6 +113,7 @@ NORD = Theme(
     radius=8,
     radius_sm=5,
     density=1.0,
+    shell="sidebar",
 )
 
 # 5. OLED: negro absoluto (#000000) de ultra alto contraste.
@@ -133,10 +137,11 @@ OLED = Theme(
     success="#00E676",
     warning="#FFAB00",
 
-    # Forma: contraste alto, compacto.
+    # Forma: contraste alto, compacto, con dock lateral.
     radius=6,
     radius_sm=4,
     density=0.92,
+    shell="dock",
 )
 
 # 6. Catppuccin: tonos pastel oscuros tipo Mocha.
@@ -160,10 +165,11 @@ CATPPUCCIN = Theme(
     success="#A6E3A1",
     warning="#F9E2AF",
 
-    # Forma: muy redondeado y aireado.
+    # Forma: muy redondeado y aireado, con riel plegable.
     radius=16,
     radius_sm=9,
     density=1.06,
+    shell="rail",
 )
 
 # 7. Emerald: verde bosque profundo con toques esmeralda.
@@ -191,6 +197,7 @@ EMERALD = Theme(
     radius=10,
     radius_sm=6,
     density=1.0,
+    shell="sidebar",
 )
 
 # 8. Sunset: cálido carbón oscuro y ámbar dorado.
@@ -214,10 +221,11 @@ SUNSET = Theme(
     success="#10B981",
     warning="#F59E0B",
 
-    # Forma: redondeado, calido.
+    # Forma: redondeado, calido, con barra de navegación inferior.
     radius=14,
     radius_sm=8,
     density=1.0,
+    shell="bottom",
 )
 
 # --- diseños temáticos: cambian forma y estructura, no solo el color ---------
@@ -246,12 +254,14 @@ EDITORIAL = Theme(
     success="#4C7A34",
     warning="#8A6508",
 
-    # Forma: plano (sin degradados), borde fino, titular serif y aireado.
+    # Forma: plano (sin degradados), borde fino, titular serif y aireado;
+    # la navegación va en pestañas superiores.
     radius=6,
     radius_sm=4,
     density=1.12,
     flat=True,
     heading_family=SERIF_STACK,
+    shell="tabs",
 )
 
 # 10. Wuxia Ink: papel de arroz, tinta y sello bermellón; esquinas de pincel.
@@ -275,11 +285,13 @@ WUXIA = Theme(
     success="#3F6B4A",
     warning="#8A6508",
 
-    # Forma: esquinas casi rectas (trazo de pincel) y titulares serif.
+    # Forma: esquinas casi rectas (trazo de pincel), titulares serif y un riel
+    # lateral que se pliega y despliega.
     radius=2,
     radius_sm=1,
     density=1.0,
     heading_family=SERIF_STACK,
+    shell="rail",
 )
 
 # 11. Fauna: bosque profundo y ámbar, plano y natural.
@@ -303,11 +315,12 @@ FAUNA = Theme(
     success="#6FBF73",
     warning="#E0B44A",
 
-    # Forma: plano, sobrio, con curvas suaves.
+    # Forma: plano, sobrio, con curvas suaves y dock lateral compacto.
     radius=8,
     radius_sm=5,
     density=1.0,
     flat=True,
+    shell="dock",
 )
 
 # 12. Fauna de Chile: arena de Atacama y azul de los Andes.
@@ -331,10 +344,11 @@ CHILE = Theme(
     success="#2F7D57",
     warning="#8A6508",
 
-    # Forma: claro y terroso, curvas medias.
+    # Forma: claro y terroso, curvas medias, con barra inferior.
     radius=10,
     radius_sm=6,
     density=1.02,
+    shell="bottom",
 )
 
 # 13. Anime Pop: noche violeta con acento magenta neón, muy redondeado.
@@ -358,10 +372,11 @@ ANIME = Theme(
     success="#55E0A6",
     warning="#FFC24B",
 
-    # Forma: muy redondeado y con aires de burbuja.
+    # Forma: muy redondeado y con aires de burbuja; doble panel con inspector.
     radius=18,
     radius_sm=10,
     density=1.04,
+    shell="split",
 )
 
 # 14. Pocket Monsters: rojo Poké y amarillo eléctrico sobre claro, titulares en
@@ -386,12 +401,14 @@ POKEMON = Theme(
     success="#217A36",
     warning="#A97C00",
 
-    # Forma: curvas juguetonas, contornos marcados y titulares en mayuscula.
+    # Forma: curvas juguetonas, contornos marcados, titulares en mayuscula y
+    # barra de navegación inferior de consola.
     radius=14,
     radius_sm=8,
     density=1.0,
     border_w=2,
     headings_uppercase=True,
+    shell="bottom",
 )
 
 THEME_LIST: list[Theme] = [

@@ -79,6 +79,10 @@ class Theme:
     headings_uppercase: bool = False
     heading_family: str = ""
 
+    # Estructura: como se arma el armazon de la app. Va en el diseno para que
+    # elegir un tema cambie tambien la organizacion, no solo el color.
+    shell: str = "sidebar"
+
     def color(self, name: str) -> str:
         """Acceso a un token por nombre (util para estilos dinamicos)."""
         return getattr(self, name)

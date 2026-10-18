@@ -144,7 +144,6 @@ class SettingsPage(Page):
     """Preferencias persistidas en `config.json`."""
 
     theme_changed = Signal(str)           # Theme.id
-    nav_layout_changed = Signal(str)      # "top", "dock", "sidebar"
     format_changed = Signal(str)          # AudioFormat.id
     library_folder_changed = Signal(str)  # ruta de la biblioteca
     downloads_folder_changed = Signal(str) # ruta de descargas
@@ -168,24 +167,7 @@ class SettingsPage(Page):
         theme_box.currentIndexChanged.connect(self._on_theme_changed)
         self.theme_box = theme_box
 
-        # 2. Disposición de navegación
-        nav_box = QComboBox()
-        nav_box.setObjectName("SettingsControl")
-        nav_options = [
-            ("Barra Superior en Cápsula (Pantalla completa)", "top"),
-            ("Dock Lateral Compacto (Iconos verticales)", "dock"),
-            ("Barra Lateral Clásica (Menú extendido)", "sidebar"),
-        ]
-        for label, val in nav_options:
-            nav_box.addItem(label, val)
-        current_nav = self.settings.get("nav_layout", "top")
-        nav_ids = [val for _, val in nav_options]
-        nav_box.setCurrentIndex(nav_ids.index(current_nav) if current_nav in nav_ids else 0)
-        nav_box.setFixedWidth(CONTROL_W)
-        nav_box.currentIndexChanged.connect(self._on_nav_changed)
-        self.nav_box = nav_box
-
-        # 3. Formato de descarga
+        # 2. Formato de descarga
         format_box = QComboBox()
         format_box.setObjectName("SettingsControl")
         for fmt in FORMATS:
@@ -284,17 +266,11 @@ class SettingsPage(Page):
         # Filas agrupadas por tema
         row_theme = SettingRow(
             "Tema y diseño",
-            "Elige un diseño completo: no solo cambia los colores, también la forma "
-            "(esquinas, bordes), el espaciado y la tipografía de toda la app.",
+            "Elige un diseño completo: cambia los colores, la forma (esquinas, "
+            "bordes, tipografía) y cómo se organiza la navegación (barra lateral, "
+            "pestañas, barra inferior, riel o doble panel).",
             theme_box,
             "palette",
-        )
-        row_nav = SettingRow(
-            "Disposición de navegación",
-            "Elige entre barra superior para maximizar el ancho para tus canciones, "
-            "o dock lateral.",
-            nav_box,
-            "grid",
         )
         self.icons_btn = TextButton("Personalizar…", "ghost", icon="sparkles")
         self.icons_btn.clicked.connect(self._on_customize_icons)
@@ -376,7 +352,6 @@ class SettingsPage(Page):
 
         self._rows = [
             row_theme,
-            row_nav,
             row_icons,
             row_formato,
             row_concurrent,
@@ -388,7 +363,7 @@ class SettingsPage(Page):
         ]
 
         # Tarjetas: agrupan las filas por tema para dar jerarquia a la pagina.
-        self._add_card("Apariencia", "palette", [row_theme, row_nav, row_icons])
+        self._add_card("Apariencia", "palette", [row_theme, row_icons])
         self._add_card(
             "Descargas",
             "download",
@@ -427,12 +402,6 @@ class SettingsPage(Page):
         self.settings["theme"] = theme_id
         save_settings({"theme": theme_id})
         self.theme_changed.emit(theme_id)
-
-    def _on_nav_changed(self, index: int) -> None:
-        nav_mode = self.nav_box.itemData(index)
-        self.settings["nav_layout"] = nav_mode
-        save_settings({"nav_layout": nav_mode})
-        self.nav_layout_changed.emit(nav_mode)
 
     def _on_customize_icons(self) -> None:
         """Abre el estudio de iconos; reenvía cada cambio para repintar la app."""

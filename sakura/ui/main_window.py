@@ -16,7 +16,7 @@ from . import theme as th
 from .motion import animations_enabled
 from .pages import HomePage, LibraryPage, QueuePage, SearchPage, SettingsPage
 from .services import DownloadManager, LibraryReviewScanner
-from .widgets import Sidebar, TitleBar
+from .widgets import BottomBar, InspectorPanel, Sidebar, TabBar, TitleBar
 from .widgets.completion_dialog import CompletionDialog
 from .widgets.topbar import TopBar
 
@@ -24,9 +24,14 @@ from .widgets.topbar import TopBar
 # se oculta: cada pagina trae sus propios controles.
 PAGINAS_WITH_SEARCHER = frozenset({"home", "search"})
 
-# Un solo origen para el valor por defecto: `set_nav_layout` cae aca cuando el
-# ajuste guardado no es un modo conocido.
+# Estructuras de armazon que un diseno puede pedir. La barra superior se esconde
+# donde no aporta salvo en `top`, donde ES el menu.
+SHELLS = frozenset({"sidebar", "dock", "rail", "top", "tabs", "bottom", "split"})
+
+# Un solo origen para el valor por defecto: cae aca cuando el diseno o el ajuste
+# guardado no declaran una estructura conocida.
 DEFAULT_NAV_LAYOUT = str(DEFAULTS["nav_layout"])
+DEFAULT_SHELL = DEFAULT_NAV_LAYOUT
 
 # Cuanto dura un aviso en la barra de titulo.
 WARN_MS = 4000
@@ -49,6 +54,10 @@ class MainWindow(QWidget):
 
         self.titlebar = TitleBar(self)
         root.addWidget(self.titlebar)
+
+        self.tabbar = TabBar(self)
+        self.tabbar.page_selected.connect(self.show_page)
+        root.addWidget(self.tabbar)
 
         body = QHBoxLayout()
         body.setContentsMargins(0, 0, 0, 0)
@@ -83,7 +92,15 @@ class MainWindow(QWidget):
 
         main.addWidget(self.pages, 1)
         body.addLayout(main, 1)
+
+        self.inspector = InspectorPanel(self)
+        body.addWidget(self.inspector)
+
         root.addLayout(body, 1)
+
+        self.bottombar = BottomBar(self)
+        self.bottombar.page_selected.connect(self.show_page)
+        root.addWidget(self.bottombar)
 
         self.downloads = DownloadManager(self)
         self.downloads.job_added.connect(self._on_job_added)
@@ -95,6 +112,7 @@ class MainWindow(QWidget):
         self._cerrando = False
         self._home_review_generation = 0
         self._nav_layout = str(load_settings().get("nav_layout", DEFAULT_NAV_LAYOUT))
+        self._shell = DEFAULT_SHELL
         self._batch_downloads: dict[int, DownloadJob] = {}
         self._home_review_scanner = LibraryReviewScanner(self)
         self._home_review_scanner.finished.connect(self._on_home_review_finished)
@@ -107,7 +125,6 @@ class MainWindow(QWidget):
         self.page_map["search"].download_all_requested.connect(self._on_download_all)
         self.page_map["search"].album_download_requested.connect(self._on_album_download)
         self.page_map["settings"].theme_changed.connect(self._on_theme_changed)
-        self.page_map["settings"].nav_layout_changed.connect(self.set_nav_layout)
         self.page_map["settings"].format_changed.connect(self._on_format_changed)
         self.page_map["settings"].max_concurrent_changed.connect(self._on_max_concurrent_changed)
         self.page_map["settings"].library_folder_changed.connect(self._on_library_folder_changed)
@@ -144,7 +161,8 @@ class MainWindow(QWidget):
         self._refresh_home_downloads()
 
         self._register_shortcuts()
-        self.set_nav_layout(self._nav_layout)
+        # La estructura sale del diseno activo, no de un ajuste aparte.
+        self.set_shell_layout(th.active().shell)
         self.show_page("home")
         self.downloads.resume_pending()
 
@@ -277,12 +295,16 @@ class MainWindow(QWidget):
             from ..app import _app_icon
 
             app.setWindowIcon(_app_icon(theme.accent, theme.surface))
+        self.set_shell_layout(theme.shell)
         self.refresh_theme()
 
     def refresh_theme(self) -> None:
         self.titlebar.refresh()
         self.sidebar.refresh()
         self.topbar.refresh()
+        self.tabbar.refresh()
+        self.bottombar.refresh()
+        self.inspector.refresh()
 # Los botones resuelven el color de su icono al construirse, asi que hay que
         # repintarlos. Se buscan por tipo en vez de listarlos pagina por pagina:
         # asi ningun boton nuevo queda del color del tema anterior. `findChildren`
@@ -421,23 +443,41 @@ class MainWindow(QWidget):
         in_wait = sum(1 for job in jobs if job.status is JobStatus.PENDING)
         failed = sum(1 for job in jobs if job.status is JobStatus.FAILED)
         self.page_map["home"].set_downloads(active, in_wait, failed)
+        self.inspector.set_jobs(jobs)
 
     def set_nav_layout(self, mode: str) -> None:
-        """Alterna entre barra superior (TopNav), dock lateral compacto o barra clásica."""
+        """Compatibilidad: los tres modos historicos de navegacion."""
         self._nav_layout = mode if mode in ("top", "dock", "sidebar") else DEFAULT_NAV_LAYOUT
-        is_top = self._nav_layout == "top"
+        self.set_shell_layout(self._nav_layout)
 
-        self.topbar.set_nav_layout(self._nav_layout)
-        if is_top:
-            self.sidebar.setVisible(False)
+    def set_shell_layout(self, mode: str) -> None:
+        """Arma el armazon que pide el diseno.
+
+        `sidebar` y `split` usan la barra lateral ancha, `dock` el mini dock,
+        `rail` el riel plegable, `top` la capsula superior, `tabs` las pestanas
+        y `bottom` la barra inferior. En `split` se suma el inspector derecho.
+        """
+        self._shell = mode if mode in SHELLS else DEFAULT_SHELL
+        m = self._shell
+
+        self.sidebar.setVisible(m in ("sidebar", "dock", "rail", "split"))
+        self.sidebar.set_slim(m == "dock")
+        self.sidebar.set_rail(m == "rail")
+        self.topbar.set_nav_layout("top" if m == "top" else "sidebar")
+        self.tabbar.setVisible(m == "tabs")
+        self.bottombar.setVisible(m == "bottom")
+        self.inspector.setVisible(m == "split")
+
+        for nav in (self.sidebar, self.topbar, self.tabbar, self.bottombar):
+            nav.select(self._current_page)
+        self._sync_nav_visibility()
+
+    def _sync_nav_visibility(self) -> None:
+        """La barra superior se oculta donde no aporta, salvo si ES el menu."""
+        if self._shell == "top":
             self.topbar.setVisible(True)
         else:
-            self.sidebar.setVisible(True)
-            self.sidebar.set_slim(self._nav_layout == "dock")
             self.topbar.setVisible(self._current_page in PAGINAS_WITH_SEARCHER)
-
-        self.sidebar.select(self._current_page)
-        self.topbar.select(self._current_page)
 
     def show_page(self, key: str) -> None:
         page = self.page_map.get(key)
@@ -447,13 +487,9 @@ class MainWindow(QWidget):
         self.pages.setCurrentWidget(page)
         self.sidebar.select(key)
         self.topbar.select(key)
-
-        if self._nav_layout == "top":
-            self.sidebar.setVisible(False)
-            self.topbar.setVisible(True)
-        else:
-            self.sidebar.setVisible(True)
-            self.topbar.setVisible(key in PAGINAS_WITH_SEARCHER)
+        self.tabbar.select(key)
+        self.bottombar.select(key)
+        self._sync_nav_visibility()
 
         self.titlebar.set_title("")
         if key == "search":

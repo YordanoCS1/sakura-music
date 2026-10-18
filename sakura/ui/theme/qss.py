@@ -177,6 +177,65 @@ QLineEdit#SearchInput::placeholder {{
     color: {t.text_muted};
 }}
 
+/* ---------- armazon: pestanas, barra inferior e inspector ---------- */
+#TabBar {{
+    background: {bar_fill(t, t.surface_alt, t.surface)};
+    border-bottom: {bord};
+}}
+#BottomBar {{
+    background: {bar_fill(t, t.surface_alt, t.surface)};
+    border-top: {bord};
+}}
+QPushButton#TabButton {{
+    background: transparent;
+    color: {t.text_dim};
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: {px(t, 9)} {px(t, 18)};
+    font-size: {fs('label')};
+    font-weight: 600;
+}}
+QPushButton#TabButton:hover {{
+    color: {t.text};
+    background: {t.surface_hover};
+}}
+QPushButton#TabButton:checked {{
+    color: {t.accent};
+    border-bottom: 2px solid {t.accent};
+}}
+#Inspector {{
+    background: {bar_fill(t, t.surface, t.surface_alt)};
+    border-left: {bord};
+}}
+#InspectorTitle {{
+    color: {t.text_muted};
+    font-size: {fs('micro')};
+    font-weight: 700;
+    letter-spacing: 0.6px;
+}}
+#InspectorEmpty {{
+    color: {t.text_muted};
+    font-size: {fs('caption')};
+}}
+#InspectorRow {{
+    background: transparent;
+    border: none;
+    border-bottom: {bord};
+}}
+QPushButton#RailToggle {{
+    background: transparent;
+    color: {t.text_muted};
+    border: {bord};
+    border-radius: {t.radius_sm}px;
+    font-size: {fs('caption')};
+    font-weight: 700;
+    padding: {px(t, 3)};
+}}
+QPushButton#RailToggle:hover {{
+    color: {t.text};
+    background: {t.surface_hover};
+}}
+
 /* ---------- contenido ---------- */
 #PageHeader {{
     color: {t.text};

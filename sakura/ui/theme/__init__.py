@@ -42,7 +42,6 @@ __all__ = [
     "FAUNA",
     "FONT_STACK",
     "MODERN",
-    "MONO_STACK",
     "NORD",
     "OLED",
     "POKEMON",

@@ -33,6 +33,9 @@ class Sidebar(QFrame):
         super().__init__(parent)
         self.setObjectName("Sidebar")
         self._slim = False
+        self._rail = False
+        self._rail_pinned = False
+        self._rail_open = True
         self.setFixedWidth(th.active().sidebar_w)
 
         self._layout = QVBoxLayout(self)
@@ -40,6 +43,16 @@ class Sidebar(QFrame):
         self._layout.setSpacing(4)
 
         self._layout.addWidget(self._brand())
+
+        # Boton del riel: fija abierto o suelta. Solo se ve en modo `rail`.
+        self._rail_btn = QPushButton("»")
+        self._rail_btn.setObjectName("RailToggle")
+        self._rail_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self._rail_btn.setFixedHeight(24)
+        self._rail_btn.setVisible(False)
+        self._rail_btn.setToolTip("Fijar el riel abierto")
+        self._rail_btn.clicked.connect(self._on_rail_toggle)
+        self._layout.addWidget(self._rail_btn)
 
         group = QButtonGroup(self)
         group.setExclusive(True)
@@ -130,21 +143,71 @@ class Sidebar(QFrame):
     def set_slim(self, slim: bool) -> None:
         """Alterna entre barra lateral ancha y mini dock vertical compacto (68px)."""
         self._slim = slim
+        self._rail = False
+        self._rail_btn.setVisible(False)
+        self._apply_mode()
+
+    def set_rail(self, rail: bool) -> None:
+        """Modo riel: barra de iconos que se pliega y se despliega.
+
+        Sin fijar, se abre al entrar el puntero y vuelve a plegarse al salir;
+        con el boton de la cabecera queda fija abierta.
+        """
+        self._rail = rail
+        self._slim = False
+        self._rail_btn.setVisible(rail)
+        if rail:
+            self._rail_open = self._rail_pinned
+        self._apply_mode()
+
+    def _on_rail_toggle(self) -> None:
+        self._rail_pinned = not self._rail_pinned
+        self._rail_open = self._rail_pinned
+        self._apply_mode()
+
+    def _apply_mode(self) -> None:
+        """Fija ancho y visibilidad de etiquetas segun el modo actual."""
         t = th.active()
-        self.setFixedWidth(68 if slim else t.sidebar_w)
-        self._sec_label.setVisible(not slim)
-        self._brand_title.setVisible(not slim)
-        self._brand_subtitle.setVisible(not slim)
+        labels = not (self._slim or (self._rail and not self._rail_open))
+        if self._slim:
+            ancho = 68
+        elif self._rail and not self._rail_open:
+            ancho = 72
+        else:
+            ancho = t.sidebar_w
+        self.setFixedWidth(ancho)
+
+        self._sec_label.setVisible(labels)
+        self._brand_title.setVisible(labels)
+        self._brand_subtitle.setVisible(labels)
+
+        self._rail_btn.setText("«  Soltar" if self._rail_pinned else "»")
+        self._rail_btn.setToolTip(
+            "Soltar el riel" if self._rail_pinned else "Fijar el riel abierto"
+        )
 
         for button in (*self._buttons.values(), self._settings_button):
             label = button.property("label")
-            button.setText("" if slim else f"  {label}")
+            button.setText(f"  {label}" if labels else "")
             # El modo compacto se pinta por propiedad en el QSS, no en linea:
             # asi el tema manda y no queda un estilo pegado al cambiar.
-            button.setProperty("slim", slim)
+            button.setProperty("slim", not labels)
             button.style().unpolish(button)
             button.style().polish(button)
             self._recolor(button)
+
+    def enterEvent(self, event) -> None:
+        """Con el puntero encima, el riel se despliega (si no esta fijado)."""
+        if self._rail and not self._rail_pinned:
+            self._rail_open = True
+            self._apply_mode()
+        super().enterEvent(event)
+
+    def leaveEvent(self, event) -> None:
+        if self._rail and not self._rail_pinned:
+            self._rail_open = False
+            self._apply_mode()
+        super().leaveEvent(event)
 
     def select(self, page: str) -> None:
         btn = self._buttons.get(page) or (
@@ -163,8 +226,5 @@ class Sidebar(QFrame):
 
     def refresh(self) -> None:
         """Reaplica tamano e iconos tras un cambio de tema."""
-        t = th.active()
-        self.setFixedWidth(68 if self._slim else t.sidebar_w)
+        self._apply_mode()
         self._recolor_brand()
-        for button in (*self._buttons.values(), self._settings_button):
-            self._recolor(button)
