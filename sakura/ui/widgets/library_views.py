@@ -17,9 +17,9 @@ from .track_delegates import (
     TrackGridDelegate,
     TrackPolaroidDelegate,
     TrackPosterDelegate,
+    TrackScrollDelegate,
     TrackShelfDelegate,
     TrackShowcaseDelegate,
-    TrackWuxiaDelegate,
 )
 
 # Orden del stack. Tiene que coincidir con los botones de la barra.
@@ -155,7 +155,7 @@ class LibraryViewStack(QStackedWidget):
 
     def _build_scroll(self, proxy) -> None:
         self.scroll_view = self._create_list_column(proxy, "TrackScroll")
-        self.scroll_delegate = TrackWuxiaDelegate(self)
+        self.scroll_delegate = TrackScrollDelegate(self)
         self.scroll_view.setItemDelegate(self.scroll_delegate)
         self.addWidget(self.scroll_view)
 

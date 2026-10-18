@@ -658,6 +658,21 @@ def test_el_rollo_numera_los_capitulos() -> None:
     assert chapter_label(21) == "卷二十一"
 
 
+def test_el_rollo_se_anima_solo_mientras_su_vista_esta_activa(page) -> None:
+    from PySide6.QtTest import QTest
+
+    _wait(page)
+    page.set_view_mode("scroll", save=False)
+    inicial = page.scroll_delegate._phase
+    QTest.qWait(page._disc_timer.interval() * 3)
+
+    assert page._disc_timer.isActive()
+    assert page.scroll_delegate._phase != inicial
+
+    page.set_view_mode("table", save=False)
+    assert not page._disc_timer.isActive()
+
+
 # --- deshacer el ultimo lote --------------------------------------------------
 
 

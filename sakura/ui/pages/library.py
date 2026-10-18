@@ -72,6 +72,7 @@ class LibraryPage(Page):
         self.refresher.failed.connect(self._on_refresh_failed)
 
         self._disc_rotation = 0
+        self._scroll_phase = 0
         self._disc_timer = QTimer(self)
         self._disc_timer.setInterval(50)
         self._disc_timer.timeout.connect(self._advance_disc_animation)
@@ -211,12 +212,17 @@ class LibraryPage(Page):
         self._update_disc_animation()
 
     def _update_disc_animation(self) -> None:
-        if self.view_mode == "discs" and self.isVisible():
+        if self.view_mode in ("discs", "scroll") and self.isVisible():
             self._disc_timer.start()
         else:
             self._disc_timer.stop()
 
     def _advance_disc_animation(self) -> None:
+        if self.view_mode == "scroll":
+            self._scroll_phase = (self._scroll_phase + 8) % 720
+            self.scroll_delegate.set_phase(self._scroll_phase)
+            self.scroll_view.viewport().update()
+            return
         self._disc_rotation = (self._disc_rotation + 2) % 360
         self.discs_delegate.set_rotation(self._disc_rotation)
         self.discs_view.viewport().update()
