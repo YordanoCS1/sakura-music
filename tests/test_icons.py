@@ -154,3 +154,18 @@ def test_un_png_ilegible_se_ignora(qapp, tmp_path) -> None:
     icons.load_overrides({"home": {"path": faltante, "tint": True}})
 
     assert not icons.has_override("home")
+
+
+def test_un_override_svg_se_rasteriza_y_tine(qapp, tmp_path) -> None:
+    archivo = tmp_path / "icono.svg"
+    archivo.write_text(
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">'
+        '<rect x="4" y="4" width="16" height="16" fill="currentColor"/></svg>',
+        encoding="utf-8",
+    )
+
+    assert icons.set_override("home", str(archivo), tint=True)
+
+    centro = icons.render("home", "#00A0FF", 24).toImage().pixelColor(24, 24)
+    assert centro.blue() > 150
+    assert centro.red() < 80

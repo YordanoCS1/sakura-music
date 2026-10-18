@@ -189,9 +189,9 @@ def override_specs() -> dict[str, dict]:
 
 
 def set_override(name: str, path: str, tint: bool = False) -> bool:
-    """Usa el PNG de `path` para el icono `name`. False si no se pudo leer."""
-    pixmap = QPixmap(str(path))
-    if pixmap.isNull():
+    """Usa el PNG o SVG de `path` para el icono `name`. False si no se pudo leer."""
+    pixmap = _load_source(str(path))
+    if pixmap is None or pixmap.isNull():
         return False
     _OVERRIDES[name] = {"path": str(path), "tint": bool(tint), "pixmap": pixmap}
     return True
@@ -211,6 +211,70 @@ def load_overrides(specs: dict | None) -> None:
     for name, spec in (specs or {}).items():
         if isinstance(spec, dict) and spec.get("path"):
             set_override(name, str(spec["path"]), bool(spec.get("tint", False)))
+
+
+def _fit(renderer: QSvgRenderer, side: float) -> QRectF:
+    """Rectangulo centrado que encaja el viewBox del SVG sin deformarlo."""
+    view = renderer.viewBoxF()
+    if view.isEmpty():
+        return QRectF(0, 0, side, side)
+    scale = min(side / view.width(), side / view.height())
+    ancho, alto = view.width() * scale, view.height() * scale
+    return QRectF((side - ancho) / 2, (side - alto) / 2, ancho, alto)
+
+
+def _rasterize(svg: bytes, size: int, color: str | None, ratio: int = 2) -> QPixmap | None:
+    """Renderiza un SVG a pixmap y, si hay `color`, lo tiñe respetando su alfa."""
+    renderer = QSvgRenderer(svg)
+    if not renderer.isValid():
+        return None
+
+    lado = size * ratio
+    px = QPixmap(lado, lado)
+    px.setDevicePixelRatio(ratio)
+    px.fill(Qt.GlobalColor.transparent)
+    painter = QPainter(px)
+    painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
+    renderer.render(painter, _fit(renderer, lado))
+    if color:
+        painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_SourceIn)
+        painter.fillRect(px.rect(), QColor(color))
+    painter.end()
+    return px
+
+
+def svg_body_pixmap(
+    body: str,
+    size: int,
+    color: str | None = None,
+    width: int = 24,
+    height: int = 24,
+) -> QPixmap | None:
+    """Pixmap de un `body` SVG suelto (como los que sirve Iconify)."""
+    svg = (
+        '<svg xmlns="http://www.w3.org/2000/svg" '
+        f'viewBox="0 0 {width} {height}">{body}</svg>'
+    ).encode()
+    return _rasterize(svg, size, color)
+
+
+def _load_source(path: str) -> QPixmap | None:
+    """Carga el archivo de override: rasteriza SVG, o lee el PNG tal cual.
+
+    El SVG se dibuja a 256 px para que escalar hacia abajo a 48 o 16 quede
+    nitido; leerlo como imagen daria solo su tamano intrinseco (24 px).
+    """
+    if path.lower().endswith(".svg"):
+        datos = None
+        try:
+            with open(path, "rb") as archivo:
+                datos = archivo.read()
+        except OSError:
+            return None
+        return _rasterize(datos, 256, None, ratio=1)
+
+    pixmap = QPixmap(path)
+    return None if pixmap.isNull() else pixmap
 
 
 def _render_override(name: str, color: str, size: int) -> QPixmap:
