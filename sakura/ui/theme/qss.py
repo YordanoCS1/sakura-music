@@ -407,14 +407,36 @@ QPushButton#SegmentButton:focus {{
 #JobRow {{
     background: {t.surface_alt};
     border: {bord};
+    border-left: 4px solid {t.border};
     border-radius: {t.radius}px;
 }}
-#JobRow[failed="true"] {{
-    border-left: 3px solid {t.danger};
+#JobRow[status="active"] {{
+    border-left-color: {t.warning};
+}}
+#JobRow[status="done"] {{
+    border-left-color: {t.success};
+}}
+#JobRow[status="failed"] {{
+    border-left-color: {t.danger};
+}}
+#JobRow[status="cancelled"] {{
+    border-left-color: {t.text_dim};
+}}
+#JobRow[status="skipped"] {{
+    border-left-color: {t.success};
+}}
+#JobThumb {{
+    background: transparent;
+}}
+#JobMeta {{
+    color: {t.text_muted};
+    font-size: {fs('body_sm')};
+    background: transparent;
 }}
 #JobDetail {{
-    color: {t.text_muted};
+    color: {t.text_dim};
     font-size: {fs('micro')};
+    font-weight: 600;
     background: transparent;
 }}
 QProgressBar#Progress, QProgressBar#ProgressInverted {{

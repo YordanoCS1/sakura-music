@@ -544,6 +544,7 @@ class MainWindow(QWidget):
         """Espera a que terminen los hilos de segundo plano."""
         self.downloads.shutdown()
         self.page_map["search"].shutdown()
+        self.page_map["queue"].shutdown()
         self.page_map["library"].scanner.shutdown()
         self.page_map["library"].refresher.shutdown()
         self._home_review_scanner.shutdown()
