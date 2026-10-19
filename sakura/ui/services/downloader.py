@@ -524,7 +524,13 @@ class DownloadManager(QObject):
     # --- archivos ------------------------------------------------------------
 
     def _collect_output(self, staging: Path | None, job: DownloadJob | None = None) -> Path | None:
-        """Mueve el archivo producido desde `staging` a la biblioteca."""
+        """Mueve el archivo producido desde `staging` a la biblioteca.
+
+        Las listas y los álbumes son colecciones: su carpeta va directo a la
+        raíz de la biblioteca, nunca dentro de la carpeta de descargas (que
+        puede ser la de un artista). Las búsquedas sueltas siguen yendo a la
+        carpeta de descargas configurada.
+        """
         if staging is None or not staging.exists():
             return None
 
@@ -537,7 +543,9 @@ class DownloadManager(QObject):
             return None
 
         relative = chosen.relative_to(staging)
-        target = downloads_target_dir() / relative
+        organized = job is not None and bool(job.playlist_title.strip())
+        root = library_dir() if organized else downloads_target_dir()
+        target = root / relative
         target.parent.mkdir(parents=True, exist_ok=True)
 
         shutil.move(str(chosen), str(target))

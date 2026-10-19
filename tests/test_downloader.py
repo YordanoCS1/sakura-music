@@ -75,6 +75,9 @@ def manager(qapp, runner, monkeypatch, tmp_path):
         "sakura.ui.services.downloader.music_dir", lambda: tmp_path / "music"
     )
     monkeypatch.setattr(
+        "sakura.ui.services.downloader.library_dir", lambda: tmp_path / "music"
+    )
+    monkeypatch.setattr(
         "sakura.ui.services.downloader.downloads_target_dir", lambda: tmp_path / "music"
     )
     (tmp_path / "staging").mkdir()
@@ -694,6 +697,58 @@ def test_archivos_de_playlist_se_mueven_a_su_carpeta(manager) -> None:
 
     assert job.filepath is not None
     assert job.filepath == manager.tmp_path / "music" / "Mi playlist" / "una cancion.opus"  # type: ignore[attr-defined]
+
+
+def test_la_carpeta_de_una_playlist_queda_fuera_de_la_carpeta_de_descargas(
+    manager, monkeypatch, tmp_path
+) -> None:
+    """La lista va a la raíz de la biblioteca, no dentro de la carpeta de descargas."""
+    biblioteca = tmp_path / "biblioteca"
+    descargas = biblioteca / "idle"
+    biblioteca.mkdir()
+    descargas.mkdir()
+    monkeypatch.setattr(
+        "sakura.ui.services.downloader.library_dir", lambda: biblioteca
+    )
+    monkeypatch.setattr(
+        "sakura.ui.services.downloader.downloads_target_dir", lambda: descargas
+    )
+
+    job = manager.enqueue(result("una cancion"), playlist_title="Twice Topic")
+    producido = staging_dir(manager) / "job-0000" / "Twice Topic" / "una cancion.opus"
+    producido.parent.mkdir(parents=True, exist_ok=True)
+    producido.write_bytes(b"audio")
+
+    runner_for(manager, job).emit_completed(0)
+
+    assert job.filepath == biblioteca / "Twice Topic" / "una cancion.opus"
+    assert not (descargas / "Twice Topic").exists()
+
+
+def test_una_busqueda_suelta_sigue_en_la_carpeta_de_descargas(
+    manager, monkeypatch, tmp_path
+) -> None:
+    """Sin lista, el archivo conserva la carpeta de descargas configurada."""
+    biblioteca = tmp_path / "biblioteca"
+    descargas = tmp_path / "descargas"
+    biblioteca.mkdir()
+    descargas.mkdir()
+    monkeypatch.setattr(
+        "sakura.ui.services.downloader.library_dir", lambda: biblioteca
+    )
+    monkeypatch.setattr(
+        "sakura.ui.services.downloader.downloads_target_dir", lambda: descargas
+    )
+
+    job = manager.enqueue(result("una cancion"))
+    producido = staging_dir(manager) / "job-0000" / "Artista" / "una cancion.opus"
+    producido.parent.mkdir(parents=True, exist_ok=True)
+    producido.write_bytes(b"audio")
+
+    runner_for(manager, job).emit_completed(0)
+
+    assert job.filepath == descargas / "Artista" / "una cancion.opus"
+    assert not (biblioteca / "Artista").exists()
 
 
 # --- duplicados --------------------------------------------------------------

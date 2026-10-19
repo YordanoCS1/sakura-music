@@ -179,6 +179,9 @@ def _aislar_destinos(monkeypatch, tmp_path) -> None:
     monkeypatch.setattr(
         "sakura.ui.services.downloader.downloads_target_dir", lambda: tmp_path / "music"
     )
+    monkeypatch.setattr(
+        "sakura.ui.services.downloader.library_dir", lambda: tmp_path / "music"
+    )
     (tmp_path / "staging").mkdir(exist_ok=True)
     (tmp_path / "music").mkdir(exist_ok=True)
 
