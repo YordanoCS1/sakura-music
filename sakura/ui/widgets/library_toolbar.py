@@ -23,11 +23,6 @@ VIEW_SPECS = (
     ("grid", "grid", "Vista en tarjetas"),
     ("discs", "disc", "Vista de discos"),
     ("carousel", "music", "Vista carrusel"),
-    ("scroll", "scroll", "Vista de rollo (Wuxia)"),
-    ("polaroid", "camera", "Vista de álbum de fotos"),
-    ("catalog", "file-text", "Vista de ficha de catálogo"),
-    ("shelf", "shelf", "Vista de librero"),
-    ("poster", "image", "Vista de muro de pósters"),
 )
 
 

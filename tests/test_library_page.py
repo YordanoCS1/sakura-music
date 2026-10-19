@@ -577,100 +577,16 @@ def test_nuevos_disenos_muestran_la_portada(page, tmp_path, mode, size, cover_po
         assert output.toImage().pixelColor(45, 35) != color
 
 
-# --- vistas de diseno (rollo, polaroid, ficha, librero y muro) ---------------
+# --- orden y visibilidad de las vistas ---------------------------------------
 
 
 def test_el_orden_de_las_vistas_coincide_con_la_barra(page) -> None:
     from sakura.ui.widgets.library_views import VIEW_ORDER
 
-    assert len(VIEW_ORDER) == 9
+    assert len(VIEW_ORDER) == 4
     assert tuple(page.view_buttons) == VIEW_ORDER
     assert page.view_stack.count() == len(VIEW_ORDER)
     assert set(page.card_views) == set(VIEW_ORDER) - {"table"}
-
-
-@pytest.mark.parametrize("mode", ("scroll", "polaroid", "catalog", "shelf", "poster"))
-def test_las_nuevas_vistas_se_activan(page, mode: str) -> None:
-    from PySide6.QtWidgets import QStyleOptionViewItem
-
-    _wait(page)
-    page.set_view_mode(mode, save=False)
-
-    assert page.view_mode == mode
-    assert page.view_stack.currentWidget() is page.card_views[mode]
-    hint = page.card_delegates[mode].sizeHint(
-        QStyleOptionViewItem(), page.proxy.index(0, 0)
-    )
-    assert hint.width() > 0 and hint.height() > 0
-
-
-@pytest.mark.parametrize(
-    ("mode", "size"),
-    (
-        ("scroll", (480, 216)),
-        ("polaroid", (202, 254)),
-        ("catalog", (424, 118)),
-        ("shelf", (150, 188)),
-        ("poster", (208, 208)),
-    ),
-)
-def test_las_nuevas_vistas_muestran_la_portada(page, tmp_path, mode, size) -> None:
-    from PySide6.QtCore import QRect
-    from PySide6.QtGui import QColor, QPainter, QPixmap
-    from PySide6.QtWidgets import QStyleOptionViewItem
-
-    _wait(page)
-    page.set_view_mode(mode, save=False)
-    cover = QPixmap(48, 48)
-    cover.fill(QColor("#fa1496"))
-    cover_path = tmp_path / f"{mode}-cover.png"
-    assert cover.save(str(cover_path))
-
-    tracks = page.model.tracks
-    for track in tracks:
-        track.cover_path = cover_path
-    page.model.set_tracks(tracks)
-
-    delegate = page.card_delegates[mode]
-    option = QStyleOptionViewItem()
-    option.rect = QRect(0, 0, *size)
-    output = QPixmap(*size)
-    output.fill(QColor("#ffffff"))
-    painter = QPainter(output)
-    delegate.paint(painter, option, page.proxy.index(0, 0))
-    painter.end()
-
-    image = output.toImage()
-    encontrados = 0
-    for y in range(image.height()):
-        for x in range(image.width()):
-            pixel = image.pixelColor(x, y)
-            if pixel.red() > 200 and pixel.blue() > 110:
-                encontrados += 1
-    assert encontrados > 100, f"la vista {mode} no pinto la portada"
-
-
-def test_el_rollo_numera_los_capitulos() -> None:
-    from sakura.ui.widgets.track_delegates import chapter_label
-
-    assert chapter_label(1) == "卷一"
-    assert chapter_label(10) == "卷十"
-    assert chapter_label(21) == "卷二十一"
-
-
-def test_el_rollo_se_anima_solo_mientras_su_vista_esta_activa(page) -> None:
-    from PySide6.QtTest import QTest
-
-    _wait(page)
-    page.set_view_mode("scroll", save=False)
-    inicial = page.scroll_delegate._phase
-    QTest.qWait(page._disc_timer.interval() * 3)
-
-    assert page._disc_timer.isActive()
-    assert page.scroll_delegate._phase != inicial
-
-    page.set_view_mode("table", save=False)
-    assert not page._disc_timer.isActive()
 
 
 # --- deshacer el ultimo lote --------------------------------------------------

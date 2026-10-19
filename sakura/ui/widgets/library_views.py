@@ -12,28 +12,10 @@ from PySide6.QtWidgets import (
 )
 
 from ..models.track_model import COLUMNS, STRETCH_COLUMN
-from .track_delegates import (
-    TrackCatalogDelegate,
-    TrackGridDelegate,
-    TrackPolaroidDelegate,
-    TrackPosterDelegate,
-    TrackScrollDelegate,
-    TrackShelfDelegate,
-    TrackShowcaseDelegate,
-)
+from .track_delegates import TrackGridDelegate, TrackShowcaseDelegate
 
 # Orden del stack. Tiene que coincidir con los botones de la barra.
-VIEW_ORDER = (
-    "table",
-    "grid",
-    "discs",
-    "carousel",
-    "scroll",
-    "polaroid",
-    "catalog",
-    "shelf",
-    "poster",
-)
+VIEW_ORDER = ("table", "grid", "discs", "carousel")
 
 
 class LibraryViewStack(QStackedWidget):
@@ -49,11 +31,6 @@ class LibraryViewStack(QStackedWidget):
         self._build_grid(proxy)
         self._build_discs(proxy)
         self._build_carousel(proxy)
-        self._build_scroll(proxy)
-        self._build_polaroid(proxy)
-        self._build_catalog(proxy)
-        self._build_shelf(proxy)
-        self._build_poster(proxy)
 
     # --- construccion -------------------------------------------------------
 
@@ -151,71 +128,6 @@ class LibraryViewStack(QStackedWidget):
         view.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         return view
 
-    # --- vistas nuevas ------------------------------------------------------
-
-    def _build_scroll(self, proxy) -> None:
-        self.scroll_view = self._create_list_column(proxy, "TrackScroll")
-        self.scroll_delegate = TrackScrollDelegate(self)
-        self.scroll_view.setItemDelegate(self.scroll_delegate)
-        self.addWidget(self.scroll_view)
-
-    def _build_polaroid(self, proxy) -> None:
-        self.polaroid_view = self._create_card_view(proxy, "TrackPolaroid")
-        self.polaroid_delegate = TrackPolaroidDelegate(self)
-        self.polaroid_view.setItemDelegate(self.polaroid_delegate)
-        self.addWidget(self.polaroid_view)
-
-    def _build_catalog(self, proxy) -> None:
-        self.catalog_view = self._create_card_view(proxy, "TrackCatalog")
-        self.catalog_delegate = TrackCatalogDelegate(self)
-        self.catalog_view.setItemDelegate(self.catalog_delegate)
-        self.addWidget(self.catalog_view)
-
-    def _build_shelf(self, proxy) -> None:
-        # Sin separacion entre items: las baldas de una fila se leen continuas.
-        self.shelf_view = self._create_card_view(proxy, "TrackShelf", spacing=0)
-        self.shelf_delegate = TrackShelfDelegate(self)
-        self.shelf_view.setItemDelegate(self.shelf_delegate)
-        self.addWidget(self.shelf_view)
-
-    def _build_poster(self, proxy) -> None:
-        self.poster_view = self._create_card_view(proxy, "TrackPoster", spacing=0)
-        self.poster_delegate = TrackPosterDelegate(self)
-        self.poster_view.setItemDelegate(self.poster_delegate)
-        self.addWidget(self.poster_view)
-
-    def _create_card_view(self, proxy, name: str, spacing: int = 10) -> QListView:
-        view = QListView()
-        view.setObjectName(name)
-        view.setModel(proxy)
-        view.setViewMode(QListView.ViewMode.IconMode)
-        view.setResizeMode(QListView.ResizeMode.Adjust)
-        view.setWrapping(True)
-        view.setSpacing(spacing)
-        view.setUniformItemSizes(True)
-        view.setMovement(QListView.Movement.Static)
-        view.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        view.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
-        view.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
-        return view
-
-    def _create_list_column(self, proxy, name: str) -> QListView:
-        """Una sola columna vertical de items de ancho completo."""
-        view = QListView()
-        view.setObjectName(name)
-        view.setModel(proxy)
-        view.setViewMode(QListView.ViewMode.ListMode)
-        view.setFlow(QListView.Flow.TopToBottom)
-        view.setWrapping(False)
-        view.setResizeMode(QListView.ResizeMode.Adjust)
-        view.setSpacing(0)
-        view.setUniformItemSizes(True)
-        view.setMovement(QListView.Movement.Static)
-        view.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        view.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
-        view.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
-        return view
-
     # --- API ----------------------------------------------------------------
 
     @property
@@ -224,11 +136,6 @@ class LibraryViewStack(QStackedWidget):
             "grid": self.grid_view,
             "discs": self.discs_view,
             "carousel": self.carousel_view,
-            "scroll": self.scroll_view,
-            "polaroid": self.polaroid_view,
-            "catalog": self.catalog_view,
-            "shelf": self.shelf_view,
-            "poster": self.poster_view,
         }
 
     @property
@@ -237,11 +144,6 @@ class LibraryViewStack(QStackedWidget):
             "grid": self.grid_delegate,
             "discs": self.discs_delegate,
             "carousel": self.carousel_delegate,
-            "scroll": self.scroll_delegate,
-            "polaroid": self.polaroid_delegate,
-            "catalog": self.catalog_delegate,
-            "shelf": self.shelf_delegate,
-            "poster": self.poster_delegate,
         }
 
     @property
