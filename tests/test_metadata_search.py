@@ -264,3 +264,72 @@ def test_un_candidato_por_pista(files, without_red) -> None:
 
     applied, _ = apply_album(files[:1], tracks_album)
     assert applied == 1
+
+
+# --- MusicBrainz -------------------------------------------------------------
+
+
+def test_busqueda_musicbrainz_directa_consulta_solo_ese_catalogo(monkeypatch) -> None:
+    consultas: list[str] = []
+    monkeypatch.setattr(
+        "sakura.ui.services.metadata_search.search_musicbrainz",
+        lambda query, limit: consultas.append(query)
+        or [Candidate("musicbrainz", title="BEAM BEAM", artist="JEON SOYEON")],
+    )
+    worker = _SearchWorker("BEAM BEAM", 10, "musicbrainz", artist_query="SOYEON")
+    sources: list[str] = []
+    worker.source_changed.connect(sources.append)
+
+    worker.run()
+
+    assert sources == ["musicbrainz"]
+    assert consultas == ["BEAM BEAM SOYEON"]
+
+
+def test_comparar_todos_suma_musicbrainz(monkeypatch) -> None:
+    monkeypatch.setattr(
+        "sakura.ui.services.metadata_search.search_itunes",
+        lambda *_: [Candidate("itunes", title="Uno", artist="A")],
+    )
+    monkeypatch.setattr(
+        "sakura.ui.services.metadata_search.search_deezer",
+        lambda *_: [Candidate("deezer", title="Dos", artist="B")],
+    )
+    monkeypatch.setattr(
+        "sakura.ui.services.metadata_search.search_musicbrainz",
+        lambda *_: [Candidate("musicbrainz", title="Tres", artist="C")],
+    )
+    worker = _SearchWorker("x", 50, "all")
+    sources: list[str] = []
+    recibidos: list[list[Candidate]] = []
+    worker.source_changed.connect(sources.append)
+    worker.results_ready.connect(recibidos.append)
+
+    worker.run()
+
+    assert sources == ["itunes", "deezer", "musicbrainz"]
+    assert {item.source for item in recibidos[0]} == {
+        "itunes",
+        "deezer",
+        "musicbrainz",
+    }
+
+
+def test_modo_automatico_no_consulta_musicbrainz(monkeypatch) -> None:
+    llamado: list[str] = []
+    monkeypatch.setattr(
+        "sakura.ui.services.metadata_search.search_itunes", lambda *_: []
+    )
+    monkeypatch.setattr(
+        "sakura.ui.services.metadata_search.search_deezer",
+        lambda *_: [candidate("One More Time")],
+    )
+    monkeypatch.setattr(
+        "sakura.ui.services.metadata_search.search_musicbrainz",
+        lambda *_: llamado.append("musicbrainz") or [],
+    )
+    worker = _SearchWorker("Daft Punk", 15, "auto")
+
+    worker.run()
+
+    assert llamado == [], "el modo automático debe seguir rápido: sin MusicBrainz"

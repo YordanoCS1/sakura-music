@@ -89,6 +89,77 @@ def test_deezer_normaliza(monkeypatch, monkeypatch_request) -> None:
     assert first.cover_url.endswith((".jpg", ".jpeg", ".png"))
 
 
+def test_musicbrainz_normaliza(monkeypatch) -> None:
+    monkeypatch.setattr(
+        ms, "_musicbrainz_request", lambda *a, **k: fixture("musicbrainz_search")
+    )
+    results = ms.search_musicbrainz("daft punk one more time")
+
+    assert results
+    first = results[0]
+    assert first.source == "musicbrainz"
+    assert first.title == "One More Time"
+    assert first.artist == "Daft Punk"
+    assert first.album == "Discovery"
+    assert first.year == "2001"
+    assert first.track_total == 14
+    assert first.duration_ms == 320000
+    assert first.album_id == "b0e1b8b6-aaaa-bbbb-cccc-ddddeeeeffff"
+    assert "coverartarchive.org" in first.cover_url
+
+
+def test_musicbrainz_une_el_artist_credit(monkeypatch) -> None:
+    monkeypatch.setattr(
+        ms, "_musicbrainz_request", lambda *a, **k: fixture("musicbrainz_search")
+    )
+    results = ms.search_musicbrainz("daft punk")
+    credit = next(c for c in results if c.title == "One More Time (Instrumental)")
+    assert credit.artist == "Daft Punk feat. Romanthony"
+
+
+def test_musicbrainz_sin_resultados(monkeypatch) -> None:
+    monkeypatch.setattr(ms, "_musicbrainz_request", lambda *a, **k: {"recordings": []})
+    assert ms.search_musicbrainz("posta") == []
+
+
+def test_musicbrainz_vacio_no_hace_red(monkeypatch) -> None:
+    llamado = []
+    monkeypatch.setattr(ms, "_musicbrainz_request", lambda *a, **k: llamado.append(a))
+    assert ms.search_musicbrainz("   ") == []
+    assert not llamado
+
+
+def test_musicbrainz_espera_entre_peticiones(monkeypatch) -> None:
+    """MusicBrainz limita a una peticion por segundo; hay que respetarlo."""
+    pausas: list[float] = []
+    reloj = {"t": 100.0}
+
+    def dormir(segundos: float) -> None:
+        pausas.append(segundos)
+        reloj["t"] += segundos
+
+    monkeypatch.setattr(ms, "_request", lambda *a, **k: {"recordings": []})
+    monkeypatch.setattr(ms.time, "monotonic", lambda: reloj["t"])
+    monkeypatch.setattr(ms.time, "sleep", dormir)
+    monkeypatch.setattr(ms, "MUSICBRAINZ_PAUSE", 1.0)
+    monkeypatch.setattr(ms, "_last_musicbrainz", 0.0)
+
+    ms._musicbrainz_request("u1")
+    ms._musicbrainz_request("u2")
+
+    assert len(pausas) == 1, "la primera peticion no debe esperar"
+    assert abs(pausas[0] - 1.0) < 0.01
+
+
+def test_musicbrainz_cover_url() -> None:
+    assert ms.musicbrainz_cover_url("") == ""
+    assert ms.musicbrainz_cover_url("  ") == ""
+    assert (
+        ms.musicbrainz_cover_url("abc")
+        == "https://coverartarchive.org/release/abc/front-500"
+    )
+
+
 def test_itunes_sin_resultados(monkeypatch, monkeypatch_request) -> None:
     monkeypatch_request("itunes_search_sin_resultado", lambda d: d)
     assert ms.search_itunes("xyzqwerty nonexistent") == []

@@ -55,6 +55,7 @@ from .metadata_catalog import CandidateRow, CatalogPanel, make_result_item
 SOURCE_LABELS = {
     "itunes": "APPLE MUSIC · ITUNES",
     "deezer": "DEEZER",
+    "musicbrainz": "MUSICBRAINZ",
 }
 
 
@@ -151,6 +152,7 @@ class MetadataEditor(QDialog):
         self.source_badge = panel.source_badge
         self.search_status = panel.search_status
         self.use_btn = panel.use_btn
+        self.compare = panel.compare
 
     def _connect_catalog(self) -> None:
         self.search_box.returnPressed.connect(self._search)
@@ -384,7 +386,12 @@ class MetadataEditor(QDialog):
         self.save_btn.setVisible(in_editor)
         self.album_btn.setVisible(
             in_editor
-            and bool(self._candidate and self._candidate.album_id and self.album_tracks)
+            and bool(
+                self._candidate
+                and self._candidate.source == "itunes"
+                and self._candidate.album_id
+                and self.album_tracks
+            )
         )
 
     def _open_catalog(self) -> None:
@@ -621,6 +628,7 @@ class MetadataEditor(QDialog):
         self.save.setEnabled(True)
         self.list.clear()
         self._candidate = None
+        self.compare.clear()
         self.use_btn.setEnabled(False)
         self.results_title.setText("Buscando…")
         self.search_status.setText("Conectando con el catálogo seleccionado…")
@@ -644,6 +652,7 @@ class MetadataEditor(QDialog):
         self._thumbnail_labels.clear()
         self.list.clear()
         self._candidate = None
+        self.compare.clear()
         self.use_btn.setEnabled(False)
 
         for candidate in candidates:
@@ -677,6 +686,8 @@ class MetadataEditor(QDialog):
         self.artist_search_box.setEnabled(True)
         self.platform_box.setEnabled(True)
         self.list.clear()
+        self._candidate = None
+        self.compare.clear()
         self.results_title.setText("Sin resultados")
         self.source_badge.setText("SIN COINCIDENCIAS")
         self.search_status.setText(message_text)
@@ -687,6 +698,12 @@ class MetadataEditor(QDialog):
         self.use_btn.setEnabled(candidate is not None)
         if candidate is not None:
             self._previsualizar(candidate)
+            self.compare.show_candidate(candidate, self._current_fields())
+        else:
+            self.compare.clear()
+
+    def _current_fields(self) -> dict[str, str]:
+        return {name: editor.text() for name, editor in self.field_map.items()}
 
     def _candidate_selected(self) -> Candidate | None:
         row = self.list.currentRow()
@@ -735,7 +752,10 @@ class MetadataEditor(QDialog):
             return
 
         self._candidate = candidate
-        for field_name, value in candidate.to_tags().items():
+        chosen = candidate.to_tags()
+        if self.compare.candidate() is candidate:
+            chosen = self.compare.selected_fields()
+        for field_name, value in chosen.items():
             editor = self.field_map.get(field_name)
             if editor is not None:
                 editor.setText(value)

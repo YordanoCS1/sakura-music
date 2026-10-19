@@ -902,6 +902,31 @@ QPushButton#NavPill:checked {{
     background: {tint(t.border, t.accent, 0.32)};
     border: none;
 }}
+#MetadataComparePanel {{
+    background: {t.surface_alt};
+    border: {bord};
+    border-radius: {t.radius}px;
+}}
+#MetadataCompareHeader {{
+    color: {t.text_muted};
+    font-size: {fs('micro')};
+    font-weight: 800;
+    letter-spacing: 0.6px;
+}}
+#MetadataCompareField {{
+    color: {t.text_dim};
+    font-size: {fs('caption')};
+    font-weight: 700;
+}}
+#MetadataCompareNew {{
+    color: {t.text};
+    font-size: {fs('caption')};
+    font-weight: 600;
+}}
+#MetadataCompareOld {{
+    color: {t.text_muted};
+    font-size: {fs('caption')};
+}}
 QLineEdit#MetadataField {{
     background: {t.surface_alt};
     border: {bord};

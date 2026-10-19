@@ -1,15 +1,15 @@
 """Busqueda de metadatos en catálogos publicos.
 
-Dos fuentes, ambas sin clave ni autenticacion:
+Tres fuentes, todas sin clave ni autenticacion:
 
 - **iTunes Search API** (Apple). La mejor: trae genero, año, numero de pista y
   portada de alta, y `collectionId` permite traer el album entero en una sola
   consulta, que es lo que permite rellenar la biblioteca de un album de una vez.
 - **Deezer** complementa iTunes cuando la búsqueda automática está activa.
-
-Se eligio NO usar MusicBrainz: exige un User-Agent propio, tiene limite de una
-peticion por segundo y la portada viene de otro servicio (Cover Art Archive), lo
-que suma latencia a cambio de poco.
+- **MusicBrainz** es la base de datos abierta y comunitaria. Exige un User-Agent
+  propio, limita a una peticion por segundo y su portada vive en otro servicio
+  (Cover Art Archive), asi que se consulta con un ritmo propio y nunca en la
+  busqueda automatica rapida.
 
 Las funciones usan `urllib` y son bloqueantes a proposito: quien las llama lo
 hace desde un hilo (ver `ui/services/metadata_search.py`).
@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import json
 import re
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -28,13 +29,22 @@ from itertools import pairwise
 
 from . import text
 
-USER_AGENT = "SakuraMusic/0.1"
+# MusicBrainz pide un User-Agent que identifique la app y un contacto.
+USER_AGENT = "SakuraMusic/0.1 (https://github.com/sakura-music)"
 TIMEOUT = 12
 
 ITUNES_SEARCH = "https://itunes.apple.com/search"
 ITUNES_LOOKUP = "https://itunes.apple.com/lookup"
 DEEZER_SEARCH = "https://api.deezer.com/search"
 DEEZER_ALBUM = "https://api.deezer.com/album"
+MUSICBRAINZ_SEARCH = "https://musicbrainz.org/ws/2/recording"
+MUSICBRAINZ_RELEASE = "https://musicbrainz.org/ws/2/release"
+COVER_ART_ARCHIVE = "https://coverartarchive.org/release/{mbid}/front-500"
+
+# MusicBrainz solo deja una peticion por segundo. Se respeta con una pausa
+# propia en vez de confiar en el timeout de la red.
+MUSICBRAINZ_PAUSE = 1.0
+_last_musicbrainz = 0.0
 
 # iTunes guarda la portada con el tamaño en la URL: 100x100 -> 600x600.
 ITUNES_COVER_SIZES = ("100x100", "300x300", "600x600")
@@ -188,6 +198,25 @@ def deezer_search_url(query: str, limit: int = 20) -> str:
     return f"{DEEZER_SEARCH}?{params}"
 
 
+def musicbrainz_search_url(query: str, limit: int = 20) -> str:
+    params = urllib.parse.urlencode(
+        {
+            "query": f"recording:{query}",
+            "fmt": "json",
+            "limit": min(100, max(1, limit)),
+        }
+    )
+    return f"{MUSICBRAINZ_SEARCH}?{params}"
+
+
+def musicbrainz_cover_url(release_id: str) -> str:
+    """La portada de un lanzamiento en el Cover Art Archive."""
+    release_id = release_id.strip()
+    if not release_id:
+        return ""
+    return COVER_ART_ARCHIVE.format(mbid=release_id)
+
+
 # Cuantos resultados pide iTunes por consulta. Es mayor que el limite pedido
 # porque despues se filtran duplicados y versiones, y el ranking ordena: pedir
 # exactamente `limit` y descartar al final deja menos resultados de los utiles.
@@ -270,6 +299,18 @@ def _request(url: str, timeout: int = TIMEOUT) -> dict:
         return json.loads(body.decode("utf-8"))
     except (ValueError, UnicodeDecodeError) as exc:
         raise SourceError("La respuesta no era JSON válido") from exc
+
+
+def _musicbrainz_request(url: str, timeout: int = TIMEOUT) -> dict:
+    """Como `_request`, pero respetando la pausa de una peticion por segundo."""
+    global _last_musicbrainz
+    now = time.monotonic()
+    espera = MUSICBRAINZ_PAUSE - (now - _last_musicbrainz)
+    if espera > 0:
+        time.sleep(espera)
+        now = time.monotonic()
+    _last_musicbrainz = now
+    return _request(url, timeout)
 
 
 def search_itunes(
@@ -501,6 +542,27 @@ def search_deezer(query: str, limit: int = 20) -> list[Candidate]:
     return rank_candidates(list(results.values()), query)
 
 
+def search_musicbrainz(query: str, limit: int = 20) -> list[Candidate]:
+    """Busca grabaciones en MusicBrainz (una peticion por segundo)."""
+    text_value = query.strip()
+    if not text_value:
+        return []
+
+    data = _musicbrainz_request(musicbrainz_search_url(text_value, limit))
+
+    results: dict[tuple[str, str, str], Candidate] = {}
+    for item in data.get("recordings", []):
+        candidate = _candidate_musicbrainz(item)
+        if candidate is not None:
+            key = (
+                normalize(candidate.title),
+                normalize(candidate.artist),
+                normalize(candidate.album),
+            )
+            results.setdefault(key, candidate)
+    return rank_candidates(list(results.values()), query)[: max(1, limit)]
+
+
 def search(query: str, limit: int = 20) -> list[Candidate]:
     """Busca en iTunes y, si no encuentra nada, cae a Deezer."""
     results = search_itunes(query, limit)
@@ -563,6 +625,64 @@ def _candidate_deezer(item: dict) -> Candidate | None:
         cover_url=album.get("cover_xl") or album.get("cover_medium") or "",
         album_id=str(album.get("id") or ""),
     )
+
+
+def _candidate_musicbrainz(item: dict) -> Candidate | None:
+    """Normaliza una grabacion de MusicBrainz.
+
+    El resultado de busqueda no trae genero ni numero de pista; si el
+    lanzamiento y su año, que es lo que la busqueda por texto no puede saber.
+    """
+    title_text = (item.get("title") or "").strip()
+    if not title_text:
+        return None
+
+    artist_name = _artist_credit(item.get("artist-credit"))
+    album = ""
+    album_id = ""
+    year = ""
+    track_total = 0
+    for release in item.get("releases") or []:
+        name_text = (release.get("title") or "").strip()
+        release_id = str(release.get("id") or "")
+        date = release.get("date") or ""
+        if name_text and not album:
+            album = name_text
+            album_id = release_id
+            year = date[:4] if len(date) >= 4 else ""
+        elif release_id and not album_id:
+            album_id = release_id
+        total = sum(
+            int(media.get("track-count") or 0)
+            for media in (release.get("media") or [])
+        )
+        track_total = max(track_total, total)
+
+    return Candidate(
+        source="musicbrainz",
+        title=title_text,
+        artist=artist_name,
+        album=album,
+        albumartist=artist_name,
+        year=year if year.isdigit() else "",
+        genre="",
+        track_number="",
+        track_total=track_total,
+        duration_ms=int(item.get("length") or 0),
+        cover_url=musicbrainz_cover_url(album_id),
+        album_id=album_id,
+    )
+
+
+def _artist_credit(credits: list | None) -> str:
+    """Une los `artist-credit` de MusicBrainz respetando su `joinphrase`."""
+    partes: list[str] = []
+    for credit in credits or []:
+        name_text = (credit.get("name") or "").strip()
+        if not name_text:
+            continue
+        partes.append(name_text + (credit.get("joinphrase") or ""))
+    return "".join(partes).strip()
 
 
 def _cover_itunes(url: str | None) -> str:

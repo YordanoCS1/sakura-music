@@ -138,8 +138,10 @@ def test_busqueda_muestra_catalogos_disponibles(editor) -> None:
     ]
     assert opciones == [
         "Automático · iTunes y Deezer",
+        "Comparar todos · iTunes + Deezer + MusicBrainz",
         "Apple Music · iTunes",
         "Deezer",
+        "MusicBrainz",
     ]
 
 
@@ -506,3 +508,40 @@ def test_cerrar_el_editor_corta_la_busqueda(editor, monkeypatch) -> None:
     editor.reject()
 
     assert cortados == ["shutdown"]
+
+
+# --- comparacion de candidatos -----------------------------------------------
+
+
+def test_comparar_marca_solo_los_campos_que_cambian(editor) -> None:
+    editor.field_map["title"].setText("Around the World")
+    editor.field_map["artist"].setText("Otro artista")
+
+    editor._on_results([_candidate()])
+
+    assert editor.compare.has_candidate()
+    selected = editor.compare.selected_fields()
+    assert "title" not in selected, "el título ya coincidía, no hay nada que pisar"
+    assert selected["artist"] == "Daft Punk"
+    assert selected["album"] == "Homework"
+
+
+def test_usar_candidato_aplica_solo_lo_marcado(editor) -> None:
+    editor.field_map["artist"].setText("Otro artista")
+    editor._on_results([_candidate()])
+    editor.compare._boxes["album"].setChecked(False)
+
+    editor._use_candidate()
+
+    assert editor.field_map["artist"].text() == "Daft Punk"
+    assert editor.field_map["album"].text() == "", "ese campo estaba desmarcado"
+    assert editor.field_map["title"].text() == "Around the World"
+
+
+def test_nueva_busqueda_limpia_la_comparacion(editor) -> None:
+    editor._on_results([_candidate()])
+    assert editor.compare.has_candidate()
+
+    editor._on_results([])
+
+    assert editor.compare.has_candidate() is False

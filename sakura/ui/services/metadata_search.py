@@ -25,6 +25,7 @@ from ...core.metadata_sources import (
     rank_candidates,
     search_deezer,
     search_itunes,
+    search_musicbrainz,
 )
 
 
@@ -60,6 +61,51 @@ class _SearchWorker(QThread):
         query = " ".join(part for part in (self._query, self._artist_query) if part)
         return search_deezer(query, self._limit)
 
+    def _musicbrainz_results(self) -> list[Candidate]:
+        query = " ".join(part for part in (self._query, self._artist_query) if part)
+        return search_musicbrainz(query, self._limit)
+
+    def _combined_results(self, compare: bool) -> tuple[list[Candidate], str]:
+        """Junta los catálogos y deduplica. Devuelve los candidatos y el aviso.
+
+        `compare` agrega MusicBrainz, que es más lento (va con una pausa por
+        pedido), así que en modo automático se deja solo con iTunes y Deezer.
+        """
+        searchers = [
+            ("itunes", "iTunes", self._itunes_results),
+            ("deezer", "Deezer", self._deezer_results),
+        ]
+        if compare:
+            searchers.append(("musicbrainz", "MusicBrainz", self._musicbrainz_results))
+
+        results: list[Candidate] = []
+        errors: list[str] = []
+        for key, label, buscar in searchers:
+            self.source_changed.emit(key)
+            try:
+                results.extend(buscar())
+            except SourceError as exc:
+                errors.append(f"{label}: {exc}")
+
+        if not results and errors:
+            raise SourceError(" · ".join(errors))
+
+        keys_views: set[tuple[str, str, str]] = set()
+        unique: list[Candidate] = []
+        for candidate in results:
+            key_name = (
+                candidate.title.casefold().strip(),
+                candidate.artist.casefold().strip(),
+                candidate.album.casefold().strip(),
+            )
+            if key_name not in keys_views:
+                keys_views.add(key_name)
+                unique.append(candidate)
+        sort_by = " ".join(part for part in (self._query, self._artist_query) if part)
+        found = rank_candidates(unique, sort_by)[: self._limit]
+        aviso = "Resultados parciales; " + " · ".join(errors) if errors else ""
+        return found, aviso
+
     def run(self) -> None:
         aviso_parcial = ""
         try:
@@ -69,40 +115,13 @@ class _SearchWorker(QThread):
             elif self._source == "deezer":
                 self.source_changed.emit("deezer")
                 found = self._deezer_results()
+            elif self._source == "musicbrainz":
+                self.source_changed.emit("musicbrainz")
+                found = self._musicbrainz_results()
             else:
-                self.source_changed.emit("itunes")
-                results_by_source: list[Candidate] = []
-                errors: list[str] = []
-                try:
-                    results_by_source.extend(self._itunes_results())
-                except SourceError as exc:
-                    errors.append(f"iTunes: {exc}")
-
-                self.source_changed.emit("deezer")
-                try:
-                    results_by_source.extend(self._deezer_results())
-                except SourceError as exc:
-                    errors.append(f"Deezer: {exc}")
-
-                if not results_by_source and errors:
-                    raise SourceError(" · ".join(errors))
-                if errors:
-                    aviso_parcial = "Resultados parciales; " + " · ".join(errors)
-                keys_views: set[tuple[str, str, str]] = set()
-                unique: list[Candidate] = []
-                for candidate in results_by_source:
-                    key_name = (
-                        candidate.title.casefold().strip(),
-                        candidate.artist.casefold().strip(),
-                        candidate.album.casefold().strip(),
-                    )
-                    if key_name not in keys_views:
-                        keys_views.add(key_name)
-                        unique.append(candidate)
-                sort_by = " ".join(
-                    part for part in (self._query, self._artist_query) if part
+                found, aviso_parcial = self._combined_results(
+                    compare=self._source == "all"
                 )
-                found = rank_candidates(unique, sort_by)[: self._limit]
         except SourceError as exc:
             self.failed.emit(str(exc))
             return
