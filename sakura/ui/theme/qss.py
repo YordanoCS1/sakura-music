@@ -907,6 +907,21 @@ QPushButton#NavPill:checked {{
     border: {bord};
     border-radius: {t.radius}px;
 }}
+#MetadataCompareScroll, #MetadataCompareScroll > QWidget > QWidget {{
+    background: transparent;
+    border: none;
+}}
+#MetadataCompareToggle {{
+    background: transparent;
+    border: none;
+    color: {t.accent};
+    font-size: {fs('caption')};
+    font-weight: 700;
+    padding: 2px 4px;
+}}
+#MetadataCompareToggle:disabled {{
+    color: {t.text_muted};
+}}
 #MetadataCompareHeader {{
     color: {t.text_muted};
     font-size: {fs('micro')};

@@ -16,6 +16,8 @@ from PySide6.QtWidgets import (
     QLineEdit,
     QListWidget,
     QListWidgetItem,
+    QPushButton,
+    QScrollArea,
     QVBoxLayout,
     QWidget,
 )
@@ -127,20 +129,38 @@ class CandidateCompare(QFrame):
         layout.setContentsMargins(14, 12, 14, 12)
         layout.setSpacing(8)
 
+        header = QHBoxLayout()
+        header.setSpacing(8)
         title = QLabel("Comparar antes de aplicar")
         title.setObjectName("MetadataSectionTitle")
+        header.addWidget(title)
+        header.addStretch(1)
+        self.toggle = QPushButton("Marcar todo")
+        self.toggle.setObjectName("MetadataCompareToggle")
+        self.toggle.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.toggle.clicked.connect(self._toggle_all)
+        header.addWidget(self.toggle)
+
         hint = QLabel(
             "Marca qué campos del resultado reemplazan a los que ya tiene el archivo."
         )
         hint.setObjectName("MetadataHint")
         hint.setWordWrap(True)
-        layout.addWidget(title)
+        layout.addLayout(header)
         layout.addWidget(hint)
 
-        self._rows = QVBoxLayout()
-        self._rows.setContentsMargins(0, 4, 0, 0)
-        self._rows.setSpacing(6)
-        layout.addLayout(self._rows)
+        self.scroll = QScrollArea()
+        self.scroll.setObjectName("MetadataCompareScroll")
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setFrameShape(QFrame.Shape.NoFrame)
+        self.scroll.setMaximumHeight(216)
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        rows_host = QWidget()
+        self._rows = QVBoxLayout(rows_host)
+        self._rows.setContentsMargins(0, 0, 0, 0)
+        self._rows.setSpacing(4)
+        self.scroll.setWidget(rows_host)
+        layout.addWidget(self.scroll)
         self.setVisible(False)
 
     def has_candidate(self) -> bool:
@@ -158,6 +178,7 @@ class CandidateCompare(QFrame):
             widget = item.widget()
             if widget is not None:
                 widget.deleteLater()
+        self.toggle.setText("Marcar todo")
         self.setVisible(False)
 
     def show_candidate(self, candidate: Candidate, current: dict[str, str]) -> None:
@@ -182,6 +203,7 @@ class CandidateCompare(QFrame):
             new_value = tags.get(field, "")
             old_value = current.get(field, "")
             self._rows.addWidget(self._row(field, new_value, old_value))
+        self._refresh_toggle()
         self.setVisible(True)
 
     def _row(self, field: str, new_value: str, old_value: str) -> QWidget:
@@ -192,7 +214,9 @@ class CandidateCompare(QFrame):
 
         box = QCheckBox()
         box.setChecked(bool(new_value) and new_value != old_value)
+        box.setEnabled(bool(new_value))
         box.setFixedWidth(20)
+        box.toggled.connect(self._refresh_toggle)
         layout.addWidget(box)
         self._boxes[field] = box
         self._values[field] = new_value
@@ -210,6 +234,24 @@ class CandidateCompare(QFrame):
         old_label.setObjectName("MetadataCompareOld")
         layout.addWidget(old_label, 1)
         return row
+
+    def _checkable_boxes(self) -> list[QCheckBox]:
+        return [box for box in self._boxes.values() if box.isEnabled()]
+
+    def _toggle_all(self) -> None:
+        boxes = self._checkable_boxes()
+        if not boxes:
+            return
+        target = not all(box.isChecked() for box in boxes)
+        for box in boxes:
+            box.setChecked(target)
+        self._refresh_toggle()
+
+    def _refresh_toggle(self) -> None:
+        boxes = self._checkable_boxes()
+        some_off = any(not box.isChecked() for box in boxes)
+        self.toggle.setText("Marcar todo" if some_off else "Desmarcar todo")
+        self.toggle.setEnabled(bool(boxes))
 
     def selected_fields(self) -> dict[str, str]:
         """Los campos marcados, con el valor que trae el catálogo."""

@@ -545,3 +545,27 @@ def test_nueva_busqueda_limpia_la_comparacion(editor) -> None:
     editor._on_results([])
 
     assert editor.compare.has_candidate() is False
+
+
+def test_comparar_deshabilita_campos_sin_valor(editor) -> None:
+    from sakura.core.metadata_sources import Candidate
+
+    editor._on_results([Candidate("deezer", title="Tema", artist="Alguien")])
+
+    assert editor.compare._boxes["title"].isEnabled()
+    assert editor.compare._boxes["album"].isEnabled() is False
+
+
+def test_marcar_todo_marca_solo_los_campos_con_valor(editor) -> None:
+    from sakura.core.metadata_sources import Candidate
+
+    editor._on_results([Candidate("deezer", title="Tema", artist="Alguien")])
+    editor.compare._boxes["title"].setChecked(False)
+    assert editor.compare.toggle.text() == "Marcar todo"
+
+    editor.compare.toggle.click()
+
+    assert editor.compare.toggle.text() == "Desmarcar todo"
+    selected = editor.compare.selected_fields()
+    assert "title" in selected
+    assert "album" not in selected, "el candidato no trae ese campo"
