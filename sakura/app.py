@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
@@ -12,6 +13,7 @@ from PySide6.QtWidgets import QApplication
 from .config import load_settings
 from .ui import icons, sakura
 from .ui import theme as th
+from .ui.launcher import LauncherWindow
 from .ui.main_window import MainWindow
 from .ui.splash import SakuraSplash
 
@@ -24,9 +26,19 @@ def _splash_enabled() -> bool:
     `SAKURA_NO_SPLASH=1` la salta (util al depurar) y con `QT_QPA_PLATFORM`
     offscreen no tiene sentido mostrar una ventana decorativa.
     """
-    import os
-
     if os.environ.get("SAKURA_NO_SPLASH"):
+        return False
+    return os.environ.get("QT_QPA_PLATFORM", "").lower() != "offscreen"
+
+
+def _launcher_enabled() -> bool:
+    """El launcher visual se saltea en pruebas y se puede apagar por consola.
+
+    `SAKURA_NO_LAUNCHER=1` es util para depurar la ventana principal directamente
+    sin volver a tocar el codigo; con `QT_QPA_PLATFORM=offscreen` no se muestra
+    ninguna ventana decorativa.
+    """
+    if os.environ.get("SAKURA_NO_LAUNCHER"):
         return False
     return os.environ.get("QT_QPA_PLATFORM", "").lower() != "offscreen"
 
@@ -70,7 +82,9 @@ def main() -> int:
         Qt.HighDpiScaleFactorRoundingPolicy.PassThrough
     )
 
-    app = QApplication(sys.argv)
+    skip_launcher = "--no-launcher" in sys.argv
+    argv = [arg for arg in sys.argv if arg != "--no-launcher"] or [sys.argv[0]]
+    app = QApplication(argv)
     app.setApplicationName(APP_NAME)
     app.setStyle("Fusion")
 
@@ -84,25 +98,43 @@ def main() -> int:
     # UI. Se cargan antes de armar la ventana, que ya construye los del lateral.
     icons.load_overrides(load_settings().get("icon_overrides", {}))
 
-    # La flor florece mientras se arma la ventana: cubre el tiempo de arranque
-    # con algo de la marca en vez de un cuadro en blanco.
-    splash = SakuraSplash(theme) if _splash_enabled() else None
-    if splash is not None:
-        splash.show()
-        app.processEvents()
+    launcher: LauncherWindow | None = None
+    splash: SakuraSplash | None = None
+    window: MainWindow | None = None
 
-    window = MainWindow()
-    window.show()
+    def abrir(pagina: str) -> None:
+        nonlocal window
+        if window is not None:
+            return
+        window = MainWindow()
+        window.show()
+        if pagina != "home":
+            window.show_page(pagina)
+        if splash is not None:
+            splash.release(window)
+        if launcher is not None:
+            launcher.close()
 
-    if splash is not None:
-        splash.release(window)
+    if _launcher_enabled() and not skip_launcher:
+        launcher = LauncherWindow()
+        launcher.open_requested.connect(abrir)
+        launcher.show()
+    else:
+        # La flor florece mientras se arma la ventana: cubre el tiempo de
+        # arranque con algo de la marca en vez de un cuadro en blanco.
+        splash = SakuraSplash(theme) if _splash_enabled() else None
+        if splash is not None:
+            splash.show()
+            app.processEvents()
+        abrir("home")
 
     codigo = app.exec()
 
     # La limpieza va acá y no en `closeEvent`: si queda un QThread vivo mientras
     # Qt se destruye, la salida se cuelga de forma intermitente.
-    window.shutdown()
-    del window
+    if window is not None:
+        window.shutdown()
+        del window
     app.processEvents()
     return codigo
 

@@ -36,6 +36,10 @@ python -m pip install -e .
 python -m sakura
 ```
 
+En Windows también se puede abrir con doble clic en **`SakuraMusic.pyw`**:
+usa `pythonw.exe` para no abrir una consola y arranca con el launcher visual.
+`python -m sakura --no-launcher` entra directo a la ventana principal.
+
 Escribes en el buscador, pulsas el botón de descarga de un resultado y sigues el
 avance en **Cola**. Al terminar, el mp3 queda en la biblioteca.
 
@@ -59,7 +63,7 @@ python -c "from sakura import config; print(config.base_dir())"
 ```
 sakura/
   config.py             rutas, con detección de redirección de Windows
-  app.py                bootstrap de QApplication, icono de la app
+  app.py                bootstrap de QApplication, launcher visual e icono
 core/                 lógica pura, sin Qt
     models.py           SearchResult, DownloadJob, JobStatus
     tools.py            comandos yt-dlp + parseo de su salida
@@ -67,8 +71,9 @@ core/                 lógica pura, sin Qt
     library.py          escaneo de carpeta y lectura de tags con mutagen
     metadata.py         escritura de tags y portadas embebidas
   ui/
-    theme.py            TOKENS de diseño + generador de QSS
+    theme/             TOKENS de diseño + generador de QSS
     icons.py            iconos Lucide renderizados con QtSvg
+    launcher.py         pantalla de inicio con estado del entorno
     main_window.py      sidebar + topbar + páginas
     models/             QAbstractTableModel de la biblioteca
     pages/              home, search, library, queue, settings
@@ -464,7 +469,7 @@ Dos cosas que quedaron fuera a propósito:
 
 ### La regla de los tokens
 
-**Ningún widget escribe un color literal.** Todo sale de `sakura/ui/theme.py`:
+**Ningún widget escribe un color literal.** Todo sale de `sakura/ui/theme/`:
 
 ```python
 @dataclass(frozen=True)
@@ -506,7 +511,7 @@ pedirla por nombre desde cualquier botón: `TextButton("Descargar música", "acc
 ## Desarrollo
 
 ```bash
-python -m pytest          # 882 tests
+python -m pytest          # 1140 tests
 python -m ruff check .    # lint
 
 python scripts/preview_icons.py      # hoja de contactos de los iconos

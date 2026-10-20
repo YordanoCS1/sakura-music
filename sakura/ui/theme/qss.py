@@ -1225,4 +1225,155 @@ QPushButton#IconSlot:checked {{
     border: {bord};
     border-radius: {t.radius}px;
 }}
+
+/* ---------- launcher visual ---------- */
+/* La pantalla de inicio es una ventana transparente con una tarjeta adentro:
+   no hereda el fondo del Root de la app, porque se muestra sola. */
+#LauncherSurface {{
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+        stop:0 {tint(t.bg, t.accent, 0.18)},
+        stop:0.45 {t.surface},
+        stop:1 {tint(t.surface_alt, t.accent, 0.12)});
+    border: 1px solid {tint(t.border, t.accent, 0.38)};
+    border-radius: {t.radius + 12}px;
+}}
+#LauncherHeader {{
+    background: transparent;
+    border-bottom: 1px solid {tint(t.border, t.accent, 0.28)};
+    border-top-left-radius: {t.radius + 12}px;
+    border-top-right-radius: {t.radius + 12}px;
+}}
+#LauncherBrand {{
+    color: {t.text};
+    font-size: {fs('label')};
+    font-weight: 800;
+}}
+#LauncherBrandTag {{
+    color: {t.accent};
+    font-size: {fs('nano')};
+    font-weight: 800;
+    letter-spacing: 1.4px;
+}}
+#LauncherBody {{
+    background: transparent;
+}}
+#LauncherPanel {{
+    background: transparent;
+}}
+#LauncherEyebrow {{
+    color: {t.accent};
+    font-size: {fs('micro')};
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    background: transparent;
+}}
+#LauncherTitle {{
+    color: {t.text};
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+    background: transparent;
+}}
+#LauncherSubtitle {{
+    color: {t.text_dim};
+    font-size: {fs('label')};
+    background: transparent;
+}}
+#LauncherHeroEyebrow {{
+    color: {t.accent};
+    font-size: {fs('micro')};
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    background: transparent;
+}}
+#LauncherHeroTitle {{
+    color: {t.text};
+    font-size: 34px;
+    font-weight: 800;
+    letter-spacing: -0.4px;
+    background: transparent;
+}}
+#LauncherHeroText {{
+    color: {t.text_dim};
+    font-size: {fs('label')};
+    background: transparent;
+}}
+#LauncherHeroMeta {{
+    color: {t.text_muted};
+    font-size: {fs('micro')};
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    background: transparent;
+}}
+
+QPushButton#LauncherCard {{
+    background: {card};
+    border: {bord};
+    border-radius: {t.radius + 4}px;
+    padding: 0;
+    text-align: left;
+}}
+QPushButton#LauncherCard:hover {{
+    background: {card_hover};
+    border-color: {tint(t.border, t.accent, 0.55)};
+}}
+QPushButton#LauncherCard:pressed {{
+    background: {t.surface_hover};
+    border-color: {t.accent};
+}}
+QPushButton#LauncherCard:focus {{
+    border-color: {t.accent};
+}}
+#LauncherCardIcon {{
+    background: {tint(t.surface, t.accent, 0.14)};
+    border: 1px solid {tint(t.border, t.accent, 0.32)};
+    border-radius: {t.radius_sm + 2}px;
+}}
+#LauncherCardLabel {{
+    color: {t.text_muted};
+    font-size: {fs('micro')};
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    background: transparent;
+}}
+#LauncherCardValue {{
+    color: {t.text};
+    font-size: {fs('body')};
+    font-weight: 700;
+    background: transparent;
+}}
+#LauncherCardHint {{
+    color: {t.text_muted};
+    font-size: {fs('micro')};
+    background: transparent;
+}}
+#LauncherStatusDot {{
+    background: {t.text_muted};
+    border-radius: 4px;
+}}
+#LauncherStatusDot[state="ok"] {{
+    background: {t.success};
+}}
+#LauncherStatusDot[state="warning"] {{
+    background: {t.warning};
+}}
+#LauncherStatusText {{
+    color: {t.text_dim};
+    font-size: {fs('caption')};
+    font-weight: 600;
+}}
+#LauncherFooter {{
+    color: {t.text_muted};
+    font-size: {fs('micro')};
+}}
+QPushButton#AccentButton[launcherPrimary="true"] {{
+    border-radius: {t.radius + 2}px;
+    font-size: {fs('label')};
+    padding: {px(t, 11)} {px(t, 22)};
+}}
+QPushButton#GhostButton[launcherSecondary="true"] {{
+    border-radius: {t.radius + 2}px;
+    font-size: {fs('caption')};
+    padding: {px(t, 11)} {px(t, 18)};
+}}
 {extra}"""

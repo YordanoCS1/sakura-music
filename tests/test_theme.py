@@ -117,6 +117,21 @@ def test_qss_cubre_los_widgets_de_la_app() -> None:
         assert selector in qss, f"falta el selector {selector}"
 
 
+def test_el_qss_del_launcher_usa_tokens_de_tema() -> None:
+    for theme in th.THEME_LIST:
+        qss = th.build_qss(theme)
+        for selector in (
+            "#LauncherSurface",
+            "#LauncherHeader",
+            "#LauncherHero",
+            "QPushButton#LauncherCard",
+            "#LauncherCardIcon",
+            "#LauncherStatusDot",
+        ):
+            assert selector in qss, f"falta {selector} en {theme.id}"
+        assert theme.accent in qss
+
+
 def test_editor_de_metadatos_usa_tokens_de_tema() -> None:
     for theme_name in th.THEME_LIST:
         qss = th.build_qss(theme_name)
