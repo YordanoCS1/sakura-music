@@ -10,6 +10,7 @@ import pytest
 # Los tests corren sin pantalla: hay que fijarlo antes de importar QtWidgets.
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
+from PySide6.QtCore import QCoreApplication, QEvent
 from PySide6.QtWidgets import QApplication
 
 from sakura import config
@@ -19,6 +20,20 @@ from sakura import config
 def qapp() -> QApplication:
     app = QApplication.instance() or QApplication([])
     yield app
+
+
+@pytest.fixture(autouse=True)
+def borra_widgets_diferidos(qapp: QApplication) -> None:
+    """`deleteLater()` sin bucle de eventos no borra nada y las ventanas se acumulan.
+
+    Varios fixtures cierran una `MainWindow` y llaman `deleteLater()`, pero
+    `processEvents()` no procesa los borrados diferidos. Sin este empujon, cada
+    test dejaba viva la ventana anterior: el QSS global se reaplicaba a todas y
+    el final de la suite se volvia cuadratico.
+    """
+    yield
+    QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
+    qapp.processEvents()
 
 
 @pytest.fixture(scope="session")
