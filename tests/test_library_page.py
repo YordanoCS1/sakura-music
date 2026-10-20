@@ -83,6 +83,7 @@ def test_escanea_la_carpeta_configurada(page) -> None:
     _wait(page)
     assert len(page.model) == 2
     assert page.message.isVisible() is False
+    assert page.library_body.isVisible() is True
 
 
 def test_muestra_la_carpeta_en_el_subtitulo(page) -> None:
@@ -114,6 +115,7 @@ def test_carpeta_vacia_muestra_mensaje(qapp, monkeypatch, tmp_path) -> None:
 
     assert len(pagina.model) == 0
     assert pagina.message.isVisible() is True
+    assert pagina.library_body.isVisible() is False
     assert "No hay" in pagina.message.label.text()
 
 
@@ -587,6 +589,15 @@ def test_el_orden_de_las_vistas_coincide_con_la_barra(page) -> None:
     assert tuple(page.view_buttons) == VIEW_ORDER
     assert page.view_stack.count() == len(VIEW_ORDER)
     assert set(page.card_views) == set(VIEW_ORDER) - {"table"}
+
+
+def test_toolbar_ocultar_y_restaurar_vistas(page) -> None:
+    toolbar = page.toolbar
+    assert not toolbar.view_buttons["carousel"].isHidden()
+    toolbar.hide_view("carousel")
+    assert toolbar.view_buttons["carousel"].isHidden()
+    toolbar.restore_all_views()
+    assert not toolbar.view_buttons["carousel"].isHidden()
 
 
 # --- deshacer el ultimo lote --------------------------------------------------

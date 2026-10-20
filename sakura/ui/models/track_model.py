@@ -85,6 +85,7 @@ class TrackTableModel(QAbstractTableModel):
         super().__init__(parent)
         self._tracks: list[Track] = []
         self._cover_icons: dict[tuple[str, str], QIcon] = {}
+        self.library_theme: th.Theme | None = None
 
     # --- API pública --------------------------------------------------------
 
@@ -127,6 +128,18 @@ class TrackTableModel(QAbstractTableModel):
             self.index(row, 0), self.index(row, max(0, self.columnCount() - 1))
         )
         return True
+
+    def remove_paths(self, paths) -> int:
+        """Quita las pistas cuya ruta ya no existe. Devuelve cuantas salieron."""
+        if not paths:
+            return 0
+
+        wanted = set(paths)
+        keep = [track for track in self._tracks if track.path not in wanted]
+        removed = len(self._tracks) - len(keep)
+        if removed:
+            self.set_tracks(keep)
+        return removed
 
     def row_of(self, track: Track) -> int:
         return self.row_of_path(track.path)
@@ -181,10 +194,11 @@ class TrackTableModel(QAbstractTableModel):
                 if track_item.cover_path and track_item.cover_path.is_file()
                 else None
             )
-            key_name = (str(cover) if cover else "", th.active().id)
+            theme = self.library_theme or th.active()
+            key_name = (str(cover) if cover else "", theme.id)
             icono = self._cover_icons.get(key_name)
             if icono is None:
-                icono = QIcon(render_cover(cover, 40))
+                icono = QIcon(render_cover(cover, 40, theme))
                 if len(self._cover_icons) >= 500:
                     self._cover_icons.clear()
                 self._cover_icons[key_name] = icono
@@ -194,7 +208,8 @@ class TrackTableModel(QAbstractTableModel):
             return int(COLUMNS[col_index][2])
 
         if role == Qt.ItemDataRole.ForegroundRole:
-            return th.active().text_dim if col_index in (4, 5, 6) else th.active().text
+            theme = self.library_theme or th.active()
+            return theme.text_dim if col_index in (4, 5, 6) else theme.text
 
         if role == SORT_ROLE:
             return self._sort_key(track_item, col_index)

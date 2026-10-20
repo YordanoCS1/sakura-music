@@ -20,6 +20,8 @@ class TrackDetail(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setFixedWidth(236)
+        self.library_theme = None
+        self._track: Track | None = None
         self._covers: dict[Path, Path | None] = CoverCache()
 
         layout = QVBoxLayout(self)
@@ -53,7 +55,9 @@ class TrackDetail(QWidget):
         self.refresh()
 
     def _show_placeholder(self) -> None:
-        self.cover.setPixmap(render_cover(None, COVER_SIZE))
+        self.cover.setPixmap(
+            render_cover(None, COVER_SIZE, self.library_theme or th.active())
+        )
 
     def _set_chips(self, tags: list[str]) -> None:
         while self._chips_layout.count():
@@ -70,6 +74,7 @@ class TrackDetail(QWidget):
             self._chips.append(chip)
 
     def set_track(self, track_item: Track | None) -> None:
+        self._track = track_item
         if track_item is None:
             self.title.setText("—")
             self.meta.setText("")
@@ -103,7 +108,9 @@ class TrackDetail(QWidget):
             cover_path = folder_cover(track_item.path.parent, self._covers)
 
         if cover_path and cover_path.exists():
-            pixmap = render_cover(cover_path, COVER_SIZE)
+            pixmap = render_cover(
+                cover_path, COVER_SIZE, self.library_theme or th.active()
+            )
             if not pixmap.isNull():
                 self.cover.setPixmap(pixmap)
                 self.refresh()
@@ -113,7 +120,17 @@ class TrackDetail(QWidget):
         self.refresh()
 
     def refresh(self) -> None:
-        t = th.active()
+        t = self.library_theme or th.active()
+        if self._track is None:
+            self._show_placeholder()
+        else:
+            cover_path = self._track.cover_path
+            if not cover_path or not cover_path.exists():
+                cover_path = folder_cover(self._track.path.parent, self._covers)
+            if cover_path and cover_path.exists():
+                self.cover.setPixmap(render_cover(cover_path, COVER_SIZE, t))
+            else:
+                self._show_placeholder()
         self.title.setStyleSheet(
             f"color: {t.text}; font-size: 15px; font-weight: 700; background: transparent;"
         )

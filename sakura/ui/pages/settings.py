@@ -143,12 +143,13 @@ class SettingsCard(QFrame):
 class SettingsPage(Page):
     """Preferencias persistidas en `config.json`."""
 
-    theme_changed = Signal(str)           # Theme.id
-    format_changed = Signal(str)          # AudioFormat.id
+    theme_changed = Signal(str)  # Theme.id
+    format_changed = Signal(str)  # AudioFormat.id
     library_folder_changed = Signal(str)  # ruta de la biblioteca
-    downloads_folder_changed = Signal(str) # ruta de descargas
+    downloads_folder_changed = Signal(str)  # ruta de descargas
     max_concurrent_changed = Signal(int)  # descargas simultaneas
     folder_cover_changed = Signal(bool)  # escribir folder.jpg
+    ambient_changed = Signal(bool)  # acento según la portada
     icons_changed = Signal()  # cambio un icono personalizado (PNG)
 
     def __init__(self, parent=None):
@@ -166,6 +167,13 @@ class SettingsPage(Page):
         theme_box.setFixedWidth(CONTROL_W)
         theme_box.currentIndexChanged.connect(self._on_theme_changed)
         self.theme_box = theme_box
+
+        ambient_box = QCheckBox("Cambiar el acento según la portada")
+        ambient_box.setObjectName("SettingsCheck")
+        ambient_box.setChecked(bool(self.settings.get("ambient_theme", True)))
+        ambient_box.setFixedWidth(CONTROL_W)
+        ambient_box.toggled.connect(self._on_ambient_toggled)
+        self.ambient_box = ambient_box
 
         # 2. Formato de descarga
         format_box = QComboBox()
@@ -201,9 +209,7 @@ class SettingsPage(Page):
         concurrent_box = QComboBox()
         concurrent_box.setObjectName("SettingsControl")
         for count in range(MIN_CONCURRENT, MAX_CONCURRENT + 1):
-            concurrent_box.addItem(
-                "Una a la vez" if count == 1 else f"{count} a la vez", count
-            )
+            concurrent_box.addItem("Una a la vez" if count == 1 else f"{count} a la vez", count)
         saved = load_settings().get("max_concurrent_downloads", DEFAULT_CONCURRENT)
         try:
             saved = int(saved)
@@ -274,6 +280,13 @@ class SettingsPage(Page):
         )
         self.icons_btn = TextButton("Personalizar…", "ghost", icon="sparkles")
         self.icons_btn.clicked.connect(self._on_customize_icons)
+        row_ambient = SettingRow(
+            "Tema desde la portada",
+            "Toma el color dominante de la carátula de la pista elegida y lo usa "
+            "como acento mientras estás en Biblioteca. Al salir vuelve el tema.",
+            ambient_box,
+            "disc",
+        )
         row_icons = SettingRow(
             "Iconos de la interfaz",
             "Reemplazá las pestañas y botones con tus propios PNG. Podés teñirlos "
@@ -352,6 +365,7 @@ class SettingsPage(Page):
 
         self._rows = [
             row_theme,
+            row_ambient,
             row_icons,
             row_formato,
             row_concurrent,
@@ -363,7 +377,7 @@ class SettingsPage(Page):
         ]
 
         # Tarjetas: agrupan las filas por tema para dar jerarquia a la pagina.
-        self._add_card("Apariencia", "palette", [row_theme, row_icons])
+        self._add_card("Apariencia", "palette", [row_theme, row_ambient, row_icons])
         self._add_card(
             "Descargas",
             "download",
@@ -402,6 +416,11 @@ class SettingsPage(Page):
         self.settings["theme"] = theme_id
         save_settings({"theme": theme_id})
         self.theme_changed.emit(theme_id)
+
+    def _on_ambient_toggled(self, marked: bool) -> None:
+        self.settings["ambient_theme"] = marked
+        save_settings({"ambient_theme": marked})
+        self.ambient_changed.emit(marked)
 
     def _on_customize_icons(self) -> None:
         """Abre el estudio de iconos; reenvía cada cambio para repintar la app."""

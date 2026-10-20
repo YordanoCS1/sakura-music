@@ -21,6 +21,11 @@ from .. import theme as th
 from ..covers import CoverCache, folder_cover, render_cover
 
 
+def _active_theme(delegate) -> th.Theme:
+    """Usa la paleta propia de Biblioteca cuando el delegate tiene una."""
+    return getattr(delegate, "library_theme", None) or th.active()
+
+
 class TrackGridDelegate(QStyledItemDelegate):
     """Renderiza cada pista como una tarjeta moderna con portada, título y artista."""
 
@@ -30,15 +35,19 @@ class TrackGridDelegate(QStyledItemDelegate):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self._scale: float = 1.0
         self._cover_cache: dict[tuple[str, str], QPixmap] = {}
         self._folder_covers: dict[Path, Path | None] = CoverCache()
+
+    def set_scale(self, factor: float) -> None:
+        self._scale = max(0.65, min(1.8, factor))
 
     def clear_cache(self) -> None:
         self._cover_cache.clear()
         self._folder_covers.clear()
 
     def sizeHint(self, option: QStyleOptionViewItem, index: QModelIndex) -> QSize:
-        return QSize(self.CARD_WIDTH, self.CARD_HEIGHT)
+        return QSize(int(self.CARD_WIDTH * self._scale), int(self.CARD_HEIGHT * self._scale))
 
     def paint(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex) -> None:
         track_item: Track | None = index.data(Qt.ItemDataRole.UserRole)
@@ -49,7 +58,7 @@ class TrackGridDelegate(QStyledItemDelegate):
         painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
         painter.setRenderHint(QPainter.RenderHint.TextAntialiasing, True)
 
-        t = th.active()
+        t = _active_theme(self)
         rect = option.rect
         card_rect = QRectF(rect.x() + 4, rect.y() + 4, rect.width() - 8, rect.height() - 8)
         radius = float(t.radius)
@@ -76,18 +85,21 @@ class TrackGridDelegate(QStyledItemDelegate):
         painter.drawRoundedRect(card_rect, radius, radius)
 
         # Portada
-        cover_x = card_rect.x() + (card_rect.width() - self.COVER_SIZE) / 2
+        cover_size = int(self.COVER_SIZE * self._scale)
+        cover_x = card_rect.x() + (card_rect.width() - cover_size) / 2
         cover_y = card_rect.y() + 8
         cover_path = track_item.cover_path
         if not cover_path or not cover_path.exists():
             cover_path = folder_cover(track_item.path.parent, self._folder_covers)
 
-        cache_key = (str(cover_path) if cover_path else "", t.id)
+        cache_key = (f"{cover_path or ''}:{cover_size}", t.id)
         if cache_key in self._cover_cache:
             pixmap = self._cover_cache[cache_key]
         else:
             pixmap = render_cover(
-                cover_path if cover_path and cover_path.exists() else None, self.COVER_SIZE
+                cover_path if cover_path and cover_path.exists() else None,
+                cover_size,
+                t,
             )
             if len(self._cover_cache) > 400:
                 self._cover_cache.clear()
@@ -105,7 +117,7 @@ class TrackGridDelegate(QStyledItemDelegate):
             fm_badge = painter.fontMetrics()
             bw = fm_badge.horizontalAdvance(ext) + 10
             bh = 16
-            bx = cover_x + self.COVER_SIZE - bw - 6
+            bx = cover_x + cover_size - bw - 6
             by = cover_y + 6
             b_path = QPainterPath()
             b_path.addRoundedRect(QRectF(bx, by, bw, bh), 4, 4)
@@ -186,10 +198,14 @@ class TrackShowcaseDelegate(QStyledItemDelegate):
         super().__init__(parent)
         self.mode = mode
         self.rotation = 0
+        self._scale: float = 1.0
         self._cover_cache: dict[tuple[str, str], QPixmap] = {}
         self._vinyl_cache: dict[tuple[str, str, int], QPixmap] = {}
         self._resolved_covers: dict[Path, Path | None] = {}
         self._folder_covers: dict[Path, Path | None] = CoverCache()
+
+    def set_scale(self, factor: float) -> None:
+        self._scale = max(0.65, min(1.8, factor))
 
     def set_rotation(self, degrees: int) -> None:
         self.rotation = degrees % 360
@@ -202,8 +218,8 @@ class TrackShowcaseDelegate(QStyledItemDelegate):
 
     def sizeHint(self, option: QStyleOptionViewItem, index: QModelIndex) -> QSize:
         if self.mode == "carousel":
-            return QSize(344, 190)
-        return QSize(204, 270)
+            return QSize(int(344 * self._scale), int(190 * self._scale))
+        return QSize(int(204 * self._scale), int(270 * self._scale))
 
     def paint(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex) -> None:
         track_item: Track | None = index.data(Qt.ItemDataRole.UserRole)
@@ -214,7 +230,7 @@ class TrackShowcaseDelegate(QStyledItemDelegate):
         painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
         painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform, True)
 
-        theme = th.active()
+        theme = _active_theme(self)
         rect = option.rect
         card = QRectF(rect.x() + 5, rect.y() + 5, rect.width() - 10, rect.height() - 10)
         selected = bool(option.state & QStyle.StateFlag.State_Selected)
@@ -413,7 +429,9 @@ class TrackShowcaseDelegate(QStyledItemDelegate):
         pixmap = self._cover_cache.get(key)
         if pixmap is None:
             pixmap = render_cover(
-                cover_path if cover_path and cover_path.exists() else None, size
+                cover_path if cover_path and cover_path.exists() else None,
+                size,
+                theme,
             )
             if len(self._cover_cache) >= 400:
                 self._cover_cache.clear()
@@ -458,25 +476,3 @@ class TrackShowcaseDelegate(QStyledItemDelegate):
             track_item.album or track_item.extension.upper(), Qt.TextElideMode.ElideRight, width
         )
         painter.drawText(x, y + 44, width, 16, Qt.AlignmentFlag.AlignVCenter, album)
-
-
-# --- vistas nuevas: rollo, polaroid, ficha, librero y muro de posters ---------
-
-_DIGITOS_CN = "零一二三四五六七八九"
-
-
-def chapter_label(number: int) -> str:
-    """Numero de capitulo en chino (1 -> '卷一', 10 -> '卷十', 21 -> '卷二十一')."""
-    if number <= 0:
-        return "卷"
-    if number > 99:
-        return f"卷{number}"
-    if number <= 10:
-        texto = "十" if number == 10 else _DIGITOS_CN[number]
-    elif number < 20:
-        texto = "十" + _DIGITOS_CN[number % 10]
-    elif number % 10 == 0:
-        texto = _DIGITOS_CN[number // 10] + "十"
-    else:
-        texto = _DIGITOS_CN[number // 10] + "十" + _DIGITOS_CN[number % 10]
-    return f"卷{texto}"

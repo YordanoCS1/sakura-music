@@ -91,6 +91,23 @@ class Theme:
         """Variante del tema con otro color de acento (portada -> tema Aqua)."""
         return replace(self, accent=hex_color, accent_hover=hex_color)
 
+    def with_ambient(self, hex_color: str) -> Theme:
+        """Variante con el acento de la portada, sin perder legibilidad.
+
+        `with_accent` cambia solo el color de marca; acá tambien se ajustan el
+        texto de los botones (que va encima del acento), el hover y la seleccion,
+        porque un color sacado de una foto puede ser claro u oscuro.
+        """
+        text = "#0B0B0B" if relative_luminance(hex_color) > 0.45 else "#FFFFFF"
+        return replace(
+            self,
+            accent=hex_color,
+            accent_hover=tint(hex_color, self.text, 0.14),
+            accent_text=text,
+            selection=tint(self.bg, hex_color, 0.20),
+            selection_text=self.text,
+        )
+
     def with_density(self, factor: float) -> Theme:
         """Variante con otra densidad de espaciado."""
         return replace(self, density=factor)
@@ -122,6 +139,17 @@ FONT_SIZES: dict[str, int] = {
 def fs(name: str) -> str:
     """Tamano de fuente por rol, ya en px para inyectar en el QSS."""
     return f"{FONT_SIZES[name]}px"
+
+
+def relative_luminance(hex_color: str) -> float:
+    """Luminancia relativa (0 = negro, 1 = blanco) para elegir texto encima."""
+    raw = hex_color.lstrip("#")
+    channels = [int(raw[i : i + 2], 16) / 255 for i in (0, 2, 4)]
+    linear = [
+        value / 12.92 if value <= 0.04045 else ((value + 0.055) / 1.055) ** 2.4
+        for value in channels
+    ]
+    return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2]
 
 
 def tint(base: str, color: str, alpha: float) -> str:

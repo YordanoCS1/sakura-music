@@ -8,6 +8,7 @@ El paquete separa tres cosas: los tokens (`tokens`), las paletas concretas
 `from sakura.ui import theme` siga funcionando igual.
 """
 
+from .ambient import dominant_color
 from .palettes import (
     ANIME,
     CATPPUCCIN,
@@ -54,6 +55,7 @@ __all__ = [
     "Theme",
     "active",
     "build_qss",
+    "dominant_color",
     "get_theme",
     "px",
     "set_active",

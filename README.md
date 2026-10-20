@@ -224,6 +224,16 @@ otro color:
 Agregar un tema es escribir un `Theme` más: el QSS se genera entero desde los
 tokens y ningún widget se toca.
 
+### Vistas de la Biblioteca
+
+La Biblioteca cuenta con 4 vistas nativas diseñadas a medida para disfrutar tu colección:
+* **Tabla clásica:** vista compacta con columnas detalladas y ordenables.
+* **Cuadrícula:** tarjetas modernas con portada, título y artista.
+* **Discos de vinilo:** recrea tus álbumes en discos de vinilo con surcos e ilustración central.
+* **Carrusel 3D:** navegación horizontal con efecto de perspectiva.
+
+Cada botón de vista en la barra superior se puede ocultar o mostrar haciendo **clic derecho** sobre él («Ocultar de la barra» / «Mostrar todas las vistas»), permitiéndote dejar una interfaz limpia y adaptada únicamente a los modos que uses.
+
 ### Un tema tiene que LEERSE, no solo verse bonito
 
 `scripts/audit_contrast.py` mide el contraste WCAG de los 8 temas sobre los

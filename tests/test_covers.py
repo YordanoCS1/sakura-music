@@ -63,6 +63,22 @@ def test_el_placeholder_tambien_redondeado(qapp) -> None:
     assert image.pixelColor(SIZE // 2, SIZE // 2).alpha() == 255
 
 
+def test_placeholder_de_biblioteca_usa_la_paleta_local(qapp) -> None:
+    from PySide6.QtGui import QColor
+
+    theme = th.get_theme("chile").with_accent("#CC3377")
+
+    image = render_cover(None, 64, theme).toImage()
+
+    expected = QColor(theme.surface_alt)
+    actual = image.pixelColor(32, 8)
+    assert (actual.red(), actual.green(), actual.blue()) == (
+        expected.red(),
+        expected.green(),
+        expected.blue(),
+    )
+
+
 def test_acepta_bytes_como_una_ruta(qapp, cover) -> None:
     """El editorTodavia no escribio la imagen: la tiene en memoria."""
     from_bytes = _image(cover.read_bytes())

@@ -1,4 +1,4 @@
-"""Las cuatro vistas de la Biblioteca: tabla, tarjetas, discos y carrusel."""
+"""Vistas de la Biblioteca, incluida la vista personalizada por diseño."""
 
 from __future__ import annotations
 
@@ -168,3 +168,17 @@ class LibraryViewStack(QStackedWidget):
     def update_viewports(self) -> None:
         for view in self.card_views.values():
             view.viewport().update()
+
+    def set_zoom(self, factor: float) -> None:
+        """Ajusta la escala de las tarjetas y portadas de la biblioteca."""
+        factor = max(0.65, min(1.8, factor))
+        for delegate in self.card_delegates.values():
+            if hasattr(delegate, "set_scale"):
+                delegate.set_scale(factor)
+        for view in self.card_views.values():
+            view.doItemsLayout()
+            view.viewport().update()
+        self.table.verticalHeader().setDefaultSectionSize(int(52 * factor))
+        icon_dim = int(40 * factor)
+        self.table.setIconSize(QSize(icon_dim, icon_dim))
+        self.table.viewport().update()

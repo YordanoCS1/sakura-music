@@ -143,3 +143,5 @@ def test_un_ajuste_invalido_cae_al_default(monkeypatch, tmp_path) -> None:
 
     assert gestor.max_concurrent == DownloadManager.MAX_CONCURRENT
     gestor.shutdown()
+
+

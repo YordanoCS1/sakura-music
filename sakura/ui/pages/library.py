@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from functools import lru_cache
 from pathlib import Path
 
 from PySide6.QtCore import Qt, QTimer, Signal
@@ -24,7 +25,7 @@ from .. import icons
 from .. import theme as th
 from ..covers import CoverCache, folder_cover, render_cover
 from ..models.track_model import COLUMNS, STRETCH_COLUMN, TrackFilterProxy, TrackTableModel
-from ..services.library import LibraryRefresher, LibraryScanner
+from ..services.library import LibraryDeltaScanner, LibraryRefresher, LibraryScanner
 from ..widgets.batch_editor import open_edicion_batch
 from ..widgets.buttons import TextButton
 from ..widgets.library_folders import LibraryFolderPanel
@@ -36,6 +37,17 @@ from ..widgets.track_detail import TrackDetail
 from ..widgets.track_info import TrackInfoDialog
 from .base import Page
 
+# Un cambio de seleccion con las flechas dispara decenas de lecturas de portada
+# en un segundo. Se espera a que el usuario se detenga antes de recolorear.
+AMBIENT_DEBOUNCE_MS = 220
+
+
+@lru_cache(maxsize=256)
+def _cover_accent(path: Path, mtime_ns: int) -> str | None:
+    """Color de acento de una portada, recordado por ruta y fecha."""
+    color = th.dominant_color(path)
+    return color.name() if color is not None else None
+
 
 class LibraryPage(Page):
     """Escanea la carpeta de musica y lista todo lo que encuentre."""
@@ -43,6 +55,10 @@ class LibraryPage(Page):
     review_data_changed = Signal()
     # El estado vacio ofrece saltar a Buscar para llenar la biblioteca.
     search_requested = Signal()
+    # La ventana usa el color de la portada como acento mientras esta pagina
+    # esta visible; al salir se vuelve al tema elegido.
+    ambient_requested = Signal(str)  # #RRGGBB
+    ambient_cleared = Signal()
 
     def __init__(self, parent=None):
         super().__init__("Biblioteca", "Tu música local", parent)
@@ -59,6 +75,14 @@ class LibraryPage(Page):
         self._library_root: Path | None = None
         self._current_folder: Path | None = None
         self._review_mode = False
+        self._ambient_source: tuple[Path, int] | None = None
+        self._ambient_color = ""
+        self._ambient_enabled = bool(load_settings().get("ambient_theme", True))
+        self._changes_pending = False
+        self._ambient_timer = QTimer(self)
+        self._ambient_timer.setSingleShot(True)
+        self._ambient_timer.setInterval(AMBIENT_DEBOUNCE_MS)
+        self._ambient_timer.timeout.connect(self._emit_ambient)
 
         self.scanner = LibraryScanner(self)
         self.scanner.tracks_found.connect(self._on_tracks)
@@ -71,6 +95,11 @@ class LibraryPage(Page):
         self.refresher.finished.connect(self._on_refresh_done)
         self.refresher.failed.connect(self._on_refresh_failed)
 
+        self.delta = LibraryDeltaScanner(self)
+        self.delta.tracks_changed.connect(self._on_delta_changed)
+        self.delta.tracks_removed.connect(self._on_delta_removed)
+        self.delta.finished.connect(self._on_delta_finished)
+        self.delta.failed.connect(self._on_delta_failed)
         self._disc_rotation = 0
         self._disc_timer = QTimer(self)
         self._disc_timer.setInterval(50)
@@ -92,6 +121,8 @@ class LibraryPage(Page):
         self.content.addWidget(self.selection_bar)
 
         body = QWidget()
+        body.setObjectName("LibraryBody")
+        self.library_body = body
         body_layout = QHBoxLayout(body)
         body_layout.setContentsMargins(0, 0, 0, 0)
         body_layout.setSpacing(0)
@@ -161,6 +192,10 @@ class LibraryPage(Page):
         bar.open_button.clicked.connect(self._on_pick_folder)
         bar.reload_button.clicked.connect(lambda: self.rescan())
         bar.undo_button.clicked.connect(self._on_undo)
+        bar.zoom_changed.connect(self._on_zoom_changed)
+
+    def _on_zoom_changed(self, percent: int) -> None:
+        self.view_stack.set_zoom(percent / 100.0)
 
     def _connect_selection(self) -> None:
         bar = self.selection_bar
@@ -190,9 +225,7 @@ class LibraryPage(Page):
         for mode, view in self.card_views.items():
             if mode != "grid":
                 view.selectionModel().selectionChanged.connect(
-                    lambda *_args, selected_view=view: self._on_card_selection(
-                        selected_view
-                    )
+                    lambda *_args, selected_view=view: self._on_card_selection(selected_view)
                 )
             view.doubleClicked.connect(lambda _index: self._on_info())
 
@@ -225,6 +258,7 @@ class LibraryPage(Page):
         self.view_stack.clear_selections()
         self.detail.set_track(None)
         self._sync_edit_buttons(None)
+        self._request_ambient(None)
 
     def _active_card_view(self) -> QListView | None:
         return self.view_stack.active_card_view()
@@ -247,6 +281,40 @@ class LibraryPage(Page):
             f"QTableView::item:hover {{ background: {t.surface_hover}; }}"
             f"QTableCornerButton::section {{ background: {t.bg}; border: none; }}"
         )
+        self.library_body.setStyleSheet(
+            f"QWidget#LibraryBody {{ background: {t.bg}; color: {t.text}; }}"
+            f"QListView, QListWidget {{ background: {t.bg}; color: {t.text};"
+            f" border: none; selection-background-color: {selection_bg}; }}"
+            f"QListWidget::item {{ background: {t.surface}; border: 1px solid {t.border};"
+            f" border-radius: 8px; padding: 8px 12px; }}"
+            f"QListWidget::item:hover {{ background: {t.surface_hover}; }}"
+            f"QListWidget::item:selected {{ color: {t.accent}; }}"
+            f"QLabel#Breadcrumb, QLabel#ToolbarStats {{ color: {t.text_dim}; }}"
+            f"QLabel#DetailCover {{ background: {t.surface_alt};"
+            f" border: 1px solid {t.border}; border-radius: {t.radius}px; }}"
+        )
+        self.toolbar.setStyleSheet(
+            f"QWidget#LibraryToolbar {{ background: {t.bg}; }}"
+            f"QLineEdit#SearchInput {{ background: {t.surface}; color: {t.text};"
+            f" border: 1px solid {t.border}; border-radius: 10px; padding: 8px 12px; }}"
+            f"QFrame#SegmentedControl {{ background: {t.surface};"
+            f" border: 1px solid {t.border}; border-radius: 10px; }}"
+            f"QPushButton#SegmentButton {{ background: transparent; border-radius: 7px; }}"
+            f"QPushButton#SegmentButton:checked {{ background: {t.surface_hover}; }}"
+            f"QPushButton#IconButton {{ background: {t.surface}; color: {t.text};"
+            f" border: 1px solid {t.border}; border-radius: 10px; }}"
+            f"QPushButton#IconButton:hover {{ background: {t.surface_hover};"
+            f" border-color: {t.accent}; }}"
+        )
+        self.detail.library_theme = t
+        self.detail.refresh()
+        self.model.library_theme = t
+        self.model._cover_icons.clear()
+        if self.model.rowCount():
+            self.model.dataChanged.emit(
+                self.model.index(0, 0),
+                self.model.index(self.model.rowCount() - 1, self.model.columnCount() - 1),
+            )
         self.view_stack.clear_caches()
         self.view_stack.update_viewports()
         self.toolbar.set_active_view(self.view_mode)
@@ -261,6 +329,10 @@ class LibraryPage(Page):
         configurado = load_settings().get("library_folder")
         return Path(configurado) if configurado else music_dir()
 
+    @property
+    def library_root(self) -> Path | None:
+        return self._library_root
+
     def rescan(self, folder: Path | None = None) -> None:
         root = folder or self.library_folder()
         if not root.is_dir():
@@ -272,6 +344,8 @@ class LibraryPage(Page):
             return
 
         root = root.resolve()
+        self.delta.cancel()
+        self._changes_pending = False
         self._library_root = root
         self._current_folder = self._library_root
         self._clear_showcase_caches()
@@ -282,11 +356,16 @@ class LibraryPage(Page):
         self.model.clear()
         self._update_folder_navigation()
         self.table.setSortingEnabled(False)
-        self._show_message("Escaneando...")
+        self._show_message(
+            "Buscando pistas y leyendo sus metadatos...",
+            title="Preparando tu biblioteca",
+            icon="music",
+        )
         self._set_stats("Leyendo metadatos...")
         self.scanner.scan(root)
 
     def _on_tracks(self, batch: list[Track]) -> None:
+        self.library_body.setVisible(True)
         self.message.setVisible(False)
         self.model.append(batch)
 
@@ -295,6 +374,7 @@ class LibraryPage(Page):
 
     def _on_finished(self, total: int, summary: dict[str, int]) -> None:
         self.table.setSortingEnabled(True)
+        self._retry_pending_changes()
         if total == 0:
             self._update_folder_navigation()
             self._show_message(
@@ -329,6 +409,67 @@ class LibraryPage(Page):
             icon="alert-triangle",
         )
         self._set_stats("")
+        self._retry_pending_changes()
+
+    def refresh_changes(self) -> None:
+        """Revisa el disco y aplica solo altas, bajas y cambios de metadatos."""
+        if self._library_root is None:
+            return
+        if self.scanner.is_running or self.refresher.is_running or self.delta.is_running:
+            # Un cambio a mitad de escaneo no puede perderse: se reintenta al
+            # terminar el trabajo en curso.
+            self._changes_pending = True
+            return
+        self._changes_pending = False
+        self.delta.scan(self._library_root)
+
+    def _retry_pending_changes(self) -> None:
+        if self._changes_pending:
+            self._changes_pending = False
+            QTimer.singleShot(0, self.refresh_changes)
+
+    def _on_delta_changed(self, batch: list[Track]) -> None:
+        self.library_body.setVisible(True)
+        self.message.setVisible(False)
+        for track_item in batch:
+            row_index = self.model.row_of_path(track_item.path)
+            if row_index >= 0:
+                self.model.replace(row_index, track_item)
+            else:
+                self.model.append([track_item])
+
+    def _on_delta_removed(self, paths) -> None:
+        if self.model.remove_paths(paths):
+            self._clear_showcase_caches()
+            self._on_selection()
+
+    def _on_delta_finished(self, changed: int, removed: int) -> None:
+        self._retry_pending_changes()
+        if not changed and not removed:
+            return
+
+        self._clear_showcase_caches()
+        self._update_folder_navigation()
+        if not len(self.model):
+            self._show_message(
+                f"No hay música en {self.library_folder()}\n\n"
+                "Descargá algo desde Buscar y aparecerá acá.",
+                title="Tu biblioteca está vacía",
+                icon="music",
+                action="Buscar música",
+            )
+            self._set_stats("")
+        else:
+            self._update_filtered_stats()
+        self.review_data_changed.emit()
+
+    def _on_delta_failed(self, message: str) -> None:
+        self._set_stats(f"No se pudo revisar la carpeta: {message}")
+
+    def shutdown(self) -> None:
+        self.scanner.shutdown()
+        self.delta.shutdown()
+        self.refresher.shutdown()
 
     # --- filtros y seleccion -----------------------------------------------
 
@@ -353,17 +494,11 @@ class LibraryPage(Page):
                 if self._current_folder == self._library_root:
                     self._on_finished_filter_reset()
                 else:
-                    self._set_stats(
-                        f"{self.proxy.rowCount()} pistas en esta carpeta"
-                    )
+                    self._set_stats(f"{self.proxy.rowCount()} pistas en esta carpeta")
             return
         visible = self.proxy.rowCount()
         total = self.model.rowCount()
-        self._set_stats(
-            f"{visible} de {total} pistas"
-            if visible != total
-            else f"{total} pistas"
-        )
+        self._set_stats(f"{visible} de {total} pistas" if visible != total else f"{total} pistas")
 
     def _on_finished_filter_reset(self) -> None:
         if not len(self.model):
@@ -386,6 +521,7 @@ class LibraryPage(Page):
             track_item = self.selected_track()
             self._sync_edit_buttons(track_item)
             self.detail.set_track(track_item)
+            self._request_ambient(track_item)
         finally:
             self._syncing_selection = False
 
@@ -407,6 +543,7 @@ class LibraryPage(Page):
             track_item = self.selected_track()
             self._sync_edit_buttons(track_item)
             self.detail.set_track(track_item)
+            self._request_ambient(track_item)
         finally:
             self._syncing_selection = False
 
@@ -418,6 +555,67 @@ class LibraryPage(Page):
         self.batch_button.setVisible(marked > 1)
         self.batch_button.setEnabled(marked > 1)
         self.selection_bar.set_selection(marked)
+
+    def refresh_ambient(self) -> None:
+        """Recalcula el acento de la pista marcada (al activar el ajuste)."""
+        self._ambient_source = None
+        self._ambient_color = ""
+        self._request_ambient(self.selected_track())
+
+    def set_ambient_enabled(self, enabled: bool) -> None:
+        """Activa o apaga el tema ambiente sin releer el ajuste en cada clic."""
+        self._ambient_enabled = enabled
+        if enabled:
+            self.refresh_ambient()
+            return
+
+        self._ambient_timer.stop()
+        self._ambient_source = None
+        if self._ambient_color:
+            self._ambient_color = ""
+            self.ambient_cleared.emit()
+
+    def _request_ambient(self, track_item: Track | None) -> None:
+        """Pide un acento nuevo para `track_item`, con un respiro por el scroll."""
+        if not self._ambient_enabled:
+            return
+
+        if track_item is None or track_item.cover_path is None:
+            self._ambient_timer.stop()
+            self._ambient_source = None
+            if self._ambient_color:
+                self._ambient_color = ""
+                self.ambient_cleared.emit()
+            return
+
+        cover = track_item.cover_path
+        try:
+            mtime_ns = cover.stat().st_mtime_ns
+        except OSError:
+            return
+
+        source = (cover, mtime_ns)
+        if source == self._ambient_source:
+            return
+        self._ambient_source = source
+        self._ambient_timer.start()
+
+    def _emit_ambient(self) -> None:
+        source = self._ambient_source
+        if source is None:
+            return
+
+        path, mtime_ns = source
+        color = _cover_accent(path, mtime_ns)
+        if color is None:
+            if self._ambient_color:
+                self._ambient_color = ""
+                self.ambient_cleared.emit()
+            return
+
+        if color != self._ambient_color:
+            self._ambient_color = color
+            self.ambient_requested.emit(color)
 
     def selected_tracks(self) -> list[Track]:
         """Todas las pistas marcadas, en el orden en que se ven."""
@@ -534,7 +732,7 @@ class LibraryPage(Page):
         Va en un hilo aparte: son dos lecturas de mutagen por pista y con miles
         de pistas el hilo de la GUI se congela durante segundos.
         """
-        if self.refresher.is_running:
+        if self.refresher.is_running or self.delta.is_running:
             return
 
         self.table.setSortingEnabled(False)
@@ -555,6 +753,7 @@ class LibraryPage(Page):
         self._on_selection()
         self._set_stats(f"{total} pistas actualizadas")
         self.review_data_changed.emit()
+        self._retry_pending_changes()
 
     def _on_refresh_failed(self, message: str) -> None:
         self.table.setSortingEnabled(True)
@@ -565,6 +764,7 @@ class LibraryPage(Page):
         )
         self._update_filtered_stats()
         self.review_data_changed.emit()
+        self._retry_pending_changes()
 
     def _refresh_track(self, track_item: Track, tags) -> None:
         """Vuelve a leer la pista del disco y actualiza la fila y el detalle."""
@@ -575,9 +775,7 @@ class LibraryPage(Page):
 
         updated.cover_path = extract_cover(updated.path, covers_dir())
         if not updated.cover_path:
-            updated.cover_path = folder_cover(
-                updated.path.parent, self._covers
-            )
+            updated.cover_path = folder_cover(updated.path.parent, self._covers)
         row_index = self.model.row_of(track_item)
         if row_index < 0:
             return
@@ -663,9 +861,7 @@ class LibraryPage(Page):
             else "  ›  ".join(location)  # noqa: RUF001
         )
         self.proxy.set_folder_filter(
-            current
-            if not self.proxy.query and not self._review_mode
-            else None
+            current if not self.proxy.query and not self._review_mode else None
         )
         self._populate_folder_list()
 
@@ -675,12 +871,7 @@ class LibraryPage(Page):
         self.folder_list.clear()
         root = self._library_root
         current = self._current_folder
-        if (
-            root is None
-            or current is None
-            or self.proxy.query
-            or self._review_mode
-        ):
+        if root is None or current is None or self.proxy.query or self._review_mode:
             self.folder_panel.setVisible(False)
             return
 
@@ -696,9 +887,7 @@ class LibraryPage(Page):
             children.setdefault(child, []).append(track)
 
         t = th.active()
-        for folder, tracks in sorted(
-            children.items(), key=lambda entry: entry[0].name.casefold()
-        ):
+        for folder, tracks in sorted(children.items(), key=lambda entry: entry[0].name.casefold()):
             cover = next(
                 (
                     track.cover_path
@@ -718,9 +907,7 @@ class LibraryPage(Page):
                 folder_icon,
                 f"{folder.name} · {len(tracks)} pistas",
             )
-            item.setTextAlignment(
-                Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
-            )
+            item.setTextAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
             item.setData(Qt.ItemDataRole.UserRole, folder)
             item.setToolTip(f"{folder.name}\n{len(tracks)} pistas\nClic para abrir")
             self.folder_list.addItem(item)
@@ -729,17 +916,18 @@ class LibraryPage(Page):
 
     # --- utilidades ---------------------------------------------------------
 
-    def _show_message(
-        self, text: str, title: str = "", icon: str = "", action: str = ""
-    ) -> None:
+    def _show_message(self, text: str, title: str = "", icon: str = "", action: str = "") -> None:
         if not text:
             self.message.setVisible(False)
+            self.library_body.setVisible(True)
             return
         self.message.set_text(text)
         self.message.set_title(title)
         self.message.set_icon(icon)
         self.message.set_action(action, icon="search" if action else "")
         self.message.setVisible(True)
+        if not len(self.model):
+            self.library_body.setVisible(False)
 
     def _set_stats(self, text: str) -> None:
         self.stats.setText(text)
@@ -753,6 +941,7 @@ class LibraryPage(Page):
         """Escanea la primera vez que se abre la pagina."""
         super().showEvent(event)
         self._update_disc_animation()
+        self.refresh_ambient()
         if not len(self.model) and not self.scanner.is_running:
             self.subtitle.setText(str(self.library_folder()))
             self.rescan()

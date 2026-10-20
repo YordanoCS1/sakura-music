@@ -16,6 +16,7 @@ from . import theme as th
 from .motion import animations_enabled
 from .pages import HomePage, LibraryPage, QueuePage, SearchPage, SettingsPage
 from .services import DownloadManager, LibraryReviewScanner
+from .services.watcher import LibraryWatcher
 from .widgets import BottomBar, InspectorPanel, Sidebar, TabBar, TitleBar
 from .widgets.completion_dialog import CompletionDialog
 from .widgets.topbar import TopBar
@@ -110,12 +111,18 @@ class MainWindow(QWidget):
 
         self._current_page = "home"
         self._cerrando = False
+        self._base_theme = th.active()
+        self._ambient_color = ""
         self._home_review_generation = 0
         self._nav_layout = str(load_settings().get("nav_layout", DEFAULT_NAV_LAYOUT))
         self._shell = DEFAULT_SHELL
         self._batch_downloads: dict[int, DownloadJob] = {}
         self._home_review_scanner = LibraryReviewScanner(self)
         self._home_review_scanner.finished.connect(self._on_home_review_finished)
+        # Vigila la carpeta de la biblioteca para reflejar descargas y cambios
+        # hechos desde el explorador sin volver a escanear todo.
+        self._library_watcher = LibraryWatcher(self)
+        self._library_watcher.changed.connect(self._on_library_folder_touched)
 
         self._warn_timer = QTimer(self)
         self._warn_timer.setSingleShot(True)
@@ -129,6 +136,7 @@ class MainWindow(QWidget):
         self.page_map["settings"].max_concurrent_changed.connect(self._on_max_concurrent_changed)
         self.page_map["settings"].library_folder_changed.connect(self._on_library_folder_changed)
         self.page_map["settings"].downloads_folder_changed.connect(self._on_downloads_folder_changed)
+        self.page_map["settings"].ambient_changed.connect(self._on_ambient_setting_changed)
         self.page_map["settings"].icons_changed.connect(self.refresh_theme)
         self.topbar.page_selected.connect(self.show_page)
         self.topbar.search_changed.connect(self._on_search_changed)
@@ -153,6 +161,8 @@ class MainWindow(QWidget):
         self.page_map["library"].review_data_changed.connect(
             self._on_library_review_data_changed
         )
+        self.page_map["library"].ambient_requested.connect(self._on_ambient_requested)
+        self.page_map["library"].ambient_cleared.connect(self._on_ambient_cleared)
 
         for job in self.downloads.jobs:
             self.page_map["queue"].add_job(job)
@@ -169,6 +179,14 @@ class MainWindow(QWidget):
     def _on_library_scanned(self, _total: int, summary: dict[str, int]) -> None:
         """El resumen de Inicio sale del escaneo, sin volver a leer los archivos."""
         self._update_home_library(summary)
+        root = self.page_map["library"].library_root
+        if root is not None and not self._cerrando:
+            self._library_watcher.start(root)
+
+    def _on_library_folder_touched(self) -> None:
+        if self._cerrando:
+            return
+        self.page_map["library"].refresh_changes()
 
     def _on_library_review_data_changed(self) -> None:
         track_items = self.page_map["library"].model.tracks
@@ -273,6 +291,7 @@ class MainWindow(QWidget):
     def _on_library_folder_changed(self, folder: str) -> None:
         lib_page = self.page_map.get("library")
         if lib_page and hasattr(lib_page, "rescan"):
+            self._library_watcher.stop()
             lib_page.subtitle.setText(folder)
             lib_page.rescan(Path(folder))
         self._warn(f"Biblioteca: {folder}")
@@ -286,6 +305,17 @@ class MainWindow(QWidget):
         self._warn(f"Tema: {theme.name}")
 
     def apply_theme(self, theme: th.Theme) -> None:
+        self._base_theme = theme
+        self._apply_theme_variant()
+
+    def _apply_theme_variant(self) -> None:
+        """Aplica el tema base, o su variante con el acento de la portada."""
+        base = getattr(self, "_base_theme", None) or th.active()
+        color = getattr(self, "_ambient_color", "")
+        theme = base.with_ambient(color) if color and self._ambient_enabled() else base
+        self._set_theme(theme)
+
+    def _set_theme(self, theme: th.Theme) -> None:
         th.set_active(theme)
         from PySide6.QtWidgets import QApplication
 
@@ -297,6 +327,28 @@ class MainWindow(QWidget):
             app.setWindowIcon(_app_icon(theme.accent, theme.surface))
         self.set_shell_layout(theme.shell)
         self.refresh_theme()
+
+    def _ambient_enabled(self) -> bool:
+        return bool(load_settings().get("ambient_theme", True))
+
+    def _on_ambient_requested(self, color: str) -> None:
+        if self._current_page != "library" or not self._ambient_enabled():
+            return
+        if color == self._ambient_color:
+            return
+        self._ambient_color = color
+        self._apply_theme_variant()
+
+    def _on_ambient_cleared(self) -> None:
+        if not self._ambient_color:
+            return
+        self._ambient_color = ""
+        self._apply_theme_variant()
+
+    def _on_ambient_setting_changed(self, enabled: bool) -> None:
+        self.page_map["library"].set_ambient_enabled(enabled)
+        if not enabled:
+            self._on_ambient_cleared()
 
     def refresh_theme(self) -> None:
         self.titlebar.refresh()
@@ -387,7 +439,6 @@ class MainWindow(QWidget):
 
     def current_format(self) -> AudioFormat:
         return get_format(load_settings()["audio_format"])
-
 
     def _warn(self, message: str) -> None:
         """Aviso efimero en la barra superior, sin sistema de notificaciones."""
@@ -491,6 +542,9 @@ class MainWindow(QWidget):
         self.bottombar.select(key)
         self._sync_nav_visibility()
 
+        if key != "library":
+            self._on_ambient_cleared()
+
         self.titlebar.set_title("")
         if key == "search":
             self.topbar.focus_search()
@@ -534,6 +588,7 @@ class MainWindow(QWidget):
         todavia no termino.
         """
         self._cerrando = True
+        self._library_watcher.stop()
         super().closeEvent(event)
 
     @property
@@ -542,9 +597,9 @@ class MainWindow(QWidget):
 
     def shutdown(self) -> None:
         """Espera a que terminen los hilos de segundo plano."""
+        self._library_watcher.stop()
         self.downloads.shutdown()
         self.page_map["search"].shutdown()
         self.page_map["queue"].shutdown()
-        self.page_map["library"].scanner.shutdown()
-        self.page_map["library"].refresher.shutdown()
+        self.page_map["library"].shutdown()
         self._home_review_scanner.shutdown()

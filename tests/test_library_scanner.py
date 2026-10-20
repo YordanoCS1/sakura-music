@@ -7,7 +7,8 @@ from pathlib import Path
 
 import pytest
 
-from sakura.core.library import scan_paths
+from sakura.core.library import Track, scan_paths
+from sakura.core.library_index import LibraryIndex
 from sakura.core.tools import ffmpeg_location
 from sakura.ui import services
 from sakura.ui.services.library import _ScanWorker
@@ -88,3 +89,89 @@ def test_una_carpeta_inexistente_no_revienta(qapp, tmp_path) -> None:
     worker.run()
 
     assert totales == [0]
+
+
+# --- cache de metadatos ------------------------------------------------------
+
+
+def _fake_track(path: Path, title_text: str) -> Track:
+    return Track(
+        path=path,
+        title=title_text,
+        artist="Artista",
+        album="Álbum",
+        duration=1.0,
+        size=path.stat().st_size,
+    )
+
+
+def _scan_indexed(root: Path, index_path: Path) -> list[Track]:
+    worker = _ScanWorker(
+        root,
+        root / "covers",
+        with_covers=False,
+        workers=2,
+        index_path=index_path,
+    )
+    pistas: list[Track] = []
+    worker.batch_ready.connect(lambda batch: pistas.extend(batch))
+    worker.run()
+    return pistas
+
+
+def test_el_segundo_escaneo_reusa_el_indice(qapp, tmp_path, monkeypatch) -> None:
+    root = tmp_path / "lib"
+    root.mkdir()
+    for name in ("uno.mp3", "dos.mp3"):
+        (root / name).write_bytes(b"x" * 10)
+
+    lecturas: list[Path] = []
+    titulos = {"uno.mp3": "Uno", "dos.mp3": "Dos"}
+
+    def falso(path: Path) -> Track:
+        lecturas.append(path)
+        return _fake_track(path, titulos.get(path.name, path.stem))
+
+    monkeypatch.setattr(services.library, "load_track", falso)
+    index_path = tmp_path / "index.db"
+
+    primera = _scan_indexed(root, index_path)
+    assert len(primera) == 2
+    assert len(lecturas) == 2
+
+    # Cambiar lo que devolveria mutagen no alcanza: si el archivo no cambio,
+    # el segundo escaneo ni siquiera lo abre.
+    titulos["uno.mp3"] = "Cambiado"
+    segunda = _scan_indexed(root, index_path)
+
+    assert len(lecturas) == 2, "no debe releer pistas sin cambios"
+    assert {t.title for t in segunda} == {"Uno", "Dos"}
+
+    # Un byte mas cambia tamano y mtime: ahora si hay que releer una.
+    (root / "uno.mp3").write_bytes(b"y" * 11)
+    tercera = _scan_indexed(root, index_path)
+
+    assert len(lecturas) == 3
+    assert "Cambiado" in {t.title for t in tercera}
+
+
+def test_el_indice_descarta_las_pistas_borradas(qapp, tmp_path, monkeypatch) -> None:
+    root = tmp_path / "lib"
+    root.mkdir()
+    for name in ("uno.mp3", "dos.mp3"):
+        (root / name).write_bytes(b"x" * 10)
+
+    monkeypatch.setattr(
+        services.library,
+        "load_track",
+        lambda path: _fake_track(path, path.stem),
+    )
+    index_path = tmp_path / "index.db"
+    _scan_indexed(root, index_path)
+
+    (root / "dos.mp3").unlink()
+    pistas = _scan_indexed(root, index_path)
+
+    assert [t.path for t in pistas] == [root / "uno.mp3"]
+    with LibraryIndex(index_path) as index:
+        assert set(index.load(root)) == {root / "uno.mp3"}

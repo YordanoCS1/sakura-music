@@ -60,14 +60,16 @@ def folder_cover(folder: Path, cache: dict[Path, Path | None]) -> Path | None:
     return cache[folder]
 
 
-def render_cover(destino: Path | bytes | None, size: int) -> QPixmap:
+def render_cover(
+    destino: Path | bytes | None, size: int, theme: th.Theme | None = None
+) -> QPixmap:
     """Pixmap de `size` x `size` con la portada de `destino`, o el placeholder.
 
     `destino` puede ser una ruta (biblioteca, ficha) o los bytes de la imagen
     (el editor, que todavia no la escribio). Siempre sale redondeada y con
     marco, para que las tres pantallas que muestran una portada se vean igual.
     """
-    t = th.active()
+    t = theme or th.active()
     radio = t.radius
 
     pixmap = QPixmap(size, size)
@@ -96,7 +98,7 @@ def render_cover(destino: Path | bytes | None, size: int) -> QPixmap:
         )
         painter.setClipping(False)
         painter.end()
-        _marco(pixmap, size, radio)
+        _marco(pixmap, size, radio, t)
         return pixmap
 
     painter.setPen(Qt.PenStyle.NoPen)
@@ -126,13 +128,15 @@ def _load(destino: Path | bytes | None) -> QPixmap | None:
     return QPixmap(str(destino))
 
 
-def _marco(pixmap: QPixmap, size: int, radio: int) -> None:
+def _marco(
+    pixmap: QPixmap, size: int, radio: int, theme: th.Theme | None = None
+) -> None:
     """Linea de 1px alrededor, para que la portada tenga un borde.
 
     El rectangulo va 1px hacia adentro: en el borde el trazo se reparte entre el
     pixel 0 y el -1, queda medio pixel de nada y al antialiaser se ve sucio.
     """
-    t = th.active()
+    t = theme or th.active()
     painter = QPainter(pixmap)
     painter.setRenderHint(QPainter.RenderHint.Antialiasing)
     painter.setPen(QPen(QColor(t.border), 1))

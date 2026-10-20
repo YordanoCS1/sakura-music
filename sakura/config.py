@@ -31,7 +31,9 @@ DEFAULTS: dict[str, object] = {
     # Escribir la portada del álbum como `folder.jpg` en su carpeta.
     "write_folder_cover": True,
     "theme": "modern",
+    "ambient_theme": True,
     "library_view": "table",
+    "hidden_library_views": [],
     "nav_layout": "sidebar",
     # PNG con los que el usuario reemplaza iconos de la UI, por nombre de icono.
     # Cada valor es {"path": ruta del PNG, "tint": si se tiñe con el tema}.
@@ -197,6 +199,11 @@ def config_file() -> Path:
 
 def download_queue_file() -> Path:
     return data_dir() / "download_queue.json"
+
+
+def library_index_file() -> Path:
+    """Cache de metadatos de la biblioteca (se puede borrar sin perder nada)."""
+    return data_dir() / "library_index.db"
 
 
 def tag_history_dir() -> Path:
