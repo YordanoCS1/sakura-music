@@ -142,6 +142,31 @@ def test_encuentra_lrc_con_sufijo_extra(library) -> None:
     assert find_lyrics(library / "I Want That.m4a") == letter
 
 
+def test_find_lyrics_usa_el_indice_sin_relistar(library, monkeypatch) -> None:
+    """Con el índice de la carpeta no hace falta volver a recorrer el disco."""
+    letter = library / "I DO.lrc"
+    letter.write_text("[00:01.00] hola", encoding="utf-8")
+    indice = lyrics_indexes(library, scan_paths(library))[library]
+
+    monkeypatch.setattr(
+        "sakura.core.library.lyrics_index",
+        lambda _folder: pytest.fail("no debería listar la carpeta otra vez"),
+    )
+
+    assert find_lyrics(library / "I DO.m4a", indice) == letter
+    assert find_lyrics(library / "I DO.m4a", {}) is None
+
+
+def test_el_indice_prefiere_lrc_sobre_txt(library) -> None:
+    (library / "I DO.txt").write_text("letra", encoding="utf-8")
+    letter = library / "I DO.lrc"
+    letter.write_text("[00:01.00] hola", encoding="utf-8")
+
+    indice = lyrics_indexes(library, scan_paths(library))[library]
+
+    assert indice["i do"] == letter
+
+
 def test_ignora_txt_si_hay_lrc(library) -> None:
     (library / "I DO.txt").write_text("letra", encoding="utf-8")
     (library / "I DO.lrc").write_text("[00:01.00] hola", encoding="utf-8")

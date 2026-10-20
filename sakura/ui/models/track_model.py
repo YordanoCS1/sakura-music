@@ -293,9 +293,10 @@ class TrackFilterProxy(QSortFilterProxyModel):
     def setSourceModel(self, source_model: QAbstractItemModel | None) -> None:
         super().setSourceModel(source_model)
         if source_model is not None:
-            source_model.modelReset.connect(self._refresh_duplicate_paths)
-            source_model.rowsInserted.connect(self._refresh_duplicate_paths)
-            source_model.dataChanged.connect(self._refresh_duplicate_paths)
+            source_model.modelReset.connect(self._on_source_changed)
+            source_model.rowsInserted.connect(self._on_source_changed)
+            source_model.rowsRemoved.connect(self._on_source_changed)
+            source_model.dataChanged.connect(self._on_source_changed)
         self._refresh_duplicate_paths()
 
     def set_query(self, text: str) -> None:
@@ -307,11 +308,21 @@ class TrackFilterProxy(QSortFilterProxyModel):
         if review_filter not in ("", "untagged", "missing_cover", "duplicates"):
             raise ValueError(f"filtro de revisión desconocido: {review_filter!r}")
         self._review_filter = review_filter
-        self.invalidateRowsFilter()
+        if review_filter == "duplicates":
+            # Solo este filtro necesita el conjunto de duplicados. Calcularlo
+            # en cada tanda del escaneo era trabajo O(n) repetido que trababa
+            # la interfaz al entrar a Biblioteca.
+            self._refresh_duplicate_paths()
+        else:
+            self.invalidateRowsFilter()
 
     def set_folder_filter(self, folder: Path | None) -> None:
         self._folder_filter = folder
         self.invalidateRowsFilter()
+
+    def _on_source_changed(self, *_args) -> None:
+        if self._review_filter == "duplicates":
+            self._refresh_duplicate_paths()
 
     def _refresh_duplicate_paths(self, *_args) -> None:
         modelo = self.sourceModel()

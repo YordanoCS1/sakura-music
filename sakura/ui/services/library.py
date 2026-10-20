@@ -66,6 +66,7 @@ class _ScanWorker(QThread):
         self._covers_folder: dict[Path, Path] = {}
         self._lyrics_indices: dict[Path, dict[str, Path]] = {}
         self._cached: dict[Path, IndexedTrack] = {}
+        self._cover_files: set[Path] | None = None
 
     def cancel(self) -> None:
         self._cancelled.set()
@@ -90,6 +91,7 @@ class _ScanWorker(QThread):
         # vez por pista: son lecturas del mismo directorio repetidas 200 veces.
         if self._with_covers:
             self._covers_folder = folder_covers(self._root, paths)
+            self._load_cover_files()
         self._lyrics_indices = lyrics_indexes(self._root, paths)
 
         track_items: list[Track] = []
@@ -179,27 +181,57 @@ class _ScanWorker(QThread):
         return file_path, track_item, stat.st_mtime_ns, True
 
     def _from_cache(self, file_path: Path, cached: IndexedTrack) -> Track | None:
-        """Pista cacheada, revisando que portada y letra sigan existiendo."""
+        """Pista cacheada, revisando barato que portada y letra sigan vigentes.
+
+        Antes se hacian varios `is_file()` por pista (portada embebida, .lrc,
+        .txt) y, si la carpeta no tenia letras, se volvia a listar el directorio
+        entero por cada tema. Con una biblioteca real eso agregaba segundos al
+        arranque. Ahora la portada embebida se valida contra un unico listado de
+        la cache, la de carpeta sale del mapa ya escaneado y las letras del
+        indice de la carpeta.
+        """
         track_item = replace(cached.track)
         if not self._with_covers:
             track_item.cover_path = None
-        elif track_item.cover_path is not None and not track_item.cover_path.is_file():
-            track_item.cover_path = self._covers_folder.get(file_path.parent)
-            if track_item.cover_path is None:
-                # La portada embebida desaparecio: hay que volver a extraerla.
-                return None
+        else:
+            cover = self._covers_folder.get(file_path.parent)
+            embebida = cached.track.cover_path
+            if (
+                embebida is not None
+                and embebida.parent == self._covers_root
+                and self._embedded_cover_exists(embebida)
+            ):
+                cover = embebida
+            track_item.cover_path = cover
 
-        lyrics = track_item.lyrics_path
-        if lyrics is None or not lyrics.is_file():
-            lyrics = find_lyrics(file_path, self._lyrics_indices.get(file_path.parent))
-        track_item.lyrics_path = lyrics
+        track_item.lyrics_path = find_lyrics(
+            file_path, self._lyrics_indices.get(file_path.parent, {})
+        )
         return track_item
+
+    def _embedded_cover_exists(self, cover: Path) -> bool:
+        """Si la portada extraida sigue en la cache, sin preguntar por cada una.
+
+        El listado se hace una sola vez por escaneo y se consulta en memoria.
+        """
+        if self._cover_files is None:
+            self._load_cover_files()
+        return cover in self._cover_files
+
+    def _load_cover_files(self) -> None:
+        """Lista la cache de portadas una sola vez, antes de los hilos."""
+        try:
+            self._cover_files = {
+                entry for entry in self._covers_root.iterdir() if entry.is_file()
+            }
+        except OSError:
+            self._cover_files = set()
 
     def _load_fresh(self, file_path: Path) -> Track | None:
         return _read_track(
             file_path,
             self._covers_folder,
-            self._lyrics_indices.get(file_path.parent),
+            self._lyrics_indices.get(file_path.parent, {}),
             self._covers_root,
             self._with_covers,
         )
@@ -434,7 +466,7 @@ class _DeltaWorker(QThread):
         track_item = _read_track(
             file_path,
             self._covers_folder,
-            self._lyrics_indices.get(file_path.parent),
+            self._lyrics_indices.get(file_path.parent, {}),
             self._covers_root,
             self._with_covers,
         )

@@ -310,17 +310,16 @@ class LibraryPage(Page):
         self.detail.refresh()
         self.model.library_theme = t
         self.model._cover_icons.clear()
+        # No hace falta avisar fila por fila: las portadas visibles se vuelven
+        # a pedir al repintar y recorrer miles de filas en cada cambio de tema
+        # (o de acento ambiente) trababa la pagina.
         if self.model.rowCount():
-            self.model.dataChanged.emit(
-                self.model.index(0, 0),
-                self.model.index(self.model.rowCount() - 1, self.model.columnCount() - 1),
-            )
+            self.table.viewport().update()
         self.view_stack.clear_caches()
         self.view_stack.update_viewports()
         self.toolbar.set_active_view(self.view_mode)
         self.toolbar.refresh()
         self.selection_bar.refresh()
-        self.detail.refresh()
         self._populate_folder_list()
 
     # --- ciclo de escaneo ---------------------------------------------------

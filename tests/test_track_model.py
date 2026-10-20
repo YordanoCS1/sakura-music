@@ -298,6 +298,26 @@ def test_filtro_revision_duplicados_se_actualiza_con_el_modelo(proxy) -> None:
     assert proxy.rowCount() == 0
 
 
+def test_duplicados_no_se_calculan_en_cada_alta(proxy, monkeypatch) -> None:
+    """El escaneo agrega por tandas: recalcular duplicados en cada una lo traba."""
+    calculos: list[int] = []
+    monkeypatch.setattr(
+        "sakura.ui.models.track_model.duplicate_track_paths",
+        lambda tracks: calculos.append(len(tracks)) or set(),
+    )
+
+    proxy.sourceModel().set_tracks([track_item("a")])
+    proxy.sourceModel().append([track_item("b")])
+    assert calculos == [], "sin el filtro de duplicados no hay nada que calcular"
+
+    proxy.set_review_filter("duplicates")
+    assert calculos, "al abrir el filtro hay que calcularlos una vez"
+
+    calculos.clear()
+    proxy.sourceModel().replace(0, track_item("c"))
+    assert calculos, "con el filtro activo los cambios tienen que actualizarlo"
+
+
 def test_filtro_revision_desconocido_es_error(proxy) -> None:
     with pytest.raises(ValueError, match="filtro de revisión desconocido"):
         proxy.set_review_filter("no-existe")

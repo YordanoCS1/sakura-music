@@ -175,3 +175,35 @@ def test_el_indice_descarta_las_pistas_borradas(qapp, tmp_path, monkeypatch) -> 
     assert [t.path for t in pistas] == [root / "uno.mp3"]
     with LibraryIndex(index_path) as index:
         assert set(index.load(root)) == {root / "uno.mp3"}
+
+
+def test_el_cache_no_relista_carpetas_sin_letras(qapp, tmp_path, monkeypatch) -> None:
+    """Regresión: sin .lrc se volvía a listar la carpeta por cada pista.
+
+    En un disco lento eso agregaba segundos al entrar a Biblioteca. El índice
+    de letras ya dice que la carpeta no tiene ninguna: hay que pasarle un mapa
+    vacío, no `None`, para que no vuelva a recorrerla.
+    """
+    root = tmp_path / "lib"
+    root.mkdir()
+    for name in ("uno.mp3", "dos.mp3"):
+        (root / name).write_bytes(b"x" * 10)
+
+    monkeypatch.setattr(
+        services.library, "load_track", lambda path: _fake_track(path, path.stem)
+    )
+    index_path = tmp_path / "index.db"
+    _scan_indexed(root, index_path)
+
+    indices: list[object] = []
+    original = services.library.find_lyrics
+
+    def espia(path: Path, idx=None):
+        indices.append(idx)
+        return original(path, idx)
+
+    monkeypatch.setattr(services.library, "find_lyrics", espia)
+    _scan_indexed(root, index_path)
+
+    assert indices, "el escaneo cacheado tiene que resolver las letras"
+    assert all(idx is not None for idx in indices), "no puede caer en relistar la carpeta"

@@ -232,18 +232,32 @@ def lyrics_index(folder: Path) -> dict[str, Path]:
         if not entrada.is_file() or entrada.suffix.lower() not in LYRICS_SUFFIXES:
             continue
         key_name = normalize(entrada.stem)
-        if key_name:
-            idx.setdefault(key_name, entrada)
+        if not key_name:
+            continue
+        anterior = idx.get(key_name)
+        # El .lrc gana sobre el .txt sin importar el orden en que los devuelva
+        # el sistema de archivos.
+        if anterior is None or (
+            anterior.suffix.lower() != ".lrc" and entrada.suffix.lower() == ".lrc"
+        ):
+            idx[key_name] = entrada
     return idx
 
 
 def find_lyrics(path: Path, idx: dict[str, Path] | None = None) -> Path | None:
     """Letra asociada a una pista.
 
-    Primero prueba el nombre exacto; después, el índice normalizado de la
-    carpeta. `indice` se pasa desde el escáner para no releer el directorio por
-    cada pista.
+    Con `idx` (el índice que arma el escáner) la búsqueda es en memoria: cada
+    `is_file` por pista era una vuelta al disco que, con miles de archivos en
+    un disco lento, dominaba el arranque de la biblioteca. Sin índice se prueba
+    el nombre exacto y después se arma el de la carpeta.
     """
+    key_name = normalize(path.stem)
+    clean = normalize(without_parentesis(path.stem))
+
+    if idx is not None:
+        return idx.get(key_name) or idx.get(clean)
+
     for suffix in LYRICS_SUFFIXES:
         exacta = path.with_suffix(suffix)
         try:
@@ -252,16 +266,8 @@ def find_lyrics(path: Path, idx: dict[str, Path] | None = None) -> Path | None:
         except OSError:
             continue
 
-    if idx is None:
-        idx = lyrics_index(path.parent)
-
-    key_name = normalize(path.stem)
-    if key_name in idx:
-        return idx[key_name]
-
-    # Ultimo recurso: el nombre del archivo sin sufijos entre parentesis.
-    clean = normalize(without_parentesis(path.stem))
-    return idx.get(clean)
+    idx = lyrics_index(path.parent)
+    return idx.get(key_name) or idx.get(clean)
 
 
 def parse_lrc(text_value: str) -> list[tuple[float, str]]:
