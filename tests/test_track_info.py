@@ -6,6 +6,7 @@ import subprocess
 from pathlib import Path
 
 import pytest
+from PySide6.QtCore import Qt
 
 from sakura.core.library import Track, load_track
 from sakura.core.metadata import TrackTags, write_cover, write_tags
@@ -64,7 +65,7 @@ def test_muestra_la_ruta(info, file_path) -> None:
 
 
 def test_lista_los_datos(info) -> None:
-    text_value = info.data.text()
+    text_value = info.data_text()
     for expected_value in ("Superstition", "2021", "R&B", "0:01", "MP3", "Pista"):
         assert expected_value in text_value, f"falta {expected_value}"
 
@@ -73,7 +74,7 @@ def test_oculta_campos_vacios(info, track_item) -> None:
     """Sin genero no deberia aparecer la fila Genero con valor vacio."""
     track_item.genre = ""
     info.refresh()
-    text_value = info.data.text()
+    text_value = info.data_text()
 
     assert "Género" not in text_value
     assert "Año" in text_value
@@ -82,19 +83,19 @@ def test_oculta_campos_vacios(info, track_item) -> None:
 def test_oculta_album_desconocido(info, track_item) -> None:
     track_item.album = "Desconocido"
     info.refresh()
-    assert "Álbum" not in info.data.text()
+    assert "Álbum" not in info.data_text()
 
 
 def test_numero_de_pista_sin_total(info, track_item) -> None:
     track_item.track_number = "3"
     info.refresh()
-    assert "3" in info.data.text()
+    assert "3" in info.data_text()
 
 
 def test_muestra_el_total_de_pistas(info, track_item) -> None:
     track_item.track_number = "3/14"
     info.refresh()
-    assert "3/14" in info.data.text()
+    assert "3/14" in info.data_text()
 
 
 # --- portada -----------------------------------------------------------------
@@ -154,7 +155,7 @@ def test_datos_de_archivo_variantes(qapp, tmp_path) -> None:
         size=5 * 1024 * 1024,
     )
     info = TrackInfoDialog(larga)
-    text_value = info.data.text()
+    text_value = info.data_text()
     assert "1:02:05" in text_value
     assert "5.0 MB" in text_value
     assert "FLAC" in text_value
@@ -180,3 +181,26 @@ def test_refresh_es_idempotente(info) -> None:
     info.refresh()
     info.refresh()
     assert info.title_text.text() == before
+
+
+# --- cromo temado e interacciones -------------------------------------------
+
+
+def test_la_ficha_no_usa_el_marco_nativo(info) -> None:
+    assert info.windowFlags() & Qt.WindowType.FramelessWindowHint
+    assert info.surface.objectName() == "DialogSurface"
+    assert info.header.title.text() == "Información de la pista"
+
+
+def test_clic_en_un_dato_lo_copia(qapp, info) -> None:
+    info._copy_value("R&B")
+
+    assert qapp.clipboard().text() == "R&B"
+    assert "Copiado" in info.state.text()
+
+
+def test_copiar_la_ruta_completa(qapp, info, file_path) -> None:
+    info.copy_path()
+
+    assert qapp.clipboard().text() == str(file_path)
+    assert "Ruta copiada" in info.state.text()

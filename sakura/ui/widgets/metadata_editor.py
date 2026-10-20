@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QPixmap
+from PySide6.QtCore import Qt, QTimer
+from PySide6.QtGui import QKeySequence, QPixmap, QShortcut
 from PySide6.QtWidgets import (
     QApplication,
     QDialog,
@@ -42,6 +42,7 @@ from ..covers import render_cover
 from ..services.metadata_search import MetadataSearch, apply_album
 from ..services.thumbnails import ThumbnailLoader, cache_path
 from ..widgets.buttons import IconButton, TextButton
+from .dialog import ThemedDialog
 from .elided import ElidedLabel
 from .metadata_artwork import (
     IMAGE_FILTER,
@@ -59,7 +60,7 @@ SOURCE_LABELS = {
 }
 
 
-class MetadataEditor(QDialog):
+class MetadataEditor(ThemedDialog):
     """Formulario de edicion de una pista.
 
     Lee los tags al abrir y escribe recien al confirmar, asi que cancelar no
@@ -68,7 +69,6 @@ class MetadataEditor(QDialog):
     """
 
     def __init__(self, path: Path, parent=None, album_tracks: list[Track] | None = None):
-        super().__init__(parent)
         self.path = path
         self.album_tracks = album_tracks or []
         self._cover_bytes: bytes | None = None
@@ -85,15 +85,20 @@ class MetadataEditor(QDialog):
         self._original_tags: dict[str, str] = {}
         self._original_cover_bytes: bytes | None = None
         self._field_labels: dict[str, QLabel] = {}
+        self._reset_buttons: dict[str, IconButton] = {}
 
-        self.setWindowTitle("Editar metadatos")
-        self.setModal(True)
+        super().__init__(
+            title="Editar metadatos",
+            eyebrow="BIBLIOTECA · PISTA",
+            subtitle=path.name,
+            parent=parent,
+        )
         # El alto nunca pasa de la pantalla: antes pedia 800 fijos y en un monitor
         # de 800 de alto el encabezado quedaba cortado arriba.
         pantalla = QApplication.primaryScreen()
         available = pantalla.availableGeometry().height() if pantalla else 900
-        self.resize(820, max(560, min(720, available - 80)))
-        self.setMinimumSize(680, 520)
+        self.resize(860, max(580, min(780, available - 70)))
+        self.setMinimumSize(700, 540)
 
         self._build()
         self._connect_search()
@@ -103,15 +108,16 @@ class MetadataEditor(QDialog):
         self._show_view_current()
         self._load()
         self.search_box.setPlaceholderText(self.query_sugerida())
+        self._install_shortcuts()
 
     # --- interfaz -----------------------------------------------------------
 
     def _build(self) -> None:
-        root = QVBoxLayout(self)
-        root.setContentsMargins(22, 18, 22, 18)
+        root = self.content_layout
+        root.setContentsMargins(22, 12, 22, 14)
         root.setSpacing(12)
 
-        root.addLayout(self._file_current())
+        root.addWidget(self._file_current())
         self.views = QStackedWidget()
 
         self.editar_view = QScrollArea()
@@ -138,7 +144,9 @@ class MetadataEditor(QDialog):
         self._connect_catalog()
         self.views.addWidget(self.catalog_view)
         root.addWidget(self.views, 1)
-        root.addLayout(self._footer())
+
+        self.show_footer(True)
+        self._build_footer()
 
     def _alias_catalog(self) -> None:
         """Deja a mano en el editor los widgets del panel que se usan afuera."""
@@ -161,29 +169,21 @@ class MetadataEditor(QDialog):
         self.list.itemSelectionChanged.connect(self._selection_candidate)
         self.use_btn.clicked.connect(lambda: self._use_candidate())
 
-    def _file_current(self) -> QHBoxLayout:
-        """Una sola linea: qué pista es, dónde está y qué vista se ve.
-
-        Antes eran tres lineas de marca ('SAKURA MUSIC / TRACK STUDIO',
-        'Personaliza tu biblioteca', una bajada) mas la ruta. Competitian con el
-        título real de la pista, que es lo único que importa al abrir el editor.
-        """
-        header = QHBoxLayout()
-        header.setSpacing(12)
-
-        texts = QVBoxLayout()
-        texts.setSpacing(2)
-        title = QLabel("Editar metadatos")
-        title.setObjectName("MetadataPageTitle")
-        texts.addWidget(title)
+    def _file_current(self) -> QWidget:
+        """Barra de contexto: qué archivo se edita y qué vista está activa."""
+        header = QFrame()
+        header.setObjectName("MetadataContextBar")
+        header.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
+        row = QHBoxLayout(header)
+        row.setContentsMargins(12, 7, 7, 7)
+        row.setSpacing(12)
 
         self.path_label = ElidedLabel("")
         self.path_label.setObjectName("MetadataPath")
         self.path_label.setToolTip("La ruta del archivo en tu biblioteca")
-        texts.addWidget(self.path_label)
-        header.addLayout(texts, 1)
+        row.addWidget(self.path_label, 1)
 
-        header.addWidget(self._view_toggle(), 0, Qt.AlignmentFlag.AlignVCenter)
+        row.addWidget(self._view_toggle(), 0, Qt.AlignmentFlag.AlignVCenter)
         return header
 
     def _view_toggle(self) -> QWidget:
@@ -218,20 +218,20 @@ class MetadataEditor(QDialog):
     def _block_cover(self) -> QWidget:
         """La portada como ficha vertical: imagen, identidad y acciones.
 
-        El ancho fijo deja el formulario con el espacio sobrante; antes el texto
-        y los tres botones de al lado estiraban el hero y estrangulaban los
-        campos. Ahora solo "Buscar en catálogo" lleva peso; elegir y quitar
-        imagen son iconos.
+        La imagen tambien acepta clics y arrastres, asi que la accion principal
+        esta sobre la propia portada y no escondida en un boton.
         """
         holder = QFrame()
         holder.setObjectName("MetadataArtworkPanel")
-        holder.setFixedWidth(250)
+        holder.setFixedWidth(254)
 
         layout = QVBoxLayout(holder)
         layout.setContentsMargins(16, 16, 16, 16)
         layout.setSpacing(10)
 
         self.cover = MetadataCoverView()
+        self.cover.clicked.connect(self._choose_image)
+        self.cover.image_dropped.connect(self._load_cover_path)
         layout.addWidget(self.cover, 0, Qt.AlignmentFlag.AlignHCenter)
 
         self.track_title = ElidedLabel("Editando tu música")
@@ -254,7 +254,6 @@ class MetadataEditor(QDialog):
 
         actions = QHBoxLayout()
         actions.setSpacing(8)
-        actions.addStretch(1)
         self.change_cover = IconButton("download", "Elegir imagen", 38)
         self.change_cover.clicked.connect(self._choose_image)
         actions.addWidget(self.change_cover)
@@ -269,8 +268,8 @@ class MetadataEditor(QDialog):
         panel = QFrame()
         panel.setObjectName("MetadataFormPanel")
         form = QVBoxLayout(panel)
-        form.setContentsMargins(18, 14, 18, 14)
-        form.setSpacing(14)
+        form.setContentsMargins(18, 13, 18, 13)
+        form.setSpacing(12)
 
         # Campos agrupados por sentido: antes eran siete en una rejilla plana sin
         # jerarquía, con "Nº de pista" ocupando dos columnas de la nada.
@@ -304,7 +303,7 @@ class MetadataEditor(QDialog):
         group = QWidget(parent)
         layout = QVBoxLayout(group)
         layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(8)
+        layout.setSpacing(7)
 
         header = QHBoxLayout()
         title = QLabel(group_name)
@@ -323,7 +322,7 @@ class MetadataEditor(QDialog):
 
         grid = QGridLayout()
         grid.setHorizontalSpacing(14)
-        grid.setVerticalSpacing(8)
+        grid.setVerticalSpacing(7)
         grid.setColumnStretch(0, 1)
         grid.setColumnStretch(1, 1)
         for index, (field_name, tag) in enumerate(fields):
@@ -332,50 +331,86 @@ class MetadataEditor(QDialog):
         return group
 
     def _field(self, tag: str, field_name: str) -> QWidget:
-        field = QWidget()
+        field = QFrame()
+        field.setObjectName("MetadataFieldBox")
+        field.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
         field_layout = QVBoxLayout(field)
-        field_layout.setContentsMargins(0, 0, 0, 0)
-        field_layout.setSpacing(5)
+        field_layout.setContentsMargins(8, 6, 8, 8)
+        field_layout.setSpacing(4)
+
+        label_row = QHBoxLayout()
+        label_row.setContentsMargins(0, 0, 0, 0)
+        label_row.setSpacing(4)
 
         label_widget = QLabel(tag)
         label_widget.setObjectName("FieldLabel")
         self._field_labels[field_name] = label_widget
+        label_row.addWidget(label_widget)
+        label_row.addStretch(1)
+
+        reset = IconButton("undo", "Restaurar el valor original", 22)
+        reset.setGraphicsEffect(None)
+        reset.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        reset.setVisible(False)
+        reset.clicked.connect(lambda: self._reset_field(field_name))
+        self._reset_buttons[field_name] = reset
+        label_row.addWidget(reset)
+        field_layout.addLayout(label_row)
 
         editor = QLineEdit()
         editor.setObjectName("MetadataField")
         editor.setMinimumHeight(38)
         self.field_map[field_name] = editor
-
-        field_layout.addWidget(label_widget)
         field_layout.addWidget(editor)
         return field
 
-    def _footer(self) -> QHBoxLayout:
-        footer = QHBoxLayout()
-        footer.setSpacing(10)
+    def _reset_field(self, field_name: str) -> None:
+        """Devuelve un campo a lo que tenia el archivo al abrir el editor."""
+        editor = self.field_map.get(field_name)
+        if editor is None:
+            return
+        editor.setText(self._original_tags.get(field_name, ""))
+        editor.setFocus()
 
+    def _build_footer(self) -> None:
         self.dirty_label = QLabel("")
         self.dirty_label.setObjectName("MetadataDirty")
-        footer.addWidget(self.dirty_label)
+        self.footer_layout.addWidget(self.dirty_label)
 
         self.state = QLabel("")
         self.state.setObjectName("EmptyState")
-        footer.addWidget(self.state, 1)
+        self.footer_layout.addWidget(self.state, 1)
 
         self.back_btn = TextButton("Volver a metadatos", "ghost", icon="arrow-left")
         self.back_btn.clicked.connect(self._back_editor)
         self.back_btn.setVisible(False)
-        footer.addWidget(self.back_btn)
+        self.footer_layout.addWidget(self.back_btn)
 
         self.cancel_btn = TextButton("Cancelar", "ghost", icon="close")
         self.cancel_btn.clicked.connect(self.reject)
-        footer.addWidget(self.cancel_btn)
+        self.footer_layout.addWidget(self.cancel_btn)
 
         self.save = TextButton("Guardar cambios", "accent", icon="check")
         self.save_btn = self.save
+        self.save.setToolTip("Guardar cambios (Ctrl+S)")
         self.save.clicked.connect(self._save)
-        footer.addWidget(self.save)
-        return footer
+        self.footer_layout.addWidget(self.save)
+
+    def _install_shortcuts(self) -> None:
+        for sequence in (QKeySequence.StandardKey.Save, QKeySequence("Ctrl+Return")):
+            shortcut = QShortcut(sequence, self)
+            shortcut.activated.connect(self._save)
+
+    def showEvent(self, event) -> None:
+        super().showEvent(event)
+        # Sin foco explicito, el primer boton de la ficha se lleva el foco y
+        # QScrollArea arranca desplazado hacia abajo. El timer deja que Qt
+        # termine de colocar el foco antes de fijar la posicion.
+        self.field_map["title"].setFocus()
+        QTimer.singleShot(0, self._scroll_top)
+
+    def _scroll_top(self) -> None:
+        self.editar_view.verticalScrollBar().setValue(0)
 
     def _show_view_current(self) -> None:
         in_editor = self.views.currentWidget() == self.editar_view
@@ -393,6 +428,7 @@ class MetadataEditor(QDialog):
                 and self.album_tracks
             )
         )
+        self._update_dirty()
 
     def _open_catalog(self) -> None:
         self.search_box.setText(self.query_sugerida())
@@ -455,8 +491,12 @@ class MetadataEditor(QDialog):
             if editor.text().strip() != self._original_tags.get(field_name, "")
         }
         for field_name, label in self._field_labels.items():
-            self._mark_modified(label, field_name in changed)
-            self._mark_modified(self.field_map[field_name], field_name in changed)
+            modified = field_name in changed
+            self._mark_modified(label, modified)
+            self._mark_modified(self.field_map[field_name], modified)
+            reset = self._reset_buttons.get(field_name)
+            if reset is not None:
+                reset.setVisible(modified)
 
         cover_dirty = self._cover_removed or (
             self._cover_bytes != self._original_cover_bytes
@@ -468,6 +508,7 @@ class MetadataEditor(QDialog):
             self.dirty_label.setText("1 cambio sin guardar")
         else:
             self.dirty_label.setText(f"{total} cambios sin guardar")
+        self.save.setEnabled(total > 0 and not self._cover_request_pending)
 
     @staticmethod
     def _mark_modified(widget: QWidget, modified: bool) -> None:
@@ -506,7 +547,10 @@ class MetadataEditor(QDialog):
         )[0]
         if not chosen:
             return
+        self._load_cover_path(chosen)
 
+    def _load_cover_path(self, chosen: str) -> None:
+        """Carga una portada elegida en el dialogo o soltada sobre la imagen."""
         try:
             data, mime = read_cover_file(Path(chosen))
         except MetadataError as exc:
@@ -831,8 +875,8 @@ class MetadataEditor(QDialog):
         if url != self._chosen_cover_url:
             return
         self._cover_request_pending = False
-        self.save.setEnabled(True)
         self._paint_cover()
+        self._update_dirty()
         self._state(f"No se pudo cargar la portada ({razon}); se conservará la portada actual.")
 
     def _use_cover_candidate(self, url: str, data: bytes) -> None:

@@ -569,3 +569,45 @@ def test_marcar_todo_marca_solo_los_campos_con_valor(editor) -> None:
     selected = editor.compare.selected_fields()
     assert "title" in selected
     assert "album" not in selected, "el candidato no trae ese campo"
+
+
+# --- cromo temado e interacciones -------------------------------------------
+
+
+def test_el_editor_no_usa_el_marco_nativo(editor) -> None:
+    assert editor.windowFlags() & Qt.WindowType.FramelessWindowHint
+    assert editor.surface.objectName() == "DialogSurface"
+    assert editor.header.title.text() == "Editar metadatos"
+
+
+def test_guardar_arranca_deshabilitado_sin_cambios(qapp, track_item) -> None:
+    dialog = MetadataEditor(track_item)
+    assert dialog.save_btn.isEnabled() is False
+
+    dialog.field_map["title"].setText("Otro título")
+
+    assert dialog.save_btn.isEnabled() is True
+
+
+def test_restaurar_un_campo_vuelve_al_valor_original(editor) -> None:
+    original = editor.field_map["title"].text()
+    editor.field_map["title"].setText("Otro título")
+    assert editor._reset_buttons["title"].isHidden() is False
+
+    editor._reset_buttons["title"].click()
+
+    assert editor.field_map["title"].text() == original
+    assert editor._reset_buttons["title"].isHidden() is True
+
+
+def test_una_imagen_soltada_sobre_la_portada_se_carga(editor, tmp_path) -> None:
+    from tests.test_metadata import _png
+
+    image = tmp_path / "portada.png"
+    image.write_bytes(_png())
+
+    editor.cover.image_dropped.emit(str(image))
+
+    assert editor._cover_bytes is not None
+    assert editor._mime == "image/png"
+    assert editor._cover_removed is False

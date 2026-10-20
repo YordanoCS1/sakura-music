@@ -2,6 +2,7 @@
 
 from .bottombar import BottomBar
 from .buttons import IconButton, TextButton
+from .dialog import ThemedDialog
 from .inspector import InspectorPanel
 from .sidebar import Sidebar
 from .tabbar import TabBar
@@ -14,5 +15,6 @@ __all__ = [
     "Sidebar",
     "TabBar",
     "TextButton",
+    "ThemedDialog",
     "TitleBar",
 ]

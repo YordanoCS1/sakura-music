@@ -25,6 +25,7 @@ def build_qss(t: Theme) -> str:
     card = card_fill(t)
     card_hover = card_fill(t, t.surface_hover, t.surface_alt)
     form_panel = card_fill(t, t.surface, t.surface_alt)
+    dialog_fill = card_fill(t, t.surface, t.bg)
     extra = heading_rules(t)
     return f"""
 * {{
@@ -54,6 +55,43 @@ QToolTip {{
    principal y salen blancos con texto claro encima. */
 QDialog {{
     background: {t.bg};
+}}
+/* Los dialogos temados son una ventana transparente con una tarjeta dentro:
+   el fondo del QDialog no debe tapar la sombra ni las esquinas. */
+QDialog[themedDialog="true"] {{
+    background: transparent;
+}}
+#DialogSurface {{
+    background: {dialog_fill};
+    border: {bord};
+    border-radius: {t.radius + 10}px;
+}}
+#DialogHeader {{
+    background: transparent;
+    border-bottom: 1px solid {tint(t.border, t.accent, 0.28)};
+    border-top-left-radius: {t.radius + 10}px;
+    border-top-right-radius: {t.radius + 10}px;
+}}
+#DialogEyebrow {{
+    color: {t.accent};
+    font-size: {fs('nano')};
+    font-weight: 800;
+    letter-spacing: 1.2px;
+}}
+#DialogTitle {{
+    color: {t.text};
+    font-size: {fs('heading')};
+    font-weight: 800;
+}}
+#DialogSubtitle {{
+    color: {t.text_muted};
+    font-size: {fs('caption')};
+}}
+#DialogFooter {{
+    background: {tint(t.bg, t.surface_alt, 0.55)};
+    border-top: 1px solid {tint(t.border, t.accent, 0.24)};
+    border-bottom-left-radius: {t.radius + 10}px;
+    border-bottom-right-radius: {t.radius + 10}px;
 }}
 
 /* ---------- barra de titulo ---------- */
@@ -317,6 +355,11 @@ QPushButton#AccentButton:hover {{
     background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
         stop:0 {t.accent_hover}, stop:1 {t.accent});
     border-color: {t.accent};
+}}
+QPushButton#AccentButton:disabled {{
+    background: {t.surface_alt};
+    color: {t.text_muted};
+    border-color: {t.border};
 }}
 
 QPushButton#GhostButton {{
@@ -812,6 +855,47 @@ QPushButton#NavPill:checked {{
     letter-spacing: 0.4px;
 }}
 
+/* ---------- ficha de pista ---------- */
+#InfoTitle {{
+    color: {t.text};
+    font-size: {fs('title')};
+    font-weight: 800;
+}}
+#InfoArtist {{
+    color: {t.text_dim};
+    font-size: {fs('lead')};
+    font-weight: 600;
+}}
+#InfoChip {{
+    color: {t.accent};
+    background: {tint(t.surface_alt, t.accent, 0.16)};
+    border: 1px solid {tint(t.border, t.accent, 0.35)};
+    border-radius: {t.radius_pill}px;
+    padding: {px(t, 5)} {px(t, 11)};
+    font-size: {fs('caption')};
+    font-weight: 700;
+}}
+#InfoTile {{
+    background: {tint(t.surface_alt, t.bg, 0.35)};
+    border: {bord};
+    border-radius: {t.radius}px;
+}}
+#InfoTile:hover {{
+    background: {tint(t.surface_hover, t.accent, 0.12)};
+    border-color: {tint(t.border, t.accent, 0.55)};
+}}
+#InfoTileLabel {{
+    color: {t.text_muted};
+    font-size: {fs('micro')};
+    font-weight: 800;
+    letter-spacing: 0.6px;
+}}
+#InfoTileValue {{
+    color: {t.text};
+    font-size: {fs('label')};
+    font-weight: 700;
+}}
+
 /* ---------- editor musical de metadatos ---------- */
 #MetadataEyebrow {{
     color: {t.accent};
@@ -838,6 +922,18 @@ QPushButton#NavPill:checked {{
     border: {bord};
     border-radius: {t.radius_pill}px;
     padding: 8px 12px;
+}}
+#MetadataContextBar {{
+    background: {tint(t.surface_alt, t.bg, 0.35)};
+    border: {bord};
+    border-radius: {t.radius + 2}px;
+}}
+#MetadataFieldBox {{
+    background: transparent;
+    border-radius: {t.radius}px;
+}}
+#MetadataFieldBox:hover {{
+    background: {tint(t.surface_alt, t.accent, 0.07)};
 }}
 #MetadataArtworkPanel {{
     background: {t.surface_alt};

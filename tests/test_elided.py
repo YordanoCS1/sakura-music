@@ -62,8 +62,7 @@ def test_el_editor_abre_al_ancho_pedido(qapp, tmp_path) -> None:
 
     Antes el mínimo lo imponía la etiqueta con la ruta y la ventana abría en 1192
     en vez de los 860 pedidos, que no entra en una pantalla de laptop. El
-    rediseño bajó el ancho a 820 porque la portada y los botones ya no imponen
-    un mínimo tan grande.
+    rediseño dejó el ancho en 860 porque el cromo del diálogo suma márgenes.
     """
     from sakura.ui.widgets.metadata_editor import MetadataEditor
 
@@ -72,7 +71,7 @@ def test_el_editor_abre_al_ancho_pedido(qapp, tmp_path) -> None:
 
     dialog = MetadataEditor(file_path)
     assert dialog.minimumSizeHint().width() <= 860, "el mínimo sigue siendo enorme"
-    assert dialog.width() == 820, "no respetó el ancho pedido en el constructor"
+    assert dialog.width() == 860, "no respetó el ancho pedido en el constructor"
 
 
 def test_el_modo_se_puede_cambiar(qapp) -> None:

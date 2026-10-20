@@ -6,10 +6,20 @@ placeholder); este widget solo sabe pintarlo.
 
 from __future__ import annotations
 
-from PySide6.QtCore import QBuffer, QIODevice, QSize, Qt
-from PySide6.QtGui import QPixmap
+from PySide6.QtCore import QBuffer, QIODevice, QRectF, QSize, Qt, Signal
+from PySide6.QtGui import (
+    QColor,
+    QDragEnterEvent,
+    QDropEvent,
+    QMouseEvent,
+    QPainter,
+    QPainterPath,
+    QPixmap,
+)
 from PySide6.QtWidgets import QLabel
 
+from .. import icons
+from .. import theme as th
 from ..covers import render_cover
 
 # 190 px en vez de 220: con el panel de tags completo, 220 hacia que el campo
@@ -28,13 +38,26 @@ def size_text(bytes_: int) -> str:
 
 
 class MetadataCoverView(QLabel):
-    """La portada del editor: placeholder, imagen incrustada o vista previa."""
+    """La portada del editor: placeholder, imagen incrustada o vista previa.
+
+    Tambien es una zona de destino: un clic abre el selector y arrastrar una
+    imagen sobre ella la carga directamente. El velo con el icono aparece solo
+    al pasar el mouse, para no tapar la portada mientras se revisa.
+    """
+
+    clicked = Signal()
+    image_dropped = Signal(str)
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self._hover = False
+        self._drag_active = False
         self.setFixedSize(COVER_SIZE, COVER_SIZE)
         self.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.setObjectName("MetadataCover")
+        self.setAcceptDrops(True)
+        self.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.setToolTip("Haz clic o arrastra una imagen para cambiar la portada")
 
     def show_placeholder(self) -> None:
         ratio = self.devicePixelRatioF()
@@ -59,6 +82,86 @@ class MetadataCoverView(QLabel):
         )
         display.setDevicePixelRatio(ratio)
         self.setPixmap(display)
+
+    # --- interaccion --------------------------------------------------------
+
+    def mouseReleaseEvent(self, event: QMouseEvent) -> None:
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.clicked.emit()
+        super().mouseReleaseEvent(event)
+
+    def enterEvent(self, event) -> None:
+        self._hover = True
+        self.update()
+        super().enterEvent(event)
+
+    def leaveEvent(self, event) -> None:
+        self._hover = False
+        self._drag_active = False
+        self.update()
+        super().leaveEvent(event)
+
+    def dragEnterEvent(self, event: QDragEnterEvent) -> None:
+        if self._drop_path(event) is not None:
+            self._drag_active = True
+            self.update()
+            event.acceptProposedAction()
+
+    def dragLeaveEvent(self, event) -> None:
+        self._drag_active = False
+        self.update()
+        super().dragLeaveEvent(event)
+
+    def dropEvent(self, event: QDropEvent) -> None:
+        path = self._drop_path(event)
+        self._drag_active = False
+        self.update()
+        if path is not None:
+            event.acceptProposedAction()
+            self.image_dropped.emit(path)
+
+    @staticmethod
+    def _drop_path(event) -> str | None:
+        mime = event.mimeData()
+        if not mime.hasUrls():
+            return None
+        for url in mime.urls():
+            if not url.isLocalFile():
+                continue
+            path = url.toLocalFile()
+            if path.lower().endswith((".jpg", ".jpeg", ".png", ".webp", ".bmp")):
+                return path
+        return None
+
+    def paintEvent(self, event) -> None:
+        super().paintEvent(event)
+        if not self._hover and not self._drag_active:
+            return
+
+        t = th.active()
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        rect = QRectF(0, 0, self.width(), self.height())
+        path = QPainterPath()
+        path.addRoundedRect(rect, t.radius, t.radius)
+
+        veil = QColor(th.tint(t.bg, t.accent, 0.30))
+        veil.setAlpha(170 if self._drag_active else 135)
+        painter.fillPath(path, veil)
+
+        icon_name = "download" if self._drag_active else "edit"
+        icon_size = 34
+        icon = icons.render(icon_name, t.accent, icon_size)
+        painter.drawPixmap(
+            (self.width() - icon_size) // 2,
+            (self.height() - icon_size) // 2,
+            icon,
+        )
+        painter.setPen(QColor(t.accent))
+        painter.setBrush(Qt.BrushStyle.NoBrush)
+        painter.drawRoundedRect(rect.adjusted(1, 1, -1, -1), t.radius, t.radius)
+        painter.end()
+
 
 
 def pixmap_bytes(pixmap: QPixmap) -> bytes:
