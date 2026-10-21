@@ -18,6 +18,7 @@ from ...config import (  # noqa: F401
     load_settings,
     music_dir,
 )
+from ...core.download_history import DownloadHistory
 from ...core.formats import AudioFormat, get_default, get_format
 from ...core.library import find_existing_download, write_cover_folder
 from ...core.metadata import (
@@ -614,6 +615,8 @@ class DownloadManager(QObject):
     def _set_status(self, job: DownloadJob, status: JobStatus) -> None:
         job.status = status
         self._save_jobs()
+        if status.is_finished:
+            DownloadHistory.record(job)
         self.job_updated.emit(job)
 
     def _load_jobs(self) -> None:

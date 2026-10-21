@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 from pathlib import Path
 from typing import TYPE_CHECKING
+from uuid import uuid4
 
 from .formats import AudioFormat, get_default
 
@@ -104,6 +105,9 @@ class DownloadJob:
     speed: str = ""
     error: str = ""
     filepath: Path | None = None
+    # Clave estable del historial de descargas. No se persiste en la cola: al
+    # reanudar una app, un trabajo guardado recibe una nueva.
+    history_id: str = field(default_factory=lambda: uuid4().hex)
 
     @property
     def title(self) -> str:

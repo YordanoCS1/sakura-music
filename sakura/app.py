@@ -7,7 +7,6 @@ import sys
 from pathlib import Path
 
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication
 
 from .config import load_settings
@@ -41,21 +40,6 @@ def _launcher_enabled() -> bool:
     if os.environ.get("SAKURA_NO_LAUNCHER"):
         return False
     return os.environ.get("QT_QPA_PLATFORM", "").lower() != "offscreen"
-
-
-def _app_icon(color: str, background: str = "#121625") -> QIcon:
-    """Icono de la aplicacion: el logo de la flor de cerezo.
-
-    Se registran varios tamanos porque la barra de tareas de Windows elige el
-    pixmap mas cercano al tamano que pide, y con uno solo de 64 px se ve borroso
-    a 16 o a 48. Los colores salen del tema, no estan escritos a mano.
-    """
-    icono = QIcon()
-    for lado in (16, 24, 32, 48, 64, 128):
-        px = sakura.render_logo(color, lado, halo=background, center_border=background)
-        icono.addPixmap(px)
-        icono.addPixmap(px, QIcon.Mode.Disabled)
-    return icono
 
 
 def _armar_traza() -> None:
@@ -92,7 +76,7 @@ def main() -> int:
     theme = th.get_theme(saved_theme_id)
     th.set_active(theme)
     app.setStyleSheet(th.build_qss(theme))
-    app.setWindowIcon(_app_icon(theme.accent, theme.surface))
+    app.setWindowIcon(sakura.application_icon(theme))
 
     # Los PNG elegidos en Ajustes reemplazan a los iconos por nombre en toda la
     # UI. Se cargan antes de armar la ventana, que ya construye los del lateral.

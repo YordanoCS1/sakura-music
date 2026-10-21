@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from PySide6.QtCore import QSize, Qt, Signal
 from PySide6.QtWidgets import (
+    QHBoxLayout,
     QLabel,
     QScrollArea,
     QSizePolicy,
@@ -24,6 +25,7 @@ class MessageBlock(QWidget):
     """
 
     action_clicked = Signal()
+    secondary_clicked = Signal()
 
     def __init__(self, text: str = "", parent=None):
         super().__init__(parent)
@@ -56,10 +58,21 @@ class MessageBlock(QWidget):
         self.label.setMaximumWidth(440)
         box.addWidget(self.label, 0, Qt.AlignmentFlag.AlignHCenter)
 
+        actions = QHBoxLayout()
+        actions.setSpacing(10)
+        actions.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
         self.button = TextButton("", "accent")
         self.button.setVisible(False)
         self.button.clicked.connect(self.action_clicked)
-        box.addWidget(self.button, 0, Qt.AlignmentFlag.AlignHCenter)
+        actions.addWidget(self.button)
+
+        self.secondary_button = TextButton("", "ghost")
+        self.secondary_button.setVisible(False)
+        self.secondary_button.clicked.connect(self.secondary_clicked)
+        actions.addWidget(self.secondary_button)
+
+        box.addLayout(actions)
 
         self._icon_name = ""
 
@@ -89,11 +102,25 @@ class MessageBlock(QWidget):
             self.button.setText(text)
         self.button.setVisible(True)
 
+    def set_secondary_action(self, text: str, icon: str = "") -> None:
+        if not text:
+            self.secondary_button.setVisible(False)
+            return
+        if icon:
+            self.secondary_button.set_icon_name(icon)
+            self.secondary_button.setIconSize(QSize(17, 17))
+            self.secondary_button.setText(f"  {text}")
+        else:
+            self.secondary_button.setText(text)
+        self.secondary_button.setVisible(True)
+
     # --- tema ----------------------------------------------------------------
 
     def refresh(self) -> None:
         """Repinta el icono con el acento del tema activo."""
         self._paint_icon()
+        self.button.refresh()
+        self.secondary_button.refresh()
 
     def _paint_icon(self) -> None:
         if not self._icon_name:

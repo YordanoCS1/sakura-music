@@ -40,6 +40,11 @@ En Windows también se puede abrir con doble clic en **`SakuraMusic.pyw`**:
 usa `pythonw.exe` para no abrir una consola y arranca con el launcher visual.
 `python -m sakura --no-launcher` entra directo a la ventana principal.
 
+El icono propio de Sakura está en `resources/SakuraMusic.ico`. Como Windows no
+permite embeber un icono en un `.pyw`, corré `python scripts/create_launcher_shortcut.py`
+para crear el acceso directo de **Escritorio** y del **Menú Inicio** con ese
+icono. `python scripts/make_app_icon.py` regenera el `.ico` desde el logo.
+
 Escribes en el buscador, pulsas el botón de descarga de un resultado y sigues el
 avance en **Cola**. Al terminar, el mp3 queda en la biblioteca.
 

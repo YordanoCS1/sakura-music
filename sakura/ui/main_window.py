@@ -17,7 +17,14 @@ from .motion import animations_enabled
 from .pages import HomePage, LibraryPage, QueuePage, SearchPage, SettingsPage
 from .services import DownloadManager, LibraryReviewScanner
 from .services.watcher import LibraryWatcher
-from .widgets import BottomBar, InspectorPanel, Sidebar, TabBar, TitleBar
+from .widgets import (
+    BottomBar,
+    DownloadHistoryDialog,
+    InspectorPanel,
+    Sidebar,
+    TabBar,
+    TitleBar,
+)
 from .widgets.completion_dialog import CompletionDialog
 from .widgets.topbar import TopBar
 
@@ -146,6 +153,7 @@ class MainWindow(QWidget):
         self.page_map["queue"].cancel_requested.connect(self._on_cancel_all)
         self.page_map["queue"].retry_requested.connect(self._on_retry_failed)
         self.page_map["queue"].retry_one_requested.connect(self._on_retry_one)
+        self.page_map["queue"].history_requested.connect(self._show_download_history)
         # Los estados vacios de Cola y Biblioteca llevan a Buscar.
         self.page_map["queue"].search_requested.connect(self._ir_a_search)
         self.page_map["library"].search_requested.connect(self._ir_a_search)
@@ -322,9 +330,9 @@ class MainWindow(QWidget):
         app = QApplication.instance()
         if app:
             app.setStyleSheet(th.build_qss(theme))
-            from ..app import _app_icon
+            from . import sakura
 
-            app.setWindowIcon(_app_icon(theme.accent, theme.surface))
+            app.setWindowIcon(sakura.application_icon(theme))
         self.set_shell_layout(theme.shell)
         self.refresh_theme()
 
@@ -485,6 +493,13 @@ class MainWindow(QWidget):
     def _show_summary_downloads(self, summary: DownloadSummary) -> None:
         dialog = CompletionDialog(summary, self)
         dialog.queue_requested.connect(lambda: self.show_page("queue"))
+        dialog.exec()
+        dialog.deleteLater()
+
+    def _show_download_history(self) -> None:
+        """Abre el registro persistente de descargas terminadas."""
+        dialog = DownloadHistoryDialog(self)
+        dialog.cleared.connect(lambda: self.page_map["queue"].refresh())
         dialog.exec()
         dialog.deleteLater()
 

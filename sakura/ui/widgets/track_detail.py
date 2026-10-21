@@ -1,63 +1,232 @@
-"""Panel lateral con la portada y los tags de la pista seleccionada."""
+"""Panel lateral moderno con la portada, metadatos y registro en SQLite de la pista."""
 
 from __future__ import annotations
 
 from pathlib import Path
 
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QGridLayout, QLabel, QVBoxLayout, QWidget
+from PySide6.QtCore import Qt, QTimer, QUrl, Signal
+from PySide6.QtGui import QDesktopServices
+from PySide6.QtWidgets import (
+    QApplication,
+    QFrame,
+    QGridLayout,
+    QHBoxLayout,
+    QLabel,
+    QScrollArea,
+    QSizePolicy,
+    QVBoxLayout,
+    QWidget,
+)
 
 from ...core.library import Track
+from .. import icons
 from .. import theme as th
 from ..covers import CoverCache, folder_cover, render_cover
+from .buttons import IconButton, TextButton
 
-COVER_SIZE = 204
+COVER_SIZE = 200
 
 
 class TrackDetail(QWidget):
-    """Panel lateral: portada, titulo, artista/album y chips de tags."""
+    """Panel lateral de registro: portada, metadatos, estado SQLite y acciones rápidas."""
+
+    edit_requested = Signal()
+    folder_requested = Signal()
+    info_requested = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setFixedWidth(236)
+        self.setObjectName("TrackDetailPanel")
+        self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
+        self.setFixedWidth(280)
         self.library_theme = None
         self._track: Track | None = None
         self._covers: dict[Path, Path | None] = CoverCache()
 
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(16, 4, 8, 16)
-        layout.setSpacing(12)
+        root = QVBoxLayout(self)
+        root.setContentsMargins(0, 0, 0, 0)
+        root.setSpacing(0)
 
+        # Scroll para garantizar que nada se corte en pantallas pequeñas
+        self.scroll = QScrollArea()
+        self.scroll.setObjectName("TrackDetailScroll")
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setFrameShape(QScrollArea.Shape.NoFrame)
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        root.addWidget(self.scroll)
+
+        self.content_widget = QWidget()
+        self.content_widget.setObjectName("TrackDetailContent")
+        self.content_layout = QVBoxLayout(self.content_widget)
+        self.content_layout.setContentsMargins(14, 12, 14, 16)
+        self.content_layout.setSpacing(12)
+        self.scroll.setWidget(self.content_widget)
+
+        # Estado vacío (cuando no hay selección)
+        self._build_empty_state()
+
+        # Cabecera de registro: Eyebrow + Pill de estado SQLite
+        self.header_row = QHBoxLayout()
+        self.header_row.setSpacing(6)
+        self.eyebrow = QLabel("REGISTRO & METADATOS")
+        self.eyebrow.setObjectName("DetailEyebrow")
+        self.header_row.addWidget(self.eyebrow, 1)
+
+        self.status_pill = QLabel("✓ En SQLite")
+        self.status_pill.setObjectName("DetailStatusPill")
+        self.status_pill.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.header_row.addWidget(self.status_pill, 0)
+        self.content_layout.addLayout(self.header_row)
+
+        # Portada
         self.cover = QLabel()
         self.cover.setFixedSize(COVER_SIZE, COVER_SIZE)
         self.cover.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.cover.setObjectName("DetailCover")
         self._show_placeholder()
-        layout.addWidget(self.cover)
+        self.content_layout.addWidget(self.cover, 0, Qt.AlignmentFlag.AlignHCenter)
 
+        # Título y Subtítulo
         self.title = QLabel("—")
         self.title.setObjectName("DetailTitle")
         self.title.setWordWrap(True)
+        self.title.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+        self.content_layout.addWidget(self.title)
+
         self.meta = QLabel("")
+        self.meta.setObjectName("DetailMeta")
         self.meta.setWordWrap(True)
-        self.meta.setObjectName("PageSubtitle")
-        layout.addWidget(self.title)
-        layout.addWidget(self.meta)
+        self.meta.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+        self.content_layout.addWidget(self.meta)
 
-        self._chips = []
-        self._chips_layout = QGridLayout()
-        self._chips_layout.setContentsMargins(0, 0, 0, 0)
-        self._chips_layout.setHorizontalSpacing(6)
-        self._chips_layout.setVerticalSpacing(6)
-        layout.addLayout(self._chips_layout)
+        # Chips de formato y tamaño
+        self._chips: list[QLabel] = []
+        self._chips_layout = QHBoxLayout()
+        self._chips_layout.setSpacing(6)
+        self.content_layout.addLayout(self._chips_layout)
 
-        layout.addStretch(1)
+        # Grilla de propiedades técnicas
+        self.prop_box = QFrame()
+        self.prop_box.setObjectName("DetailPropBox")
+        prop_layout = QGridLayout(self.prop_box)
+        prop_layout.setContentsMargins(10, 8, 10, 8)
+        prop_layout.setHorizontalSpacing(10)
+        prop_layout.setVerticalSpacing(6)
+
+        self._lbl_year_key = QLabel("Año")
+        self._lbl_year_val = QLabel("—")
+        self._lbl_genre_key = QLabel("Género")
+        self._lbl_genre_val = QLabel("—")
+        self._lbl_track_key = QLabel("Pista")
+        self._lbl_track_val = QLabel("—")
+        self._lbl_lyrics_key = QLabel("Letra")
+        self._lbl_lyrics_val = QLabel("—")
+
+        prop_layout.addWidget(self._lbl_year_key, 0, 0)
+        prop_layout.addWidget(self._lbl_year_val, 0, 1)
+        prop_layout.addWidget(self._lbl_genre_key, 1, 0)
+        prop_layout.addWidget(self._lbl_genre_val, 1, 1)
+        prop_layout.addWidget(self._lbl_track_key, 2, 0)
+        prop_layout.addWidget(self._lbl_track_val, 2, 1)
+        prop_layout.addWidget(self._lbl_lyrics_key, 3, 0)
+        prop_layout.addWidget(self._lbl_lyrics_val, 3, 1)
+        self.content_layout.addWidget(self.prop_box)
+
+        # Bloque de ruta del archivo con botón de copiar
+        path_box = QHBoxLayout()
+        path_box.setSpacing(6)
+        self.path_label = QLabel("")
+        self.path_label.setObjectName("DetailPathLabel")
+        self.path_label.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred)
+        path_box.addWidget(self.path_label, 1)
+
+        self.copy_path_btn = IconButton("copy", "Copiar ruta completa", 28)
+        self.copy_path_btn.clicked.connect(self._copy_path)
+        path_box.addWidget(self.copy_path_btn, 0)
+        self.content_layout.addLayout(path_box)
+
+        # Acciones interactivas
+        self.edit_btn = TextButton("Editar metadatos", "accent", icon="edit")
+        self.edit_btn.clicked.connect(self.edit_requested)
+        self.content_layout.addWidget(self.edit_btn)
+
+        action_row = QHBoxLayout()
+        action_row.setSpacing(8)
+
+        self.folder_btn = TextButton("Abrir carpeta", "ghost", icon="folder-open")
+        self.folder_btn.clicked.connect(self._open_folder)
+        action_row.addWidget(self.folder_btn, 1)
+
+        self.info_btn = TextButton("Ficha", "ghost", icon="info")
+        self.info_btn.clicked.connect(self.info_requested)
+        action_row.addWidget(self.info_btn, 1)
+
+        self.content_layout.addLayout(action_row)
+        self.content_layout.addStretch(1)
+
+        self.set_track(None)
         self.refresh()
+
+    def _build_empty_state(self) -> None:
+        self.empty_widget = QWidget()
+        empty_layout = QVBoxLayout(self.empty_widget)
+        empty_layout.setContentsMargins(16, 48, 16, 24)
+        empty_layout.setSpacing(12)
+        empty_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.empty_icon = QLabel()
+        self.empty_icon.setFixedSize(56, 56)
+        self.empty_icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        empty_layout.addWidget(self.empty_icon, 0, Qt.AlignmentFlag.AlignHCenter)
+
+        self.empty_title = QLabel("Sin selección")
+        self.empty_title.setObjectName("EmptyTitle")
+        self.empty_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        empty_layout.addWidget(self.empty_title)
+
+        self.empty_desc = QLabel(
+            "Seleccioná una canción para ver su registro, calidad y metadatos."
+        )
+        self.empty_desc.setObjectName("EmptyState")
+        self.empty_desc.setWordWrap(True)
+        self.empty_desc.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        empty_layout.addWidget(self.empty_desc)
+
+        self.content_layout.addWidget(self.empty_widget)
 
     def _show_placeholder(self) -> None:
         self.cover.setPixmap(
             render_cover(None, COVER_SIZE, self.library_theme or th.active())
         )
+
+    def _open_folder(self) -> None:
+        if self._track is not None and self._track.path.exists():
+            folder = self._track.path.parent
+            if folder.is_dir():
+                QDesktopServices.openUrl(QUrl.fromLocalFile(str(folder)))
+        self.folder_requested.emit()
+
+    def _copy_path(self) -> None:
+        if self._track is not None:
+            QApplication.clipboard().setText(str(self._track.path))
+            self.copy_path_btn.setToolTip("¡Ruta copiada al portapapeles!")
+            QTimer.singleShot(2000, lambda: self.copy_path_btn.setToolTip("Copiar ruta completa"))
+
+    def flash_saved(self) -> None:
+        """Feedback visual tras guardar cambios de metadatos en SQLite."""
+        self.status_pill.setText("✓ ¡Actualizado!")
+        t = self.library_theme or th.active()
+        self.status_pill.setStyleSheet(
+            f"color: {t.accent}; background: {t.surface_hover};"
+            f" border: 1px solid {t.accent}; border-radius: 9px; padding: 2px 8px;"
+            f" font-weight: 700; font-size: 11px;"
+        )
+        QTimer.singleShot(2500, self._restore_status_pill)
+
+    def _restore_status_pill(self) -> None:
+        self.status_pill.setText("✓ En SQLite")
+        self.status_pill.setStyleSheet("")
+        self.refresh()
 
     def _set_chips(self, tags: list[str]) -> None:
         while self._chips_layout.count():
@@ -66,43 +235,67 @@ class TrackDetail(QWidget):
             if widget is not None:
                 widget.deleteLater()
         self._chips.clear()
-        for index, text in enumerate(tags):
+        for text in tags:
             chip = QLabel(text)
             chip.setObjectName("TagChip")
             chip.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            self._chips_layout.addWidget(chip, index // 2, index % 2)
+            self._chips_layout.addWidget(chip)
             self._chips.append(chip)
+        self._chips_layout.addStretch(1)
 
     def set_track(self, track_item: Track | None) -> None:
         self._track = track_item
+        has_track = track_item is not None
+
+        self.empty_widget.setVisible(not has_track)
+        self.eyebrow.setVisible(has_track)
+        self.status_pill.setVisible(has_track)
+        self.cover.setVisible(has_track)
+        self.prop_box.setVisible(has_track)
+        self.path_label.setVisible(has_track)
+        self.copy_path_btn.setVisible(has_track)
+        self.edit_btn.setVisible(has_track)
+        self.folder_btn.setVisible(has_track)
+        self.info_btn.setVisible(has_track)
+
         if track_item is None:
             self.title.setText("—")
+            self.title.setVisible(False)
             self.meta.setText("")
+            self.meta.setVisible(False)
             self._set_chips([])
             self._show_placeholder()
+            self.path_label.setText("")
             self.refresh()
             return
 
+        self.title.setVisible(True)
+        self.meta.setVisible(True)
         self.title.setText(track_item.title)
 
-        subtitle = " · ".join(
-            part for part in (track_item.artist, track_item.album) if part
-        )
-        self.meta.setText(f"{subtitle}\n{track_item.extension.upper()}")
+        subtitle_parts = [part for part in (track_item.artist, track_item.album) if part]
+        subtitle = " · ".join(subtitle_parts)
+        ext = track_item.extension.upper()
+        self.meta.setText(f"{subtitle}\n{ext}" if subtitle else ext)
 
-        tags = []
-        if track_item.year:
-            tags.append(track_item.year)
-        if track_item.genre:
-            tags.append(track_item.genre)
+        # Chips de formato y duración
+        chips = [f"[{track_item.extension.upper()}]"]
         if track_item.duration_text:
-            tags.append(track_item.duration_text)
+            chips.append(track_item.duration_text)
         if track_item.size_text:
-            tags.append(track_item.size_text)
-        self._set_chips(tags)
+            chips.append(track_item.size_text)
+        self._set_chips(chips)
 
-        # Intentar cover_path asignado por el scanner; si no llega (race condition,
-        # pista recién descargada), buscar la imagen de carpeta en tiempo real.
+        # Propiedades técnicas
+        self._lbl_year_val.setText(track_item.year or "—")
+        self._lbl_genre_val.setText(track_item.genre or "—")
+        self._lbl_track_val.setText(track_item.track_number or "—")
+        self._lbl_lyrics_val.setText("✓ .lrc sincronizada" if track_item.has_lyrics else "No")
+
+        self.path_label.setText(track_item.path.name)
+        self.path_label.setToolTip(str(track_item.path))
+
+        # Portada
         cover_path = track_item.cover_path
         if not cover_path or not cover_path.exists():
             cover_path = folder_cover(track_item.path.parent, self._covers)
@@ -121,6 +314,8 @@ class TrackDetail(QWidget):
 
     def refresh(self) -> None:
         t = self.library_theme or th.active()
+        self.empty_icon.setPixmap(icons.render("disc", t.text_dim, 44))
+
         if self._track is None:
             self._show_placeholder()
         else:
@@ -131,16 +326,38 @@ class TrackDetail(QWidget):
                 self.cover.setPixmap(render_cover(cover_path, COVER_SIZE, t))
             else:
                 self._show_placeholder()
-        self.title.setStyleSheet(
-            f"color: {t.text}; font-size: 15px; font-weight: 700; background: transparent;"
+
+        # Estilo para las etiquetas de propiedad
+        key_style = (
+            f"color: {t.text_dim}; font-size: 11px; font-weight: 600; background: transparent;"
         )
-        self.meta.setStyleSheet(
-            f"color: {t.text_muted}; font-size: 12px; background: transparent;"
+        val_style = (
+            f"color: {t.text}; font-size: 11px; font-weight: 600; background: transparent;"
         )
+        keys = (
+            self._lbl_year_key,
+            self._lbl_genre_key,
+            self._lbl_track_key,
+            self._lbl_lyrics_key,
+        )
+        vals = (
+            self._lbl_year_val,
+            self._lbl_genre_val,
+            self._lbl_track_val,
+            self._lbl_lyrics_val,
+        )
+        for lbl in keys:
+            lbl.setStyleSheet(key_style)
+        for lbl in vals:
+            lbl.setStyleSheet(val_style)
+
         chip_style = (
             f"color: {t.text_dim}; font-size: 11px;"
             f" border: 1px solid {t.border}; border-radius: 9px;"
-            f" padding: 3px 8px; background: {t.surface_alt};"
+            f" padding: 2px 8px; background: {t.surface_alt};"
         )
         for chip in self._chips:
             chip.setStyleSheet(chip_style)
+
+
+__all__ = ["TrackDetail"]

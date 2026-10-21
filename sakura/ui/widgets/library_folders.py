@@ -34,7 +34,7 @@ class LibraryFolderPanel(QWidget):
         self.folder_list.setMovement(QListView.Movement.Static)
         self.folder_list.setIconSize(QSize(22, 22))
         self.folder_list.setSpacing(4)
-        self.folder_list.setFixedHeight(50)
+        self.folder_list.setFixedHeight(42)
         self.folder_list.setVerticalScrollBarPolicy(
             Qt.ScrollBarPolicy.ScrollBarAlwaysOff
         )

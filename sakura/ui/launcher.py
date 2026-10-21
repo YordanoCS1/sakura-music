@@ -417,6 +417,7 @@ class LauncherWindow(QWidget):
         self.setFixedSize(WIDTH, HEIGHT)
 
         self._theme = th.active()
+        self.setWindowIcon(sakura.application_icon(self._theme))
         self._status = collect_status()
         self._opening = False
         self._pending_page = "home"
@@ -617,6 +618,7 @@ class LauncherWindow(QWidget):
         """Aplica un tema a toda la app y lo guarda para el próximo arranque."""
         self._theme = theme
         th.set_active(theme)
+        self.setWindowIcon(sakura.application_icon(theme))
         app = QApplication.instance()
         if app is not None:
             app.setStyleSheet(th.build_qss(theme))

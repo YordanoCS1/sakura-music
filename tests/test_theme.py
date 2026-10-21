@@ -75,7 +75,7 @@ def test_la_seleccion_se_lee_sobre_el_fondo() -> None:
 
 def test_el_qss_no_usa_el_accento_para_seleccionar() -> None:
     qss = th.build_qss(th.MODERN)
-    assert f"QTableView::item:selected {{\nbackground: {th.MODERN.selection};" in qss
+    assert f"QTableView::item:selected {{\n    background: {th.MODERN.selection};" in qss
     assert f"QListWidget::item:selected {{\nbackground: {th.MODERN.selection};" in qss
 
 

@@ -303,6 +303,8 @@ class QueuePage(Page):
     # Reintento de una sola fila, con el trabajo que se quiere repetir.
     retry_one_requested = Signal(object)  # DownloadJob
     retry_requested = Signal()
+    # El historial es persistente: la pagina solo avisa que lo quieren abrir.
+    history_requested = Signal()
 
     def __init__(self, parent=None):
         super().__init__("Cola", "Tus descargas en curso y terminadas", parent)
@@ -321,6 +323,8 @@ class QueuePage(Page):
         self._message.set_icon("cloud-download")
         self._message.set_action("Buscar música", icon="search")
         self._message.action_clicked.connect(self.search_requested)
+        self._message.set_secondary_action("Ver historial", icon="clock")
+        self._message.secondary_clicked.connect(self.history_requested)
         self.content.addWidget(self._message)
         # Arranca vacia: la cabecera de resumen recien aparece con trabajos.
         self._sync_stats()
@@ -352,6 +356,10 @@ class QueuePage(Page):
         self.clear_button.clicked.connect(self._on_clear_clicked)
         self.clear_button.setEnabled(False)
         bar.addWidget(self.clear_button, 0)
+
+        self.history_button = TextButton("Historial", "ghost", icon="clock")
+        self.history_button.clicked.connect(self.history_requested)
+        bar.addWidget(self.history_button, 0)
 
         self.content.addWidget(controles)
         self._controls = controles

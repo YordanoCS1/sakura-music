@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from functools import lru_cache
 from pathlib import Path
 
@@ -10,7 +11,6 @@ from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QFileDialog,
     QHBoxLayout,
-    QLabel,
     QListView,
     QListWidgetItem,
     QMessageBox,
@@ -18,8 +18,16 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from ...config import covers_dir, load_settings, music_dir, save_settings, tag_history_dir
+from ...config import (
+    covers_dir,
+    library_index_file,
+    load_settings,
+    music_dir,
+    save_settings,
+    tag_history_dir,
+)
 from ...core.library import Track, extract_cover, load_track
+from ...core.library_index import IndexedTrack, LibraryIndex
 from ...core.tag_history import latest_manifest, revert_batch
 from .. import icons
 from .. import theme as th
@@ -27,6 +35,7 @@ from ..covers import CoverCache, folder_cover, render_cover
 from ..models.track_model import COLUMNS, STRETCH_COLUMN, TrackFilterProxy, TrackTableModel
 from ..services.library import LibraryDeltaScanner, LibraryRefresher, LibraryScanner
 from ..widgets.batch_editor import open_edicion_batch
+from ..widgets.breadcrumb import BreadcrumbBar
 from ..widgets.buttons import TextButton
 from ..widgets.library_folders import LibraryFolderPanel
 from ..widgets.library_selection import LibrarySelectionBar
@@ -36,6 +45,8 @@ from ..widgets.metadata_editor import open_editor
 from ..widgets.track_detail import TrackDetail
 from ..widgets.track_info import TrackInfoDialog
 from .base import Page
+
+logger = logging.getLogger(__name__)
 
 # Un cambio de seleccion con las flechas dispara decenas de lecturas de portada
 # en un segundo. Se espera a que el usuario se detenga antes de recolorear.
@@ -141,8 +152,8 @@ class LibraryPage(Page):
         self.up_folder_button.clicked.connect(self._open_parent_folder)
         self.up_folder_button.setVisible(False)
         navegacion_layout.addWidget(self.up_folder_button, 0)
-        self.folder_location = QLabel("Biblioteca")
-        self.folder_location.setObjectName("Breadcrumb")
+        self.folder_location = BreadcrumbBar()
+        self.folder_location.path_selected.connect(self._open_folder)
         navegacion_layout.addWidget(self.folder_location, 1)
         library_layout.addWidget(navegacion)
 
@@ -159,6 +170,8 @@ class LibraryPage(Page):
         body_layout.addWidget(library, 1)
 
         self.detail = TrackDetail()
+        self.detail.edit_requested.connect(self._on_edit)
+        self.detail.info_requested.connect(self._on_info)
         body_layout.addWidget(self.detail)
         self.content.addWidget(body, 1)
 
@@ -176,6 +189,7 @@ class LibraryPage(Page):
         self.stats = bar.stats
         self.review_filter_btn = bar.review_filter_btn
         self.undo_button = bar.undo_button
+        self.detail_button = bar.detail_button
         self.view_buttons = bar.view_buttons
 
     def _alias_selection(self) -> None:
@@ -193,9 +207,13 @@ class LibraryPage(Page):
         bar.reload_button.clicked.connect(lambda: self.rescan())
         bar.undo_button.clicked.connect(self._on_undo)
         bar.zoom_changed.connect(self._on_zoom_changed)
+        bar.detail_button.clicked.connect(self._toggle_detail_panel)
 
     def _on_zoom_changed(self, percent: int) -> None:
         self.view_stack.set_zoom(percent / 100.0)
+
+    def _toggle_detail_panel(self) -> None:
+        self.detail.setVisible(self.detail.isHidden())
 
     def _connect_selection(self) -> None:
         bar = self.selection_bar
@@ -268,42 +286,71 @@ class LibraryPage(Page):
 
     def apply_theme_to_table(self) -> None:
         t = th.active()
-        selection_bg = th.tint(t.surface, t.accent, 0.18)
+        selection_bg = t.selection
         self.table.setStyleSheet(
-            f"QTableView {{ background: {t.bg}; alternate-background-color: {t.surface};"
+            f"QTableView {{ background: {t.bg}; alternate-background-color: {t.bg};"
             f" border: none; gridline-color: transparent; color: {t.text};"
             f" selection-background-color: {selection_bg};"
-            f" selection-color: {t.text}; font-size: 13px; }}"
-            f"QHeaderView::section {{ background: {t.bg}; color: {t.text_muted};"
-            f" border: none; border-bottom: 1px solid {t.border}; padding: 8px 10px;"
-            f" font-size: 11px; font-weight: 700; letter-spacing: 0.5px; }}"
-            f"QTableView::item {{ padding: 0 10px; border: none; }}"
+            f" selection-color: {t.selection_text}; font-size: 13px; outline: none; }}"
+            f"QHeaderView::section {{ background: {t.bg}; color: {t.text_dim};"
+            f" border: none; border-bottom: 1px solid {t.border}; padding: 8px 12px;"
+            f" font-size: 11px; font-weight: 700;"
+            f" letter-spacing: 0.8px; text-transform: uppercase; }}"
+            f"QTableView::item {{ padding: 2px 10px; border: none; border-radius: 6px; }}"
             f"QTableView::item:hover {{ background: {t.surface_hover}; }}"
+            f"QTableView::item:selected {{ background: {selection_bg};"
+            f" color: {t.selection_text}; border-radius: 6px; }}"
             f"QTableCornerButton::section {{ background: {t.bg}; border: none; }}"
         )
         self.library_body.setStyleSheet(
             f"QWidget#LibraryBody {{ background: {t.bg}; color: {t.text}; }}"
             f"QListView, QListWidget {{ background: {t.bg}; color: {t.text};"
             f" border: none; selection-background-color: {selection_bg}; }}"
-            f"QListWidget::item {{ background: {t.surface}; border: 1px solid {t.border};"
-            f" border-radius: 8px; padding: 8px 12px; }}"
-            f"QListWidget::item:hover {{ background: {t.surface_hover}; }}"
-            f"QListWidget::item:selected {{ color: {t.accent}; }}"
-            f"QLabel#Breadcrumb, QLabel#ToolbarStats {{ color: {t.text_dim}; }}"
+            f"QListWidget#LibraryFolderGrid {{ background: transparent; border: none; }}"
+            f"QListWidget#LibraryFolderGrid::item {{ background: {t.surface_alt};"
+            f" border: 1px solid {t.border}; border-radius: 14px; padding: 4px 12px;"
+            f" font-size: 12px; font-weight: 600; color: {t.text}; }}"
+            f"QListWidget#LibraryFolderGrid::item:hover {{"
+            f" background: {t.surface_hover}; border-color: {t.accent}; }}"
+            f"QListWidget#LibraryFolderGrid::item:selected {{"
+            f" background: {selection_bg}; color: {t.selection_text};"
+            f" border-color: {t.accent}; }}"
+            f"QLabel#Breadcrumb {{ color: {t.text};"
+            f" font-size: 14px; font-weight: 700;"
+            f" background: transparent; }}"
+            f"QPushButton#BreadcrumbStep {{ background: transparent; border: none;"
+            f" color: {t.text_dim}; font-size: 14px; font-weight: 600;"
+            f" padding: 2px 5px; border-radius: 6px; }}"
+            f"QPushButton#BreadcrumbStep:hover {{ background: {t.surface_hover};"
+            f" color: {t.text}; }}"
+            f"QLabel#BreadcrumbCurrent {{ color: {t.text};"
+            f" font-size: 14px; font-weight: 700; padding: 2px 5px; }}"
+            f"QLabel#BreadcrumbSeparator {{ color: {t.text_muted};"
+            f" font-size: 14px; padding: 0 1px; }}"
+            f"QLabel#ToolbarStats {{ color: {t.text_dim};"
+            f" font-size: 12px; font-weight: 600;"
+            f" background: transparent; }}"
             f"QLabel#DetailCover {{ background: {t.surface_alt};"
             f" border: 1px solid {t.border}; border-radius: {t.radius}px; }}"
         )
         self.toolbar.setStyleSheet(
             f"QWidget#LibraryToolbar {{ background: {t.bg}; }}"
-            f"QLineEdit#SearchInput {{ background: {t.surface}; color: {t.text};"
-            f" border: 1px solid {t.border}; border-radius: 10px; padding: 8px 12px; }}"
-            f"QFrame#SegmentedControl {{ background: {t.surface};"
+            f"QLineEdit#SearchInput {{ background: {t.surface_alt}; color: {t.text};"
+            f" border: 1px solid {t.border}; border-radius: 18px;"
+            f" padding: 6px 14px; font-size: 13px; }}"
+            f"QLineEdit#SearchInput:focus {{ border-color: {t.accent}; background: {t.surface}; }}"
+            f"QFrame#SegmentedControl {{ background: {t.surface_alt};"
+            f" border: 1px solid {t.border}; border-radius: 12px; padding: 2px; }}"
+            f"QPushButton#SegmentButton {{ background: transparent;"
+            f" border: none; border-radius: 8px; }}"
+            f"QPushButton#SegmentButton:hover {{ background: {t.surface_hover}; }}"
+            f"QPushButton#SegmentButton:checked {{"
+            f" background: {selection_bg};"
+            f" border: 1px solid {t.accent}; }}"
+            f"QWidget#LibraryToolbar QPushButton#IconButton {{"
+            f" background: {t.surface_alt}; color: {t.text};"
             f" border: 1px solid {t.border}; border-radius: 10px; }}"
-            f"QPushButton#SegmentButton {{ background: transparent; border-radius: 7px; }}"
-            f"QPushButton#SegmentButton:checked {{ background: {t.surface_hover}; }}"
-            f"QPushButton#IconButton {{ background: {t.surface}; color: {t.text};"
-            f" border: 1px solid {t.border}; border-radius: 10px; }}"
-            f"QPushButton#IconButton:hover {{ background: {t.surface_hover};"
+            f"QWidget#LibraryToolbar QPushButton#IconButton:hover {{ background: {t.surface_hover};"
             f" border-color: {t.accent}; }}"
         )
         self.detail.library_theme = t
@@ -785,12 +832,23 @@ class LibraryPage(Page):
         if not tags.artist:
             updated.artist = tags.albumartist or updated.artist
 
+        try:
+            stat = updated.path.stat()
+            indexed = IndexedTrack(track=updated, mtime_ns=stat.st_mtime_ns, size=stat.st_size)
+            with LibraryIndex(library_index_file()) as index:
+                index.upsert([indexed])
+        except Exception:
+            logger.warning(
+                "No se pudo actualizar la pista en SQLite: %s", updated.path, exc_info=True
+            )
+
         self.model.replace(row_index, updated)
 
         if self.selected_track() is not None:
             self._on_selection()
         self._update_filtered_stats()
         self.review_data_changed.emit()
+        self.detail.flash_saved()
 
     # --- carpeta -------------------------------------------------------------
 
@@ -844,21 +902,16 @@ class LibraryPage(Page):
         if root is None or current is None:
             self.folder_panel.setVisible(False)
             self.up_folder_button.setVisible(False)
+            self.folder_location.set_message("Biblioteca")
             return
 
-        try:
-            relative = current.relative_to(root)
-        except ValueError:
-            relative = Path()
-        location = [root.name or str(root), *relative.parts]
         self.up_folder_button.setVisible(
             current != root and not self.proxy.query and not self._review_mode
         )
-        self.folder_location.setText(
-            "Toda la biblioteca"
-            if self.proxy.query or self._review_mode
-            else "  ›  ".join(location)  # noqa: RUF001
-        )
+        if self.proxy.query or self._review_mode:
+            self.folder_location.set_message("Toda la biblioteca")
+        else:
+            self.folder_location.set_path(root, current)
         self.proxy.set_folder_filter(
             current if not self.proxy.query and not self._review_mode else None
         )

@@ -68,6 +68,7 @@ def app_dir_aislada(app_dir: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     # test se leia en el siguiente: Inicio contaba errores que otro test habia
     # dejado, y `test_main_window` fallaba solo en la suite completa.
     config.download_queue_file().unlink(missing_ok=True)
+    config.download_history_file().unlink(missing_ok=True)
     return app_dir
 
 

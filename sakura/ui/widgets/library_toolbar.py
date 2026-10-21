@@ -45,10 +45,11 @@ class LibraryToolbar(QWidget):
         # --- zona izquierda: filtro y contador -----------------------------
         self.filter_box = QLineEdit()
         self.filter_box.setObjectName("SearchInput")
-        self.filter_box.setPlaceholderText("Buscar canciones en toda la biblioteca...")
+        self.filter_box.setPlaceholderText("Buscar por título, artista o álbum...")
         self.filter_box.setClearButtonEnabled(True)
         self.filter_box.setMaximumWidth(420)
         self.filter_box.setMinimumWidth(260)
+        self.filter_box.setMinimumHeight(38)
         bar.addWidget(self.filter_box)
 
         self.review_filter_btn = TextButton("Ver toda la biblioteca", "ghost", icon="list")
@@ -83,6 +84,9 @@ class LibraryToolbar(QWidget):
 
         self.undo_button = IconButton("undo", "Deshacer último lote", 38)
         bar.addWidget(self.undo_button, 0)
+
+        self.detail_button = IconButton("info", "Mostrar / ocultar panel de información", 38)
+        bar.addWidget(self.detail_button, 0)
         self._apply_hidden_views()
 
     def _zoom_step(self, delta: int) -> None:
@@ -177,5 +181,6 @@ class LibraryToolbar(QWidget):
         self.open_button.refresh()
         self.reload_button.refresh()
         self.undo_button.refresh()
+        self.detail_button.refresh()
         for button in self.view_buttons.values():
             button.refresh()

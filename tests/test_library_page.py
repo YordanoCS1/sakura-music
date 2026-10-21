@@ -8,6 +8,7 @@ from pathlib import Path
 import mutagen
 import pytest
 from PySide6.QtCore import QEventLoop, Qt
+from PySide6.QtWidgets import QLabel, QPushButton
 
 from sakura.core.tools import ffmpeg_location
 from sakura.ui.pages.library import LibraryPage
@@ -175,6 +176,22 @@ def test_biblioteca_navega_por_carpetas_y_busca_en_toda_la_biblioteca(page) -> N
     assert page.folder_panel.isVisible()
 
 
+def test_migas_de_pan_navegan_a_cualquier_nivel(page) -> None:
+    _wait_scan(page)
+    assert page._library_root is not None
+    album = page._library_root / "Daft Punk" / "Discovery"
+    page._open_folder(album)
+
+    steps = page.folder_location.findChildren(QPushButton, "BreadcrumbStep")
+    assert [step.text() for step in steps] == [page._library_root.name, "Daft Punk"]
+    current = page.folder_location.findChild(QLabel, "BreadcrumbCurrent")
+    assert current is not None
+    assert current.text() == "Discovery"
+
+    steps[0].click()
+    assert page._current_folder == page._library_root
+
+
 def test_el_contador_de_una_carpeta_no_promete_mas_de_lo_que_muestra(page) -> None:
     """Regresión: la lista contaba pistas en profundidad y el filtro no.
 
@@ -215,7 +232,7 @@ def test_tabla_muestra_portada_junto_al_titulo(page, tmp_path) -> None:
 
     assert isinstance(icon, QIcon)
     assert not icon.pixmap(QSize(40, 40)).isNull()
-    assert page.table.iconSize() == QSize(40, 40)
+    assert page.table.iconSize() == QSize(38, 38)
     assert page.table.verticalHeader().defaultSectionSize() >= 48
 
 

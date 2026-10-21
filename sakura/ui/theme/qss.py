@@ -613,6 +613,30 @@ QPushButton#SegmentButton[segmentKind="text"] {{
     font-size: {fs('label')};
     font-weight: 700;
 }}
+#BreadcrumbStep {{
+    background: transparent;
+    border: none;
+    color: {t.text_dim};
+    font-size: {fs('label')};
+    font-weight: 600;
+    padding: 2px 5px;
+    border-radius: 6px;
+}}
+#BreadcrumbStep:hover {{
+    background: {t.surface_hover};
+    color: {t.text};
+}}
+#BreadcrumbCurrent {{
+    color: {t.text};
+    font-size: {fs('label')};
+    font-weight: 700;
+    padding: 2px 5px;
+}}
+#BreadcrumbSeparator {{
+    color: {t.text_muted};
+    font-size: {fs('label')};
+    padding: 0 1px;
+}}
 #SelectionBar {{
     background: {tint(t.surface, t.accent, 0.10)};
     border: 1px solid {tint(t.border, t.accent, 0.35)};
@@ -631,10 +655,49 @@ QPushButton#SegmentButton[segmentKind="text"] {{
     padding: {px(t, 3)} {px(t, 8)};
     font-size: {fs('micro')};
 }}
+#TrackDetailPanel {{
+    background: {t.surface_alt};
+    border-left: {bord};
+}}
+#TrackDetailScroll {{
+    background: transparent;
+    border: none;
+}}
+#DetailEyebrow {{
+    color: {t.text_dim};
+    font-size: {fs('micro')};
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    background: transparent;
+}}
+#DetailStatusPill {{
+    color: {t.success};
+    background: {tint(t.surface, t.success, 0.15)};
+    border: 1px solid {tint(t.border, t.success, 0.35)};
+    border-radius: {t.radius_pill}px;
+    padding: {px(t, 2)} {px(t, 8)};
+    font-size: {fs('micro')};
+    font-weight: 700;
+}}
 #DetailTitle {{
     color: {t.text};
     font-size: {fs('body')};
     font-weight: 700;
+}}
+#DetailMeta {{
+    color: {t.text_muted};
+    font-size: {fs('body_sm')};
+    background: transparent;
+}}
+#DetailPropBox {{
+    background: {t.surface};
+    border: {bord};
+    border-radius: {t.radius_sm}px;
+}}
+#DetailPathLabel {{
+    color: {t.text_dim};
+    font-size: {fs('micro')};
+    background: transparent;
 }}
 #DetailCover {{
     background: {t.surface_alt};
@@ -644,35 +707,38 @@ QPushButton#SegmentButton[segmentKind="text"] {{
 
 /* ---------- tabla de la biblioteca ---------- */
 QTableView {{
-background: {t.bg};
-alternate-background-color: {t.surface};
-border: none;
-gridline-color: transparent;
-color: {t.text};
-selection-background-color: {t.selection};
-selection-color: {t.selection_text};
-font-size: {fs('label')};
+    background: {t.bg};
+    alternate-background-color: {t.bg};
+    border: none;
+    gridline-color: transparent;
+    color: {t.text};
+    selection-background-color: {t.selection};
+    selection-color: {t.selection_text};
+    font-size: {fs('label')};
+    outline: none;
 }}
 QTableView::item {{
-padding: 0 {px(t, 10)};
-border: none;
+    padding: 2px {px(t, 10)};
+    border: none;
+    border-radius: {t.radius_sm}px;
 }}
 QTableView::item:hover {{
-background: {t.surface_hover};
+    background: {t.surface_hover};
 }}
 QTableView::item:selected {{
-background: {t.selection};
-color: {t.selection_text};
+    background: {t.selection};
+    color: {t.selection_text};
 }}
 QHeaderView::section {{
     background: {t.bg};
-    color: {t.text_muted};
+    color: {t.text_dim};
     border: none;
     border-bottom: {bord};
     padding: {px(t, 8)} {px(t, 10)};
     font-size: {fs('micro')};
     font-weight: 700;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
 }}
 QTableCornerButton::section {{
     background: {t.bg};

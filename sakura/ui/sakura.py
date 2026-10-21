@@ -23,7 +23,7 @@ from PySide6.QtGui import (
     QRadialGradient,
 )
 
-from .theme import tint
+from .theme import Theme, tint
 
 # Cantidad de petalos. La sakura verdadera tiene cinco, con una muesca en la
 # punta; aca se simplifica a cinco petalos redondos para que se lea bien a
@@ -214,6 +214,22 @@ def render_logo(
     return px
 
 
+def application_icon(theme: Theme, background: str | None = None) -> QIcon:
+    """Icono de la ventana y de la barra de tareas, en varios tamanos.
+
+    Windows elige el pixmap mas cercano al tamano que pide; con uno solo de 64
+    px se ve borroso a 16 o a 48. Los colores salen del tema, no estan
+    escritos a mano.
+    """
+    halo = background or theme.surface
+    icono = QIcon()
+    for lado in (16, 24, 32, 48, 64, 128):
+        px = render_logo(theme.accent, lado, halo=halo, center_border=halo)
+        icono.addPixmap(px)
+        icono.addPixmap(px, QIcon.Mode.Disabled)
+    return icono
+
+
 def icon(color: str, size: int = 18, dimmed: str | None = None) -> QIcon:
     """QIcon con estados Normal y Disabled, para que el QSS pueda atenuarla."""
     result = QIcon()
@@ -246,6 +262,7 @@ def widget(size: int, *, color: str | None = None, halo: str | None = None) -> Q
 __all__ = [
     "PETALOS",
     "PETALOS_CAIDOS",
+    "application_icon",
     "icon",
     "paint",
     "petalo_path",

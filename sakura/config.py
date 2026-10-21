@@ -201,6 +201,11 @@ def download_queue_file() -> Path:
     return data_dir() / "download_queue.json"
 
 
+def download_history_file() -> Path:
+    """Registro persistente de descargas terminadas, saltadas o con error."""
+    return data_dir() / "download_history.json"
+
+
 def library_index_file() -> Path:
     """Cache de metadatos de la biblioteca (se puede borrar sin perder nada)."""
     return data_dir() / "library_index.db"

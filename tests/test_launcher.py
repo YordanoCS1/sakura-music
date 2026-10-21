@@ -24,6 +24,7 @@ def test_el_launcher_abre_en_una_tarjeta_sin_marco_nativo(launcher) -> None:
     assert launcher.size() == QSize(WIDTH, HEIGHT)
     assert launcher.header.brand.text() == "Sakura Music"
     assert launcher.surface.objectName() == "LauncherSurface"
+    assert launcher.windowIcon().isNull() is False
 
 
 def test_el_boton_principal_abre_en_home(launcher, qapp) -> None:
