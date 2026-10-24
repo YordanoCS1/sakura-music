@@ -37,6 +37,9 @@ class LibrarySelectionBar(QWidget):
         self.batch_button.setVisible(False)
         bar.addWidget(self.batch_button, 0)
 
+        self.lyrics_button = TextButton("Incrustar letras", "ghost", icon="file-text")
+        bar.addWidget(self.lyrics_button, 0)
+
         self.clear_button = TextButton("Quitar selección", "ghost", icon="close")
         bar.addWidget(self.clear_button, 0)
 
@@ -53,4 +56,5 @@ class LibrarySelectionBar(QWidget):
         """Recolorea los iconos tras un cambio de tema."""
         self.edit_button.refresh()
         self.batch_button.refresh()
+        self.lyrics_button.refresh()
         self.clear_button.refresh()

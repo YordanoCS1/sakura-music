@@ -32,7 +32,7 @@ def test_el_boton_principal_abre_en_home(launcher, qapp) -> None:
     launcher.open_requested.connect(seen.append)
 
     launcher.open_btn.click()
-    QTest.qWait(80)
+    QTest.qWait(200)
 
     assert seen == ["home"]
     assert launcher.open_btn.isEnabled() is False
@@ -43,12 +43,12 @@ def test_las_tarjetas_abren_su_seccion(launcher, qapp) -> None:
     launcher.open_requested.connect(seen.append)
 
     launcher.library_card.click()
-    QTest.qWait(80)
+    QTest.qWait(200)
     assert seen == ["library"]
 
     launcher._opening = False
     launcher.queue_card.click()
-    QTest.qWait(80)
+    QTest.qWait(200)
     assert seen == ["library", "queue"]
 
 

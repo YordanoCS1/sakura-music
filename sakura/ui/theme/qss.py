@@ -361,6 +361,10 @@ QPushButton#AccentButton:disabled {{
     color: {t.text_muted};
     border-color: {t.border};
 }}
+QPushButton#AccentButton[compact="true"] {{
+    padding: {px(t, 9)} {px(t, 12)};
+    font-size: {fs('caption')};
+}}
 
 QPushButton#GhostButton {{
     background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
@@ -581,6 +585,26 @@ QListWidget#LibraryFolderGrid::item:selected {{
 #LibraryToolbar {{
     background: transparent;
 }}
+#LibrarySections {{
+    background: transparent;
+}}
+#LibrarySections::tab {{
+    background: transparent;
+    color: {t.text_dim};
+    padding: 6px 12px;
+    margin-right: 2px;
+    border: none;
+    border-bottom: 2px solid transparent;
+    font-size: {fs('caption')};
+    font-weight: 600;
+}}
+#LibrarySections::tab:selected {{
+    color: {t.text};
+    border-bottom: 2px solid {t.accent};
+}}
+#LibrarySections::tab:hover {{
+    color: {t.text};
+}}
 #ToolbarSeparator {{
     background: {t.border};
     border: none;
@@ -656,16 +680,24 @@ QPushButton#SegmentButton[segmentKind="text"] {{
     font-size: {fs('micro')};
 }}
 #TrackDetailPanel {{
-    background: {t.surface_alt};
-    border-left: {bord};
+    background: {t.surface};
+    border: {bord};
+    border-radius: {t.radius + 4}px;
 }}
-#TrackDetailScroll {{
+#TrackDetailScroll, #TrackDetailContent {{
     background: transparent;
     border: none;
 }}
 #DetailEyebrow {{
-    color: {t.text_dim};
-    font-size: {fs('micro')};
+    color: {t.text};
+    font-size: {fs('caption')};
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    background: transparent;
+}}
+#DetailSectionLabel {{
+    color: {t.text_muted};
+    font-size: {fs('nano')};
     font-weight: 700;
     letter-spacing: 0.8px;
     background: transparent;
@@ -681,7 +713,7 @@ QPushButton#SegmentButton[segmentKind="text"] {{
 }}
 #DetailTitle {{
     color: {t.text};
-    font-size: {fs('body')};
+    font-size: {fs('lead')};
     font-weight: 700;
 }}
 #DetailMeta {{
@@ -690,7 +722,12 @@ QPushButton#SegmentButton[segmentKind="text"] {{
     background: transparent;
 }}
 #DetailPropBox {{
-    background: {t.surface};
+    background: {t.surface_alt};
+    border: {bord};
+    border-radius: {t.radius_sm}px;
+}}
+#DetailFileBox {{
+    background: {t.surface_alt};
     border: {bord};
     border-radius: {t.radius_sm}px;
 }}

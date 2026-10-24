@@ -1,8 +1,8 @@
-"""Barra de la Biblioteca: filtro, contadores, vistas y acciones.
+"""Barra de la Biblioteca: buscador, secciones, vistas y acciones.
 
-Dos zonas separadas por un divisor: a la izquierda el filtro y el contador, a
-la derecha el control de vista y las acciones. Las acciones de edicion no viven
-aca: aparecen en la barra contextual al marcar pistas (`library_selection.py`).
+Todo vive en una sola linea: las secciones y el buscador a la izquierda, el
+contador y las acciones a la derecha. Asi la pagina gana altura util sin perder
+ninguna herramienta.
 """
 
 from __future__ import annotations
@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
     QLabel,
     QLineEdit,
     QMenu,
+    QTabBar,
     QWidget,
 )
 
@@ -24,33 +25,61 @@ from .buttons import IconButton, TextButton
 VIEW_SPECS = (
     ("table", "list", "Vista en tabla"),
     ("grid", "grid", "Vista en tarjetas"),
+    ("mosaic", "image", "Vista mosaico"),
+    ("albums", "album", "Vista de álbumes"),
     ("discs", "disc", "Vista de discos"),
     ("carousel", "music", "Vista carrusel"),
 )
 
+# Secciones de contenido, no formatos de vista. Cada una abre la presentacion
+# que mejor le sienta; el usuario puede cambiarla despues en Canciones.
+SECTION_SPECS = (
+    ("songs", "Canciones"),
+    ("folders", "Carpetas"),
+)
+SECTION_KEYS = tuple(key for key, _label in SECTION_SPECS)
+
+SECTION_VIEWS = {
+    "songs": "table",
+    "folders": "table",
+}
+
 
 class LibraryToolbar(QWidget):
-    """Barra superior con el filtro, los contadores, las vistas y las acciones."""
+    """Encabezado de la Biblioteca con busqueda, secciones y acciones."""
 
     zoom_changed = Signal(int)
+    section_changed = Signal(str)
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("LibraryToolbar")
         self._zoom_percent: int = 100
-        bar = QHBoxLayout(self)
-        bar.setContentsMargins(0, 0, 0, 10)
-        bar.setSpacing(10)
 
-        # --- zona izquierda: filtro y contador -----------------------------
+        bar = QHBoxLayout(self)
+        bar.setContentsMargins(0, 0, 0, 4)
+        bar.setSpacing(12)
+
         self.filter_box = QLineEdit()
         self.filter_box.setObjectName("SearchInput")
         self.filter_box.setPlaceholderText("Buscar por título, artista o álbum...")
         self.filter_box.setClearButtonEnabled(True)
-        self.filter_box.setMaximumWidth(420)
-        self.filter_box.setMinimumWidth(260)
-        self.filter_box.setMinimumHeight(38)
-        bar.addWidget(self.filter_box)
+        self.filter_box.setMaximumWidth(380)
+        self.filter_box.setMinimumWidth(220)
+        self.filter_box.setMinimumHeight(36)
+        bar.addWidget(self.filter_box, 1)
+
+        self.section_bar = QTabBar()
+        self.section_bar.setObjectName("LibrarySections")
+        self.section_bar.setDrawBase(False)
+        self.section_bar.setExpanding(False)
+        self.section_bar.setUsesScrollButtons(False)
+        self.section_bar.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        for key, label in SECTION_SPECS:
+            index = self.section_bar.addTab(label)
+            self.section_bar.setTabData(index, key)
+        self.section_bar.currentChanged.connect(self._on_section_changed)
+        bar.addWidget(self.section_bar, 0)
 
         self.review_filter_btn = TextButton("Ver toda la biblioteca", "ghost", icon="list")
         self.review_filter_btn.setVisible(False)
@@ -58,36 +87,46 @@ class LibraryToolbar(QWidget):
 
         self.stats = QLabel("")
         self.stats.setObjectName("ToolbarStats")
-        bar.addSpacing(4)
-        bar.addWidget(self.stats, 1)
+        bar.addWidget(self.stats, 0)
 
-        # --- zona derecha: vistas y acciones -------------------------------
-        bar.addWidget(self._separator())
+        bar.addStretch(1)
 
-        bar.addWidget(self._view_group(), 0)
+        self.view_group = self._view_group()
+        bar.addWidget(self.view_group, 0)
 
-        # Controles de escala / zoom
-        self.zoom_out_button = IconButton("minus", "Reducir tamaño (100%)", 32)
-        self.zoom_in_button = IconButton("plus", "Aumentar tamaño (100%)", 32)
+        self.zoom_out_button = IconButton("minus", "Reducir tamaño (100%)", 30)
+        self.zoom_in_button = IconButton("plus", "Aumentar tamaño (100%)", 30)
         self.zoom_out_button.clicked.connect(lambda: self._zoom_step(-15))
         self.zoom_in_button.clicked.connect(lambda: self._zoom_step(15))
         bar.addWidget(self.zoom_out_button, 0)
         bar.addWidget(self.zoom_in_button, 0)
 
-        bar.addWidget(self._separator())
+        bar.addWidget(self._separator(), 0)
 
-        self.open_button = IconButton("folder", "Cambiar carpeta", 38)
+        self.open_button = IconButton("folder", "Cambiar carpeta", 36)
         bar.addWidget(self.open_button, 0)
 
-        self.reload_button = IconButton("repeat", "Volver a escanear", 38)
+        self.reload_button = IconButton("repeat", "Volver a escanear", 36)
         bar.addWidget(self.reload_button, 0)
 
-        self.undo_button = IconButton("undo", "Deshacer último lote", 38)
+        self.undo_button = IconButton("undo", "Deshacer último lote", 36)
         bar.addWidget(self.undo_button, 0)
 
-        self.detail_button = IconButton("info", "Mostrar / ocultar panel de información", 38)
-        bar.addWidget(self.detail_button, 0)
         self._apply_hidden_views()
+
+    def _on_section_changed(self, index: int) -> None:
+        key = self.section_bar.tabData(index)
+        if key:
+            self.section_changed.emit(str(key))
+
+    def set_active_section(self, section: str) -> None:
+        """Marca una seccion sin volver a emitir la senal."""
+        for index in range(self.section_bar.count()):
+            if self.section_bar.tabData(index) == section:
+                was_blocked = self.section_bar.blockSignals(True)
+                self.section_bar.setCurrentIndex(index)
+                self.section_bar.blockSignals(was_blocked)
+                return
 
     def _zoom_step(self, delta: int) -> None:
         new_val = max(70, min(160, self._zoom_percent + delta))
@@ -105,7 +144,7 @@ class LibraryToolbar(QWidget):
         return sep
 
     def _view_group(self) -> QWidget:
-        """Las vistas de Biblioteca en un control segmentado."""
+        """Las vistas de Canciones en un control segmentado."""
         group = QFrame()
         group.setObjectName("SegmentedControl")
         layout = QHBoxLayout(group)
@@ -176,11 +215,15 @@ class LibraryToolbar(QWidget):
         for name, button in self.view_buttons.items():
             button.setChecked(name == mode)
 
+    def set_view_controls_visible(self, visible: bool) -> None:
+        self.view_group.setVisible(visible)
+        self.zoom_out_button.setVisible(visible)
+        self.zoom_in_button.setVisible(visible)
+
     def refresh(self) -> None:
         """Recolorea los botones con icono tras un cambio de tema."""
         self.open_button.refresh()
         self.reload_button.refresh()
         self.undo_button.refresh()
-        self.detail_button.refresh()
         for button in self.view_buttons.values():
             button.refresh()

@@ -30,6 +30,9 @@ logger = logging.getLogger(__name__)
 # Formatos cuya escritura de portada es soportada.
 COVER_FORMATS = frozenset({".mp3", ".m4a", ".m4b", ".flac", ".opus", ".ogg", ".oga"})
 
+# La letra viaja en un frame ID3, en una clave MP4 o en un comentario Vorbis.
+LYRICS_FORMATS = COVER_FORMATS
+
 IMAGE_MIME = {
     ".jpg": "image/jpeg",
     ".jpeg": "image/jpeg",
@@ -107,6 +110,39 @@ def read_cover(path: Path) -> bytes | None:
     if audio is None:
         return None
     return _cover_bytes(audio)
+
+
+def read_embedded_lyrics(path: Path) -> str:
+    """Letra incrustada en el audio, o cadena vacía."""
+    audio = _open_native(path)
+    if audio is None:
+        return ""
+
+    tags = getattr(audio, "tags", None)
+    if tags is None:
+        return ""
+
+    if hasattr(tags, "getall"):
+        frames = tags.getall("USLT")
+        if frames:
+            return str(frames[0].text).strip()
+
+    try:
+        lyrics = tags.get("\xa9lyr")
+    except Exception:
+        lyrics = None
+    if lyrics:
+        return _first_text(lyrics)
+
+    for key_name in ("LYRICS", "UNSYNCEDLYRICS", "LYRIC"):
+        try:
+            lyrics = tags.get(key_name)
+        except Exception:
+            lyrics = None
+        if lyrics:
+            return _first_text(lyrics)
+
+    return ""
 
 
 # --- escritura de texto ------------------------------------------------------
@@ -213,6 +249,35 @@ def remove_cover(path: Path) -> None:
         raise MetadataError(f"No se pudo quitar la portada: {exc}") from exc
 
 
+def write_lyrics(path: Path, lyrics: str) -> None:
+    """Incrusta la letra en el audio, reemplazando la anterior."""
+    text_value = (lyrics or "").strip()
+    if not text_value:
+        raise MetadataError("La letra está vacía")
+
+    extension = path.suffix.lower()
+    if extension not in LYRICS_FORMATS:
+        raise MetadataError(f"{extension} no admite letra embebida")
+
+    audio = _open_native(path)
+    if audio is None:
+        raise MetadataError("No se pudo abrir el archivo")
+
+    try:
+        match extension:
+            case ".mp3":
+                _write_id3_lyrics(audio, text_value)
+            case ".m4a" | ".m4b":
+                _write_mp4_lyrics(audio, text_value)
+            case _:
+                _write_vorbis_lyrics(audio, text_value)
+        audio.save()
+    except MetadataError:
+        raise
+    except Exception as exc:
+        raise MetadataError(f"No se pudieron escribir las letras: {exc}") from exc
+
+
 def read_cover_file(image_path: Path) -> tuple[bytes, str]:
     """Lee una imagen del disco y devuelve (bytes, mime) para embeberla."""
     mime = IMAGE_MIME.get(image_path.suffix.lower())
@@ -265,6 +330,12 @@ def _first(tags, key_name: str) -> str:
     return str(value).strip() if value else ""
 
 
+def _first_text(value) -> str:
+    if isinstance(value, (list, tuple)):
+        value = value[0] if value else None
+    return str(value).strip() if value else ""
+
+
 def _cover_bytes(audio) -> bytes | None:
     """Bytes de la imagen, buscando en la API que corresponda a cada formato."""
     tags = getattr(audio, "tags", None)
@@ -299,6 +370,30 @@ def _cover_bytes(audio) -> bytes | None:
             return None
 
     return None
+
+
+def _write_id3_lyrics(audio, lyrics: str) -> None:
+    if audio.tags is None:
+        audio.add_tags()
+    audio.tags.delall("USLT")
+    audio.tags.add(id3.USLT(encoding=3, lang="eng", desc="", text=lyrics))
+
+
+def _write_mp4_lyrics(audio, lyrics: str) -> None:
+    if audio.tags is None:
+        audio.add_tags()
+    if "\xa9lyr" in audio.tags:
+        del audio.tags["\xa9lyr"]
+    audio.tags["\xa9lyr"] = [lyrics]
+
+
+def _write_vorbis_lyrics(audio, lyrics: str) -> None:
+    if audio.tags is None:
+        audio.add_tags()
+    for key_name in ("LYRICS", "UNSYNCEDLYRICS", "LYRIC"):
+        if key_name in audio:
+            del audio[key_name]
+    audio["LYRICS"] = [lyrics]
 
 
 def _write_id3_cover(audio, image: bytes, mime: str) -> None:

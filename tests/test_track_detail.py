@@ -1,4 +1,4 @@
-"""Tests del panel lateral moderno de registro y detalle de pista."""
+"""Tests de la ficha lateral de informacion y detalle de pista."""
 
 from __future__ import annotations
 
@@ -35,6 +35,7 @@ def test_track_detail_empty_state(qapp) -> None:
     assert not panel.empty_widget.isHidden()
     assert panel.cover.isHidden() is True
     assert panel.edit_btn.isHidden() is True
+    assert panel.lyrics_btn.isHidden() is True
     assert panel.folder_btn.isHidden() is True
 
 
@@ -49,11 +50,12 @@ def test_track_detail_with_track(qapp, tmp_path: Path) -> None:
     assert panel.title.text() == "Cancion Test"
     assert "Artista Test" in panel.meta.text()
     assert "Disco Test" in panel.meta.text()
-    assert "MP3" in panel.meta.text()
-    assert panel.status_pill.text() == "✓ En SQLite"
+    assert any("MP3" in chip.text() for chip in panel._chips)
+    assert panel.status_pill.text() == "En biblioteca"
     assert not panel.edit_btn.isHidden()
     assert not panel.folder_btn.isHidden()
     assert not panel.info_btn.isHidden()
+    assert not panel.lyrics_btn.isHidden()
     assert panel._lbl_year_val.text() == "2024"
     assert panel._lbl_genre_val.text() == "Synthwave"
     assert panel._lbl_track_val.text() == "3/10"
@@ -86,7 +88,7 @@ def test_track_detail_flash_saved(qapp, tmp_path: Path) -> None:
     panel.set_track(_make_track(tmp_path))
 
     panel.flash_saved()
-    assert panel.status_pill.text() == "✓ ¡Actualizado!"
+    assert panel.status_pill.text() == "✓ Guardado"
 
 
 def test_track_detail_copy_path(qapp, tmp_path: Path) -> None:
@@ -98,16 +100,13 @@ def test_track_detail_copy_path(qapp, tmp_path: Path) -> None:
     assert QApplication.clipboard().text() == str(track.path)
 
 
-def test_toolbar_toggle_detail_button(qapp) -> None:
+def test_panel_de_informacion_es_permanente(qapp) -> None:
     from sakura.ui.pages.library import LibraryPage
     page = LibraryPage()
-    assert not page.detail.isHidden()
 
-    page.toolbar.detail_button.click()
-    assert page.detail.isHidden() is True
-
-    page.toolbar.detail_button.click()
-    assert not page.detail.isHidden()
+    assert page.detail.isHidden() is False
+    assert page.detail.width() == 300
+    assert not hasattr(page.toolbar, "detail_button")
 
 
 def test_refresh_track_updates_sqlite(qapp, tmp_path: Path, monkeypatch) -> None:

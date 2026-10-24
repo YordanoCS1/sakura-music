@@ -2,6 +2,7 @@
 
 from .downloader import DownloadManager
 from .library import LibraryRefresher, LibraryReviewScanner, LibraryScanner
+from .lyrics import LyricsEmbedder
 from .playlist import PlaylistResolver
 from .searcher import SearchService
 from .thumbnails import ThumbnailLoader
@@ -11,6 +12,7 @@ __all__ = [
     "LibraryRefresher",
     "LibraryReviewScanner",
     "LibraryScanner",
+    "LyricsEmbedder",
     "PlaylistResolver",
     "SearchService",
     "ThumbnailLoader",

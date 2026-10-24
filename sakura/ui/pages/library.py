@@ -34,12 +34,13 @@ from .. import theme as th
 from ..covers import CoverCache, folder_cover, render_cover
 from ..models.track_model import COLUMNS, STRETCH_COLUMN, TrackFilterProxy, TrackTableModel
 from ..services.library import LibraryDeltaScanner, LibraryRefresher, LibraryScanner
+from ..services.lyrics import LyricsEmbedder
 from ..widgets.batch_editor import open_edicion_batch
 from ..widgets.breadcrumb import BreadcrumbBar
 from ..widgets.buttons import TextButton
 from ..widgets.library_folders import LibraryFolderPanel
 from ..widgets.library_selection import LibrarySelectionBar
-from ..widgets.library_toolbar import LibraryToolbar
+from ..widgets.library_toolbar import SECTION_KEYS, SECTION_VIEWS, LibraryToolbar
 from ..widgets.library_views import VIEW_ORDER, LibraryViewStack
 from ..widgets.metadata_editor import open_editor
 from ..widgets.track_detail import TrackDetail
@@ -73,6 +74,8 @@ class LibraryPage(Page):
 
     def __init__(self, parent=None):
         super().__init__("Biblioteca", "Tu música local", parent)
+        self.layout().setContentsMargins(32, 4, 32, 24)
+        self.layout().setSpacing(12)
 
         self.model = TrackTableModel(self)
         self.proxy = TrackFilterProxy(self)
@@ -81,6 +84,10 @@ class LibraryPage(Page):
         self.view_mode = str(load_settings().get("library_view", "table"))
         if self.view_mode not in VIEW_ORDER:
             self.view_mode = "table"
+        self._songs_view = self.view_mode
+        self.section = str(load_settings().get("library_section", "songs"))
+        if self.section not in SECTION_KEYS:
+            self.section = "songs"
         self._syncing_selection = False
         self._covers: dict[Path, Path | None] = CoverCache()
         self._library_root: Path | None = None
@@ -105,6 +112,10 @@ class LibraryPage(Page):
         self.refresher.tracks_refreshed.connect(self._on_refreshed)
         self.refresher.finished.connect(self._on_refresh_done)
         self.refresher.failed.connect(self._on_refresh_failed)
+
+        self.lyrics_embedder = LyricsEmbedder(self)
+        self.lyrics_embedder.progress.connect(self._on_lyrics_progress)
+        self.lyrics_embedder.finished.connect(self._on_lyrics_finished)
 
         self.delta = LibraryDeltaScanner(self)
         self.delta.tracks_changed.connect(self._on_delta_changed)
@@ -136,15 +147,16 @@ class LibraryPage(Page):
         self.library_body = body
         body_layout = QHBoxLayout(body)
         body_layout.setContentsMargins(0, 0, 0, 0)
-        body_layout.setSpacing(0)
+        body_layout.setSpacing(18)
 
         library = QWidget()
         library_layout = QVBoxLayout(library)
         library_layout.setContentsMargins(0, 0, 0, 0)
-        library_layout.setSpacing(10)
+        library_layout.setSpacing(12)
 
         # Navegacion: volver + migas de pan, que reemplazan el titulo suelto.
         navegacion = QWidget()
+        navegacion.setObjectName("LibraryNavigation")
         navegacion_layout = QHBoxLayout(navegacion)
         navegacion_layout.setContentsMargins(0, 0, 0, 0)
         navegacion_layout.setSpacing(8)
@@ -156,6 +168,7 @@ class LibraryPage(Page):
         self.folder_location.path_selected.connect(self._open_folder)
         navegacion_layout.addWidget(self.folder_location, 1)
         library_layout.addWidget(navegacion)
+        self.navigation = navegacion
 
         self.folder_panel = LibraryFolderPanel()
         self.folder_list = self.folder_panel.folder_list
@@ -171,7 +184,11 @@ class LibraryPage(Page):
 
         self.detail = TrackDetail()
         self.detail.edit_requested.connect(self._on_edit)
+        self.detail.lyrics_requested.connect(self._on_embed_current_lyrics)
         self.detail.info_requested.connect(self._on_info)
+        # El panel es parte fija de la Biblioteca: muestra la seleccion actual
+        # o un estado vacio, sin robarle espacio a la barra superior.
+        self.detail.setVisible(True)
         body_layout.addWidget(self.detail)
         self.content.addWidget(body, 1)
 
@@ -179,7 +196,7 @@ class LibraryPage(Page):
         self.message.action_clicked.connect(self.search_requested)
         self.content.addWidget(self.message)
 
-        self.set_view_mode(self.view_mode, save=False)
+        self.set_section(self.section, save=False)
         self._update_undo_state()
 
     def _alias_toolbar(self) -> None:
@@ -189,13 +206,13 @@ class LibraryPage(Page):
         self.stats = bar.stats
         self.review_filter_btn = bar.review_filter_btn
         self.undo_button = bar.undo_button
-        self.detail_button = bar.detail_button
         self.view_buttons = bar.view_buttons
 
     def _alias_selection(self) -> None:
         bar = self.selection_bar
         self.edit_button = bar.edit_button
         self.batch_button = bar.batch_button
+        self.lyrics_button = bar.lyrics_button
 
     def _connect_toolbar(self) -> None:
         bar = self.toolbar
@@ -207,24 +224,30 @@ class LibraryPage(Page):
         bar.reload_button.clicked.connect(lambda: self.rescan())
         bar.undo_button.clicked.connect(self._on_undo)
         bar.zoom_changed.connect(self._on_zoom_changed)
-        bar.detail_button.clicked.connect(self._toggle_detail_panel)
+        bar.section_changed.connect(self.set_section)
 
     def _on_zoom_changed(self, percent: int) -> None:
         self.view_stack.set_zoom(percent / 100.0)
 
-    def _toggle_detail_panel(self) -> None:
-        self.detail.setVisible(self.detail.isHidden())
+    def _update_navigation_visibility(self) -> None:
+        """Las migas solo aparecen cuando hay una carpeta abierta o en Carpetas."""
+        root = self._library_root
+        current = self._current_folder
+        outside_root = root is not None and current is not None and current != root
+        self.navigation.setVisible(self.section == "folders" or outside_root)
 
     def _connect_selection(self) -> None:
         bar = self.selection_bar
         bar.edit_button.clicked.connect(self._on_edit)
         bar.batch_button.clicked.connect(self._on_batch_edit)
+        bar.lyrics_button.clicked.connect(self._on_embed_selected_lyrics)
         bar.clear_button.clicked.connect(self._clear_selections)
 
     def _alias_views(self) -> None:
         """Deja a mano en la pagina las vistas y delegates que se usan afuera."""
         stack = self.view_stack
         self.table = stack.table
+        self.albums_model = stack.albums_model
         for mode in VIEW_ORDER:
             if mode == "table":
                 continue
@@ -247,6 +270,21 @@ class LibraryPage(Page):
                 )
             view.doubleClicked.connect(lambda _index: self._on_info())
 
+    def set_section(self, section: str, save: bool = True) -> None:
+        """Cambia la seccion de contenido y ajusta la presentacion."""
+        if section not in SECTION_KEYS:
+            section = "songs"
+        self.section = section
+        self.toolbar.set_active_section(section)
+        target = self._songs_view if section == "songs" else SECTION_VIEWS[section]
+        self.set_view_mode(target, save=False)
+        self.toolbar.set_view_controls_visible(section == "songs")
+        if save:
+            save_settings({"library_section": section})
+        self._update_navigation_visibility()
+        self._update_filtered_stats()
+        self._populate_folder_list()
+
     def set_view_mode(self, mode: str, save: bool = True) -> None:
         """Alterna entre los diseños disponibles para la biblioteca."""
         if mode not in self.view_buttons:
@@ -254,6 +292,8 @@ class LibraryPage(Page):
         if mode != self.view_mode:
             self._clear_selections()
         self.view_mode = mode
+        if self.section == "songs":
+            self._songs_view = mode
         self.view_stack.set_mode(mode)
         self.toolbar.set_active_view(mode)
         if save:
@@ -335,9 +375,19 @@ class LibraryPage(Page):
         )
         self.toolbar.setStyleSheet(
             f"QWidget#LibraryToolbar {{ background: {t.bg}; }}"
+            f"QTabBar#LibrarySections {{ background: transparent; }}"
+            f"QTabBar#LibrarySections::tab {{ background: transparent;"
+            f" color: {t.text_dim}; padding: 6px 12px; border: none;"
+            f" border-bottom: 2px solid transparent; font-size: 12px;"
+            f" font-weight: 600; margin-right: 2px; }}"
+            f"QTabBar#LibrarySections::tab:selected {{ color: {t.text};"
+            f" border-bottom: 2px solid {t.accent}; }}"
+            f"QTabBar#LibrarySections::tab:hover {{ color: {t.text}; }}"
             f"QLineEdit#SearchInput {{ background: {t.surface_alt}; color: {t.text};"
-            f" border: 1px solid {t.border}; border-radius: 18px;"
-            f" padding: 6px 14px; font-size: 13px; }}"
+            f" border: 1px solid {t.border}; border-radius: 10px;"
+            f" padding: 5px 12px; font-size: 12px; }}"
+            f"QLineEdit#SearchInput:focus {{ border: 1px solid {t.accent};"
+            f" background: {t.surface}; }}"
             f"QLineEdit#SearchInput:focus {{ border-color: {t.accent}; background: {t.surface}; }}"
             f"QFrame#SegmentedControl {{ background: {t.surface_alt};"
             f" border: 1px solid {t.border}; border-radius: 12px; padding: 2px; }}"
@@ -439,11 +489,7 @@ class LibraryPage(Page):
             if idx != STRETCH_COLUMN:
                 self.table.setColumnWidth(idx, width)
 
-        hours = summary["duracion"] / 3600
-        self._set_stats(
-            f"{summary['pistas']} pistas · {summary['albumes']} álbumes · "
-            f"{summary['artistas']} artistas · {hours:.1f} h"
-        )
+        self._on_finished_filter_reset()
         if self.proxy.query or self.proxy.review_filter:
             self._update_filtered_stats()
 
@@ -558,8 +604,6 @@ class LibraryPage(Page):
         )
 
     def _on_selection(self, *_args) -> None:
-        if self.view_mode != "table":
-            return
         if self._syncing_selection:
             return
         self._syncing_selection = True
@@ -582,11 +626,17 @@ class LibraryPage(Page):
         self._syncing_selection = True
         try:
             marked = len(self.selected_tracks())
-            sm = self.grid_view.selectionModel()
+            sm = view.selectionModel()
             indices = sm.selectedIndexes() if sm else []
-            if marked == 1 and indices and self.table.selectionModel():
-                self.table.selectRow(indices[0].row())
             track_item = self.selected_track()
+            if marked == 1 and indices and track_item is not None:
+                source_row = self.model.row_of_path(track_item.path)
+                if source_row >= 0:
+                    proxy_index = self.proxy.mapFromSource(
+                        self.model.index(source_row, 0)
+                    )
+                    if proxy_index.isValid() and self.table.selectionModel():
+                        self.table.selectRow(proxy_index.row())
             self._sync_edit_buttons(track_item)
             self.detail.set_track(track_item)
             self._request_ambient(track_item)
@@ -663,8 +713,29 @@ class LibraryPage(Page):
             self._ambient_color = color
             self.ambient_requested.emit(color)
 
+    def _selected_album_groups(self):
+        """Albumes marcados en la estanteria, en el orden visible."""
+        if self.view_mode != "albums":
+            return []
+        view = self.view_stack.albums_view
+        sm = view.selectionModel()
+        rows = sm.selectedRows() if sm else []
+        groups = []
+        for idx in rows:
+            group = self.view_stack.albums_model.album_at(idx.row())
+            if group is not None:
+                groups.append(group)
+        return groups
+
     def selected_tracks(self) -> list[Track]:
         """Todas las pistas marcadas, en el orden en que se ven."""
+        if self.view_mode == "albums":
+            return [
+                track
+                for group in self._selected_album_groups()
+                for track in group.tracks
+            ]
+
         active_view = self._active_card_view()
         if active_view is not None:
             sm = active_view.selectionModel()
@@ -681,6 +752,10 @@ class LibraryPage(Page):
         return track_items
 
     def selected_track(self) -> Track | None:
+        if self.view_mode == "albums":
+            groups = self._selected_album_groups()
+            return groups[0].first_track if groups else None
+
         active_view = self._active_card_view()
         if active_view is not None:
             sm = active_view.selectionModel()
@@ -735,6 +810,59 @@ class LibraryPage(Page):
             self._refresh_all()
         self._show_message(result.text_summary)
         self._update_undo_state()
+
+    def _on_embed_current_lyrics(self) -> None:
+        track_item = self.selected_track()
+        if track_item is not None:
+            self._start_lyrics([track_item])
+
+    def _on_embed_selected_lyrics(self) -> None:
+        track_items = self.selected_tracks()
+        if track_items:
+            self._start_lyrics(track_items)
+
+    def _start_lyrics(self, track_items: list[Track]) -> None:
+        if self.lyrics_embedder.is_running:
+            return
+
+        self._set_lyrics_busy(True)
+        self._set_stats(f"Buscando letras para {len(track_items)} pista(s)...")
+        self.lyrics_embedder.start(track_items)
+
+    def _set_lyrics_busy(self, busy: bool) -> None:
+        self.lyrics_button.setEnabled(not busy)
+        self.detail.lyrics_btn.setEnabled(not busy)
+
+    def _on_lyrics_progress(self, done: int, total: int, title: str) -> None:
+        if not total:
+            return
+        current = min(done + 1, total)
+        self._set_stats(f"Letras {current}/{total} · {title}")
+
+    def _on_lyrics_finished(self, report) -> None:
+        self._set_lyrics_busy(False)
+        for outcome in report.outcomes:
+            row_index = self.model.row_of_path(outcome.track.path)
+            if row_index >= 0:
+                self.model.replace(row_index, outcome.track)
+
+        self._clear_showcase_caches()
+        self._on_selection()
+        self._set_stats(report.summary)
+        self.review_data_changed.emit()
+
+        if report.errors and not (report.embedded or report.downloaded or report.already):
+            details = [
+                item.message
+                for item in report.outcomes
+                if item.status == "error" and item.message
+            ]
+            if details:
+                QMessageBox.warning(
+                    self,
+                    "No se pudieron incrustar letras",
+                    "\n".join(details[:4]),
+                )
 
     def _on_undo(self) -> None:
         """Restaura los tags previos del ultimo lote escrito."""
@@ -903,6 +1031,7 @@ class LibraryPage(Page):
             self.folder_panel.setVisible(False)
             self.up_folder_button.setVisible(False)
             self.folder_location.set_message("Biblioteca")
+            self._update_navigation_visibility()
             return
 
         self.up_folder_button.setVisible(
@@ -912,6 +1041,7 @@ class LibraryPage(Page):
             self.folder_location.set_message("Toda la biblioteca")
         else:
             self.folder_location.set_path(root, current)
+        self._update_navigation_visibility()
         self.proxy.set_folder_filter(
             current if not self.proxy.query and not self._review_mode else None
         )
@@ -964,7 +1094,7 @@ class LibraryPage(Page):
             item.setToolTip(f"{folder.name}\n{len(tracks)} pistas\nClic para abrir")
             self.folder_list.addItem(item)
 
-        self.folder_panel.setVisible(bool(children))
+        self.folder_panel.setVisible(self.section == "folders" and bool(children))
 
     # --- utilidades ---------------------------------------------------------
 

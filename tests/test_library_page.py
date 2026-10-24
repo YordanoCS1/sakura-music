@@ -93,10 +93,45 @@ def test_muestra_la_carpeta_en_el_subtitulo(page) -> None:
 
 def test_stats_consistentes(page) -> None:
     _wait_scan(page)
-    text_value = page.stats.text()
-    assert "2 pistas" in text_value
-    assert "1 álbumes" in text_value
-    assert "1 artistas" in text_value
+    assert "2 pistas" in page.stats.text()
+    assert "1 álbumes" in page.stats.text()
+    assert "1 artistas" in page.stats.text()
+
+
+def test_inicia_en_canciones_con_la_biblioteca_despejada(page) -> None:
+    _wait_scan(page)
+    bar = page.toolbar.section_bar
+    assert page.section == "songs"
+    assert page.view_mode == "table"
+    assert [bar.tabText(i) for i in range(bar.count())] == ["Canciones", "Carpetas"]
+    assert page.toolbar.view_group.isVisible() is True
+    assert page.detail.isHidden() is False
+    assert page.folder_panel.isHidden() is True
+
+
+def test_barra_compacta_en_una_sola_linea(page) -> None:
+    _wait_scan(page)
+    assert page.toolbar.height() <= 52
+    assert abs(page.toolbar.filter_box.y() - page.toolbar.section_bar.y()) <= 8
+
+
+def test_canciones_recuerda_su_propia_vista(page) -> None:
+    _wait_scan(page)
+    assert page.view_mode == "table"
+    assert page.toolbar.view_group.isVisible() is True
+
+    page.set_view_mode("grid")
+    page.set_section("folders")
+    assert page.toolbar.view_group.isVisible() is False
+    page.set_section("songs")
+    assert page.view_mode == "grid"
+
+
+def test_carpetas_muestra_panel_y_migas(page) -> None:
+    _wait_scan(page)
+    page.set_section("folders")
+    assert page.folder_panel.isVisible() is True
+    assert page.navigation.isVisible() is True
 
 
 def test_carpeta_vacia_muestra_mensaje(qapp, monkeypatch, tmp_path) -> None:
@@ -142,6 +177,7 @@ def test_tabla_usa_el_proxy(page) -> None:
 
 def test_biblioteca_navega_por_carpetas_y_busca_en_toda_la_biblioteca(page) -> None:
     _wait_scan(page)
+    page.set_section("folders")
     assert page.folder_panel.isVisible()
     assert page.folder_list.count() == 1
     assert page.folder_list.item(0).text().startswith("Daft Punk")
@@ -288,7 +324,7 @@ def test_detalle_muestra_los_tags(page) -> None:
     meta = page.detail.meta.text()
     assert "Daft Punk" in meta
     assert "Discovery" in meta
-    assert "MP3" in meta
+    assert any("MP3" in chip.text() for chip in page.detail._chips)
 
 
 # --- tema --------------------------------------------------------------------
@@ -470,10 +506,20 @@ def test_alternar_modo_de_vista(page) -> None:
     _wait(page)
     option = QStyleOptionViewItem()
     # Por defecto tabla
-    assert page.view_mode in ("table", "grid", "discs", "carousel")
+    assert page.view_mode in ("table", "grid", "mosaic", "albums", "discs", "carousel")
     page.set_view_mode("grid", save=False)
     assert page.view_mode == "grid"
     assert page.view_stack.currentIndex() == 1
+
+    page.set_view_mode("mosaic", save=False)
+    assert page.view_mode == "mosaic"
+    assert page.view_stack.currentWidget() is page.mosaic_view
+    assert page.mosaic_delegate.sizeHint(option, page.proxy.index(0, 0)).width() == 158
+
+    page.set_view_mode("albums", save=False)
+    assert page.view_mode == "albums"
+    assert page.view_stack.currentWidget() is page.albums_view
+    assert page.albums_delegate.sizeHint(option, page.albums_model.index(0, 0)).width() == 190
 
     page.set_view_mode("discs", save=False)
     assert page.view_mode == "discs"
@@ -502,7 +548,7 @@ def test_seleccion_en_cuadricula(page) -> None:
 
 
 
-@pytest.mark.parametrize("mode", ("discs", "carousel"))
+@pytest.mark.parametrize("mode", ("mosaic", "discs", "carousel"))
 def test_seleccion_en_vista_artistica(page, mode: str) -> None:
     _wait(page)
     page.set_view_mode(mode, save=False)
@@ -512,6 +558,100 @@ def test_seleccion_en_vista_artistica(page, mode: str) -> None:
 
     assert page.selected_track() == page.proxy.track_at(0)
     assert page.edit_button.isEnabled() is True
+
+
+def test_estanteria_agrupa_y_selecciona_el_album_completo(page, tmp_path) -> None:
+    from sakura.core.library import Track
+
+    _wait(page)
+    page.proxy.set_folder_filter(None)
+    page.model.set_tracks(
+        [
+            Track(
+                path=tmp_path / "01 One More Time.mp3",
+                title="One More Time",
+                artist="Daft Punk",
+                album="Discovery",
+                duration=320,
+                year="2001",
+            ),
+            Track(
+                path=tmp_path / "02 Aerodynamic.mp3",
+                title="Aerodynamic",
+                artist="Daft Punk",
+                album="Discovery",
+                duration=212,
+                year="2001",
+            ),
+        ]
+    )
+    page.set_view_mode("albums", save=False)
+
+    model = page.albums_model
+    assert len(model) == 1
+    album = model.album_at(0)
+    assert album is not None
+    assert album.title == "Discovery"
+    assert album.artist_text == "Daft Punk"
+    assert album.track_count == 2
+    assert album.year == "2001"
+
+    page.albums_view.setCurrentIndex(model.index(0, 0))
+
+    assert page.selected_track() == album.first_track
+    assert len(page.selected_tracks()) == 2
+    assert page.batch_button.isVisible() is True
+    assert page.batch_button.isEnabled() is True
+
+
+def test_estanteria_muestra_la_portada_del_album(page, tmp_path) -> None:
+    from PySide6.QtCore import QRect
+    from PySide6.QtGui import QColor, QPainter, QPixmap
+    from PySide6.QtWidgets import QStyleOptionViewItem
+
+    from sakura.core.library import Track
+
+    _wait(page)
+    color = QColor("#fa1496")
+    cover = QPixmap(48, 48)
+    cover.fill(color)
+    cover_path = tmp_path / "album-cover.png"
+    assert cover.save(str(cover_path))
+
+    page.proxy.set_folder_filter(None)
+    page.model.set_tracks(
+        [
+            Track(
+                path=tmp_path / "01 One More Time.mp3",
+                title="One More Time",
+                artist="Daft Punk",
+                album="Discovery",
+                duration=320,
+                cover_path=cover_path,
+            ),
+            Track(
+                path=tmp_path / "02 Aerodynamic.mp3",
+                title="Aerodynamic",
+                artist="Daft Punk",
+                album="Discovery",
+                duration=212,
+                cover_path=cover_path,
+            ),
+        ]
+    )
+    page.set_view_mode("albums", save=False)
+
+    option = QStyleOptionViewItem()
+    option.rect = QRect(0, 0, 190, 236)
+    output = QPixmap(190, 236)
+    output.fill(QColor("#ffffff"))
+    painter = QPainter(output)
+    page.albums_delegate.paint(painter, option, page.albums_model.index(0, 0))
+    painter.end()
+
+    pixel = output.toImage().pixelColor(95, 90)
+    assert pixel.red() > 220
+    assert pixel.blue() > 120
 
 
 def test_vinilo_gira_solo_mientras_su_vista_esta_activa(page) -> None:
@@ -558,6 +698,7 @@ def test_vinilo_reutiliza_la_imagen_compuesta_entre_fotogramas(page, tmp_path) -
 @pytest.mark.parametrize(
     ("mode", "size", "cover_point"),
     (
+        ("mosaic", (158, 210), (79, 79)),
         ("discs", (204, 270), (122, 82)),
         ("carousel", (344, 190), (90, 95)),
     ),
@@ -602,7 +743,7 @@ def test_nuevos_disenos_muestran_la_portada(page, tmp_path, mode, size, cover_po
 def test_el_orden_de_las_vistas_coincide_con_la_barra(page) -> None:
     from sakura.ui.widgets.library_views import VIEW_ORDER
 
-    assert len(VIEW_ORDER) == 4
+    assert len(VIEW_ORDER) == 6
     assert tuple(page.view_buttons) == VIEW_ORDER
     assert page.view_stack.count() == len(VIEW_ORDER)
     assert set(page.card_views) == set(VIEW_ORDER) - {"table"}

@@ -11,11 +11,17 @@ from PySide6.QtWidgets import (
     QTableView,
 )
 
+from ..models.album_model import AlbumShelfModel
 from ..models.track_model import COLUMNS, STRETCH_COLUMN
-from .track_delegates import TrackGridDelegate, TrackShowcaseDelegate
+from .track_delegates import (
+    AlbumShelfDelegate,
+    TrackGridDelegate,
+    TrackMosaicDelegate,
+    TrackShowcaseDelegate,
+)
 
 # Orden del stack. Tiene que coincidir con los botones de la barra.
-VIEW_ORDER = ("table", "grid", "discs", "carousel")
+VIEW_ORDER = ("table", "grid", "mosaic", "albums", "discs", "carousel")
 
 
 class LibraryViewStack(QStackedWidget):
@@ -29,6 +35,8 @@ class LibraryViewStack(QStackedWidget):
         super().__init__(parent)
         self._build_table(proxy)
         self._build_grid(proxy)
+        self._build_mosaic(proxy)
+        self._build_albums(proxy)
         self._build_discs(proxy)
         self._build_carousel(proxy)
 
@@ -86,6 +94,49 @@ class LibraryViewStack(QStackedWidget):
         self.grid_view.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         self.addWidget(self.grid_view)
 
+    def _build_mosaic(self, proxy) -> None:
+        self.mosaic_view = QListView()
+        self.mosaic_view.setObjectName("TrackMosaic")
+        self.mosaic_view.setModel(proxy)
+        self.mosaic_delegate = TrackMosaicDelegate(self)
+        self.mosaic_view.setItemDelegate(self.mosaic_delegate)
+        self.mosaic_view.setViewMode(QListView.ViewMode.IconMode)
+        self.mosaic_view.setResizeMode(QListView.ResizeMode.Adjust)
+        self.mosaic_view.setWrapping(True)
+        self.mosaic_view.setSpacing(8)
+        self.mosaic_view.setUniformItemSizes(True)
+        self.mosaic_view.setMovement(QListView.Movement.Static)
+        self.mosaic_view.setHorizontalScrollBarPolicy(
+            Qt.ScrollBarPolicy.ScrollBarAlwaysOff
+        )
+        self.mosaic_view.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
+        self.mosaic_view.setSelectionMode(
+            QAbstractItemView.SelectionMode.ExtendedSelection
+        )
+        self.addWidget(self.mosaic_view)
+
+    def _build_albums(self, proxy) -> None:
+        self.albums_model = AlbumShelfModel(proxy, self)
+        self.albums_view = QListView()
+        self.albums_view.setObjectName("TrackAlbums")
+        self.albums_view.setModel(self.albums_model)
+        self.albums_delegate = AlbumShelfDelegate(self)
+        self.albums_view.setItemDelegate(self.albums_delegate)
+        self.albums_view.setViewMode(QListView.ViewMode.IconMode)
+        self.albums_view.setResizeMode(QListView.ResizeMode.Adjust)
+        self.albums_view.setWrapping(True)
+        self.albums_view.setSpacing(10)
+        self.albums_view.setUniformItemSizes(True)
+        self.albums_view.setMovement(QListView.Movement.Static)
+        self.albums_view.setHorizontalScrollBarPolicy(
+            Qt.ScrollBarPolicy.ScrollBarAlwaysOff
+        )
+        self.albums_view.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
+        self.albums_view.setSelectionMode(
+            QAbstractItemView.SelectionMode.ExtendedSelection
+        )
+        self.addWidget(self.albums_view)
+
     def _build_discs(self, proxy) -> None:
         self.discs_view = self._create_showcase_view(proxy, "discs")
         self.discs_delegate = TrackShowcaseDelegate("discs", self)
@@ -135,6 +186,8 @@ class LibraryViewStack(QStackedWidget):
     def card_views(self) -> dict[str, QListView]:
         return {
             "grid": self.grid_view,
+            "mosaic": self.mosaic_view,
+            "albums": self.albums_view,
             "discs": self.discs_view,
             "carousel": self.carousel_view,
         }
@@ -143,6 +196,8 @@ class LibraryViewStack(QStackedWidget):
     def card_delegates(self) -> dict[str, object]:
         return {
             "grid": self.grid_delegate,
+            "mosaic": self.mosaic_delegate,
+            "albums": self.albums_delegate,
             "discs": self.discs_delegate,
             "carousel": self.carousel_delegate,
         }
@@ -159,6 +214,7 @@ class LibraryViewStack(QStackedWidget):
 
     def clear_selections(self) -> None:
         self.table.clearSelection()
+        self.albums_view.clearSelection()
         for view in self.card_views.values():
             view.clearSelection()
 
