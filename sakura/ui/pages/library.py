@@ -40,7 +40,12 @@ from ..widgets.breadcrumb import BreadcrumbBar
 from ..widgets.buttons import TextButton
 from ..widgets.library_folders import LibraryFolderPanel
 from ..widgets.library_selection import LibrarySelectionBar
-from ..widgets.library_toolbar import SECTION_KEYS, SECTION_VIEWS, LibraryToolbar
+from ..widgets.library_toolbar import (
+    FilterChipsBar,
+    SECTION_KEYS,
+    SECTION_VIEWS,
+    LibraryToolbar,
+)
 from ..widgets.library_views import VIEW_ORDER, LibraryViewStack
 from ..widgets.metadata_editor import open_editor
 from ..widgets.track_detail import TrackDetail
@@ -88,6 +93,7 @@ class LibraryPage(Page):
         self.section = str(load_settings().get("library_section", "songs"))
         if self.section not in SECTION_KEYS:
             self.section = "songs"
+        self._review_filter = str(load_settings().get("library_review_filter", "all"))
         self._syncing_selection = False
         self._covers: dict[Path, Path | None] = CoverCache()
         self._library_root: Path | None = None
@@ -141,6 +147,12 @@ class LibraryPage(Page):
         self._alias_selection()
         self._connect_selection()
         self.content.addWidget(self.selection_bar)
+
+        # Filtros rápidos tipo chip: sin tags, sin portada, duplicados.
+        self.filter_chips = FilterChipsBar()
+        self.filter_chips.filter_changed.connect(self._on_review_filter_changed)
+        self.content.addWidget(self.filter_chips)
+        self._apply_saved_review_filter()
 
         body = QWidget()
         body.setObjectName("LibraryBody")
@@ -225,6 +237,20 @@ class LibraryPage(Page):
         bar.undo_button.clicked.connect(self._on_undo)
         bar.zoom_changed.connect(self._on_zoom_changed)
         bar.section_changed.connect(self.set_section)
+
+    def _apply_saved_review_filter(self) -> None:
+        """Aplica el filtro de revisión guardado y marca su chip."""
+        key = self._review_filter
+        value = "" if key == "all" else key
+        self.proxy.set_review_filter(value)
+        self.filter_chips.set_active(key)
+
+    def _on_review_filter_changed(self, value: str) -> None:
+        """El usuario eligió un chip de filtro: aplica y persiste."""
+        self.proxy.set_review_filter(value)
+        key = "all" if not value else value
+        self._review_filter = key
+        save_settings({"library_review_filter": key})
 
     def _on_zoom_changed(self, percent: int) -> None:
         self.view_stack.set_zoom(percent / 100.0)

@@ -632,6 +632,31 @@ QPushButton#SegmentButton:checked {{
 QPushButton#SegmentButton[segmentKind="text"] {{
     padding: 5px 16px;
 }}
+
+/* ---------- filtros tipo chip (biblioteca) ---------- */
+QPushButton#FilterChip {{
+    background: {t.surface_alt};
+    border: {bord};
+    border-radius: {t.radius_pill}px;
+    color: {t.text_muted};
+    font-size: {fs('caption')};
+    font-weight: 600;
+    padding: {px(t, 5)} {px(t, 12)};
+    min-height: {px(t, 26)};
+}}
+QPushButton#FilterChip:hover:!checked {{
+    background: {t.surface_hover};
+    border-color: {tint(t.border, t.accent, 0.4)};
+    color: {t.text};
+}}
+QPushButton#FilterChip:checked {{
+    background: {t.accent};
+    border: none;
+    color: {t.accent_text};
+}}
+QPushButton#FilterChip:checked:hover {{
+    background: {t.accent_hover};
+}}
 #Breadcrumb {{
     color: {t.text_dim};
     font-size: {fs('label')};

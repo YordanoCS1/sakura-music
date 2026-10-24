@@ -14,12 +14,94 @@ from PySide6.QtWidgets import (
     QLabel,
     QLineEdit,
     QMenu,
+    QPushButton,
     QTabBar,
     QWidget,
 )
 
 from ...config import load_settings, save_settings
 from .buttons import IconButton, TextButton
+
+# Filtros de revisión rápidos, mostrados como chips. Cada chip mapea al valor
+# que espera TrackFilterProxy.set_review_filter().
+CHIP_SPECS = (
+    ("all", "Todos", ""),
+    ("untagged", "Sin tags", "untagged"),
+    ("missing_cover", "Sin portada", "missing_cover"),
+    ("duplicates", "Duplicados", "duplicates"),
+)
+
+
+class FilterChip(QPushButton):
+    """Píldora de filtro activa o inactiva."""
+
+    def __init__(self, key: str, label: str, parent=None):
+        super().__init__(label, parent)
+        self.setObjectName("FilterChip")
+        self.setCheckable(True)
+        self.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self._key = key
+        self.setCursor(Qt.CursorShape.PointingHandCursor)
+
+    @property
+    def key(self) -> str:
+        return self._key
+
+
+class FilterChipsBar(QWidget):
+    """Barra horizontal de filtros tipo chip para la Biblioteca.
+
+    Emite `filter_changed(str)` cuando el usuario selecciona un chip.
+    """
+
+    filter_changed = Signal(str)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setObjectName("FilterChipsBar")
+        layout = QHBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(6)
+
+        self.chips: dict[str, FilterChip] = {}
+        for key, label, _value in CHIP_SPECS:
+            chip = FilterChip(key, label, self)
+            chip.toggled.connect(lambda checked, k=key: self._on_toggled(k, checked))
+            layout.addWidget(chip)
+            self.chips[key] = chip
+        layout.addStretch(1)
+
+        self._active_key = "all"
+        self.chips["all"].setChecked(True)
+
+    def _on_toggled(self, key: str, checked: bool) -> None:
+        if not checked:
+            return
+        if key == self._active_key:
+            return
+        self._active_key = key
+        for k, chip in self.chips.items():
+            chip.setChecked(k == key)
+        self.filter_changed.emit(_value_for_key(key))
+
+    def set_active(self, key: str) -> None:
+        """Marca el chip como activo sin disparar la señal."""
+        if key == self._active_key:
+            return
+        self._active_key = key
+        for k, chip in self.chips.items():
+            chip.setChecked(k == key)
+
+    def active_key(self) -> str:
+        return self._active_key
+
+
+def _value_for_key(key: str) -> str:
+    for k, _label, value in CHIP_SPECS:
+        if k == key:
+            return value
+    return ""
+
 
 # Cada forma de ver las pistas y su boton. El orden fija el indice en el stack.
 VIEW_SPECS = (
