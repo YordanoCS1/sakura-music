@@ -39,8 +39,10 @@ from ..widgets.batch_editor import open_edicion_batch
 from ..widgets.breadcrumb import BreadcrumbBar
 from ..widgets.buttons import TextButton
 from ..widgets.library_folders import LibraryFolderPanel
+from ..widgets.cover_preview import CoverPreviewWidget
 from ..widgets.library_selection import LibrarySelectionBar
 from ..widgets.library_toolbar import (
+    DensitySelector,
     FilterChipsBar,
     SECTION_KEYS,
     SECTION_VIEWS,
@@ -94,6 +96,7 @@ class LibraryPage(Page):
         if self.section not in SECTION_KEYS:
             self.section = "songs"
         self._review_filter = str(load_settings().get("library_review_filter", "all"))
+        self._density = float(load_settings().get("library_density", th.active().density))
         self._syncing_selection = False
         self._covers: dict[Path, Path | None] = CoverCache()
         self._library_root: Path | None = None
@@ -154,6 +157,12 @@ class LibraryPage(Page):
         self.content.addWidget(self.filter_chips)
         self._apply_saved_review_filter()
 
+        # Selector de densidad de la biblioteca.
+        self.density_selector = DensitySelector()
+        self.density_selector.set_density(self._density)
+        self.density_selector.density_changed.connect(self._on_density_changed)
+        self.content.addWidget(self.density_selector)
+
         body = QWidget()
         body.setObjectName("LibraryBody")
         self.library_body = body
@@ -191,6 +200,17 @@ class LibraryPage(Page):
         self.view_stack = LibraryViewStack(self.proxy)
         self._alias_views()
         self._connect_views()
+
+        # Previsualizacion de portada al pasar el mouse sobre una pista.
+        self.cover_preview = CoverPreviewWidget()
+        self.cover_preview.set_cover_cache(self._covers)
+        self.cover_preview.hide()
+
+        # Conectar el hover de las vistas de tarjetas (QListView) para mostrar
+        # la portada al pasar el mouse.
+        for view in self.view_stack.card_views.values():
+            view.entered.connect(self._on_card_entered)
+
         library_layout.addWidget(self.view_stack, 1)
         body_layout.addWidget(library, 1)
 
@@ -207,6 +227,19 @@ class LibraryPage(Page):
         self.message = self.empty_state("")
         self.message.action_clicked.connect(self.search_requested)
         self.content.addWidget(self.message)
+
+        # Estado vacio ilustrado: se muestra cuando la biblioteca esta vacia
+        # sin errores. Reemplaza visualmente al MessageBlock simple.
+        self.empty_illustrated = self.empty_state_illustrated(
+            "Tu biblioteca esta vacia.",
+            title="Empieza a coleccionar musica",
+            action="Importar carpeta",
+            illustration_size=170,
+        )
+        self.empty_illustrated.action_clicked.connect(self.search_requested)
+        self.empty_illustrated.set_petal_note("Pétalos caen alrededor del silencio...")
+        self.empty_illustrated.setVisible(False)
+        self.content.addWidget(self.empty_illustrated)
 
         self.set_section(self.section, save=False)
         self._update_undo_state()
@@ -251,6 +284,32 @@ class LibraryPage(Page):
         key = "all" if not value else value
         self._review_filter = key
         save_settings({"library_review_filter": key})
+
+    def _on_density_changed(self, value: float) -> None:
+        """El usuario cambio la densidad: recrea el tema y lo aplica."""
+        self._density = value
+        t = th.active()
+        new_t = t.with_density(value)
+        window = self.window()
+        if hasattr(window, "apply_theme"):
+            window.apply_theme(new_t)
+        save_settings({"library_density": value})
+
+    def _on_card_entered(self, index) -> None:
+        """Muestra la portada de la pista bajo el cursor en un popup flotante."""
+        if not index.isValid():
+            self.cover_preview.hide_preview()
+            return
+        track_item = index.data(Qt.ItemDataRole.UserRole)
+        if track_item is None:
+            track_item = self.proxy.track_at(index.row())
+        if track_item is None:
+            return
+        from PySide6.QtGui import QCursor
+
+        pos = QCursor.pos()
+        self.cover_preview.cancel_hide()
+        self.cover_preview.show_for_track(track_item.path, pos)
 
     def _on_zoom_changed(self, percent: int) -> None:
         self.view_stack.set_zoom(percent / 100.0)
@@ -1126,16 +1185,25 @@ class LibraryPage(Page):
 
     def _show_message(self, text: str, title: str = "", icon: str = "", action: str = "") -> None:
         if not text:
-            self.message.setVisible(False)
-            self.library_body.setVisible(True)
+            # Sin error: si hay pistas se muestra la biblioteca, si no el
+            # estado vacio ilustrado.
+            if len(self.model):
+                self.message.setVisible(False)
+                self.empty_illustrated.setVisible(False)
+                self.library_body.setVisible(True)
+            else:
+                self.message.setVisible(False)
+                self.library_body.setVisible(False)
+                self.empty_illustrated.setVisible(True)
             return
+        # Error: se muestra el MessageBlock normal, no el ilustrado.
+        self.library_body.setVisible(False)
+        self.empty_illustrated.setVisible(False)
         self.message.set_text(text)
         self.message.set_title(title)
         self.message.set_icon(icon)
         self.message.set_action(action, icon="search" if action else "")
         self.message.setVisible(True)
-        if not len(self.model):
-            self.library_body.setVisible(False)
 
     def _set_stats(self, text: str) -> None:
         self.stats.setText(text)
@@ -1144,6 +1212,7 @@ class LibraryPage(Page):
         """Recolorea tras un cambio de tema."""
         self.apply_theme_to_table()
         self.message.refresh()
+        self.empty_illustrated.refresh()
 
     def showEvent(self, event) -> None:
         """Escanea la primera vez que se abre la pagina."""

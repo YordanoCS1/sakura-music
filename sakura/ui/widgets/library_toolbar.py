@@ -19,6 +19,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from .. import theme as th
 from ...config import load_settings, save_settings
 from .buttons import IconButton, TextButton
 
@@ -309,3 +310,61 @@ class LibraryToolbar(QWidget):
         self.undo_button.refresh()
         for button in self.view_buttons.values():
             button.refresh()
+
+
+# ------------------- selector de densidad ------------------------------------
+
+DENSITY_SPECS = (
+    ("compact", "Compacta", 0.85),
+    ("comfortable", "Comoda", 1.0),
+    ("spacious", "Espaciosa", 1.15),
+)
+
+
+class DensitySelector(QWidget):
+    """Toggle de densidad de la biblioteca: compacta / comoda / espaciosa.
+
+    Cambiar la densidad recrea el tema con otro factor `density`, lo que
+    escala todos los paddings del QSS sin tocar los colores.
+    """
+
+    density_changed = Signal(float)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setObjectName("DensitySelector")
+        layout = QHBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(2)
+
+        self.buttons: dict[str, TextButton] = {}
+        for key, label, value in DENSITY_SPECS:
+            btn = TextButton(label, "ghost")
+            btn.setCheckable(True)
+            btn.setProperty("density_value", value)
+            btn.clicked.connect(lambda checked, v=value, k=key: self._on_clicked(v, k))
+            layout.addWidget(btn)
+            self.buttons[key] = btn
+
+        self._current_density = float(th.active().density)
+        self._update_button_states()
+
+    def _on_clicked(self, value: float, key: str) -> None:
+        self._current_density = value
+        self._update_button_states()
+        self.density_changed.emit(value)
+
+    def _update_button_states(self) -> None:
+        for key, btn in self.buttons.items():
+            _, _, value = next(s for s in DENSITY_SPECS if s[0] == key)
+            btn.setChecked(abs(value - self._current_density) < 0.001)
+
+    def set_density(self, value: float) -> None:
+        """Establece la densidad sin disparar la señal."""
+        if abs(value - self._current_density) < 0.001:
+            return
+        self._current_density = value
+        self._update_button_states()
+
+    def current_density(self) -> float:
+        return self._current_density
