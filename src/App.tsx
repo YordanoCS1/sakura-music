@@ -46,7 +46,10 @@ import {
   FolderCheck,
   Palette,
   Sliders,
-  Wind
+  Wind,
+  ArrowLeft,
+  Clock,
+  Calendar
 } from 'lucide-react';
 
 export interface ScannedTrack {
@@ -134,7 +137,7 @@ export interface DownloadItem {
 type ThemeMode = 'sakura' | 'cyber' | 'amber' | 'emerald';
 export type ThemeWorld = 'sakura_zen' | 'where_winds_meet';
 export type PlayerStyle = 'floating' | 'fixed';
-type ViewMode = 'grid' | 'table';
+export type ViewMode = 'grid' | 'table' | 'albums';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<'home' | 'search' | 'library' | 'queue' | 'settings'>('library');
@@ -178,7 +181,18 @@ export default function App() {
     setAmbientGlow(val);
     localStorage.setItem('sakura_ambient_glow', String(val));
   };
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [viewMode, setViewMode] = useState<ViewMode>(() => {
+    const saved = localStorage.getItem('sakura_view_mode') as ViewMode | null;
+    if (saved && (saved === 'grid' || saved === 'table' || saved === 'albums')) {
+      return saved;
+    }
+    return 'grid';
+  });
+  const handleSetViewMode = (mode: ViewMode) => {
+    setViewMode(mode);
+    localStorage.setItem('sakura_view_mode', mode);
+  };
+  const [expandedAlbumKey, setExpandedAlbumKey] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [tracks, setTracks] = useState<ScannedTrack[]>([]);
   const [activeTrack, setActiveTrack] = useState<ScannedTrack | null>(null);
@@ -986,6 +1000,99 @@ export default function App() {
     });
   }, [tracks, searchQuery, filterChip, favorites]);
 
+  // Agrupación de álbumes para Vista Estante (Album Shelf)
+  interface AlbumGroup {
+    key: string;
+    album: string;
+    artist: string;
+    year: number | null;
+    cover_url: string | null;
+    tracks: ScannedTrack[];
+    totalDurationSec: number;
+    formats: string[];
+  }
+
+  const albumGroups = useMemo<AlbumGroup[]>(() => {
+    const map = new Map<string, AlbumGroup>();
+    filteredTracks.forEach((track) => {
+      const albumName = (track.album && track.album.trim()) ? track.album.trim() : 'Álbum Desconocido';
+      const artistName = (track.album_artist && track.album_artist.trim()) 
+        ? track.album_artist.trim() 
+        : (track.artist && track.artist.trim()) 
+          ? track.artist.trim() 
+          : 'Artista Desconocido';
+      const key = `${albumName}:::${artistName}`;
+      if (!map.has(key)) {
+        map.set(key, {
+          key,
+          album: albumName,
+          artist: artistName,
+          year: track.year || null,
+          cover_url: track.cover_url || null,
+          tracks: [],
+          totalDurationSec: 0,
+          formats: [],
+        });
+      }
+      const group = map.get(key)!;
+      group.tracks.push(track);
+      group.totalDurationSec += (track.duration || 0);
+      if (!group.cover_url && track.cover_url) group.cover_url = track.cover_url;
+      if (!group.year && track.year) group.year = track.year;
+      if (track.format && !group.formats.includes(track.format)) {
+        group.formats.push(track.format);
+      }
+    });
+
+    // Ordenar pistas dentro de cada álbum por track_number o título
+    map.forEach((group) => {
+      group.tracks.sort((a, b) => {
+        if (a.track_number && b.track_number) return a.track_number - b.track_number;
+        if (a.track_number) return -1;
+        if (b.track_number) return 1;
+        return a.title.localeCompare(b.title);
+      });
+    });
+
+    // Ordenar álbumes alfabéticamente
+    return Array.from(map.values()).sort((a, b) => a.album.localeCompare(b.album));
+  }, [filteredTracks]);
+
+  const selectedAlbum = useMemo(() => {
+    if (!expandedAlbumKey) return null;
+    return albumGroups.find(g => g.key === expandedAlbumKey) || null;
+  }, [albumGroups, expandedAlbumKey]);
+
+  const formatTotalTime = (totalSecs: number) => {
+    const hours = Math.floor(totalSecs / 3600);
+    const minutes = Math.floor((totalSecs % 3600) / 60);
+    const seconds = Math.floor(totalSecs % 60);
+    if (hours > 0) {
+      return `${hours} h ${minutes} min`;
+    }
+    return `${minutes} min ${seconds} s`;
+  };
+
+  const handlePlayAlbum = (group: AlbumGroup) => {
+    if (group.tracks.length > 0) {
+      handlePlayTrack(group.tracks[0]);
+    }
+  };
+
+  const handleSelectAlbumTracks = (group: AlbumGroup, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedTrackIds(prev => {
+      const next = new Set(prev);
+      const allSelected = group.tracks.every(t => next.has(t.id));
+      if (allSelected) {
+        group.tracks.forEach(t => next.delete(t.id));
+      } else {
+        group.tracks.forEach(t => next.add(t.id));
+      }
+      return next;
+    });
+  };
+
   // Configuración de temas dinámicos
   const themeGlows: Record<ThemeMode, { glow1: string; glow2: string; accent: string; badge: string; border: string }> = {
     sakura: {
@@ -1340,7 +1447,7 @@ export default function App() {
                   <button 
                     onClick={handleOpenFolderDialog}
                     disabled={isScanning}
-                    className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-white text-xs font-semibold shadow-lg shadow-pink-500/20 transition-all active:scale-95 disabled:opacity-50">
+                    className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl ${isWWM ? 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-500/20' : 'bg-pink-600 hover:bg-pink-500 shadow-pink-500/20'} text-white text-xs font-semibold shadow-lg transition-all active:scale-95 disabled:opacity-50`}>
                     <FolderOpen className="w-3.5 h-3.5" />
                     <span>Seleccionar Carpeta</span>
                   </button>
@@ -1357,16 +1464,22 @@ export default function App() {
 
                   <div className="flex items-center p-0.5 rounded-xl bg-white/5 border border-white/5 ml-1">
                     <button 
-                      onClick={() => setViewMode('grid')}
-                      className={`p-1.5 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-white/10 text-white' : 'text-gray-400 hover:text-white'}`}
+                      onClick={() => handleSetViewMode('grid')}
+                      className={`p-1.5 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-white/10 text-white shadow-sm' : 'text-gray-400 hover:text-white'}`}
                       title="Vista Cuadrícula">
                       <LayoutGrid className="w-3.5 h-3.5" />
                     </button>
                     <button 
-                      onClick={() => setViewMode('table')}
-                      className={`p-1.5 rounded-lg transition-colors ${viewMode === 'table' ? 'bg-white/10 text-white' : 'text-gray-400 hover:text-white'}`}
-                      title="Vista Lista">
+                      onClick={() => handleSetViewMode('table')}
+                      className={`p-1.5 rounded-lg transition-colors ${viewMode === 'table' ? 'bg-white/10 text-white shadow-sm' : 'text-gray-400 hover:text-white'}`}
+                      title="Vista Lista / Tabla">
                       <List className="w-3.5 h-3.5" />
+                    </button>
+                    <button 
+                      onClick={() => { handleSetViewMode('albums'); setExpandedAlbumKey(null); }}
+                      className={`p-1.5 rounded-lg transition-colors ${viewMode === 'albums' ? 'bg-white/10 text-white shadow-sm' : 'text-gray-400 hover:text-white'}`}
+                      title="Vista Estante de Álbumes (Album Shelf)">
+                      <Disc3 className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 </div>
@@ -1374,16 +1487,16 @@ export default function App() {
 
               {/* Barra de Selección Múltiple y Batch Editor */}
               {selectedTrackIds.size > 0 && (
-                <div className="flex items-center justify-between p-3.5 mb-5 rounded-2xl bg-gradient-to-r from-pink-900/40 via-purple-900/40 to-pink-900/20 border border-pink-500/30 shadow-xl backdrop-blur-md animate-in fade-in slide-in-from-top-2">
+                <div className={`flex items-center justify-between p-3.5 mb-5 rounded-2xl bg-gradient-to-r ${isWWM ? 'from-emerald-950/60 via-teal-950/40 to-emerald-950/30 border-emerald-500/30' : 'from-pink-900/40 via-purple-900/40 to-pink-900/20 border-pink-500/30'} shadow-xl backdrop-blur-md animate-in fade-in slide-in-from-top-2`}>
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-xl bg-pink-500/20 border border-pink-500/30 flex items-center justify-center text-pink-300">
+                    <div className={`w-8 h-8 rounded-xl ${isWWM ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-300' : 'bg-pink-500/20 border-pink-500/30 text-pink-300'} flex items-center justify-center`}>
                       <Layers className="w-4 h-4" />
                     </div>
                     <div>
                       <p className="text-xs font-bold text-white">
                         {selectedTrackIds.size} de {filteredTracks.length} canciones seleccionadas
                       </p>
-                      <p className="text-[11px] text-pink-200/70">
+                      <p className={`text-[11px] ${isWWM ? 'text-emerald-200/70' : 'text-pink-200/70'}`}>
                         Edición en lote: aplica álbum, artista, año, género o portada compartida
                       </p>
                     </div>
@@ -1402,7 +1515,7 @@ export default function App() {
                     </button>
                     <button 
                       onClick={openBatchModal}
-                      className="flex items-center gap-2 px-4 py-1.5 rounded-xl bg-gradient-to-r from-pink-500 to-rose-400 hover:brightness-110 text-white text-xs font-bold shadow-lg shadow-pink-500/25 active:scale-95 transition-all">
+                      className={`flex items-center gap-2 px-4 py-1.5 rounded-xl bg-gradient-to-r ${isWWM ? 'from-emerald-500 to-teal-400 shadow-emerald-500/25' : 'from-pink-500 to-rose-400 shadow-pink-500/25'} hover:brightness-110 text-white text-xs font-bold shadow-lg active:scale-95 transition-all`}>
                       <Pencil className="w-3.5 h-3.5" />
                       <span>Editar en Lote ({selectedTrackIds.size})</span>
                     </button>
@@ -1413,8 +1526,8 @@ export default function App() {
               {/* Estado vacío si no hay canciones */}
               {tracks.length === 0 && !isScanning && (
                 <div className="flex flex-col items-center justify-center p-12 text-center glass-card rounded-3xl border border-white/5 my-6">
-                  <div className="w-16 h-16 rounded-3xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-center text-3xl mb-4">
-                    🌸
+                  <div className={`w-16 h-16 rounded-3xl ${isWWM ? 'bg-emerald-500/10 border border-emerald-500/20' : 'bg-pink-500/10 border border-pink-500/20'} flex items-center justify-center text-3xl mb-4`}>
+                    {isWWM ? '🎋' : '🌸'}
                   </div>
                   <h3 className="text-base font-bold text-white mb-1">Tu biblioteca aún está vacía</h3>
                   <p className="text-xs text-gray-400 max-w-sm mb-6">
@@ -1423,7 +1536,7 @@ export default function App() {
                   <div className="flex items-center gap-3">
                     <button 
                       onClick={handleOpenFolderDialog}
-                      className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 to-rose-400 text-white text-xs font-bold shadow-xl shadow-pink-500/25 hover:brightness-110 active:scale-95 transition-all">
+                      className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r ${isWWM ? 'from-emerald-500 to-teal-400 shadow-emerald-500/25' : 'from-pink-500 to-rose-400 shadow-pink-500/25'} text-white text-xs font-bold shadow-xl hover:brightness-110 active:scale-95 transition-all`}>
                       <FolderOpen className="w-4 h-4" />
                       <span>Escanear Carpeta de Música</span>
                     </button>
@@ -1452,10 +1565,10 @@ export default function App() {
                         onClick={() => handlePlayTrack(track)}
                         className={`group relative flex items-center gap-3.5 p-3 rounded-2xl glass-card transition-all duration-200 cursor-pointer ${
                           isSelected
-                            ? 'ring-2 ring-pink-500 bg-pink-500/15 shadow-lg'
+                            ? isWWM ? 'ring-2 ring-emerald-500 bg-emerald-500/15 shadow-lg shadow-emerald-950/40' : 'ring-2 ring-pink-500 bg-pink-500/15 shadow-lg'
                             : isCurrent 
-                              ? 'ring-1 ring-pink-500/60 bg-white/10 shadow-lg' 
-                              : 'hover:bg-white/5 hover:border-white/10'
+                              ? isWWM ? 'ring-1 ring-emerald-500/60 bg-emerald-950/30 shadow-lg shadow-emerald-950/40' : 'ring-1 ring-pink-500/60 bg-white/10 shadow-lg' 
+                              : isWWM ? 'hover:bg-emerald-950/20 hover:border-emerald-500/20' : 'hover:bg-white/5 hover:border-white/10'
                         }`}>
                         
                         {/* Checkbox de selección rápida para lote */}
@@ -1463,7 +1576,7 @@ export default function App() {
                           onClick={(e) => toggleSelectTrack(track.id, e)}
                           className={`absolute top-2.5 left-2.5 z-10 p-1 rounded-lg backdrop-blur-md transition-all ${
                             isSelected 
-                              ? 'bg-pink-500 text-white shadow-md' 
+                              ? isWWM ? 'bg-emerald-500 text-white shadow-md' : 'bg-pink-500 text-white shadow-md' 
                               : 'bg-black/60 text-gray-400 hover:text-white opacity-0 group-hover:opacity-100'
                           }`}
                           title={isSelected ? "Deseleccionar" : "Seleccionar para edición en lote"}>
@@ -1479,13 +1592,13 @@ export default function App() {
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                             />
                           ) : (
-                            <div className="w-full h-full bg-gradient-to-br from-purple-900/40 to-pink-900/40 flex items-center justify-center">
-                              <Music2 className="w-6 h-6 text-pink-400/80" />
+                            <div className={`w-full h-full bg-gradient-to-br ${isWWM ? 'from-emerald-950/60 to-teal-900/40' : 'from-purple-900/40 to-pink-900/40'} flex items-center justify-center`}>
+                              <Music2 className={`w-6 h-6 ${isWWM ? 'text-emerald-400/80' : 'text-pink-400/80'}`} />
                             </div>
                           )}
                           <div className={`absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity ${isCurrent ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
                             {isCurrent && isPlaying ? (
-                              <Pause className="w-5 h-5 text-pink-400 fill-current" />
+                              <Pause className={`w-5 h-5 ${isWWM ? 'text-emerald-400' : 'text-pink-400'} fill-current`} />
                             ) : (
                               <Play className="w-5 h-5 text-white fill-current ml-0.5" />
                             )}
@@ -1494,14 +1607,18 @@ export default function App() {
 
                         {/* Metadata */}
                         <div className="flex-1 min-w-0">
-                          <h3 className={`text-xs font-semibold truncate transition-colors ${isCurrent ? 'text-pink-300' : 'text-white group-hover:text-pink-200'}`}>
+                          <h3 className={`text-xs font-semibold truncate transition-colors ${
+                            isCurrent 
+                              ? isWWM ? 'text-emerald-300' : 'text-pink-300' 
+                              : isWWM ? 'text-white group-hover:text-emerald-200' : 'text-white group-hover:text-pink-200'
+                          }`}>
                             {track.title}
                           </h3>
                           <p className="text-[11px] text-gray-400 truncate">
                             {track.artist} {track.album ? `· ${track.album}` : ''}
                           </p>
                           <div className="flex items-center gap-2 mt-1">
-                            <span className="text-[9px] px-1.5 py-0.5 rounded-md bg-white/10 text-pink-300 font-mono font-medium">
+                            <span className={`text-[9px] px-1.5 py-0.5 rounded-md bg-white/10 ${isWWM ? 'text-emerald-300' : 'text-pink-300'} font-mono font-medium`}>
                               {track.format}
                             </span>
                             {track.year && (
@@ -1524,9 +1641,9 @@ export default function App() {
                             </button>
                             <button 
                               onClick={(e) => toggleFavorite(track.id, e)}
-                              className="text-gray-500 hover:text-pink-400 transition-colors p-1"
+                              className={`text-gray-500 ${isWWM ? 'hover:text-emerald-400' : 'hover:text-pink-400'} transition-colors p-1`}
                               title={isFav ? "Quitar de favoritas" : "Marcar como favorita"}>
-                              <Heart className={`w-3.5 h-3.5 ${isFav ? 'text-pink-400 fill-current' : ''}`} />
+                              <Heart className={`w-3.5 h-3.5 ${isFav ? (isWWM ? 'text-emerald-400 fill-current' : 'text-pink-400 fill-current') : ''}`} />
                             </button>
                           </div>
                         </div>
@@ -1549,7 +1666,7 @@ export default function App() {
                             className="text-gray-400 hover:text-white transition-colors"
                             title={selectedTrackIds.size === filteredTracks.length ? "Deseleccionar todas" : "Seleccionar todas"}>
                             {selectedTrackIds.size > 0 && selectedTrackIds.size === filteredTracks.length ? (
-                              <CheckSquare className="w-3.5 h-3.5 text-pink-400" />
+                              <CheckSquare className={`w-3.5 h-3.5 ${isWWM ? 'text-emerald-400' : 'text-pink-400'}`} />
                             ) : (
                               <Square className="w-3.5 h-3.5" />
                             )}
@@ -1574,16 +1691,16 @@ export default function App() {
                             onClick={() => handlePlayTrack(track)}
                             className={`cursor-pointer transition-colors ${
                               isSelected
-                                ? 'bg-pink-500/20 text-pink-200'
+                                ? isWWM ? 'bg-emerald-500/20 text-emerald-200' : 'bg-pink-500/20 text-pink-200'
                                 : isCurrent 
-                                  ? 'bg-pink-500/10 text-pink-300' 
+                                  ? isWWM ? 'bg-emerald-500/10 text-emerald-300' : 'bg-pink-500/10 text-pink-300' 
                                   : 'hover:bg-white/5 text-gray-300'
                             }`}>
                             <td className="py-2 px-3 text-center" onClick={(e) => e.stopPropagation()}>
                               <button 
                                 onClick={(e) => toggleSelectTrack(track.id, e)}
                                 className={`p-1 rounded-md transition-colors ${
-                                  isSelected ? 'text-pink-400' : 'text-gray-600 hover:text-gray-400'
+                                  isSelected ? (isWWM ? 'text-emerald-400' : 'text-pink-400') : 'text-gray-600 hover:text-gray-400'
                                 }`}>
                                 {isSelected ? <CheckSquare className="w-3.5 h-3.5" /> : <Square className="w-3.5 h-3.5" />}
                               </button>
@@ -1600,7 +1717,7 @@ export default function App() {
                             <td className="py-2 px-4 truncate max-w-[160px] text-gray-400">
                               {track.album}
                             </td>
-                            <td className="py-2 px-4 text-center font-mono text-[10px] text-pink-300">
+                            <td className={`py-2 px-4 text-center font-mono text-[10px] ${isWWM ? 'text-emerald-300' : 'text-pink-300'}`}>
                               {track.format}
                             </td>
                             <td className="py-2 px-4 text-right font-mono text-gray-400">
@@ -1616,9 +1733,9 @@ export default function App() {
                                 </button>
                                 <button 
                                   onClick={(e) => toggleFavorite(track.id, e)}
-                                  className="text-gray-500 hover:text-pink-400 transition-colors p-1"
+                                  className={`text-gray-500 ${isWWM ? 'hover:text-emerald-400' : 'hover:text-pink-400'} transition-colors p-1`}
                                   title={favorites.includes(track.id) ? "Quitar de favoritas" : "Marcar como favorita"}>
-                                  <Heart className={`w-3.5 h-3.5 ${favorites.includes(track.id) ? 'text-pink-400 fill-current' : ''}`} />
+                                  <Heart className={`w-3.5 h-3.5 ${favorites.includes(track.id) ? (isWWM ? 'text-emerald-400 fill-current' : 'text-pink-400 fill-current') : ''}`} />
                                 </button>
                               </div>
                             </td>
@@ -1627,6 +1744,311 @@ export default function App() {
                       })}
                     </tbody>
                   </table>
+                </div>
+              )}
+
+              {/* VISTA ÁLBUMES (ALBUM SHELF) */}
+              {viewMode === 'albums' && tracks.length > 0 && (
+                <div className="mb-24">
+                  {selectedAlbum ? (
+                    /* VISTA DETALLADA DEL ÁLBUM SELECCIONADO */
+                    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-200">
+                      
+                      {/* Barra de navegación superior con botón atrás */}
+                      <div className="flex items-center justify-between">
+                        <button 
+                          onClick={() => setExpandedAlbumKey(null)}
+                          className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white text-xs font-semibold border border-white/10 transition-all active:scale-95">
+                          <ArrowLeft className="w-4 h-4" />
+                          <span>Volver a Álbumes</span>
+                        </button>
+                        <div className="flex items-center gap-2 text-xs font-mono text-gray-400">
+                          <span>Biblioteca</span>
+                          <span>/</span>
+                          <span>Álbumes</span>
+                          <span>/</span>
+                          <span className="text-white font-semibold truncate max-w-xs">{selectedAlbum.album}</span>
+                        </div>
+                      </div>
+
+                      {/* Hero Banner del Álbum con Funda y Vinilo */}
+                      <div className={`relative overflow-hidden rounded-3xl p-6 sm:p-8 glass-card border border-white/10 bg-gradient-to-r ${isWWM ? 'from-emerald-950/40 via-teal-950/30 to-black/20' : 'from-pink-950/40 via-purple-950/30 to-black/20'}`}>
+                        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 sm:gap-8 relative z-10">
+                          
+                          {/* Portada 3D con disco de vinilo asomándose */}
+                          <div className="relative group/sleeve flex-shrink-0">
+                            {/* Disco de vinilo que gira si una pista de este álbum está sonando */}
+                            <div className={`absolute top-2 -right-6 sm:-right-8 w-44 h-44 sm:w-52 sm:h-52 rounded-full vinyl-disc transition-transform duration-500 flex items-center justify-center ${
+                              selectedAlbum.tracks.some(t => t.id === activeTrack?.id) && isPlaying 
+                                ? 'animate-spin-slow shadow-2xl' 
+                                : 'group-hover/sleeve:translate-x-3'
+                            }`}>
+                              <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full border border-white/20 ${isWWM ? 'bg-gradient-to-tr from-emerald-800 to-teal-700' : 'bg-gradient-to-tr from-pink-800 to-purple-700'} flex items-center justify-center shadow-inner`}>
+                                <div className="w-4 h-4 rounded-full bg-black/90 border border-white/10" />
+                              </div>
+                            </div>
+
+                            {/* Funda del disco */}
+                            <div className="relative z-10 w-44 h-44 sm:w-52 sm:h-52 rounded-2xl overflow-hidden bg-black/40 border border-white/10 shadow-2xl">
+                              {selectedAlbum.cover_url ? (
+                                <img 
+                                  src={getCoverSrc(selectedAlbum.cover_url)} 
+                                  alt={selectedAlbum.album}
+                                  className="w-full h-full object-cover" 
+                                />
+                              ) : (
+                                <div className={`w-full h-full bg-gradient-to-br ${isWWM ? 'from-emerald-950/80 to-teal-900/60' : 'from-purple-900/60 to-pink-900/60'} flex flex-col items-center justify-center p-4 text-center`}>
+                                  <Disc3 className={`w-16 h-16 ${isWWM ? 'text-emerald-400/80' : 'text-pink-400/80'} mb-2`} />
+                                  <span className="text-xs text-gray-300 font-bold truncate max-w-full">{selectedAlbum.album}</span>
+                                </div>
+                              )}
+                              <div className="absolute inset-0 bg-gradient-to-tr from-black/20 via-transparent to-white/10 pointer-events-none" />
+                            </div>
+                          </div>
+
+                          {/* Metadatos y acciones del álbum */}
+                          <div className="flex-1 min-w-0 text-center sm:text-left">
+                            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider mb-2 border border-white/10 bg-white/5">
+                              <Disc3 className={`w-3.5 h-3.5 ${isWWM ? 'text-emerald-400' : 'text-pink-400'}`} />
+                              <span className="text-gray-300">Álbum Completo</span>
+                            </div>
+                            
+                            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight mb-1 truncate" title={selectedAlbum.album}>
+                              {selectedAlbum.album}
+                            </h1>
+                            
+                            <p className="text-sm font-semibold text-gray-300 mb-4 truncate" title={selectedAlbum.artist}>
+                              {selectedAlbum.artist}
+                            </p>
+
+                            {/* Píldoras de información */}
+                            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5 mb-6 text-xs text-gray-400 font-mono">
+                              {selectedAlbum.year && (
+                                <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 border border-white/5">
+                                  <Calendar className="w-3.5 h-3.5 text-gray-500" />
+                                  <span>{selectedAlbum.year}</span>
+                                </span>
+                              )}
+                              <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 border border-white/5">
+                                <Disc3 className="w-3.5 h-3.5 text-gray-500" />
+                                <span>{selectedAlbum.tracks.length} {selectedAlbum.tracks.length === 1 ? 'canción' : 'canciones'}</span>
+                              </span>
+                              <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 border border-white/5">
+                                <Clock className="w-3.5 h-3.5 text-gray-500" />
+                                <span>{formatTotalTime(selectedAlbum.totalDurationSec)}</span>
+                              </span>
+                              {selectedAlbum.formats.map((fmt) => (
+                                <span key={fmt} className={`px-2 py-0.5 rounded-md font-bold text-[10px] ${isWWM ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-pink-500/20 text-pink-300 border border-pink-500/30'}`}>
+                                  {fmt}
+                                </span>
+                              ))}
+                            </div>
+
+                            {/* Botones de acción */}
+                            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3">
+                              <button 
+                                onClick={() => handlePlayAlbum(selectedAlbum)}
+                                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r ${isWWM ? 'from-emerald-500 to-teal-400 shadow-emerald-500/25' : 'from-pink-500 to-rose-400 shadow-pink-500/25'} text-white text-xs font-bold shadow-xl hover:brightness-110 active:scale-95 transition-all`}>
+                                <Play className="w-4 h-4 fill-current" />
+                                <span>Reproducir Álbum</span>
+                              </button>
+                              
+                              <button 
+                                onClick={(e) => handleSelectAlbumTracks(selectedAlbum, e)}
+                                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white text-xs font-semibold border border-white/10 transition-all active:scale-95">
+                                <Layers className="w-4 h-4" />
+                                <span>
+                                  {selectedAlbum.tracks.every(t => selectedTrackIds.has(t.id)) 
+                                    ? 'Deseleccionar Pistas' 
+                                    : 'Seleccionar para Lote'}
+                                </span>
+                              </button>
+                            </div>
+
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Lista de Canciones del Álbum */}
+                      <div className="glass-card rounded-2xl overflow-hidden border border-white/5">
+                        <table className="w-full text-left text-xs">
+                          <thead className="bg-white/5 text-[11px] uppercase tracking-wider text-gray-400 border-b border-white/5">
+                            <tr>
+                              <th className="py-2.5 px-3 w-10 text-center">
+                                <button 
+                                  onClick={(e) => handleSelectAlbumTracks(selectedAlbum, e)}
+                                  className="text-gray-400 hover:text-white transition-colors"
+                                  title="Seleccionar todas las pistas del álbum">
+                                  {selectedAlbum.tracks.every(t => selectedTrackIds.has(t.id)) ? (
+                                    <CheckSquare className={`w-3.5 h-3.5 ${isWWM ? 'text-emerald-400' : 'text-pink-400'}`} />
+                                  ) : (
+                                    <Square className="w-3.5 h-3.5" />
+                                  )}
+                                </button>
+                              </th>
+                              <th className="py-2.5 px-4 w-12 text-center">#</th>
+                              <th className="py-2.5 px-4">Título</th>
+                              <th className="py-2.5 px-4">Artista</th>
+                              <th className="py-2.5 px-4 w-20 text-center">Formato</th>
+                              <th className="py-2.5 px-4 w-20 text-right">Duración</th>
+                              <th className="py-2.5 px-4 w-20 text-center">Acciones</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-white/5">
+                            {selectedAlbum.tracks.map((track, idx) => {
+                              const isCurrent = activeTrack?.id === track.id;
+                              const isSelected = selectedTrackIds.has(track.id);
+                              const isFav = favorites.includes(track.id);
+                              return (
+                                <tr 
+                                  key={track.id}
+                                  onClick={() => handlePlayTrack(track)}
+                                  className={`cursor-pointer transition-colors ${
+                                    isSelected
+                                      ? isWWM ? 'bg-emerald-500/20 text-emerald-200' : 'bg-pink-500/20 text-pink-200'
+                                      : isCurrent 
+                                        ? isWWM ? 'bg-emerald-500/10 text-emerald-300' : 'bg-pink-500/10 text-pink-300' 
+                                        : 'hover:bg-white/5 text-gray-300'
+                                  }`}>
+                                  <td className="py-2 px-3 text-center" onClick={(e) => e.stopPropagation()}>
+                                    <button 
+                                      onClick={(e) => toggleSelectTrack(track.id, e)}
+                                      className={`p-1 rounded-md transition-colors ${
+                                        isSelected ? (isWWM ? 'text-emerald-400' : 'text-pink-400') : 'text-gray-600 hover:text-gray-400'
+                                      }`}>
+                                      {isSelected ? <CheckSquare className="w-3.5 h-3.5" /> : <Square className="w-3.5 h-3.5" />}
+                                    </button>
+                                  </td>
+                                  <td className="py-2 px-4 text-center text-gray-500 font-mono">
+                                    {isCurrent && isPlaying ? '▶' : track.track_number || idx + 1}
+                                  </td>
+                                  <td className="py-2 px-4 font-semibold text-white truncate max-w-xs">
+                                    {track.title}
+                                  </td>
+                                  <td className="py-2 px-4 truncate max-w-[160px] text-gray-400">
+                                    {track.artist}
+                                  </td>
+                                  <td className={`py-2 px-4 text-center font-mono text-[10px] ${isWWM ? 'text-emerald-300' : 'text-pink-300'}`}>
+                                    {track.format}
+                                  </td>
+                                  <td className="py-2 px-4 text-right font-mono text-gray-400">
+                                    {track.duration_str}
+                                  </td>
+                                  <td className="py-2 px-4 text-center">
+                                    <div className="flex items-center justify-center gap-1">
+                                      <button 
+                                        onClick={(e) => { e.stopPropagation(); openEditModal(track, e); }}
+                                        className="text-gray-500 hover:text-cyan-400 transition-colors p-1"
+                                        title="Editar metadatos">
+                                        <Pencil className="w-3.5 h-3.5" />
+                                      </button>
+                                      <button 
+                                        onClick={(e) => toggleFavorite(track.id, e)}
+                                        className={`text-gray-500 ${isWWM ? 'hover:text-emerald-400' : 'hover:text-pink-400'} transition-colors p-1`}
+                                        title={isFav ? "Quitar de favoritas" : "Marcar como favorita"}>
+                                        <Heart className={`w-3.5 h-3.5 ${isFav ? (isWWM ? 'text-emerald-400 fill-current' : 'text-pink-400 fill-current') : ''}`} />
+                                      </button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+
+                    </div>
+                  ) : (
+                    /* ESTANTE GENERAL DE ÁLBUMES (GRID) */
+                    <div>
+                      {/* Subbarra informativa */}
+                      <div className="flex items-center justify-between mb-4">
+                        <p className="text-xs text-gray-400 font-mono">
+                          <span className="text-white font-bold">{albumGroups.length}</span> {albumGroups.length === 1 ? 'álbum' : 'álbumes'} en tu colección
+                        </p>
+                      </div>
+
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+                        {albumGroups.map((group) => {
+                          const isAlbumPlaying = group.tracks.some(t => t.id === activeTrack?.id) && isPlaying;
+                          const hasSelectedTracks = group.tracks.some(t => selectedTrackIds.has(t.id));
+
+                          return (
+                            <div 
+                              key={group.key}
+                              onClick={() => setExpandedAlbumKey(group.key)}
+                              className={`group relative flex flex-col p-3 rounded-2xl glass-card transition-all duration-300 cursor-pointer hover:-translate-y-1 hover:shadow-2xl border ${
+                                hasSelectedTracks 
+                                  ? isWWM ? 'border-emerald-500/60 ring-1 ring-emerald-500/40 bg-emerald-950/20' : 'border-pink-500/60 ring-1 ring-pink-500/40 bg-pink-950/20' 
+                                  : isAlbumPlaying 
+                                    ? isWWM ? 'border-emerald-500/50 shadow-lg shadow-emerald-950/40' : 'border-pink-500/50 shadow-lg shadow-pink-950/40'
+                                    : 'border-white/5 hover:border-white/20'
+                              }`}>
+                              
+                              {/* Funda del Disco con Vinilo peeking */}
+                              <div className="relative aspect-square w-full rounded-xl overflow-hidden bg-black/40 shadow-inner mb-3 flex items-center justify-center">
+                                
+                                {/* Disco de vinilo asomándose en hover */}
+                                <div className={`absolute right-1 top-1/2 -translate-y-1/2 w-4/5 h-4/5 rounded-full vinyl-disc opacity-0 group-hover:opacity-100 group-hover:translate-x-3 transition-all duration-300 pointer-events-none flex items-center justify-center ${
+                                  isAlbumPlaying ? 'opacity-100 translate-x-2 animate-spin-slow' : ''
+                                }`}>
+                                  <div className={`w-8 h-8 rounded-full border border-white/20 ${isWWM ? 'bg-emerald-800' : 'bg-pink-800'} flex items-center justify-center shadow-inner`}>
+                                    <div className="w-2.5 h-2.5 rounded-full bg-black/90" />
+                                  </div>
+                                </div>
+
+                                {/* Carátula de portada */}
+                                {group.cover_url ? (
+                                  <img 
+                                    src={getCoverSrc(group.cover_url)} 
+                                    alt={group.album}
+                                    className="relative z-10 w-full h-full object-cover rounded-xl group-hover:shadow-lg transition-transform duration-300 group-hover:scale-102" 
+                                  />
+                                ) : (
+                                  <div className={`relative z-10 w-full h-full rounded-xl bg-gradient-to-br ${isWWM ? 'from-emerald-950/60 to-teal-900/40' : 'from-purple-900/40 to-pink-900/40'} flex flex-col items-center justify-center text-center p-3`}>
+                                    <Disc3 className={`w-10 h-10 ${isWWM ? 'text-emerald-400/80' : 'text-pink-400/80'} mb-1`} />
+                                    <span className="text-[10px] text-gray-400 font-mono truncate max-w-full">{group.album}</span>
+                                  </div>
+                                )}
+
+                                {/* Overlay de Play directo al pasar el mouse */}
+                                <div className="absolute inset-0 z-20 bg-black/40 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center gap-2">
+                                  <button 
+                                    onClick={(e) => { e.stopPropagation(); handlePlayAlbum(group); }}
+                                    className={`p-3 rounded-full bg-gradient-to-r ${isWWM ? 'from-emerald-500 to-teal-400 shadow-emerald-500/40' : 'from-pink-500 to-rose-400 shadow-pink-500/40'} text-white shadow-xl hover:scale-110 active:scale-95 transition-all`}
+                                    title="Reproducir álbum">
+                                    <Play className="w-4 h-4 fill-current ml-0.5" />
+                                  </button>
+                                </div>
+
+                                {/* Formato badge */}
+                                {group.formats.length > 0 && (
+                                  <div className="absolute top-2 left-2 z-20 px-1.5 py-0.5 rounded-md bg-black/60 backdrop-blur-md text-[9px] font-mono text-gray-300 font-semibold border border-white/10">
+                                    {group.formats[0]}
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Título y Artista */}
+                              <h3 className={`text-xs font-bold text-white truncate ${isWWM ? 'group-hover:text-emerald-300' : 'group-hover:text-pink-300'} transition-colors`} title={group.album}>
+                                {group.album}
+                              </h3>
+                              <p className="text-[11px] text-gray-400 truncate mt-0.5" title={group.artist}>
+                                {group.artist}
+                              </p>
+
+                              {/* Footer con pistas y año */}
+                              <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/5 text-[10px] text-gray-500 font-mono">
+                                <span>{group.tracks.length} {group.tracks.length === 1 ? 'pista' : 'pistas'}</span>
+                                {group.year && <span>{group.year}</span>}
+                              </div>
+
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
