@@ -181,6 +181,14 @@ export default function App() {
     setAmbientGlow(val);
     localStorage.setItem('sakura_ambient_glow', String(val));
   };
+  const [ambientParticles, setAmbientParticles] = useState<boolean>(() => {
+    const saved = localStorage.getItem('sakura_ambient_particles');
+    return saved !== null ? saved === 'true' : true;
+  });
+  const handleSetAmbientParticles = (val: boolean) => {
+    setAmbientParticles(val);
+    localStorage.setItem('sakura_ambient_particles', String(val));
+  };
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
     const saved = localStorage.getItem('sakura_view_mode') as ViewMode | null;
     if (saved && (saved === 'grid' || saved === 'table' || saved === 'albums')) {
@@ -232,6 +240,85 @@ export default function App() {
     }
     return convertFileSrc(coverUrl);
   };
+
+  // Extractor de color dominante para Resplandor Ambiental Dinámico (Dynamic Cover Glow)
+  const [coverGlowColors, setCoverGlowColors] = useState<{ color1: string; color2: string } | null>(null);
+
+  useEffect(() => {
+    if (!activeTrack?.cover_url) {
+      setCoverGlowColors(null);
+      return;
+    }
+
+    let isMounted = true;
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.src = getCoverSrc(activeTrack.cover_url);
+
+    img.onload = () => {
+      if (!isMounted) return;
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = 16;
+        canvas.height = 16;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        ctx.drawImage(img, 0, 0, 16, 16);
+        const data = ctx.getImageData(0, 0, 16, 16).data;
+
+        let rSum = 0, gSum = 0, bSum = 0, count = 0;
+        let maxSat = 0;
+        let vibrantR = 244, vibrantG = 63, vibrantB = 130;
+
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+          const a = data[i + 3];
+          if (a < 128) continue;
+
+          const max = Math.max(r, g, b);
+          const min = Math.min(r, g, b);
+          const delta = max - min;
+          const sat = max === 0 ? 0 : delta / max;
+
+          if (max > 40 && min < 225 && sat > maxSat) {
+            maxSat = sat;
+            vibrantR = r;
+            vibrantG = g;
+            vibrantB = b;
+          }
+
+          rSum += r;
+          gSum += g;
+          bSum += b;
+          count++;
+        }
+
+        if (count > 0) {
+          const avgR = Math.round(rSum / count);
+          const avgG = Math.round(gSum / count);
+          const avgB = Math.round(bSum / count);
+
+          setCoverGlowColors({
+            color1: `rgba(${vibrantR}, ${vibrantG}, ${vibrantB}, 0.28)`,
+            color2: `rgba(${avgR}, ${avgG}, ${avgB}, 0.20)`,
+          });
+        }
+      } catch (err) {
+        setCoverGlowColors(null);
+      }
+    };
+
+    img.onerror = () => {
+      if (isMounted) setCoverGlowColors(null);
+    };
+
+    return () => {
+      isMounted = false;
+    };
+  }, [activeTrack?.id, activeTrack?.cover_url]);
 
   // Inicialización: cargar favoritos, pistas previas y solicitar info del sistema
   useEffect(() => {
@@ -1190,12 +1277,88 @@ export default function App() {
         onError={(e) => console.error("Error nativo del elemento audio:", e)}
       />
 
-      {/* Resplandor ambiental de fondo (Acelerado por GPU) */}
+      {/* Resplandor ambiental de fondo dinámico (Acelerado por GPU) */}
       {ambientGlow && (
         <>
-          <div className={`absolute -top-32 -left-32 w-96 h-96 ${worldStyle.ambientGlow1} rounded-full blur-[110px] pointer-events-none transition-all duration-700 animate-pulse`}></div>
-          <div className={`absolute -bottom-32 -right-32 w-96 h-96 ${worldStyle.ambientGlow2} rounded-full blur-[120px] pointer-events-none transition-all duration-700`}></div>
+          {coverGlowColors ? (
+            <>
+              <div 
+                className="absolute -top-32 -left-32 w-[34rem] h-[34rem] rounded-full blur-[130px] pointer-events-none transition-all duration-1000 animate-pulse"
+                style={{ backgroundColor: coverGlowColors.color1 }}
+              />
+              <div 
+                className="absolute -bottom-32 -right-32 w-[34rem] h-[34rem] rounded-full blur-[140px] pointer-events-none transition-all duration-1000"
+                style={{ backgroundColor: coverGlowColors.color2 }}
+              />
+              <div 
+                className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[36rem] h-[22rem] rounded-full blur-[150px] pointer-events-none opacity-40 transition-all duration-1000"
+                style={{ backgroundColor: coverGlowColors.color1 }}
+              />
+            </>
+          ) : (
+            <>
+              <div className={`absolute -top-32 -left-32 w-96 h-96 ${worldStyle.ambientGlow1} rounded-full blur-[110px] pointer-events-none transition-all duration-700 animate-pulse`}></div>
+              <div className={`absolute -bottom-32 -right-32 w-96 h-96 ${worldStyle.ambientGlow2} rounded-full blur-[120px] pointer-events-none transition-all duration-700`}></div>
+            </>
+          )}
         </>
+      )}
+
+      {/* Capa de Partículas Atmosféricas (Pétalos de Sakura / Chispas & Bruma Jianghu) */}
+      {ambientParticles && (
+        <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 select-none">
+          {isWWM ? (
+            // Partículas Jianghu: Chispas doradas de linterna y bruma ascendente
+            <>
+              {[...Array(12)].map((_, i) => (
+                <div
+                  key={`spark-${i}`}
+                  className="absolute rounded-full pointer-events-none"
+                  style={{
+                    left: `${(i * 8.3 + 4) % 96}%`,
+                    bottom: '-20px',
+                    width: `${(i % 3) * 2 + 3}px`,
+                    height: `${(i % 3) * 2 + 3}px`,
+                    backgroundColor: i % 2 === 0 ? '#fbbf24' : '#34d399',
+                    boxShadow: i % 2 === 0 ? '0 0 10px #fbbf24' : '0 0 10px #34d399',
+                    animation: `spark-rise ${12 + (i % 6) * 2}s linear infinite`,
+                    animationDelay: `${(i * 1.3) % 8}s`,
+                    opacity: 0.65,
+                  }}
+                />
+              ))}
+            </>
+          ) : (
+            // Partículas Sakura: Pétalos de flor de cerezo cayendo con la brisa
+            <>
+              {[...Array(12)].map((_, i) => (
+                <div
+                  key={`petal-${i}`}
+                  className="absolute pointer-events-none"
+                  style={{
+                    left: `${(i * 8.5 + 2) % 96}%`,
+                    top: '-25px',
+                    animation: `petal-fall ${14 + (i % 5) * 2.5}s ease-in-out infinite`,
+                    animationDelay: `${(i * 1.6) % 10}s`,
+                  }}>
+                  <svg 
+                    width={`${12 + (i % 4) * 2}`} 
+                    height={`${12 + (i % 4) * 2}`} 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    className="opacity-60 drop-shadow-[0_2px_4px_rgba(244,63,130,0.3)]"
+                    style={{ transform: `rotate(${i * 30}deg)` }}>
+                    <path 
+                      d="M12 2C9 6 4 10 4 15C4 18.5 7.5 21 12 21C16.5 21 20 18.5 20 15C20 10 15 6 12 2Z" 
+                      fill={i % 2 === 0 ? "#f472b6" : "#fb7185"} 
+                      opacity="0.8" 
+                    />
+                  </svg>
+                </div>
+              ))}
+            </>
+          )}
+        </div>
       )}
 
       {/* ========================================================= */}
@@ -2749,8 +2912,10 @@ export default function App() {
                   {/* Toggle Resplandor Ambiental */}
                   <div className="flex items-center justify-between pt-1">
                     <div>
-                      <span className="text-xs font-semibold text-gray-300 block">Resplandor Ambiental Fluido</span>
-                      <span className="text-[10px] text-gray-500">Auras de color en las esquinas aceleradas por GPU</span>
+                      <span className="text-xs font-semibold text-gray-300 block">Resplandor Ambiental Fluido (Dynamic Glow)</span>
+                      <span className="text-[10px] text-gray-500">
+                        {coverGlowColors ? "Sincronizado con los colores de la carátula activa" : "Auras de color en las esquinas aceleradas por GPU"}
+                      </span>
                     </div>
                     <button
                       type="button"
@@ -2760,6 +2925,31 @@ export default function App() {
                       }`}>
                       <div className={`w-5 h-5 rounded-full bg-white transition-transform ${
                         ambientGlow ? 'translate-x-5' : 'translate-x-0'
+                      }`} />
+                    </button>
+                  </div>
+
+                  {/* Toggle Partículas Atmosféricas */}
+                  <div className="flex items-center justify-between pt-2 border-t border-white/5">
+                    <div>
+                      <span className="text-xs font-semibold text-gray-300 flex items-center gap-1.5">
+                        <span>{isWWM ? '🎋' : '🌸'}</span>
+                        <span>Efectos Atmosféricos de Partículas</span>
+                      </span>
+                      <span className="text-[10px] text-gray-500">
+                        {isWWM 
+                          ? 'Chispas doradas de linterna y bruma ligera de Jianghu' 
+                          : 'Pétalos suaves de flor de cerezo cayendo con la brisa'}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleSetAmbientParticles(!ambientParticles)}
+                      className={`w-11 h-6 rounded-full transition-colors relative p-0.5 ${
+                        ambientParticles ? (isWWM ? 'bg-emerald-500' : 'bg-pink-500') : 'bg-white/10'
+                      }`}>
+                      <div className={`w-5 h-5 rounded-full bg-white transition-transform ${
+                        ambientParticles ? 'translate-x-5' : 'translate-x-0'
                       }`} />
                     </button>
                   </div>
@@ -2852,10 +3042,31 @@ export default function App() {
                       </div>
                     )}
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <h4 className="text-xs font-bold text-white truncate">{activeTrack.title}</h4>
-                    <p className="text-[11px] text-gray-400 truncate">{activeTrack.artist}</p>
-                    <span className={`text-[9px] ${worldStyle.tagText} font-mono uppercase`}>{activeTrack.format} Lossless Direct</span>
+                  <div className="min-w-0 flex-1 max-w-[200px] sm:max-w-xs overflow-hidden">
+                    {activeTrack.title.length > 25 ? (
+                      <div className="marquee-container" title={activeTrack.title}>
+                        <div className="marquee-content animate">
+                          <span className="text-xs font-bold text-white pr-6">{activeTrack.title}</span>
+                          <span className="text-xs font-bold text-white/50 pr-6">·</span>
+                          <span className="text-xs font-bold text-white pr-6">{activeTrack.title}</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <h4 className="text-xs font-bold text-white truncate" title={activeTrack.title}>
+                        {activeTrack.title}
+                      </h4>
+                    )}
+                    <p className="text-[11px] text-gray-400 truncate" title={activeTrack.artist}>
+                      {activeTrack.artist}
+                    </p>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <span className={`text-[9px] ${worldStyle.tagText} font-mono uppercase font-semibold`}>
+                        {activeTrack.format} Lossless
+                      </span>
+                      {activeTrack.year && (
+                        <span className="text-[9px] text-gray-500 font-mono">· {activeTrack.year}</span>
+                      )}
+                    </div>
                   </div>
                 </>
               ) : (
