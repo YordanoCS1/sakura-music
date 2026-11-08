@@ -76,14 +76,12 @@ Un lote compuesto solo por duplicados no abre la ventana de resumen.
    - `https://www.youtube.com/playlist?list=...`
    - `https://www.youtube.com/watch?v=...&list=...`
    - `https://music.youtube.com/playlist?list=...`
-2. La app la detecta sola y entra en modo playlist.
-3. Los videos se muestran **numerados** en el orden de la lista. El número de
-   Buscar coincide con el de la Cola.
-4. Las entradas que no se pueden descargar —privadas, eliminadas, con restricción
-   de edad o bloqueadas por región— **no se muestran como tarjetas**, pero se
-   cuentan. El estado dice, por ejemplo:
-   `18 videos · 3 videos ocultos (2 privados, 1 con restricción de edad)`.
-5. Pulsá **Descargar todo**.
+2. La app la detecta sola y extrae el listado completo mediante `yt-dlp` a través del backend en Rust.
+3. Se abre el panel interactivo de la playlist con título, creador, cantidad de pistas y miniaturas.
+4. Podés seleccionar o deseleccionar pistas individuales con las casillas, o usar **Seleccionar Todas**.
+5. Activá o desactivá **«Organizar en subcarpeta dedicada»** para agrupar todas las canciones en su propia carpeta.
+6. Elegí el formato deseado (Opus, MP3, FLAC, M4A) y pulsá **Descargar N Canciones**.
+7. La app encola todas las canciones simultáneamente en la pestaña **Cola de Descargas** con monitoreo de progreso y velocidad en vivo.
 
 Los archivos quedan en **una sola carpeta** con el nombre de la playlist, dentro
 de la biblioteca:

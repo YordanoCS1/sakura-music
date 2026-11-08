@@ -1,63 +1,54 @@
-# Metadatos y letras
+# Metadatos y Catálogo
 
-Los tags son la fuente de verdad de la biblioteca: lo que dice el archivo manda.
-Esta página explica cómo editarlos de a una pista, en lote, desde un catálogo
-externo, cómo deshacer un lote y cómo incrustar letras.
+Los tags incrustados en cada archivo son la **fuente de verdad** de la biblioteca.
+
+> [!TIP]
+> **En Sakura Music 2.0:** El motor de etiquetado fue reimplementado en **Rust nativo con `lofty`**, ensamblando paquetes de metadatos en memoria a través de streams atómicos (`Cursor<Vec<u8>>`). Esto garantiza que **nunca se bloqueen los archivos en disco** y permite editar canciones incluso mientras las estás escuchando.
 
 ## Abrir el editor
 
 Hay tres caminos:
 
-1. Doble clic en una fila de la Biblioteca → se abre la **ficha** → **Editar
-   metadatos**.
-2. Seleccionar una pista y pulsar **Editar metadatos** en el panel de detalle.
-3. Seleccionar varias pistas y pulsar **Editar en lote**.
+1. **Desde la vista Grid (Cuadrícula):** Pasá el cursor sobre cualquier tarjeta de canción y hacé clic en el botón flotante de lápiz (✏️).
+2. **Desde la vista Tabla:** En la columna *Acciones* de cada fila, hacé clic en el botón de edición.
+3. **Desde el Reproductor inferior:** Hacé clic en el icono de edición sobre la pista activa actual.
 
-El editor individual lee los tags al abrir y **no escribe nada hasta confirmar**.
-**Cancelar** no toca el archivo.
+El editor lee los tags al abrir y **no escribe nada hasta confirmar**. Si hacés clic en **Cancelar**, no se toca ningún archivo.
 
-## Campos del editor
+## Características del Editor Pro
 
-Los campos están agrupados por sentido:
+El modal de edición cuenta con dos pestañas optimizadas:
 
-| Grupo | Campos |
-|---|---|
-| **Identidad** | Título, artista, artista del álbum |
-| **Álbum** | Álbum, año, número de pista |
-| **Clasificación** | Género |
+### 1. Pestaña «Etiquetas & Portada»
 
-Además podés:
+- **Gestión de Carátula:**
+  - **Cargar...**: Abre el selector nativo para elegir imágenes JPG, PNG o WEBP.
+  - **Buscar HD**: Salta directamente a la búsqueda en catálogo oficial.
+  - **Quitar carátula**: Marca la imagen para eliminación completa del archivo.
+  - **Restaurar**: Vuelve a la carátula original del archivo.
+  - **Pegar desde el Portapapeles (`Ctrl + V`)**: Podés copiar cualquier imagen de tu navegador o capturador y pegarla al instante en el editor.
+- **Campos organizados:**
+  - **Información Principal:** Título, Artista, Artista del Álbum.
+  - **Álbum & Posición:** Nombre del Álbum, Número de Pista.
+  - **Año & Género:** Año de lanzamiento, Género con botones rápidos para géneros populares (*J-Pop, K-Pop, Anime, Rock, Pop, Lo-Fi, Electrónica, Hip-Hop, Metal, Vocaloid, Jazz, Clásica*).
+- **Botones de Reversión individual:** Cada campo cuenta con su propio botón *«Revertir»* que aparece cuando el valor ha sido modificado.
+- **Restablecer valores originales:** Restaura todos los campos a su estado inicial antes de editar.
 
-- elegir una **portada local** desde un archivo;
-- quitar la portada actual;
-- **Buscar en catálogo** para traer los datos de un servicio externo.
+### 2. Pestaña «Buscador Catálogo»
 
-Al guardar se escribe el tag del formato y, si elegiste una portada, se incrusta
-en el archivo. La biblioteca relee la pista y actualiza fila, ficha, filtros y
-contadores.
+- Búsqueda integrada contra la API oficial de **Apple Music / iTunes**.
+- Autocompleta la consulta con el Artista y Título actuales.
+- Muestra los resultados con miniaturas de carátula, artista, álbum, año y género.
+- Cada resultado tiene dos botones directos:
+  - **Aplicar todo:** Rellena todos los campos de texto e importa automáticamente la carátula en alta definición (600x600 px).
+  - **Solo portada:** Descarga únicamente el arte en alta resolución sin tocar los textos que ya editaste.
 
-## Buscar en un catálogo
+## Guardado seguro en caliente
 
-**Buscar en catálogo** abre un panel con:
-
-| Fuente | Qué aporta |
-|---|---|
-| **Automático** | iTunes y, si no hay nada, Deezer |
-| **Apple Music (iTunes)** | Fichas completas con `album_id`, portada y número de pista |
-| **Deezer** | Alternativa cuando iTunes no tiene el disco |
-| **MusicBrainz** | Metadatos abiertos; la portada viene de Cover Art Archive |
-
-MusicBrainz queda fuera del modo automático a propósito: exige un `User-Agent`
-propio y limita a una petición por segundo. Se consulta solo cuando lo pedís.
-
-El emparejado normaliza antes de comparar: minúsculas, sin acentos ni puntuación,
-y descarta palabras ruido (`feat`, `remix`, `official video`…).
-
-### Aplicar un candidato
-
-1. Buscá por título o por artista.
-2. Elegí un resultado.
-3. Pulsá **Usar datos seleccionados**.
+Al presionar **Guardar Cambios**:
+1. El backend en Rust procesa los cambios en memoria.
+2. Escribe de forma atómica los nuevos bloques Vorbis (Opus), ID3v2 (MP3) o MP4 (M4A/AAC).
+3. La biblioteca local y la caché de disco se sincronizan al instante sin necesidad de re-escanear toda la carpeta.
 4. Los campos se llenan y la portada se prepara. La descarga de la portada ocurre
    antes de guardar; si falla, se conserva la actual.
 5. **Guardar cambios**.
@@ -81,62 +72,45 @@ Si el candidato tiene un `album_id` de iTunes, aparece **Aplicar a todo el
 Esto es lo que hace que los archivos de una descarga (`01 - One More Time.mp3`)
 reciban su título, año, género y número de pista correctos de una sola vez.
 
-## Editar en lote
+## Editar en lote (Batch Editor)
 
-Con dos o más pistas seleccionadas, **Editar en lote** abre un diálogo con estos
-campos:
+En Sakura Music 2.0, seleccioná dos o más pistas marcando las casillas de verificación tanto en la **Vista Cuadrícula** como en la **Vista Tabla**.
 
-- artista;
-- álbum;
-- artista del álbum;
-- año;
-- género;
-- número de pista.
+Al seleccionar canciones, se activa automáticamente la **Barra de Selección en Lote** que indica la cantidad de canciones elegidas y ofrece:
+- **Seleccionar Todas**: Marca rápidamente todas las canciones mostradas.
+- **Deseleccionar**: Limpia la selección actual.
+- **Editar en Lote (N)**: Abre el modal del Batch Editor.
 
-**El título queda afuera a propósito:** cambiarlo en lote convertiría 200 pistas
-en la misma canción.
+### Campos modificables en lote:
+- **Artista**
+- **Álbum**
+- **Artista del álbum**
+- **Año**
+- **Género**
+- **Carátula compartida** (o remoción masiva de carátulas)
 
-### La regla que define la pantalla
+> **Nota de diseño:** El campo *Título* queda excluido de la edición por lotes para preservar la identidad de cada canción.
 
-> **Un campo vacío no se toca.**
+### La regla de oro del Batch Editor
 
-Si dejaste “Álbum” en blanco es porque no querés cambiarlo, no porque quieras
-borrarlo. Vacío como “borrar” convertiría un clic mal dado en 200 pistas sin
-álbum, y eso no se puede deshacer de forma razonable.
+> **Un campo desmarcado no se toca.**
 
-Para limpiar un campo hay que hacerlo de a una pista, desde el editor individual.
+Cada campo cuenta con una casilla de activación independiente. Si el usuario no activa explícitamente la casilla de un campo, el motor en Rust respeta el valor existente en cada pista individual.
 
-### Qué informa
+### Procesamiento atómico en Rust
 
-Al aplicar:
+El motor de Rust procesa el lote de manera atómica en memoria RAM con reintentos automáticos para evitar bloqueos por parte del explorador de Windows, actualizando la caché y la interfaz en tiempo real.
 
-- cuántas pistas se actualizaron;
-- cuántas ya tenían ese valor (“sin cambios”);
-- qué pistas fallaron y por qué.
+## Formatos soportados
 
-Por cada campo que cambió se guarda un manifiesto para poder deshacer.
+Los tags y carátulas se procesan con el motor nativo en Rust (**Lofty**). La app soporta:
+- **OPUS** (Vorbis Comments nativos)
+- **FLAC** (Vorbis Comments con carátulas PICTURE)
+- **MP3** (ID3v2.3 y ID3v2.4)
+- **M4A / AAC** (MP4 atoms/boxes)
+- **OGG / WAV**
 
-## Deshacer el último lote
-
-El botón **Deshacer último lote** está en la barra de la Biblioteca. Se habilita
-solo si hay un manifiesto legible.
-
-1. Pulsá el botón.
-2. La app muestra el resumen del lote y pide confirmación.
-3. Al confirmar, restaura los valores anteriores **solo si el archivo sigue con
-   los valores que dejó el lote**.
-4. Si alguien reetiquetó el archivo por fuera, esa pista se saltea para no pisar
-   el cambio.
-5. Si no hubo errores, el manifiesto se borra. La vista se refresca y se informa
-   cuántas se restauraron y cuántas se saltearon.
-
-### Cómo funciona por dentro
-
-No se copia el audio entero: sería duplicar gigabytes. Se guarda un **manifiesto
-JSON** en `Historial/AAAAmmdd-HHMMSS-xxxxxx.json` con:
-
-- la ruta del archivo;
-- los campos que cambiaron;
+Si un archivo no permite escribir por problemas de permisos del sistema de archivos, el motor informa el error puntualmente sin corromper el resto de las canciones del lote.
 - el valor anterior y el nuevo de cada uno.
 
 Se conservan los **20 manifiestos más nuevos**. Un manifiesto corrupto se

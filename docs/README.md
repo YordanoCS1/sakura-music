@@ -1,25 +1,23 @@
 # Documentación de Sakura Music
 
-Esta carpeta es la documentación de producto y de referencia del proyecto. El
-[README principal](../README.md) sigue siendo el documento de **diseño**: explica
-por qué la app está hecha así y qué decisiones se tomaron. Acá se documenta **qué
-hace**, **para quién**, **cómo se usa** y **cómo se mantiene**.
+Esta carpeta contiene la documentación técnica y de referencia del proyecto Sakura Music.
+
+> [!NOTE]
+> **Sakura Music 2.0:** El proyecto fue completamente modernizado de Python/PySide6 a una arquitectura nativa con **Tauri 2.0 (Rust backend) + React 18 + TypeScript + Tailwind CSS**.
+> El código fuente de la versión 1.0 en Python se conserva íntegro en `legacy_python/` como referencia histórica. Consulta el [ADR 0009](adr/0009-migracion-tauri-2-rust.md) para más detalles.
 
 ## Por dónde empezar
 
 | Si querés… | Leé |
 |---|---|
-| Instalar y abrir la app | [manual/instalacion.md](manual/instalacion.md) |
+| Visión general, instalación y arranque rápido | [README principal](../README.md) |
+| Arquitectura v2.0 (Tauri + Rust + React) | [ADR 0009: Migración a Tauri 2 y Rust](adr/0009-migracion-tauri-2-rust.md) |
 | Buscar, descargar y entender la cola | [manual/buscar-y-descargar.md](manual/buscar-y-descargar.md) |
-| Escanear, ordenar y filtrar tu biblioteca | [manual/biblioteca.md](manual/biblioteca.md) |
-| Editar tags, portadas y letras | [manual/metadatos-y-letras.md](manual/metadatos-y-letras.md) |
-| Cambiar tema, iconos y densidad | [manual/apariencia.md](manual/apariencia.md) |
+| Escaneo, ordenar y filtrar biblioteca | [manual/biblioteca.md](manual/biblioteca.md) |
+| Editar tags, portadas y catálogo | [manual/metadatos-y-letras.md](manual/metadatos-y-letras.md) |
+| Cambiar tema, iconos y apariencia | [manual/apariencia.md](manual/apariencia.md) |
 | Resolver un error concreto | [manual/problemas.md](manual/problemas.md) |
-| Entender el sistema y sus flujos | [casos-de-uso.md](casos-de-uso.md) |
-| Saber qué está garantizado y cómo se prueba | [requisitos.md](requisitos.md) |
-| Ver capas, hilos y persistencia | [arquitectura.md](arquitectura.md) |
-| Conocer el porqué de una decisión técnica | [adr/README.md](adr/README.md) |
-| Contribuir o extender la app | [desarrollo.md](desarrollo.md) |
+| Índice de decisiones técnicas | [adr/README.md](adr/README.md) |
 
 ## Mapa de la documentación
 
