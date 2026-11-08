@@ -1216,7 +1216,7 @@ export default function App() {
   const isWWM = themeWorld === 'where_winds_meet';
   const worldStyle = isWWM ? {
     id: 'where_winds_meet',
-    name: 'Where Winds Meet',
+    name: 'Wuxia Jianghu',
     icon: '🎋',
     bgClass: 'bg-[#040e09]',
     ambientGlow1: 'bg-emerald-600/25',
@@ -1231,8 +1231,8 @@ export default function App() {
     seekAccent: 'accent-emerald-400',
     tagText: 'text-emerald-300',
     glowColor: 'shadow-emerald-500/25',
-    sidebarTitle: 'Where Winds Meet',
-    sidebarSubtitle: 'Wuxia · Jianghu Nature',
+    sidebarTitle: 'Wuxia Jianghu',
+    sidebarSubtitle: 'Sendero Jianghu & Bambú',
     logoIcon: '🎋',
   } : {
     id: 'sakura_zen',
@@ -1468,7 +1468,7 @@ export default function App() {
                   : 'text-gray-400 hover:text-white'
               }`}>
               <span>🎋</span>
-              <span>Jianghu</span>
+              <span>Wuxia</span>
             </button>
           </div>
         </div>
@@ -2803,7 +2803,7 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* Tarjeta 2: Where Winds Meet */}
+                  {/* Tarjeta 2: Wuxia Jianghu */}
                   <div 
                     onClick={() => handleSetThemeWorld('where_winds_meet')}
                     className={`relative p-4 rounded-2xl cursor-pointer transition-all border ${
@@ -2819,9 +2819,9 @@ export default function App() {
                         </span>
                       )}
                     </div>
-                    <h4 className="text-xs font-bold text-white mb-1">Where Winds Meet</h4>
+                    <h4 className="text-xs font-bold text-white mb-1">Wuxia (武侠 · Jianghu)</h4>
                     <p className="text-[11px] text-gray-400 leading-relaxed mb-3">
-                      Wuxia ancestral, bosque de bambú brumoso, jade imperial y cálidas linternas de ámbar.
+                      Estética tradicional china Wuxia: bosque de bambú brumoso, jade imperial, linternas cálidas de ámbar y libertad marcial.
                     </p>
                     <div className="flex items-center gap-1.5">
                       <div className="w-3.5 h-3.5 rounded-full bg-emerald-500"></div>

@@ -26,7 +26,8 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.theme-where-winds-meet .glass-surface {
+.theme-where-winds-meet .glass-surface,
+.theme-wuxia .glass-surface {
   background: rgba(8, 22, 16, var(--glass-opacity, 0.65));
   border: 1px solid rgba(16, 185, 129, 0.12);
 }
@@ -38,7 +39,8 @@
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.theme-where-winds-meet .glass-card {
+.theme-where-winds-meet .glass-card,
+.theme-wuxia .glass-card {
   background: rgba(12, 28, 20, calc(var(--glass-opacity, 0.5) * 0.8));
   border: 1px solid rgba(16, 185, 129, 0.09);
 }
