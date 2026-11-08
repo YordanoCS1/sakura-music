@@ -30,6 +30,7 @@ formato, sin cambiar su contenido.
 | [0006](0006-temas-por-tokens.md) | Temas como tokens y dimensiones, no como colores sueltos | Vigente |
 | [0007](0007-deshacer-con-manifiestos.md) | Deshacer un lote de tags con manifiestos JSON | Vigente |
 | [0008](0008-hilos-y-cierre-limpio.md) | Nada pesado en el hilo de la UI y cierre limpio de hilos | Vigente |
+| [0009](0009-migracion-tauri-2-rust.md) | Migración de PySide6 a Tauri 2.0 y Rust nativo | Vigente |
 
 ## Cómo agregar una decisión
 
