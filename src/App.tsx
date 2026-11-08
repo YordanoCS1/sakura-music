@@ -49,7 +49,11 @@ import {
   Wind,
   ArrowLeft,
   Clock,
-  Calendar
+  Calendar,
+  Folder,
+  FolderTree,
+  ChevronRight,
+  CornerLeftUp
 } from 'lucide-react';
 
 export interface ScannedTrack {
@@ -137,7 +141,7 @@ export interface DownloadItem {
 type ThemeMode = 'sakura' | 'cyber' | 'amber' | 'emerald';
 export type ThemeWorld = 'sakura_zen' | 'where_winds_meet';
 export type PlayerStyle = 'floating' | 'fixed';
-export type ViewMode = 'grid' | 'table' | 'albums';
+export type ViewMode = 'folders' | 'grid' | 'table' | 'albums';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<'home' | 'search' | 'library' | 'queue' | 'settings'>('library');
@@ -191,15 +195,16 @@ export default function App() {
   };
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
     const saved = localStorage.getItem('sakura_view_mode') as ViewMode | null;
-    if (saved && (saved === 'grid' || saved === 'table' || saved === 'albums')) {
+    if (saved && (saved === 'folders' || saved === 'grid' || saved === 'table' || saved === 'albums')) {
       return saved;
     }
-    return 'grid';
+    return 'folders';
   });
   const handleSetViewMode = (mode: ViewMode) => {
     setViewMode(mode);
     localStorage.setItem('sakura_view_mode', mode);
   };
+  const [currentFolderNav, setCurrentFolderNav] = useState<string[]>([]);
   const [expandedAlbumKey, setExpandedAlbumKey] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [tracks, setTracks] = useState<ScannedTrack[]>([]);
@@ -1072,9 +1077,183 @@ export default function App() {
     }
   };
 
+  // Base común de carpetas para el Explorador
+  const baseFolderPath = useMemo(() => {
+    if (currentFolder) return currentFolder.replace(/\\/g, '/').replace(/\/+$/, '');
+    if (tracks.length === 0) return '';
+    const splitPaths = tracks.map(t => t.path.replace(/\\/g, '/').split('/'));
+    let common = splitPaths[0].slice(0, -1);
+    for (let i = 1; i < splitPaths.length; i++) {
+      const cur = splitPaths[i];
+      let j = 0;
+      while (j < common.length && j < cur.length - 1 && common[j] === cur[j]) {
+        j++;
+      }
+      common = common.slice(0, j);
+      if (common.length === 0) break;
+    }
+    return common.join('/');
+  }, [currentFolder, tracks]);
+
+  // Explorador por Carpetas Inteligente (Navegación jerárquica)
+  const folderExplorerData = useMemo(() => {
+    const rootFolderName = currentFolder 
+      ? currentFolder.replace(/\\/g, '/').split('/').filter(Boolean).pop() || 'Biblioteca'
+      : 'Biblioteca';
+
+    if (tracks.length === 0) {
+      return { 
+        subfolders: [], 
+        directTracks: [], 
+        allFolderTracks: [], 
+        currentPathStr: '', 
+        rootFolderName 
+      };
+    }
+
+    const currentPathStr = currentFolderNav.join('/');
+    const subfolderMap = new Map<string, {
+      name: string;
+      relativePath: string;
+      tracks: ScannedTrack[];
+      subfolderNames: Set<string>;
+      formats: Set<string>;
+      sampleCoverUrl: string | null;
+    }>();
+
+    const directTracks: ScannedTrack[] = [];
+    const allFolderTracks: ScannedTrack[] = [];
+    const normBase = baseFolderPath;
+
+    tracks.forEach((track) => {
+      const normPath = track.path.replace(/\\/g, '/');
+      let rel = normPath;
+      if (normBase && normPath.startsWith(normBase)) {
+        rel = normPath.slice(normBase.length).replace(/^\/+/, '');
+      }
+      const segments = rel.split('/');
+      segments.pop(); // quitar nombre de archivo
+
+      // Verificar si la pista pertenece a la carpeta actual de navegación
+      const isInsideCurrent = currentFolderNav.every((seg, idx) => segments[idx] === seg);
+
+      if (isInsideCurrent) {
+        allFolderTracks.push(track);
+
+        if (segments.length === currentFolderNav.length) {
+          // Es una canción directa en este nivel
+          directTracks.push(track);
+        } else if (segments.length > currentFolderNav.length) {
+          // Pertenece a una subcarpeta inmediata
+          const subfolderName = segments[currentFolderNav.length];
+          const subRelPath = [...currentFolderNav, subfolderName].join('/');
+
+          if (!subfolderMap.has(subfolderName)) {
+            subfolderMap.set(subfolderName, {
+              name: subfolderName,
+              relativePath: subRelPath,
+              tracks: [],
+              subfolderNames: new Set(),
+              formats: new Set(),
+              sampleCoverUrl: null,
+            });
+          }
+          const sub = subfolderMap.get(subfolderName)!;
+          sub.tracks.push(track);
+          if (track.cover_url && !sub.sampleCoverUrl) {
+            sub.sampleCoverUrl = track.cover_url;
+          }
+          if (track.format) {
+            sub.formats.add(track.format);
+          }
+          if (segments.length > currentFolderNav.length + 1) {
+            sub.subfolderNames.add(segments[currentFolderNav.length + 1]);
+          }
+        }
+      }
+    });
+
+    const subfolders = Array.from(subfolderMap.values()).map(sub => ({
+      name: sub.name,
+      relativePath: sub.relativePath,
+      trackCount: sub.tracks.length,
+      subfolderCount: sub.subfolderNames.size,
+      sampleCoverUrl: sub.sampleCoverUrl,
+      formats: Array.from(sub.formats),
+      tracks: sub.tracks,
+    })).sort((a, b) => a.name.localeCompare(b.name));
+
+    // Filtrar canciones directas por búsqueda si hay consulta activa
+    const filteredDirectTracks = searchQuery.trim() 
+      ? directTracks.filter(t => 
+          t.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+          t.artist.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      : directTracks;
+
+    return {
+      subfolders,
+      directTracks: filteredDirectTracks,
+      allFolderTracks,
+      currentPathStr,
+      rootFolderName,
+    };
+  }, [tracks, baseFolderPath, currentFolderNav, searchQuery, currentFolder]);
+
+  // Acciones de navegación por carpetas
+  const handleNavigateIntoFolder = (folderName: string) => {
+    setCurrentFolderNav(prev => [...prev, folderName]);
+  };
+
+  const handleNavigateToBreadcrumb = (index: number) => {
+    if (index === -1) {
+      setCurrentFolderNav([]);
+    } else {
+      setCurrentFolderNav(prev => prev.slice(0, index + 1));
+    }
+  };
+
+  const handleNavigateUp = () => {
+    setCurrentFolderNav(prev => prev.slice(0, -1));
+  };
+
+  const handlePlayFolderTracks = (tracksToPlay: ScannedTrack[]) => {
+    if (tracksToPlay.length > 0) {
+      handlePlayTrack(tracksToPlay[0]);
+    }
+  };
+
+  const handleSelectFolderTracks = (tracksToSelect: ScannedTrack[], e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    const ids = tracksToSelect.map(t => t.id);
+    setSelectedTrackIds(prev => {
+      const next = new Set(prev);
+      const allSelected = ids.every(id => next.has(id));
+      if (allSelected) {
+        ids.forEach(id => next.delete(id));
+      } else {
+        ids.forEach(id => next.add(id));
+      }
+      return next;
+    });
+  };
+
   // Filtrado de canciones en memoria instantáneo (<1ms para miles de canciones)
   const filteredTracks = useMemo(() => {
     return tracks.filter(track => {
+      // Si hay navegación de carpeta activa en vistas Grid/Table/Albums, filtrar por esa carpeta
+      if (currentFolderNav.length > 0 && viewMode !== 'folders') {
+        const normPath = track.path.replace(/\\/g, '/');
+        let rel = normPath;
+        if (baseFolderPath && normPath.startsWith(baseFolderPath)) {
+          rel = normPath.slice(baseFolderPath.length).replace(/^\/+/, '');
+        }
+        const segments = rel.split('/');
+        segments.pop();
+        const matchesFolder = currentFolderNav.every((seg, idx) => segments[idx] === seg);
+        if (!matchesFolder) return false;
+      }
+
       const matchesQuery = 
         track.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         track.artist.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -1085,7 +1264,7 @@ export default function App() {
       if (filterChip === 'favorites') return favorites.includes(track.id);
       return true;
     });
-  }, [tracks, searchQuery, filterChip, favorites]);
+  }, [tracks, searchQuery, filterChip, favorites, currentFolderNav, baseFolderPath, viewMode]);
 
   // Agrupación de álbumes para Vista Estante (Album Shelf)
   interface AlbumGroup {
@@ -1627,6 +1806,12 @@ export default function App() {
 
                   <div className="flex items-center p-0.5 rounded-xl bg-white/5 border border-white/5 ml-1">
                     <button 
+                      onClick={() => handleSetViewMode('folders')}
+                      className={`p-1.5 rounded-lg transition-colors ${viewMode === 'folders' ? 'bg-white/10 text-white shadow-sm' : 'text-gray-400 hover:text-white'}`}
+                      title="Vista Explorador por Carpetas">
+                      <FolderTree className="w-3.5 h-3.5" />
+                    </button>
+                    <button 
                       onClick={() => handleSetViewMode('grid')}
                       className={`p-1.5 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-white/10 text-white shadow-sm' : 'text-gray-400 hover:text-white'}`}
                       title="Vista Cuadrícula">
@@ -1711,6 +1896,270 @@ export default function App() {
                       </button>
                     )}
                   </div>
+                </div>
+              )}
+
+              {/* Indicador de filtro de carpeta si se navega en Grid / Table / Albums */}
+              {currentFolderNav.length > 0 && viewMode !== 'folders' && (
+                <div className="flex items-center justify-between p-2.5 px-4 mb-4 rounded-xl bg-white/5 border border-white/10 text-xs text-gray-300 animate-in fade-in">
+                  <div className="flex items-center gap-2">
+                    <Folder className={`w-3.5 h-3.5 ${isWWM ? 'text-emerald-400' : 'text-pink-400'}`} />
+                    <span>Filtrando por carpeta:</span>
+                    <span className="font-semibold text-white">{currentFolderNav.join(' / ')}</span>
+                    <span className="text-gray-500 font-mono text-[11px]">({filteredTracks.length} canciones)</span>
+                  </div>
+                  <button 
+                    onClick={() => setCurrentFolderNav([])}
+                    className="text-[11px] text-gray-400 hover:text-white underline transition-colors">
+                    Mostrar toda la biblioteca
+                  </button>
+                </div>
+              )}
+
+              {/* VISTA EXPLORADOR POR CARPETAS (FOLDERS) */}
+              {viewMode === 'folders' && tracks.length > 0 && (
+                <div className="space-y-6 mb-24 animate-in fade-in duration-200">
+                  
+                  {/* Barra de Navegación y Rutas (Breadcrumbs) */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-2xl glass-card border border-white/10">
+                    <div className="flex items-center gap-2 flex-wrap text-xs">
+                      <button 
+                        onClick={handleNavigateUp} 
+                        disabled={currentFolderNav.length === 0} 
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white text-xs font-semibold border border-white/10 transition-all disabled:opacity-30 disabled:pointer-events-none active:scale-95"
+                        title="Subir un nivel de carpeta">
+                        <CornerLeftUp className="w-3.5 h-3.5" />
+                        <span>Subir</span>
+                      </button>
+
+                      <div className="flex items-center gap-1.5 flex-wrap font-mono">
+                        <button 
+                          onClick={() => handleNavigateToBreadcrumb(-1)}
+                          className={`flex items-center gap-1 px-2.5 py-1 rounded-lg transition-colors ${
+                            currentFolderNav.length === 0 ? 'bg-white/10 text-white font-bold' : 'text-gray-400 hover:text-white'
+                          }`}>
+                          <Folder className="w-3.5 h-3.5" />
+                          <span>{folderExplorerData.rootFolderName}</span>
+                        </button>
+
+                        {currentFolderNav.map((seg, idx) => (
+                          <div key={`${seg}-${idx}`} className="flex items-center gap-1.5">
+                            <ChevronRight className="w-3 h-3 text-gray-600" />
+                            <button 
+                              onClick={() => handleNavigateToBreadcrumb(idx)}
+                              className={`px-2 py-1 rounded-lg transition-colors ${
+                                idx === currentFolderNav.length - 1 ? 'bg-white/10 text-white font-bold' : 'text-gray-400 hover:text-white'
+                              }`}>
+                              {seg}
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Acciones de la carpeta activa */}
+                    <div className="flex items-center gap-2 self-end sm:self-auto">
+                      <button 
+                        onClick={() => handlePlayFolderTracks(folderExplorerData.allFolderTracks)}
+                        disabled={folderExplorerData.allFolderTracks.length === 0}
+                        className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-gradient-to-r ${isWWM ? 'from-emerald-500 to-teal-400 shadow-emerald-500/20' : 'from-pink-500 to-rose-400 shadow-pink-500/20'} text-white text-xs font-bold shadow-md hover:brightness-110 active:scale-95 transition-all disabled:opacity-40`}>
+                        <Play className="w-3.5 h-3.5 fill-current" />
+                        <span>Reproducir Carpeta ({folderExplorerData.allFolderTracks.length})</span>
+                      </button>
+
+                      <button 
+                        onClick={(e) => handleSelectFolderTracks(folderExplorerData.allFolderTracks, e)}
+                        disabled={folderExplorerData.allFolderTracks.length === 0}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white text-xs font-semibold border border-white/10 transition-all active:scale-95 disabled:opacity-40"
+                        title="Seleccionar todas las canciones de esta carpeta para edición en lote">
+                        <Layers className="w-3.5 h-3.5" />
+                        <span>Lote</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Sección: Subcarpetas en este nivel */}
+                  {folderExplorerData.subfolders.length > 0 && (
+                    <div>
+                      <div className="flex items-center justify-between mb-3 px-1">
+                        <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+                          <Folder className={`w-3.5 h-3.5 ${isWWM ? 'text-emerald-400' : 'text-pink-400'}`} />
+                          <span>Carpetas ({folderExplorerData.subfolders.length})</span>
+                        </h3>
+                      </div>
+
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+                        {folderExplorerData.subfolders.map((sub) => (
+                          <div 
+                            key={sub.name}
+                            onClick={() => handleNavigateIntoFolder(sub.name)}
+                            className={`group relative p-3.5 rounded-2xl glass-card transition-all duration-200 cursor-pointer hover:-translate-y-1 hover:shadow-xl border ${
+                              isWWM ? 'border-white/5 hover:border-emerald-500/40' : 'border-white/5 hover:border-pink-500/40'
+                            } flex flex-col justify-between`}>
+                            
+                            <div className="flex items-start justify-between">
+                              <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${
+                                isWWM ? 'bg-gradient-to-tr from-emerald-950/60 to-teal-900/40 text-emerald-400 border border-emerald-500/30' : 'bg-gradient-to-tr from-pink-950/60 to-purple-900/40 text-pink-400 border border-pink-500/30'
+                              } shadow-md group-hover:scale-105 transition-transform`}>
+                                <Folder className="w-5 h-5 fill-current/25" />
+                              </div>
+
+                              <button 
+                                onClick={(e) => { e.stopPropagation(); handlePlayFolderTracks(sub.tracks); }}
+                                className={`p-2 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-r ${
+                                  isWWM ? 'from-emerald-500 to-teal-400 shadow-emerald-500/30' : 'from-pink-500 to-rose-400 shadow-pink-500/30'
+                                } text-white shadow-md hover:scale-110 active:scale-95`}
+                                title={`Reproducir carpeta ${sub.name}`}>
+                                <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
+                              </button>
+                            </div>
+
+                            <div className="mt-3">
+                              <h4 className={`text-xs font-bold text-white truncate ${isWWM ? 'group-hover:text-emerald-300' : 'group-hover:text-pink-300'} transition-colors`} title={sub.name}>
+                                {sub.name}
+                              </h4>
+                              <div className="flex items-center justify-between text-[10px] text-gray-500 font-mono mt-1">
+                                <span>{sub.trackCount} {sub.trackCount === 1 ? 'canción' : 'canciones'}</span>
+                                {sub.subfolderCount > 0 && <span>{sub.subfolderCount} sub</span>}
+                              </div>
+                            </div>
+
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Sección: Canciones directas en este nivel */}
+                  {folderExplorerData.directTracks.length > 0 && (
+                    <div>
+                      <div className="flex items-center justify-between mb-3 px-1">
+                        <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+                          <Music2 className={`w-3.5 h-3.5 ${isWWM ? 'text-emerald-400' : 'text-pink-400'}`} />
+                          <span>Canciones en {currentFolderNav.length === 0 ? 'la raíz' : currentFolderNav[currentFolderNav.length - 1]} ({folderExplorerData.directTracks.length})</span>
+                        </h3>
+                      </div>
+
+                      <div className="glass-card rounded-2xl overflow-hidden border border-white/5">
+                        <table className="w-full text-left text-xs">
+                          <thead className="bg-white/5 text-[11px] uppercase tracking-wider text-gray-400 border-b border-white/5">
+                            <tr>
+                              <th className="py-2.5 px-3 w-10 text-center">
+                                <button 
+                                  onClick={(e) => handleSelectFolderTracks(folderExplorerData.directTracks, e)}
+                                  className="text-gray-400 hover:text-white transition-colors"
+                                  title="Seleccionar todas las canciones de este nivel">
+                                  {folderExplorerData.directTracks.every(t => selectedTrackIds.has(t.id)) ? (
+                                    <CheckSquare className={`w-3.5 h-3.5 ${isWWM ? 'text-emerald-400' : 'text-pink-400'}`} />
+                                  ) : (
+                                    <Square className="w-3.5 h-3.5" />
+                                  )}
+                                </button>
+                              </th>
+                              <th className="py-2.5 px-4 w-12 text-center">#</th>
+                              <th className="py-2.5 px-4">Título</th>
+                              <th className="py-2.5 px-4">Artista</th>
+                              <th className="py-2.5 px-4">Álbum</th>
+                              <th className="py-2.5 px-4 w-20 text-center">Formato</th>
+                              <th className="py-2.5 px-4 w-20 text-right">Duración</th>
+                              <th className="py-2.5 px-4 w-20 text-center">Acciones</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-white/5">
+                            {folderExplorerData.directTracks.map((track, idx) => {
+                              const isCurrent = activeTrack?.id === track.id;
+                              const isSelected = selectedTrackIds.has(track.id);
+                              const isFav = favorites.includes(track.id);
+
+                              return (
+                                <tr 
+                                  key={track.id}
+                                  onClick={() => handlePlayTrack(track)}
+                                  className={`cursor-pointer transition-colors ${
+                                    isSelected
+                                      ? isWWM ? 'bg-emerald-500/20 text-emerald-200' : 'bg-pink-500/20 text-pink-200'
+                                      : isCurrent 
+                                        ? isWWM ? 'bg-emerald-500/10 text-emerald-300' : 'bg-pink-500/10 text-pink-300' 
+                                        : 'hover:bg-white/5 text-gray-300'
+                                  }`}>
+                                  <td className="py-2 px-3 text-center" onClick={(e) => e.stopPropagation()}>
+                                    <button 
+                                      onClick={(e) => toggleSelectTrack(track.id, e)}
+                                      className={`p-1 rounded-md transition-colors ${
+                                        isSelected ? (isWWM ? 'text-emerald-400' : 'text-pink-400') : 'text-gray-600 hover:text-gray-400'
+                                      }`}>
+                                      {isSelected ? <CheckSquare className="w-3.5 h-3.5" /> : <Square className="w-3.5 h-3.5" />}
+                                    </button>
+                                  </td>
+                                  <td className="py-2 px-4 text-center text-gray-500 font-mono">
+                                    {isCurrent && isPlaying ? '▶' : track.track_number || idx + 1}
+                                  </td>
+                                  <td className="py-2 px-4 font-semibold text-white truncate max-w-xs">
+                                    <div className="flex items-center gap-2.5">
+                                      <div className="w-7 h-7 rounded-lg overflow-hidden bg-white/5 flex-shrink-0">
+                                        {track.cover_url ? (
+                                          <img src={getCoverSrc(track.cover_url)} alt={track.title} className="w-full h-full object-cover" />
+                                        ) : (
+                                          <div className="w-full h-full flex items-center justify-center bg-white/5">
+                                            <Music2 className="w-3.5 h-3.5 text-gray-500" />
+                                          </div>
+                                        )}
+                                      </div>
+                                      <span className="truncate">{track.title}</span>
+                                    </div>
+                                  </td>
+                                  <td className="py-2 px-4 truncate max-w-[160px] text-gray-400">
+                                    {track.artist}
+                                  </td>
+                                  <td className="py-2 px-4 truncate max-w-[160px] text-gray-400">
+                                    {track.album}
+                                  </td>
+                                  <td className={`py-2 px-4 text-center font-mono text-[10px] ${isWWM ? 'text-emerald-300' : 'text-pink-300'}`}>
+                                    {track.format}
+                                  </td>
+                                  <td className="py-2 px-4 text-right font-mono text-gray-400">
+                                    {track.duration_str}
+                                  </td>
+                                  <td className="py-2 px-4 text-center">
+                                    <div className="flex items-center justify-center gap-1">
+                                      <button 
+                                        onClick={(e) => { e.stopPropagation(); openEditModal(track, e); }}
+                                        className="text-gray-500 hover:text-cyan-400 transition-colors p-1"
+                                        title="Editar metadatos">
+                                        <Pencil className="w-3.5 h-3.5" />
+                                      </button>
+                                      <button 
+                                        onClick={(e) => toggleFavorite(track.id, e)}
+                                        className={`text-gray-500 ${isWWM ? 'hover:text-emerald-400' : 'hover:text-pink-400'} transition-colors p-1`}
+                                        title={isFav ? "Quitar de favoritas" : "Marcar como favorita"}>
+                                        <Heart className={`w-3.5 h-3.5 ${isFav ? (isWWM ? 'text-emerald-400 fill-current' : 'text-pink-400 fill-current') : ''}`} />
+                                      </button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Estado si la carpeta actual no tiene ni subcarpetas ni canciones */}
+                  {folderExplorerData.subfolders.length === 0 && folderExplorerData.directTracks.length === 0 && (
+                    <div className="flex flex-col items-center justify-center p-12 text-center glass-card rounded-3xl border border-white/5 my-6">
+                      <Folder className="w-12 h-12 text-gray-600 mb-3" />
+                      <h4 className="text-sm font-bold text-white mb-1">Esta carpeta no contiene archivos de audio</h4>
+                      <p className="text-xs text-gray-400 mb-4">Puedes volver al nivel anterior para explorar otras carpetas.</p>
+                      <button 
+                        onClick={handleNavigateUp}
+                        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white text-xs font-semibold border border-white/10 transition-all">
+                        <CornerLeftUp className="w-3.5 h-3.5" />
+                        <span>Subir un nivel</span>
+                      </button>
+                    </div>
+                  )}
+
                 </div>
               )}
 
