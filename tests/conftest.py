@@ -36,6 +36,44 @@ def borra_widgets_diferidos(qapp: QApplication) -> None:
     qapp.processEvents()
 
 
+def _destruye_ventanas(qapp: QApplication) -> None:
+    """Cierra y destruye lo que el test dejo vivo, con Qt todavia en pie.
+
+    Un lambda conectado a una senal mantiene una referencia fuerte a su widget.
+    Si esa ventana sobrevive hasta el apagado del interprete, Shiboken libera el
+    objeto cuando Qt ya no existe y el proceso aborta con un access violation
+    (la suite "pasa" pero sale con 0xC0000409). Cerrarlas aca evita esa carrera.
+
+    Las `MainWindow` se apagan primero: sus servicios tienen QThreads y borrar
+    la ventana con un hilo corriendo tambien termina en aborto.
+    """
+    from sakura.ui.main_window import MainWindow
+
+    for widget in qapp.topLevelWidgets():
+        if isinstance(widget, MainWindow):
+            widget.shutdown()
+    for widget in qapp.topLevelWidgets():
+        widget.close()
+        widget.deleteLater()
+
+
+@pytest.fixture(scope="session", autouse=True)
+def limpia_qt_al_final(qapp: QApplication) -> None:
+    """Suelta los objetos Qt que sobreviven a los tests, antes de apagar Qt.
+
+    El cache de `QSvgRenderer` de `icons` es global. Si se destruye despues de
+    `QApplication`, el proceso puede abortar al salir. Este barrido corre antes
+    que el teardown de `qapp` (por eso depende de el) y deja la salida limpia.
+    """
+    yield
+    from sakura.ui import icons
+
+    icons._SVG_CACHE.clear()
+    _destruye_ventanas(qapp)
+    QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
+    qapp.processEvents()
+
+
 @pytest.fixture(scope="session")
 def app_dir(tmp_path_factory: pytest.TempPathFactory) -> Path:
     """Carpeta de datos de la app para toda la corrida, no la del usuario.

@@ -10,11 +10,10 @@ from __future__ import annotations
 from pathlib import Path
 
 from PySide6.QtCore import QPoint, Qt, QTimer
-from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QLabel, QWidget
 
-from ..covers import folder_cover, render_cover, CoverCache
 from .. import theme as th
+from ..covers import CoverCache, folder_cover, render_cover
 
 
 class CoverPreviewWidget(QWidget):

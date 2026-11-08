@@ -21,3 +21,5 @@ ce.txt
 
 # Previews generados por scripts/preview_*.py
 preview_*.png
+# Las capturas versionadas de la documentación sí se commitean
+!docs/img/preview_*.png

@@ -19,8 +19,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from .. import theme as th
 from ...config import load_settings, save_settings
+from .. import theme as th
 from .buttons import IconButton, TextButton
 
 # Filtros de revisión rápidos, mostrados como chips. Cada chip mapea al valor

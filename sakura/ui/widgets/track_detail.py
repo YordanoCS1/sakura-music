@@ -44,6 +44,14 @@ class TrackDetail(QWidget):
         self._track: Track | None = None
         self._covers: dict[Path, Path | None] = CoverCache()
 
+        # El tooltip vuelve solo a los 2 s. El timer es hijo del panel para que
+        # se destruya con el; un `singleShot` con un lambda seguiria vivo y
+        # tocaria un boton ya borrado si el panel se cierra antes.
+        self._tooltip_timer = QTimer(self)
+        self._tooltip_timer.setSingleShot(True)
+        self._tooltip_timer.setInterval(2000)
+        self._tooltip_timer.timeout.connect(self._restore_copy_tooltip)
+
         root = QVBoxLayout(self)
         root.setContentsMargins(0, 0, 0, 0)
         root.setSpacing(0)
@@ -233,7 +241,10 @@ class TrackDetail(QWidget):
         if self._track is not None:
             QApplication.clipboard().setText(str(self._track.path))
             self.copy_path_btn.setToolTip("¡Ruta copiada al portapapeles!")
-            QTimer.singleShot(2000, lambda: self.copy_path_btn.setToolTip("Copiar ruta completa"))
+            self._tooltip_timer.start()
+
+    def _restore_copy_tooltip(self) -> None:
+        self.copy_path_btn.setToolTip("Copiar ruta completa")
 
     def flash_saved(self) -> None:
         """Feedback visual tras guardar cambios de metadatos en SQLite."""

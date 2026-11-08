@@ -38,14 +38,14 @@ from ..services.lyrics import LyricsEmbedder
 from ..widgets.batch_editor import open_edicion_batch
 from ..widgets.breadcrumb import BreadcrumbBar
 from ..widgets.buttons import TextButton
-from ..widgets.library_folders import LibraryFolderPanel
 from ..widgets.cover_preview import CoverPreviewWidget
+from ..widgets.library_folders import LibraryFolderPanel
 from ..widgets.library_selection import LibrarySelectionBar
 from ..widgets.library_toolbar import (
-    DensitySelector,
-    FilterChipsBar,
     SECTION_KEYS,
     SECTION_VIEWS,
+    DensitySelector,
+    FilterChipsBar,
     LibraryToolbar,
 )
 from ..widgets.library_views import VIEW_ORDER, LibraryViewStack
@@ -281,7 +281,7 @@ class LibraryPage(Page):
     def _on_review_filter_changed(self, value: str) -> None:
         """El usuario eligió un chip de filtro: aplica y persiste."""
         self.proxy.set_review_filter(value)
-        key = "all" if not value else value
+        key = value if value else "all"
         self._review_filter = key
         save_settings({"library_review_filter": key})
 

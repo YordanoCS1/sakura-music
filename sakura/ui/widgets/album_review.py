@@ -122,11 +122,11 @@ class AlbumReviewDialog(QDialog):
         footer.setSpacing(10)
 
         self.all = TextButton("Marcar todas", "ghost", icon="check")
-        self.all.clicked.connect(lambda: self._mark_all(True))
+        self.all.clicked.connect(self._mark_all_true)
         footer.addWidget(self.all)
 
         self.ninguna = TextButton("Desmarcar", "ghost", icon="close")
-        self.ninguna.clicked.connect(lambda: self._mark_all(False))
+        self.ninguna.clicked.connect(self._mark_all_false)
         footer.addWidget(self.ninguna)
 
         footer.addStretch(1)
@@ -197,6 +197,12 @@ class AlbumReviewDialog(QDialog):
         self.table.setItem(row_index, 5, item)
 
     # --- acciones ------------------------------------------------------------
+
+    def _mark_all_true(self) -> None:
+        self._mark_all(True)
+
+    def _mark_all_false(self) -> None:
+        self._mark_all(False)
 
     def _mark_all(self, value: bool) -> None:
         for row_index, match in enumerate(self._matches):

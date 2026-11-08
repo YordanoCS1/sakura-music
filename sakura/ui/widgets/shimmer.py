@@ -7,7 +7,7 @@ contenido se esta cargando. No dependen de recursos externos: todo se pinta con
 
 from __future__ import annotations
 
-from PySide6.QtCore import QPropertyAnimation, QRectF, Qt, QTimer
+from PySide6.QtCore import QPropertyAnimation, QRectF, Qt
 from PySide6.QtGui import QColor, QLinearGradient, QPainter, QPixmap
 from PySide6.QtWidgets import QWidget
 
@@ -55,7 +55,7 @@ class ShimmerPlaceholder(QWidget):
 
     # --- pintado -------------------------------------------------------------
 
-    def paintEvent(self, event) -> None:  # noqa: N802
+    def paintEvent(self, event) -> None:
         t = th.active()
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
@@ -64,7 +64,9 @@ class ShimmerPlaceholder(QWidget):
         base = QColor(t.surface_alt)
         painter.setPen(Qt.PenStyle.NoPen)
         painter.setBrush(base)
-        painter.drawRoundedRect(QRectF(0, 0, self.width(), self.height()), self._radius, self._radius)
+        painter.drawRoundedRect(
+            QRectF(0, 0, self.width(), self.height()), self._radius, self._radius
+        )
 
         # Brillo: gradiente que se desplaza.
         w = self.width()

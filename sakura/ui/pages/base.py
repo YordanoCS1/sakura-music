@@ -12,8 +12,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from .. import icons
-from .. import sakura
+from .. import icons, sakura
 from .. import theme as th
 from ..widgets.buttons import TextButton
 
@@ -193,7 +192,7 @@ class Page(QWidget):
         title: str = "",
         action: str = "",
         illustration_size: int = 160,
-    ) -> "IllustratedEmptyState":
+    ) -> IllustratedEmptyState:
         """Estado vacio con ilustracion grande de sakura y petalos cayendo.
 
         Reemplaza al icono pequeno de `empty_state` por una ilustracion
