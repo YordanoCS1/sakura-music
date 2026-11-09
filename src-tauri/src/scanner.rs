@@ -109,12 +109,12 @@ fn write_atomic_with_retries(path: &Path, bytes: &[u8], attempts: u32) -> std::i
 }
 
 fn extract_cover_art(tag: Option<&lofty::tag::Tag>, parent_dir: &Path) -> Option<String> {
-    // 1. Intentar portada incrustada en el archivo y guardarla en cache de disco.
-    // Ojo: solo se devuelve la ruta si el archivo quedó escrito y existe —
-    // antes se devolvía aunque el write hubiera fallado y el frontend
-    // mostraba un placeholder en su lugar.
+    // 1. Intentar la portada incrustada en el archivo y guardarla en caché.
+    // Elegir la más grande: los tags pueden traer una miniatura (64x64)
+    // junto a la portada principal; quedarse con la primera la mostraba borrosa.
     if let Some(t) = tag {
-        if let Some(pic) = t.pictures().first() {
+        let pic = t.pictures().iter().max_by_key(|p| p.data().len());
+        if let Some(pic) = pic {
             let data = pic.data();
             let hash = fnv1a_128(data);
             let filename = format!("{:x}.{}", hash, cover_extension(pic));
