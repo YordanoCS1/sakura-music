@@ -222,12 +222,12 @@ export function useFolderExplorer({
   const albumGroups = useMemo<AlbumGroup[]>(() => {
     const map = new Map<string, AlbumGroup>();
     filteredTracks.forEach((track) => {
-      const albumName = (track.album && track.album.trim()) ? track.album.trim() : 'Álbum Desconocido';
+      const albumName = (track.album && track.album.trim()) ? track.album.trim() : 'Sin álbum';
       const artistName = (track.album_artist && track.album_artist.trim())
         ? track.album_artist.trim()
         : (track.artist && track.artist.trim())
           ? track.artist.trim()
-          : 'Artista Desconocido';
+          : 'Sin artista';
       const key = `${albumName}:::${artistName}`;
       if (!map.has(key)) {
         map.set(key, {

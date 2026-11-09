@@ -152,51 +152,6 @@ fn extract_cover_art(tag: Option<&lofty::tag::Tag>, parent_dir: &Path) -> Option
     None
 }
 
-/// Infieren artista/álbum de las carpetas cuando faltan los tags.
-/// `.../<artista>/<álbum>/01 - pista.flac` o `.../<álbum>/01 - pista.flac` o
-/// `.../<artista> - <álbum>/01 - pista.flac`. Solo completa lo que falta.
-fn infer_from_path(parent: &Path, artist_tag: Option<String>, album_tag: Option<String>) -> (String, String) {
-    fn cleaned(value: &str) -> Option<String> {
-        let v = value.trim();
-        if v.is_empty() {
-            None
-        } else {
-            Some(v.to_string())
-        }
-    }
-
-    let artist = artist_tag.and_then(|s| cleaned(&s));
-    let album = album_tag.and_then(|s| cleaned(&s));
-    if artist.is_some() && album.is_some() {
-        return (artist.unwrap(), album.unwrap());
-    }
-
-    let folder = parent.file_name().map(|n| n.to_string_lossy().to_string());
-    let grandparent = parent
-        .parent()
-        .and_then(|p| p.file_name())
-        .map(|n| n.to_string_lossy().to_string());
-
-    // Carpeta "Artista - Álbum": completa cualquier campo faltante.
-    if let Some(ref name) = folder {
-        if let Some(dash) = name.find(" - ") {
-            let a = name[..dash].trim().to_string();
-            let b = name[dash + 3..].trim().to_string();
-            if !a.is_empty() && !b.is_empty() {
-                return (
-                    artist.unwrap_or(a),
-                    album.unwrap_or(b),
-                );
-            }
-        }
-    }
-
-    // Carpeta = álbum; la carpeta padre = artista.
-    let album_out = album.or_else(|| folder.and_then(|n| cleaned(&n))).unwrap_or_else(|| "Álbum Desconocido".to_string());
-    let artist_out = artist.or_else(|| grandparent.and_then(|n| cleaned(&n))).unwrap_or_else(|| "Artista Desconocido".to_string());
-    (artist_out, album_out)
-}
-
 pub fn scan_audio_file(path: &Path) -> Option<ScannedTrack> {
     let ext = path.extension()?.to_str()?.to_lowercase();
     let supported = ["mp3", "flac", "m4a", "opus", "ogg", "wav", "aac"];
@@ -220,15 +175,15 @@ pub fn scan_audio_file(path: &Path) -> Option<ScannedTrack> {
                 .filter(|s| !s.is_empty())
                 .unwrap_or_else(|| filename.clone());
 
-            let artist_tag = tag.and_then(|t| t.artist()).map(|s| s.to_string());
-            let album_tag = tag.and_then(|t| t.album()).map(|s| s.to_string());
+            // Sin tags, los campos quedan vacíos y la UI muestra "—".
+            // No se inventa ningún "desconocido": las canciones salen tal cual.
+            let artist = tag.and_then(|t| t.artist()).map(|s| s.trim().to_string()).unwrap_or_default();
+            let album = tag.and_then(|t| t.album()).map(|s| s.trim().to_string()).unwrap_or_default();
 
             let year = tag.and_then(|t| t.year());
             let genre = tag.and_then(|t| t.genre()).map(|s| s.to_string());
             let track_number = tag.and_then(|t| t.track());
             let album_artist = tag.and_then(|t| t.get_string(&lofty::tag::ItemKey::AlbumArtist)).map(|s| s.to_string());
-            // Sin tags válidos: los infiere de las carpetas (artista/álbum).
-            let (artist, album) = infer_from_path(parent, artist_tag, album_tag);
             let cover_url = extract_cover_art(tag, parent);
 
             Some(ScannedTrack {
@@ -249,14 +204,12 @@ pub fn scan_audio_file(path: &Path) -> Option<ScannedTrack> {
             })
         }
         Err(_) => {
-            // Ni la sonda de tags funcionó: infiere al menos las carpetas.
-            let (artist, album) = infer_from_path(parent, None, None);
             Some(ScannedTrack {
                 id: format!("{:x}", fnv1a_128(path.to_string_lossy().as_bytes())),
                 path: path.to_string_lossy().to_string(),
                 title: filename,
-                artist,
-                album,
+                artist: String::new(),
+                album: String::new(),
                 album_artist: None,
                 track_number: None,
                 duration: 0,
@@ -630,33 +583,6 @@ mod tests {
         let b = fnv1a_128(b"dos");
         assert_ne!(a, b);
         assert_eq!(a, fnv1a_128(b"uno"));
-    }
-
-    #[test]
-    fn infiere_album_y_artista_por_carpetas() {
-        // Artista/Álbum en dos niveles
-        let p = Path::new(r"D:\Música\LiSA\The First Take\pista.flac");
-        let (artist, album) = infer_from_path(p.parent().unwrap(), None, None);
-        assert_eq!(artist, "LiSA");
-        assert_eq!(album, "The First Take");
-
-        // Solo carpeta de álbum
-        let p2 = Path::new(r"D:\Música\Greatest Hits\pista.flac");
-        let (artist2, album2) = infer_from_path(p2.parent().unwrap(), None, None);
-        assert_eq!(artist2, "Música");
-        assert_eq!(album2, "Greatest Hits");
-
-        // Tags presentes: se respetan tal cual
-        let p3 = Path::new(r"D:\Música\otra-carpeta\pista.flac");
-        let (artist3, album3) = infer_from_path(p3.parent().unwrap(), Some("A".into()), Some("B".into()));
-        assert_eq!(artist3, "A");
-        assert_eq!(album3, "B");
-
-        // Carpeta "Artista - Álbum"
-        let p4 = Path::new(r"D:\Música\YOASOBI - Idol\pista.flac");
-        let (artist4, album4) = infer_from_path(p4.parent().unwrap(), None, None);
-        assert_eq!(artist4, "YOASOBI");
-        assert_eq!(album4, "Idol");
     }
 
     #[test]

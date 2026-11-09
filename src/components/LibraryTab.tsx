@@ -1,5 +1,6 @@
-import { ArrowLeft, Calendar, CheckSquare, ChevronRight, Clock, CornerLeftUp, Disc3, Folder, FolderOpen, FolderTree, Heart, Layers, LayoutGrid, List, Music2, Pause, Pencil, Play, RotateCw, Square } from 'lucide-react';
+import { ArrowLeft, Calendar, CheckSquare, ChevronRight, Clock, CornerLeftUp, Disc3, Folder, FolderOpen, Heart, Layers, Music2, Pause, Pencil, Play, Square } from 'lucide-react';
 import type { AlbumGroup, FolderExplorerData, ScannedTrack, ViewMode } from '../types';
+import LibraryToolbar from './LibraryToolbar';
 
 interface LibraryTabProps {
   tracks: ScannedTrack[];
@@ -80,107 +81,21 @@ export default function LibraryTab({
 }: LibraryTabProps) {
   return (
             <div>
-              {/* Barra de herramientas de biblioteca */}
-              <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
-                <div>
-                  <h2 className="text-base font-bold text-white tracking-wide flex items-center gap-2">
-                    <span>Biblioteca Local de Música</span>
-                    {isScanning && <span className="text-[11px] font-normal text-accent-400 animate-pulse">Escaneando...</span>}
-                  </h2>
-                  <p className="text-xs text-gray-400">
-                    {currentFolder ? (
-                      <span className="font-mono text-gray-300 truncate max-w-md inline-block">Carpeta: {currentFolder}</span>
-                    ) : (
-                      'Indexada en paralelo con Rayon + Lofty de Rust'
-                    )}
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <button 
-                    onClick={onOpenFolderDialog}
-                    disabled={isScanning}
-                    className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl ${isWWM ? 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-500/20' : 'bg-accent-600 hover:bg-accent-500 shadow-accent-500/20'} text-white text-xs font-semibold shadow-lg transition-all active:scale-95 disabled:opacity-50`}>
-                    <FolderOpen className="w-3.5 h-3.5" />
-                    <span>Seleccionar Carpeta</span>
-                  </button>
-
-                  {currentFolder && (
-                    <button 
-                      onClick={() => onScanFolder(currentFolder)}
-                      disabled={isScanning}
-                      className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white border border-white/10 transition-all active:scale-95 disabled:opacity-50"
-                      title="Volver a escanear carpeta actual">
-                      <RotateCw className={`w-3.5 h-3.5 ${isScanning ? 'animate-spin' : ''}`} />
-                    </button>
-                  )}
-
-                  <div className="flex items-center p-0.5 rounded-xl bg-white/5 border border-white/5 ml-1">
-                    <button 
-                      onClick={() => onSetViewMode('folders')}
-                      className={`p-1.5 rounded-lg transition-colors ${viewMode === 'folders' ? 'bg-white/10 text-white shadow-sm' : 'text-gray-400 hover:text-white'}`}
-                      title="Vista Explorador por Carpetas">
-                      <FolderTree className="w-3.5 h-3.5" />
-                    </button>
-                    <button 
-                      onClick={() => onSetViewMode('grid')}
-                      className={`p-1.5 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-white/10 text-white shadow-sm' : 'text-gray-400 hover:text-white'}`}
-                      title="Vista Cuadrícula">
-                      <LayoutGrid className="w-3.5 h-3.5" />
-                    </button>
-                    <button 
-                      onClick={() => onSetViewMode('table')}
-                      className={`p-1.5 rounded-lg transition-colors ${viewMode === 'table' ? 'bg-white/10 text-white shadow-sm' : 'text-gray-400 hover:text-white'}`}
-                      title="Vista Lista / Tabla">
-                      <List className="w-3.5 h-3.5" />
-                    </button>
-                    <button 
-                      onClick={() => { onSetViewMode('albums'); onSetExpandedAlbumKey(null); }}
-                      className={`p-1.5 rounded-lg transition-colors ${viewMode === 'albums' ? 'bg-white/10 text-white shadow-sm' : 'text-gray-400 hover:text-white'}`}
-                      title="Vista Estante de Álbumes (Album Shelf)">
-                      <Disc3 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Barra de Selección Múltiple y Batch Editor */}
-              {selectedTrackIds.size > 0 && (
-                <div className={`flex items-center justify-between p-3.5 mb-5 rounded-2xl bg-gradient-to-r ${isWWM ? 'from-emerald-950/60 via-teal-950/40 to-emerald-950/30 border-emerald-500/30' : 'from-accent-900/40 via-purple-900/40 to-accent-900/20 border-accent-500/30'} shadow-xl backdrop-blur-md animate-in fade-in slide-in-from-top-2`}>
-                  <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-xl ${isWWM ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-300' : 'bg-accent-500/20 border-accent-500/30 text-accent-300'} flex items-center justify-center`}>
-                      <Layers className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold text-white">
-                        {selectedTrackIds.size} de {filteredTracks.length} canciones seleccionadas
-                      </p>
-                      <p className={`text-[11px] ${isWWM ? 'text-emerald-200/70' : 'text-accent-200/70'}`}>
-                        Edición en lote: aplica álbum, artista, año, género o portada compartida
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <button 
-                      onClick={onSelectAllFiltered}
-                      className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white text-xs font-semibold border border-white/10 transition-all">
-                      Seleccionar Todas
-                    </button>
-                    <button 
-                      onClick={onClearSelection}
-                      className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-gray-200 text-xs transition-all">
-                      Deseleccionar
-                    </button>
-                    <button 
-                      onClick={onOpenBatchModal}
-                      className={`flex items-center gap-2 px-4 py-1.5 rounded-xl bg-gradient-to-r ${isWWM ? 'from-emerald-500 to-teal-400 shadow-emerald-500/25' : 'from-accent-500 to-accent-400 shadow-accent-500/25'} hover:brightness-110 text-white text-xs font-bold shadow-lg active:scale-95 transition-all`}>
-                      <Pencil className="w-3.5 h-3.5" />
-                      <span>Editar en Lote ({selectedTrackIds.size})</span>
-                    </button>
-                  </div>
-                </div>
-              )}
+              <LibraryToolbar
+                currentFolder={currentFolder}
+                isScanning={isScanning}
+                isWWM={isWWM}
+                viewMode={viewMode}
+                selectedCount={selectedTrackIds.size}
+                filteredCount={filteredTracks.length}
+                onOpenFolderDialog={onOpenFolderDialog}
+                onScanFolder={onScanFolder}
+                onSetViewMode={onSetViewMode}
+                onClearExpandedAlbum={() => onSetExpandedAlbumKey(null)}
+                onSelectAllFiltered={onSelectAllFiltered}
+                onClearSelection={onClearSelection}
+                onOpenBatchModal={onOpenBatchModal}
+              />
 
               {/* Estado vacío si no hay canciones */}
               {tracks.length === 0 && !isScanning && (
@@ -420,10 +335,10 @@ export default function LibraryTab({
                                     </div>
                                   </td>
                                   <td className="py-2 px-4 truncate max-w-[160px] text-gray-400">
-                                    {track.artist}
+                                    {track.artist || '—'}
                                   </td>
                                   <td className="py-2 px-4 truncate max-w-[160px] text-gray-400">
-                                    {track.album}
+                                    {track.album || '—'}
                                   </td>
                                   <td className={`py-2 px-4 text-center font-mono text-[10px] ${isWWM ? 'text-emerald-300' : 'text-accent-300'}`}>
                                     {track.format}
@@ -635,10 +550,10 @@ export default function LibraryTab({
                               {track.title}
                             </td>
                             <td className="py-2 px-4 truncate max-w-[160px] text-gray-400">
-                              {track.artist}
+                              {track.artist || '—'}
                             </td>
                             <td className="py-2 px-4 truncate max-w-[160px] text-gray-400">
-                              {track.album}
+                              {track.album || '—'}
                             </td>
                             <td className={`py-2 px-4 text-center font-mono text-[10px] ${isWWM ? 'text-emerald-300' : 'text-accent-300'}`}>
                               {track.format}
