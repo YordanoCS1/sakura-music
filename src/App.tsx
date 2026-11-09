@@ -1,8 +1,7 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { convertFileSrc } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-dialog';
-import { listen } from '@tauri-apps/api/event';
 import { 
   Home, 
   Search, 
@@ -16,19 +15,14 @@ import {
 
 import type {
   ScannedTrack,
-  PlaylistInfo,
   OnlineSearchResult,
   DownloaderStatus,
-  DownloadProgressEvent,
   AppInfo,
   ThemeMode,
   ThemeWorld,
   PlayerStyle,
   ViewMode,
-  AlbumGroup,
 } from './types';
-import type { PersistedDownload } from './lib/queue';
-import { toPersisted, fromPersisted } from './lib/queue';
 import { useBatchEditor } from './hooks/useBatchEditor';
 import { useMetadataEditor } from './hooks/useMetadataEditor';
 import QueueTab from './components/QueueTab';
@@ -39,8 +33,9 @@ import SearchTab from './components/SearchTab';
 import LibraryTab from './components/LibraryTab';
 import MetadataModal from './components/MetadataModal';
 import BatchModal from './components/BatchModal';
-export type { DownloadItem } from './types';
-import type { DownloadItem } from './types';
+import { useDownloadQueue } from './hooks/useDownloadQueue';
+import { useOnlineSearch } from './hooks/useOnlineSearch';
+import { useFolderExplorer } from './hooks/useFolderExplorer';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<'home' | 'search' | 'library' | 'queue' | 'settings'>('library');
@@ -110,8 +105,6 @@ export default function App() {
     setViewMode(mode);
     localStorage.setItem('sakura_view_mode', mode);
   };
-  const [currentFolderNav, setCurrentFolderNav] = useState<string[]>([]);
-  const [expandedAlbumKey, setExpandedAlbumKey] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [tracks, setTracks] = useState<ScannedTrack[]>([]);
   const [activeTrack, setActiveTrack] = useState<ScannedTrack | null>(null);
@@ -132,14 +125,53 @@ export default function App() {
 
   // Estado del motor de descargas
   const [toolsStatus, setToolsStatus] = useState<DownloaderStatus | null>(null);
-  const [onlineQuery, setOnlineQuery] = useState('');
-  const [onlineResults, setOnlineResults] = useState<OnlineSearchResult[]>([]);
-  const [isSearchingOnline, setIsSearchingOnline] = useState(false);
-  const [onlineSearchError, setOnlineSearchError] = useState<string | null>(null);
-  const [downloads, setDownloads] = useState<DownloadItem[]>([]);
-  const [downloadFormat, setDownloadFormat] = useState('FLAC');
-  const [restoredNotice, setRestoredNotice] = useState<string | null>(null);
-  const queueRestoredRef = useRef(false);
+  // Cola de descargas (estado + restauración + eventos). Vive en useDownloadQueue.ts;
+  // La búsqueda online vive en useOnlineSearch.ts.
+  const rescanAfterDownload = useCallback(() => {
+    const folder = localStorage.getItem('sakura_current_folder');
+    if (folder) {
+      invoke<ScannedTrack[]>('scan_library', { folderPath: folder })
+        .then(scanned => setTracks(scanned))
+        .catch(e => console.error("Error al auto-actualizar biblioteca:", e));
+    }
+  }, []);
+
+  const {
+    downloads, setDownloads,
+    downloadFormat, setDownloadFormat,
+    restoredNotice, setRestoredNotice,
+    triggerDownload,
+    cancelDownload,
+    cancelAllDownloads,
+    retryDownload,
+  } = useDownloadQueue({
+    currentFolder,
+    defaultMusicDir,
+    rescanAfterDownload,
+  });
+
+  const {
+    onlineQuery, setOnlineQuery,
+    onlineResults, setOnlineResults,
+    isSearchingOnline,
+    onlineSearchError,
+    playlistInfo, setPlaylistInfo,
+    isResolvingPlaylist,
+    playlistSearchError,
+    selectedPlaylistItems,
+    createAlbumFolder, setCreateAlbumFolder,
+    toggleSelectPlaylistItem,
+    selectAllPlaylistItems,
+    clearAllPlaylistItems,
+    handleDownloadSelectedPlaylist,
+    handleOnlineSearch,
+  } = useOnlineSearch({
+    triggerDownload,
+    currentFolder,
+    defaultMusicDir,
+    setActiveTab,
+  });
+
 
   // Referencia al elemento nativo de audio y al Blob URL activo
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -272,88 +304,8 @@ export default function App() {
         if (dir) setDefaultMusicDir(dir);
       })
       .catch(err => console.error("Error al obtener directorio de música:", err));
-
-    // Restaurar la cola de descargas de la sesión anterior.
-    // Las que estaban en curso al cerrar volvieron como `interrumpida` desde
-    // el backend: se relanzan con el mismo id, destino y formato.
-    invoke<PersistedDownload[]>('get_download_queue')
-      .then(saved => {
-        const restored: DownloadItem[] = (saved || []).map(fromPersisted);
-        setDownloads(restored);
-        queueRestoredRef.current = true;
-        const interrupted = restored.filter(d => d.status === 'interrumpida');
-        if (restored.length > 0) {
-          setRestoredNotice(
-            interrupted.length > 0
-              ? `Se restauraron ${restored.length} descargas; ${interrupted.length} se reanudarán solos.`
-              : `Se restauraron ${restored.length} descargas de la sesión anterior.`
-          );
-        }
-        for (const item of interrupted) {
-          const dest = item.outputDir || localStorage.getItem('sakura_current_folder') || null;
-          invoke('start_download', {
-            jobId: item.id,
-            url: item.url,
-            format: item.format,
-            ...(dest ? { outputDir: dest } : {}),
-          }).catch(err => {
-            console.error("Error al reanudar descarga:", err);
-            setDownloads(prev => prev.map(d =>
-              d.id === item.id ? { ...d, status: `error: ${String(err)}` } : d
-            ));
-          });
-        }
-      })
-      .catch(err => {
-        console.error("Error al restaurar la cola de descargas:", err);
-        queueRestoredRef.current = true;
-      });
-
-    // Escuchar eventos en vivo emitidos desde el motor Rust
-    const unlistenPromise = listen<DownloadProgressEvent>('download-progress', (event) => {
-      const payload = event.payload;
-      setDownloads(prev => {
-        return prev.map(item => {
-          if (item.id === payload.id) {
-            return {
-              ...item,
-              progress: payload.progress,
-              speed: payload.speed,
-              eta: payload.eta,
-              status: payload.status,
-              ...(payload.file_path ? { filePath: payload.file_path } : {}),
-            };
-          }
-          return item;
-        });
-      });
-
-      // Si terminó de descargar y convertir, re-escanear para actualizar biblioteca en vivo
-      if (payload.status === 'completado') {
-        const folder = localStorage.getItem('sakura_current_folder');
-        if (folder) {
-          invoke<ScannedTrack[]>('scan_library', { folderPath: folder })
-            .then(scanned => setTracks(scanned))
-            .catch(e => console.error("Error al auto-actualizar biblioteca:", e));
-        }
-      }
-    });
-
-    return () => {
-      unlistenPromise.then(unlisten => unlisten());
-    };
   }, []);
 
-  // Persistir la cola tras cada cambio (una vez restaurada, para no pisar el
-  // archivo con la lista vacía inicial). El backend recorta a 100 y escribe
-  // atómicamente.
-  useEffect(() => {
-    if (!queueRestoredRef.current) return;
-    const snapshot = downloads.map(toPersisted);
-    invoke('save_download_queue', { items: snapshot }).catch(err =>
-      console.error("Error al guardar la cola de descargas:", err)
-    );
-  }, [downloads]);
 
   // Sincronizar conteo en appInfo
   useEffect(() => {
@@ -537,170 +489,8 @@ export default function App() {
   };
 
   // Playlist / Álbum de YouTube
-  const [playlistInfo, setPlaylistInfo] = useState<PlaylistInfo | null>(null);
-  const [isResolvingPlaylist, setIsResolvingPlaylist] = useState(false);
-  const [playlistSearchError, setPlaylistSearchError] = useState<string | null>(null);
-  const [selectedPlaylistItems, setSelectedPlaylistItems] = useState<Set<string>>(new Set());
-  const [createAlbumFolder, setCreateAlbumFolder] = useState(true);
 
-  const handleResolvePlaylist = async (url: string) => {
-    if (!url.trim()) return;
-    setIsResolvingPlaylist(true);
-    setPlaylistSearchError(null);
-    setPlaylistInfo(null);
-    try {
-      const info = await invoke<PlaylistInfo>('resolve_playlist', { url: url.trim() });
-      setPlaylistInfo(info);
-      setSelectedPlaylistItems(new Set(info.items.map(it => it.id)));
-    } catch (err) {
-      console.error("Error al resolver playlist:", err);
-      setPlaylistSearchError(`Error al consultar playlist: ${String(err)}`);
-    } finally {
-      setIsResolvingPlaylist(false);
-    }
-  };
 
-  const toggleSelectPlaylistItem = (id: string) => {
-    setSelectedPlaylistItems(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
-
-  const selectAllPlaylistItems = () => {
-    if (playlistInfo) {
-      setSelectedPlaylistItems(new Set(playlistInfo.items.map(it => it.id)));
-    }
-  };
-
-  const clearAllPlaylistItems = () => {
-    setSelectedPlaylistItems(new Set());
-  };
-
-  const handleDownloadSelectedPlaylist = async () => {
-    if (!playlistInfo || selectedPlaylistItems.size === 0) return;
-    
-    const baseFolder = currentFolder || defaultMusicDir || '.';
-    const sanitizeFolderName = (name: string) => name.replace(/[<>:"/\\|?*]/g, '_').trim();
-    const targetFolder = createAlbumFolder 
-      ? `${baseFolder}\\${sanitizeFolderName(playlistInfo.title)}` 
-      : baseFolder;
-
-    const itemsToDownload = playlistInfo.items.filter(it => selectedPlaylistItems.has(it.id));
-    
-    for (const item of itemsToDownload) {
-      triggerDownload(item.title, item.uploader, item.url, item.thumbnail, targetFolder);
-    }
-
-    setActiveTab('queue');
-  };
-
-  // Búsqueda en línea en YouTube / Soundcloud mediante yt-dlp
-  const handleOnlineSearch = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    const query = onlineQuery.trim();
-    if (!query) return;
-
-    // Si es enlace directo de playlist / álbum
-    if ((query.startsWith('http://') || query.startsWith('https://')) && 
-        (query.includes('list=') || query.includes('playlist') || query.includes('/album/'))) {
-      await handleResolvePlaylist(query);
-      return;
-    }
-
-    // Si es enlace directo a un video único (http://...), iniciar descarga directa
-    if (query.startsWith('http://') || query.startsWith('https://')) {
-      triggerDownload('Enlace Web', 'Procesando metadatos...', query, null);
-      setOnlineQuery('');
-      return;
-    }
-
-    setIsSearchingOnline(true);
-    setOnlineSearchError(null);
-    setPlaylistInfo(null);
-    try {
-      const results = await invoke<OnlineSearchResult[]>('search_online', { query });
-      setOnlineResults(results);
-      if (results.length === 0) {
-        setOnlineSearchError('No se encontraron resultados para la búsqueda.');
-      }
-    } catch (err) {
-      console.error("Error al buscar en línea:", err);
-      setOnlineSearchError(`Error al buscar en YouTube: ${String(err)}`);
-    } finally {
-      setIsSearchingOnline(false);
-    }
-  };
-
-  // Iniciar descarga asíncrona real en segundo plano
-  const triggerDownload = async (title: string, artist: string, url: string, thumbnail?: string | null, customFolder?: string) => {
-    const jobId = `dl-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
-    const destFolder = customFolder || currentFolder || defaultMusicDir || '.';
-    const newJob: DownloadItem = {
-      id: jobId,
-      title,
-      artist,
-      url,
-      progress: 0,
-      speed: 'Conectando...',
-      eta: '--:--',
-      status: 'en cola',
-      format: downloadFormat,
-      size: 'Calculando...',
-      thumbnail,
-      outputDir: destFolder,
-      filePath: null,
-      createdAt: Date.now(),
-    };
-
-    setDownloads(prev => [newJob, ...prev]);
-    try {
-      await invoke('start_download', {
-        jobId,
-        url,
-        format: downloadFormat,
-        outputDir: destFolder,
-      });
-    } catch (err) {
-      console.error("Error al iniciar descarga:", err);
-      setDownloads(prev => prev.map(d => d.id === jobId ? { ...d, status: `error: ${String(err)}` } : d));
-    }
-  };
-
-  // Cancelar una descarga puntual (en cola o en curso)
-  const cancelDownload = async (jobId: string) => {
-    try {
-      await invoke('cancel_download', { jobId });
-      setDownloads(prev => prev.map(d =>
-        d.id === jobId && !d.status.startsWith('completado')
-          ? { ...d, status: 'cancelado', speed: '--', eta: '--' }
-          : d
-      ));
-    } catch (err) {
-      console.error("Error al cancelar descarga:", err);
-    }
-  };
-
-  // Cancelar todo lo pendiente y en curso
-  const cancelAllDownloads = async () => {
-    try {
-      await invoke('cancel_all_downloads');
-      setDownloads(prev => prev.map(d =>
-        d.status.startsWith('completado') || d.status.includes('error')
-          ? d
-          : { ...d, status: 'cancelado', speed: '--', eta: '--' }
-      ));
-    } catch (err) {
-      console.error("Error al cancelar descargas:", err);
-    }
-  };
-
-  // Reintentar una descarga con los mismos datos (mismo destino si lo tenía)
-  const retryDownload = (item: DownloadItem) => {
-    triggerDownload(item.title, item.artist, item.url, item.thumbnail, item.outputDir ?? undefined);
-  };
 
   // Selección múltiple y Batch Editor
   const [selectedTrackIds, setSelectedTrackIds] = useState<Set<string>>(new Set());
@@ -800,277 +590,33 @@ export default function App() {
 
 
   // Base común de carpetas para el Explorador
-  const baseFolderPath = useMemo(() => {
-    if (currentFolder) return currentFolder.replace(/\\/g, '/').replace(/\/+$/, '');
-    if (tracks.length === 0) return '';
-    const splitPaths = tracks.map(t => t.path.replace(/\\/g, '/').split('/'));
-    let common = splitPaths[0].slice(0, -1);
-    for (let i = 1; i < splitPaths.length; i++) {
-      const cur = splitPaths[i];
-      let j = 0;
-      while (j < common.length && j < cur.length - 1 && common[j] === cur[j]) {
-        j++;
-      }
-      common = common.slice(0, j);
-      if (common.length === 0) break;
-    }
-    return common.join('/');
-  }, [currentFolder, tracks]);
-
-  // Explorador por Carpetas Inteligente (Navegación jerárquica)
-  const folderExplorerData = useMemo(() => {
-    const rootFolderName = currentFolder 
-      ? currentFolder.replace(/\\/g, '/').split('/').filter(Boolean).pop() || 'Biblioteca'
-      : 'Biblioteca';
-
-    if (tracks.length === 0) {
-      return { 
-        subfolders: [], 
-        directTracks: [], 
-        allFolderTracks: [], 
-        currentPathStr: '', 
-        rootFolderName 
-      };
-    }
-
-    const currentPathStr = currentFolderNav.join('/');
-    const subfolderMap = new Map<string, {
-      name: string;
-      relativePath: string;
-      tracks: ScannedTrack[];
-      subfolderNames: Set<string>;
-      formats: Set<string>;
-      sampleCoverUrl: string | null;
-    }>();
-
-    const directTracks: ScannedTrack[] = [];
-    const allFolderTracks: ScannedTrack[] = [];
-    const normBase = baseFolderPath;
-
-    tracks.forEach((track) => {
-      const normPath = track.path.replace(/\\/g, '/');
-      let rel = normPath;
-      if (normBase && normPath.startsWith(normBase)) {
-        rel = normPath.slice(normBase.length).replace(/^\/+/, '');
-      }
-      const segments = rel.split('/');
-      segments.pop(); // quitar nombre de archivo
-
-      // Verificar si la pista pertenece a la carpeta actual de navegación
-      const isInsideCurrent = currentFolderNav.every((seg, idx) => segments[idx] === seg);
-
-      if (isInsideCurrent) {
-        allFolderTracks.push(track);
-
-        if (segments.length === currentFolderNav.length) {
-          // Es una canción directa en este nivel
-          directTracks.push(track);
-        } else if (segments.length > currentFolderNav.length) {
-          // Pertenece a una subcarpeta inmediata
-          const subfolderName = segments[currentFolderNav.length];
-          const subRelPath = [...currentFolderNav, subfolderName].join('/');
-
-          if (!subfolderMap.has(subfolderName)) {
-            subfolderMap.set(subfolderName, {
-              name: subfolderName,
-              relativePath: subRelPath,
-              tracks: [],
-              subfolderNames: new Set(),
-              formats: new Set(),
-              sampleCoverUrl: null,
-            });
-          }
-          const sub = subfolderMap.get(subfolderName)!;
-          sub.tracks.push(track);
-          if (track.cover_url && !sub.sampleCoverUrl) {
-            sub.sampleCoverUrl = track.cover_url;
-          }
-          if (track.format) {
-            sub.formats.add(track.format);
-          }
-          if (segments.length > currentFolderNav.length + 1) {
-            sub.subfolderNames.add(segments[currentFolderNav.length + 1]);
-          }
-        }
-      }
-    });
-
-    const subfolders = Array.from(subfolderMap.values()).map(sub => ({
-      name: sub.name,
-      relativePath: sub.relativePath,
-      trackCount: sub.tracks.length,
-      subfolderCount: sub.subfolderNames.size,
-      sampleCoverUrl: sub.sampleCoverUrl,
-      formats: Array.from(sub.formats),
-      tracks: sub.tracks,
-    })).sort((a, b) => a.name.localeCompare(b.name));
-
-    // Filtrar canciones directas por búsqueda si hay consulta activa
-    const filteredDirectTracks = searchQuery.trim() 
-      ? directTracks.filter(t => 
-          t.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-          t.artist.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-      : directTracks;
-
-    return {
-      subfolders,
-      directTracks: filteredDirectTracks,
-      allFolderTracks,
-      currentPathStr,
-      rootFolderName,
-    };
-  }, [tracks, baseFolderPath, currentFolderNav, searchQuery, currentFolder]);
-
-  // Acciones de navegación por carpetas
-  const handleNavigateIntoFolder = (folderName: string) => {
-    setCurrentFolderNav(prev => [...prev, folderName]);
-  };
-
-  const handleNavigateToBreadcrumb = (index: number) => {
-    if (index === -1) {
-      setCurrentFolderNav([]);
-    } else {
-      setCurrentFolderNav(prev => prev.slice(0, index + 1));
-    }
-  };
-
-  const handleNavigateUp = () => {
-    setCurrentFolderNav(prev => prev.slice(0, -1));
-  };
-
-  const handlePlayFolderTracks = (tracksToPlay: ScannedTrack[]) => {
-    if (tracksToPlay.length > 0) {
-      handlePlayTrack(tracksToPlay[0]);
-    }
-  };
-
-  const handleSelectFolderTracks = (tracksToSelect: ScannedTrack[], e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
-    const ids = tracksToSelect.map(t => t.id);
-    setSelectedTrackIds(prev => {
-      const next = new Set(prev);
-      const allSelected = ids.every(id => next.has(id));
-      if (allSelected) {
-        ids.forEach(id => next.delete(id));
-      } else {
-        ids.forEach(id => next.add(id));
-      }
-      return next;
-    });
-  };
-
-  // Filtrado de canciones en memoria instantáneo (<1ms para miles de canciones)
-  const filteredTracks = useMemo(() => {
-    return tracks.filter(track => {
-      // Si hay navegación de carpeta activa en vistas Grid/Table/Albums, filtrar por esa carpeta
-      if (currentFolderNav.length > 0 && viewMode !== 'folders') {
-        const normPath = track.path.replace(/\\/g, '/');
-        let rel = normPath;
-        if (baseFolderPath && normPath.startsWith(baseFolderPath)) {
-          rel = normPath.slice(baseFolderPath.length).replace(/^\/+/, '');
-        }
-        const segments = rel.split('/');
-        segments.pop();
-        const matchesFolder = currentFolderNav.every((seg, idx) => segments[idx] === seg);
-        if (!matchesFolder) return false;
-      }
-
-      const matchesQuery = 
-        track.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        track.artist.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        track.album.toLowerCase().includes(searchQuery.toLowerCase());
-      if (!matchesQuery) return false;
-
-      if (filterChip === 'flac') return track.format.toUpperCase().includes('FLAC');
-      if (filterChip === 'favorites') return favorites.includes(track.id);
-      return true;
-    });
-  }, [tracks, searchQuery, filterChip, favorites, currentFolderNav, baseFolderPath, viewMode]);
-
-  // Agrupación de álbumes para Vista Estante (Album Shelf)
-  // (tipo AlbumGroup vive en src/types.ts)
-
-  const albumGroups = useMemo<AlbumGroup[]>(() => {
-    const map = new Map<string, AlbumGroup>();
-    filteredTracks.forEach((track) => {
-      const albumName = (track.album && track.album.trim()) ? track.album.trim() : 'Álbum Desconocido';
-      const artistName = (track.album_artist && track.album_artist.trim()) 
-        ? track.album_artist.trim() 
-        : (track.artist && track.artist.trim()) 
-          ? track.artist.trim() 
-          : 'Artista Desconocido';
-      const key = `${albumName}:::${artistName}`;
-      if (!map.has(key)) {
-        map.set(key, {
-          key,
-          album: albumName,
-          artist: artistName,
-          year: track.year || null,
-          cover_url: track.cover_url || null,
-          tracks: [],
-          totalDurationSec: 0,
-          formats: [],
-        });
-      }
-      const group = map.get(key)!;
-      group.tracks.push(track);
-      group.totalDurationSec += (track.duration || 0);
-      if (!group.cover_url && track.cover_url) group.cover_url = track.cover_url;
-      if (!group.year && track.year) group.year = track.year;
-      if (track.format && !group.formats.includes(track.format)) {
-        group.formats.push(track.format);
-      }
-    });
-
-    // Ordenar pistas dentro de cada álbum por track_number o título
-    map.forEach((group) => {
-      group.tracks.sort((a, b) => {
-        if (a.track_number && b.track_number) return a.track_number - b.track_number;
-        if (a.track_number) return -1;
-        if (b.track_number) return 1;
-        return a.title.localeCompare(b.title);
-      });
-    });
-
-    // Ordenar álbumes alfabéticamente
-    return Array.from(map.values()).sort((a, b) => a.album.localeCompare(b.album));
-  }, [filteredTracks]);
-
-  const selectedAlbum = useMemo(() => {
-    if (!expandedAlbumKey) return null;
-    return albumGroups.find(g => g.key === expandedAlbumKey) || null;
-  }, [albumGroups, expandedAlbumKey]);
-
-  const formatTotalTime = (totalSecs: number) => {
-    const hours = Math.floor(totalSecs / 3600);
-    const minutes = Math.floor((totalSecs % 3600) / 60);
-    const seconds = Math.floor(totalSecs % 60);
-    if (hours > 0) {
-      return `${hours} h ${minutes} min`;
-    }
-    return `${minutes} min ${seconds} s`;
-  };
-
-  const handlePlayAlbum = (group: AlbumGroup) => {
-    if (group.tracks.length > 0) {
-      handlePlayTrack(group.tracks[0]);
-    }
-  };
-
-  const handleSelectAlbumTracks = (group: AlbumGroup, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setSelectedTrackIds(prev => {
-      const next = new Set(prev);
-      const allSelected = group.tracks.every(t => next.has(t.id));
-      if (allSelected) {
-        group.tracks.forEach(t => next.delete(t.id));
-      } else {
-        group.tracks.forEach(t => next.add(t.id));
-      }
-      return next;
-    });
-  };
+  // Explorador, filtrado y álbumes. Vive en useFolderExplorer.ts;
+  // acá se destructura con los nombres originales para no tocar call sites.
+  const {
+    currentFolderNav, setCurrentFolderNav,
+    setExpandedAlbumKey,
+    folderExplorerData,
+    filteredTracks,
+    albumGroups,
+    selectedAlbum,
+    formatTotalTime,
+    handleNavigateIntoFolder,
+    handleNavigateToBreadcrumb,
+    handleNavigateUp,
+    handlePlayFolderTracks,
+    handleSelectFolderTracks,
+    handlePlayAlbum,
+    handleSelectAlbumTracks,
+  } = useFolderExplorer({
+    tracks,
+    currentFolder,
+    searchQuery,
+    filterChip,
+    favorites,
+    viewMode,
+    setSelectedTrackIds,
+    handlePlayTrack,
+  });
 
   // Configuración de temas dinámicos
   const themeGlows: Record<ThemeMode, { glow1: string; glow2: string; accent: string; badge: string; border: string }> = {
