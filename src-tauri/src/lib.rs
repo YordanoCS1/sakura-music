@@ -336,11 +336,6 @@ pub fn run() {
             paths::init(data_dir.clone());
             cleanup_temp_covers();
 
-            // WebView2 necesita su propio subdirectorio exclusivo para evitar
-            // conflictos de lock con los datos de la app.
-            let webview_data = data_dir.join("webview_data");
-            let _ = std::fs::create_dir_all(&webview_data);
-
             let _window = tauri::WebviewWindowBuilder::new(
                 &handle,
                 "main",
@@ -350,7 +345,6 @@ pub fn run() {
             .inner_size(1200.0, 760.0)
             .min_inner_size(940.0, 600.0)
             .center()
-            .data_directory(webview_data)
             .build()?;
 
             Ok(())
