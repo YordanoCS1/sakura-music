@@ -32,6 +32,7 @@ adelante rigen la v2.
 | [0008](0008-hilos-y-cierre-limpio.md) | Nada pesado en el hilo de la UI y cierre limpio de hilos | Vigente en concepto; en v2 es Rust (`rayon`/hilos) + `cancel_all()` al salir |
 | [0009](0009-migracion-tauri-2-rust.md) | Migración de PySide6 a Tauri 2.0 y Rust nativo | Vigente |
 | [0010](0010-cierre-seguridad-atomicidad.md) | Cierre de deuda: seguridad, atomicidad y cancelación | Vigente |
+| [0011](0011-cola-persistente.md) | Persistir la cola y reanudar al abrir | Vigente |
 
 ## Cómo agregar una decisión
 

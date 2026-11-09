@@ -50,11 +50,18 @@ que se parezca al tuyo y seguí la causa probable.
 | “No se encontró el archivo descargado” | yt-dlp terminó sin dejar archivo válido | Reintentá; si persiste, actualizá yt-dlp |
 | Querés más de 2 descargas a la vez | Límite del motor | No es configurable: el `DownloadManager` está fijo en 2 |
 
-### La cola no se guarda entre sesiones
+### La cola se guarda y se reanuda
 
-Esto es **intencional** en la v2: si cerrás la app a mitad de camino, las filas
-desaparecen y las descargas incompletas no se reanudan. La v1 sí persistía la
-cola en `download_queue.json`; la v2 la conserva solo en memoria.
+Si cerrás la app a mitad de camino, al reabrir la Cola restaura las filas y las
+interrumpidas **se reanudan solas desde cero**. Si el archivo
+`download_queue.json` se corrompe, la app arranca con la cola vacía en vez de
+romperse.
+
+| Síntoma | Qué hacer |
+|---|---|
+| Una descarga se reanuda sola al abrir | Es lo esperado: estaba `interrumpida` |
+| La cola vieja no desaparece | **Limpiar terminadas** saca las filas finales; **Cancelar todo** cancela lo activo |
+| Querés vaciar todo el historial | Dejá la Cola vacía: el archivo se reescribe solo |
 
 ## Biblioteca
 

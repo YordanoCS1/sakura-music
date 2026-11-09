@@ -94,6 +94,7 @@ No hay SQLite en la v2. Cada dato tiene el formato más simple que le sirve:
 flowchart TB
     BASE["app_local_data_dir()<br/>AppData/Local/com.sakura.music"]
     BASE --> CACHE["library_cache.json<br/>caché de pistas"]
+    BASE --> QUEUE["download_queue.json<br/>foto de la cola (100 filas)"]
     BASE --> COVERS["covers/<br/>carátulas con extensión real"]
     BASE --> BIN["bin/<br/>yt-dlp / ffmpeg opcionales"]
     BASE --> WEB["WebView data directory<br/>localStorage + IndexedDB"]
@@ -103,6 +104,7 @@ flowchart TB
 | Dato | Archivo / clave | Formato | Retención |
 |---|---|---|---|
 | Biblioteca | `library_cache.json` | JSON, escritura atómica | Descartable, se reconstruye |
+| Cola | `download_queue.json` | JSON, escritura atómica | 100 filas más recientes; lo activo vuelve como `interrumpida` |
 | Carátulas | `covers/` | JPG/PNG/WebP/GIF/BMP/TIFF reales | Cache, deduplicada por hash |
 | Portadas temporales | `covers/temp_*` | Imagen cualquiera | Se borran al arrancar y antes de guardar una nueva |
 | Preferencias | `localStorage` (`sakura_*`) | JSON/strings | Permanente |
@@ -119,6 +121,10 @@ escaneo completo la reconstruye.
 y cae a `./.tauri_data` en tests o llamadas tempranas. Nunca se usa el
 `current_dir()` como carpeta de datos en producción (en Windows puede ser
 `System32`).
+
+- **Persistencia de la cola:** cada cambio se guarda al instante vía
+  `save_download_queue`; al arrancar, `get_download_queue` restaura y el
+  frontend relanza lo `interrumpido` con el mismo id/destino/formato.
 
 ### Escritura atómica
 

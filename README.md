@@ -37,7 +37,7 @@ Gestor, reproductor, descargador y etiquetador de música para escritorio, const
 
 ### 📥 Búsqueda, playlists y descarga en segundo plano
 - Búsqueda en YouTube con `ytsearch10` vía `yt-dlp`, playlists resueltas con `--flat-playlist` sin descargar, y `--no-playlist` al bajar pistas sueltas.
-- Cola con **máximo 2 descargas en paralelo**, cancelación por ítem y "Cancelar todo", reintento de fallidas/canceladas y limpieza de terminadas.
+- Cola con **máximo 2 descargas en paralelo**, cancelación por ítem y "Cancelar todo", reintento de fallidas/canceladas, limpieza de terminadas y **persistencia entre sesiones** (`download_queue.json`): al reabrir, lo interrumpido se reanuda solo.
 - Al salir se cancelan y matan los procesos `yt-dlp`/`ffmpeg` vivos.
 - Formatos: Opus (`--audio-quality 0`), FLAC (sin pérdida), M4A/AAC 192 kbps y MP3 320 kbps, siempre con metadatos y carátula embebidos.
 - Progreso en tiempo real por evento `download-progress` (porcentaje, velocidad, ETA). yt-dlp imprime `after_move:filepath` y si no, se busca el archivo por `[id]` en la carpeta destino.

@@ -77,7 +77,8 @@ consultaba iTunes.
 ### Negativas / deuda que queda
 - `src/App.tsx` sigue siendo un monolito (~4600 líneas): funciona, pero un
   componente grande nuevo debería ir en un archivo propio.
-- La cola no se persiste entre sesiones (la v1 sí guardaba `download_queue.json`).
+- La cola no se persistía entre sesiones (la v1 sí guardaba
+  `download_queue.json`). **Resuelto en el ADR 0011.**
 - No hay letras (LRCLIB), ni deshacer con manifiestos, ni watch incremental:
   quedaron en `legacy_python/` si se quiere recuperar alguna.
 - Sin tests de frontend (Vitest) todavía: la cobertura es Rust + `tsc` + build.

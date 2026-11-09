@@ -68,9 +68,11 @@ espera turno.
 | **Limpiar terminadas** | Saca las filas finales de la vista |
 
 **Al cerrar la app se cancela y mata todo lo pendiente.** No quedan procesos
-`yt-dlp` huérfanos. La cola **no se guarda entre sesiones**: si cerrás a mitad
-de camino, las filas desaparecen y las descargas incompletas no se reanudan
-automáticamente (eso era la v1).
+`yt-dlp` huérfanos. Pero la cola **sí se guarda entre sesiones**: al reabrir
+aparece el aviso "Se restauraron N descargas…", y las que estaban en curso
+vuelven como `interrumpida` y **se reanudan solas** desde el principio
+(yt-dlp no continúa a mitad de archivo). Las terminadas, canceladas y con error
+quedan como historial en la Cola.
 
 ## Qué hacer si una descarga falla
 

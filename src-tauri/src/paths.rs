@@ -35,6 +35,10 @@ pub fn cache_file() -> PathBuf {
     ensure_data_dir().join("library_cache.json")
 }
 
+pub fn queue_file() -> PathBuf {
+    ensure_data_dir().join("download_queue.json")
+}
+
 pub fn covers_dir() -> PathBuf {
     let dir = ensure_data_dir().join("covers");
     let _ = std::fs::create_dir_all(&dir);

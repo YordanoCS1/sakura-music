@@ -6,6 +6,8 @@ use tauri::{Manager, State};
 mod scanner;
 mod downloader;
 mod paths;
+mod queue;
+use queue::PersistedDownload;
 use scanner::{BatchUpdateResult, ScannedTrack};
 use downloader::{DownloadManager, DownloaderStatus, OnlineSearchResult};
 
@@ -55,6 +57,23 @@ fn cancel_download(manager: State<'_, Arc<DownloadManager>>, job_id: String) -> 
 fn cancel_all_downloads(manager: State<'_, Arc<DownloadManager>>) -> bool {
     manager.cancel_all();
     true
+}
+
+/// Foto persistida de la cola. Al arrancar, las filas activas vuelven como
+/// `interrumpida` para que el frontend las relance.
+#[tauri::command]
+fn get_download_queue() -> Vec<PersistedDownload> {
+    queue::load_queue()
+}
+
+#[tauri::command]
+fn save_download_queue(items: Vec<PersistedDownload>) -> bool {
+    queue::save_queue(items)
+}
+
+#[tauri::command]
+fn clear_download_queue() -> bool {
+    queue::clear_queue()
 }
 
 #[derive(Serialize, Deserialize)]
@@ -345,6 +364,9 @@ pub fn run() {
             start_download,
             cancel_download,
             cancel_all_downloads,
+            get_download_queue,
+            save_download_queue,
+            clear_download_queue,
             update_track_metadata,
             update_batch_metadata,
             save_temp_cover,

@@ -142,6 +142,55 @@ export interface DownloadItem {
   format: string;
   size: string;
   thumbnail?: string | null;
+  outputDir?: string | null;
+  filePath?: string | null;
+  createdAt: number;
+}
+
+/// Foto persistida en download_queue.json (mismo contrato que el backend).
+interface PersistedDownload {
+  id: string;
+  title: string;
+  artist: string;
+  url: string;
+  format: string;
+  output_dir: string | null;
+  status: string;
+  created_at: number;
+  file_path: string | null;
+}
+
+function toPersisted(item: DownloadItem): PersistedDownload {
+  return {
+    id: item.id,
+    title: item.title,
+    artist: item.artist,
+    url: item.url,
+    format: item.format,
+    output_dir: item.outputDir ?? null,
+    status: item.status,
+    created_at: item.createdAt,
+    file_path: item.filePath ?? null,
+  };
+}
+
+function fromPersisted(saved: PersistedDownload): DownloadItem {
+  return {
+    id: saved.id,
+    title: saved.title,
+    artist: saved.artist,
+    url: saved.url,
+    progress: saved.status === 'completado' ? 100 : 0,
+    speed: '--',
+    eta: '--',
+    status: saved.status,
+    format: saved.format,
+    size: '—',
+    thumbnail: null,
+    outputDir: saved.output_dir,
+    filePath: saved.file_path,
+    createdAt: saved.created_at,
+  };
 }
 
 type ThemeMode = 'sakura' | 'cyber' | 'amber' | 'emerald';
@@ -245,6 +294,8 @@ export default function App() {
   const [onlineSearchError, setOnlineSearchError] = useState<string | null>(null);
   const [downloads, setDownloads] = useState<DownloadItem[]>([]);
   const [downloadFormat, setDownloadFormat] = useState('FLAC');
+  const [restoredNotice, setRestoredNotice] = useState<string | null>(null);
+  const queueRestoredRef = useRef(false);
 
   // Referencia al elemento nativo de audio y al Blob URL activo
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -378,6 +429,42 @@ export default function App() {
       })
       .catch(err => console.error("Error al obtener directorio de música:", err));
 
+    // Restaurar la cola de descargas de la sesión anterior.
+    // Las que estaban en curso al cerrar volvieron como `interrumpida` desde
+    // el backend: se relanzan con el mismo id, destino y formato.
+    invoke<PersistedDownload[]>('get_download_queue')
+      .then(saved => {
+        const restored: DownloadItem[] = (saved || []).map(fromPersisted);
+        setDownloads(restored);
+        queueRestoredRef.current = true;
+        const interrupted = restored.filter(d => d.status === 'interrumpida');
+        if (restored.length > 0) {
+          setRestoredNotice(
+            interrupted.length > 0
+              ? `Se restauraron ${restored.length} descargas; ${interrupted.length} se reanudarán solos.`
+              : `Se restauraron ${restored.length} descargas de la sesión anterior.`
+          );
+        }
+        for (const item of interrupted) {
+          const dest = item.outputDir || localStorage.getItem('sakura_current_folder') || null;
+          invoke('start_download', {
+            jobId: item.id,
+            url: item.url,
+            format: item.format,
+            ...(dest ? { outputDir: dest } : {}),
+          }).catch(err => {
+            console.error("Error al reanudar descarga:", err);
+            setDownloads(prev => prev.map(d =>
+              d.id === item.id ? { ...d, status: `error: ${String(err)}` } : d
+            ));
+          });
+        }
+      })
+      .catch(err => {
+        console.error("Error al restaurar la cola de descargas:", err);
+        queueRestoredRef.current = true;
+      });
+
     // Escuchar eventos en vivo emitidos desde el motor Rust
     const unlistenPromise = listen<DownloadProgressEvent>('download-progress', (event) => {
       const payload = event.payload;
@@ -390,6 +477,7 @@ export default function App() {
               speed: payload.speed,
               eta: payload.eta,
               status: payload.status,
+              ...(payload.file_path ? { filePath: payload.file_path } : {}),
             };
           }
           return item;
@@ -411,6 +499,17 @@ export default function App() {
       unlistenPromise.then(unlisten => unlisten());
     };
   }, []);
+
+  // Persistir la cola tras cada cambio (una vez restaurada, para no pisar el
+  // archivo con la lista vacía inicial). El backend recorta a 100 y escribe
+  // atómicamente.
+  useEffect(() => {
+    if (!queueRestoredRef.current) return;
+    const snapshot = downloads.map(toPersisted);
+    invoke('save_download_queue', { items: snapshot }).catch(err =>
+      console.error("Error al guardar la cola de descargas:", err)
+    );
+  }, [downloads]);
 
   // Sincronizar conteo en appInfo
   useEffect(() => {
@@ -694,6 +793,7 @@ export default function App() {
   // Iniciar descarga asíncrona real en segundo plano
   const triggerDownload = async (title: string, artist: string, url: string, thumbnail?: string | null, customFolder?: string) => {
     const jobId = `dl-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+    const destFolder = customFolder || currentFolder || defaultMusicDir || '.';
     const newJob: DownloadItem = {
       id: jobId,
       title,
@@ -706,11 +806,12 @@ export default function App() {
       format: downloadFormat,
       size: 'Calculando...',
       thumbnail,
+      outputDir: destFolder,
+      filePath: null,
+      createdAt: Date.now(),
     };
 
     setDownloads(prev => [newJob, ...prev]);
-
-    const destFolder = customFolder || currentFolder || defaultMusicDir || '.';
     try {
       await invoke('start_download', {
         jobId,
@@ -752,9 +853,9 @@ export default function App() {
     }
   };
 
-  // Reintentar una descarga con los mismos datos
+  // Reintentar una descarga con los mismos datos (mismo destino si lo tenía)
   const retryDownload = (item: DownloadItem) => {
-    triggerDownload(item.title, item.artist, item.url, item.thumbnail);
+    triggerDownload(item.title, item.artist, item.url, item.thumbnail, item.outputDir ?? undefined);
   };
 
   // Selección múltiple y Batch Editor
@@ -3199,6 +3300,18 @@ export default function App() {
                   </div>
                 )}
               </div>
+
+              {/* Aviso de cola restaurada de la sesión anterior */}
+              {restoredNotice && (
+                <div className="p-3.5 rounded-2xl bg-accent-500/10 border border-accent-500/20 text-xs text-accent-300 flex items-center justify-between gap-3">
+                  <span>{restoredNotice}</span>
+                  <button
+                    onClick={() => setRestoredNotice(null)}
+                    className="text-[11px] text-gray-400 hover:text-white underline transition-colors">
+                    Entendido
+                  </button>
+                </div>
+              )}
 
               {/* Estado vacío si no hay descargas */}
               {downloads.length === 0 && (

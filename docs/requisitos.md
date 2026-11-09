@@ -187,6 +187,20 @@ Se persiste en `localStorage` (`sakura_theme_world`).
 
 **Test:** verificación manual.
 
+#### RF-19 · Persistir la cola y reanudar al abrir
+
+**Criterio:** cada cambio de la cola se guarda en
+`download_queue.json` (carpeta de datos, escritura atómica, tope de 100 filas).
+Al arrancar, `get_download_queue` la restaura; las que estaban en curso
+(`en cola`/`descargando`/`convirtiendo audio`) vuelven como `interrumpida` y
+el frontend las relanza con el mismo id, formato y carpeta destino. Archivo
+ausente o corrupto → cola vacía, sin romper el arranque.
+
+**Test:** `queue::tests::reconcilia_estados_activos_a_interrumpida`,
+`queue::tests::conserva_estados_finales`,
+`queue::tests::roundtrip_json_con_campos_necesarios`,
+`queue::tests::json_corrupto_no_rompe_y_devuelve_vacio`.
+
 ---
 
 ## Requisitos no funcionales
@@ -273,7 +287,7 @@ enlaza a `docs/`.
 | ID v1 | Qué era | Cuándo / por qué |
 |---|---|---|
 | RF-04 (v1) | Saltar duplicados en la cola | Retirado en la v2: hoy cada descarga es un job independiente reintentable |
-| RF-09, RF-10 (v1) | Cola persistente e historial de 1000 entradas | Retirado: la cola vive solo en memoria y el historial no se guarda |
+| RF-09, RF-10 (v1) | Cola persistente e historial de 1000 entradas | Reemplazados por RF-19 (persistencia acotada a 100) y sin historial separado |
 | RF-12, RF-13 (v1) | Índice SQLite `mtime_ns` + watcher incremental | Retirado: ahora hay caché JSON descartable + escaneo completo |
 | RF-20, RF-22, RF-23 (v1) | Aplicar álbum, deshacer con manifiestos, letras LRCLIB | Retirados: no hay editor de álbum, ni manifiestos, ni letras |
 | RF-25, RF-26 (v1) | Tema ambiente desde la portada e iconos personalizados | Retirados: no existen en la v2 |

@@ -126,13 +126,29 @@ playlist (si se activó esa opción).
 2. Reintentar crea un job nuevo con los mismos datos (título, artista, URL,
    miniatura y formato actual) y lo encola de nuevo.
 
+**Flujo de persistencia y reanudación**
+
+1. Cada cambio de la cola (nueva fila, progreso, cancelación, reintento) se
+   guarda en `download_queue.json` con escritura atómica (tope de 100 filas,
+   las más recientes).
+2. Al cerrar, el backend cancela y mata todo lo pendiente; la foto en disco
+   conserva esos jobs como activos.
+3. Al reabrir, `get_download_queue` restaura las filas; las que estaban en curso
+   vuelven como `interrumpida` y el frontend las relanza con el mismo `id`,
+   formato y carpeta destino, respetando el límite de 2 en paralelo.
+4. El aviso "Se restauraron N descargas…" aparece en la Cola.
+
 **Postcondiciones:** al cerrar la app, el evento `Exit` cancela y mata todo lo
-pendiente, así que no quedan `yt-dlp` huérfanos.
+pendiente, así que no quedan `yt-dlp` huérfanos. Al volver, nada se perdió:
+cada fila conserva su historial y las interrumpidas siguen solas.
 
 **Dónde está:** `src/App.tsx` (`cancelDownload`, `cancelAllDownloads`,
-`retryDownload`, intento en `triggerDownload`),
+`retryDownload`, `triggerDownload`, restauración al montar, guardado tras
+cada cambio),
 `src-tauri/src/downloader.rs` (`cancel`, `cancel_all`, `is_cancelled`),
-`src-tauri/src/lib.rs` (`cancel_download`, `cancel_all_downloads`, `run`).
+`src-tauri/src/lib.rs` (`cancel_download`, `cancel_all_downloads`,
+`get_download_queue`, `save_download_queue`, `clear_download_queue`, `run`),
+`src-tauri/src/queue.rs` (`load_queue`, `save_queue`, `reconcile_status`).
 
 ---
 
