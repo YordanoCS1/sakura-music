@@ -19,7 +19,8 @@
         "minWidth": 940,
         "minHeight": 600,
         "center": true,
-        "decorations": true
+        "decorations": true,
+        "dataDirectory": "webview"
       }
     ],
     "security": {
