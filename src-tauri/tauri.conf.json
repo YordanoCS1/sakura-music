@@ -12,6 +12,7 @@
   "app": {
     "windows": [
       {
+        "create": false,
         "label": "main",
         "title": "Sakura Music",
         "width": 1200,
@@ -23,10 +24,10 @@
       }
     ],
     "security": {
-      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' asset: http://asset.localhost data: blob: https:; media-src 'self' asset: http://asset.localhost data: blob:; connect-src 'self' ipc: http://ipc.localhost asset: http://asset.localhost ws://localhost:1420 http://localhost:1420 https://itunes.apple.com https://api.deezer.com; object-src 'none'; base-uri 'self'; frame-ancestors 'none'",
+      "csp": null,
       "assetProtocol": {
         "enable": true,
-        "scope": ["$AUDIO/**", "$APPLOCALDATA/**", "$TEMP/**"]
+        "scope": ["**"]
       }
     }
   },
