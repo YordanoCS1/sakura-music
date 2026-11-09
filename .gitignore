@@ -26,11 +26,17 @@ dist-ssr
 # Tauri & Rust
 src-tauri/target/
 target/
-Cargo.lock
 .tauri_data/
 
 # Python residuals
 __pycache__/
 *.pyc
 sakura_music.egg-info/
+.pytest_cache/
+.ruff_cache/
 scripts/__pycache__/
+legacy_python/scripts/__pycache__/
+
+# Crash dumps
+src-tauri/crash.txt
+crash.txt

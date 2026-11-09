@@ -1,99 +1,48 @@
 # Instalación y primer arranque
 
-Sakura Music es una app de escritorio. Se instala con `pip`, necesita **ffmpeg**
-para procesar audio y video, y guarda todo lo suyo en una carpeta de datos del
-usuario.
+Sakura Music 2.0 es una app de escritorio Tauri. La compilás con Node + Rust y
+guardás todo lo suyo en la carpeta de datos del usuario
+(`AppData/Local/com.sakura.music` en Windows). No necesitás Python.
 
 ## Lo que necesitás
 
 | Requisito | Para qué | Cómo se resuelve |
 |---|---|---|
-| **Python 3.12 o superior** | Correr la app | [python.org](https://www.python.org/downloads/) o el Python de tu sistema |
-| **PySide6, yt-dlp y mutagen** | Interfaz, descargas y tags | Los instala `pip` con el proyecto |
-| **ffmpeg y ffprobe** | Convertir, mezclar y verificar medios | En el `PATH` o en `%LOCALAPPDATA%\SakuraMusic\bin` |
-| **Conexión a YouTube** | Buscar y descargar | — |
+| **Node.js 20+** | Correr Vite y Tauri CLI | [nodejs.org](https://nodejs.org/) |
+| **Rust estable** | Compilar el backend | [rustup.rs](https://rustup.rs/) |
+| **yt-dlp** | Buscar y bajar de YouTube | En el `PATH`, o en `bin/` de la carpeta de datos |
+| **ffmpeg** | Convertir a FLAC/MP3/M4A/Opus | En el `PATH`, winget o `bin/` |
+| **WebView2** | Mostrar la interfaz | Preinstalado en Windows 10/11 |
 
-`yt-dlp` viene como dependencia de Python. `ffmpeg` no: es un binario aparte y la
-app no lo puede instalar sola sin permiso del sistema. Si falta, la app avisa y
-no encola descargas.
+La app **detecta** yt-dlp y ffmpeg y te informa dónde los encontró (Cola y
+Ajustes). Sin yt-dlp no podés buscar ni descargar. ¿No tenés ninguno?
 
-## Instalar
+**Windows (con winget):**
 
-Desde la raíz del repositorio:
-
-```bash
-python -m pip install -e .
-```
-
-Eso deja el comando `sakura-music` disponible y permite ejecutar el paquete con
-`python -m sakura`.
-
-Para desarrollo, con tests y lint:
-
-```bash
-python -m pip install -e .[dev]
-```
-
-## Instalar ffmpeg
-
-**Opción rápida en Windows** (si tenés `winget`):
-
-```bash
+```powershell
+winget install yt-dlp.yt-dlp
 winget install Gyan.FFmpeg
 ```
 
-**Opción manual:** descargá un build de [ffmpeg.org](https://ffmpeg.org/download.html),
-descomprimilo y dejá `ffmpeg.exe` y `ffprobe.exe` en:
+**Manual:** descargá los binarios, descomprimilos en la carpeta de datos
+(`%LOCALAPPDATA%\com.sakura.music\bin\`) y reiniciá la app.
 
-```text
-%LOCALAPPDATA%\SakuraMusic\bin\
+## Instalar y abrir
+
+Desde la raíz del repositorio:
+
+```powershell
+npm install
+npm run tauri dev
 ```
 
-La app busca primero en el `PATH` y después en esa carpeta. También puede
-actualizarlo desde **Ajustes → Herramientas**, que usa `winget` cuando está
-disponible.
+En Windows también podés hacer doble clic en **`iniciar_sakura.bat`**: hace
+exactamente `npm run tauri dev`.
 
-## Abrir la app
+Para tener la app instalada (instalador .exe / .msi):
 
-```bash
-python -m sakura
-```
-
-En Windows también podés usar **`SakuraMusic.pyw`**: arranca con `pythonw.exe`,
-sin consola, y muestra el launcher visual.
-
-| Querés… | Hacé |
-|---|---|
-| Entrar directo a la ventana principal | `python -m sakura --no-launcher` |
-| Saltear el launcher por variable | `SAKURA_NO_LAUNCHER=1` |
-| Saltear el splash | `SAKURA_NO_SPLASH=1` |
-| Diagnosticar un cuelgue | `SAKURA_TRACE=1` (vuelca la pila a los 6 s) |
-
-### Launcher o ventana directa
-
-Con el launcher activo vas a ver:
-
-- **Biblioteca:** cuántas pistas y álbumes hay.
-- **Cola:** trabajos pendientes o el aviso de que se reanuda al abrir.
-- **Herramientas:** si FFmpeg está detectado y qué versión de yt-dlp tenés.
-- **Abrir Sakura:** entra a la ventana principal.
-
-El launcher **no escanea audio ni lanza procesos**: solo lee lo que ya está
-guardado. Si querés evitar ese paso, usá `--no-launcher`.
-
-## Acceso directo con icono
-
-Windows no permite embeber un icono en un `.pyw`. Para tener el acceso directo
-con el icono de Sakura en el Escritorio y en el Menú Inicio:
-
-```bash
-python scripts/create_launcher_shortcut.py
-```
-
-Si querés regenerar el `.ico` desde el logo:
-
-```bash
-python scripts/make_app_icon.py
+```powershell
+npm run tauri build
 ```
 
 ## Dónde quedan tus datos
@@ -101,59 +50,50 @@ python scripts/make_app_icon.py
 Por defecto, en Windows:
 
 ```text
-%LOCALAPPDATA%\SakuraMusic\
-  config.json
-  download_queue.json
-  download_history.json
-  library_index.sqlite3
-  Musica\            ← biblioteca por defecto
-  Descargas\         ← staging de descargas
-  Cache\Portadas\    ← miniaturas
-  Historial\         ← manifiestos para deshacer tags
-  Iconos\            ← copias de los PNG personalizados
+%LOCALAPPDATA%\com.sakura.music\
+  library_cache.json     ← caché de la biblioteca (descartable)
+  covers\                ← carátulas con extensión real
+  bin\                   ← yt-dlp / ffmpeg opcionales
 ```
 
-Si la build de Microsoft Store de Python redirige `%LOCALAPPDATA%` a un
-`VirtualStore` que ffmpeg no puede ver, la app detecta la redirección y usa
-`%USERPROFILE%\SakuraMusic`. En el peor caso, cae a la carpeta temporal.
+Tu música **no vive ahí**: vive en la carpeta que elegiste como biblioteca
+(por defecto, la carpeta Música de Windows). Las preferencias (tema, vista,
+carpeta actual, favoritos) viven en el almacenamiento del navegador
+(`localStorage`, claves `sakura_*`), no en archivos sueltos.
 
-Podés cambiar la carpeta de la biblioteca y la de descargas desde **Ajustes**.
+Si borrás `library_cache.json`, la app arranca vacía y la reconstruye al
+escanear. No perdés tags ni audio.
 
 ## Primer recorrido
 
-1. Abrí **Ajustes** y elegí:
-   - el **tema** que te guste;
-   - el **formato de descarga** (opus por defecto);
-   - la **carpeta de biblioteca** si no querés usar `Musica`;
-   - el **navegador para cookies** solo si vas a bajar contenido restringido.
-
-![Página Ajustes](../img/preview_settings.png)
-
-2. Andá a **Buscar**, escribí un artista o un título y esperá los resultados.
-3. Pulsá el botón de descarga de una tarjeta.
-4. Mirá el avance en **Cola**.
-5. Cuando termine, abrí **Biblioteca** para ver la pista con su portada y sus
-   tags.
+1. Abrí la app: arranca en **Biblioteca** con la última carpeta visitada.
+2. Si está vacía, hacé clic en **Escanear Carpeta de Música** o
+   **Escanear Música de Windows** y elegí tu colección.
+3. Andá a **Buscar**, escribí un artista o pegá un enlace de YouTube y
+   descargá tu primera canción en el formato que prefieras.
+4. En **Cola** mirá el porcentaje, velocidad y ETA; al terminar, la canción
+   aparece sola en Biblioteca.
+5. En **Ajustes** elegí tema y universo.
 
 Los siguientes pasos están en [buscar-y-descargar.md](buscar-y-descargar.md) y
 [biblioteca.md](biblioteca.md).
 
 ## Desinstalar
 
-1. `python -m pip uninstall sakura-music`
-2. Borrá la carpeta de datos (`%LOCALAPPDATA%\SakuraMusic`) **solo si** querés
-   perder ajustes, cola, historial e índice. Tu música no vive ahí salvo que hayas
-   dejado la biblioteca en `Musica\`.
-3. Si creaste accesos directos, borralos del Escritorio y del Menú Inicio.
+1. Desinstalá la app como cualquier programa de Windows (Panel de control o
+   Configuración → Aplicaciones).
+2. Si querés, borrá la carpeta de datos
+   (`%LOCALAPPDATA%\com.sakura.music`): perdés caché y carátulas, **no tu
+   música**, que está en tu biblioteca.
 
 ## Si algo no arranca
 
 | Síntoma | Causa probable | Qué hacer |
 |---|---|---|
-| “No module named sakura” | No instalaste el paquete | `python -m pip install -e .` |
-| “ffmpeg no está instalado” | Falta el binario | Instalalo en el `PATH` o en `bin\` |
-| La ventana no aparece | `QT_QPA_PLATFORM=offscreen` activo | Quitá esa variable |
-| Se cierra sin mensaje | Error de un hilo al salir | Probá `SAKURA_TRACE=1` y mirá `close_hang.txt` |
-| No descarga videos restringidos | YouTube pide sesión | Configurá cookies de navegador en Ajustes |
+| `node` no reconocido | Node no instalado o no en `PATH` | Instalá Node 20+ y reabrí la terminal |
+| `cargo` no reconocido | Rust no instalado o no en `PATH` | Instalá rustup y reabrí la terminal |
+| La ventana no aparece | Vite no arrancó | Corré `npm run tauri dev` desde terminal y leé el error |
+| “yt-dlp no encontrado” | Falta el binario | Instalalo (ver arriba) |
+| “ffmpeg no encontrado” | Falta el binario | Instalalo (ver arriba) |
 
 Más casos en [problemas.md](problemas.md).

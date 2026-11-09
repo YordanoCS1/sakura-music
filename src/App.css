@@ -9,6 +9,50 @@
     --bg-surface: #20152b;
     --accent: #f43f82;
     --accent-glow: rgba(244, 63, 130, 0.35);
+
+    /* Paleta activa. Los temas de la barra lateral cambian estos valores y
+       toda la interfaz (clases `accent-*`) se recolorea sin duplicar CSS. */
+    --accent-200: 251 207 232;
+    --accent-300: 249 168 212;
+    --accent-400: 244 114 182;
+    --accent-500: 236 72 153;
+    --accent-600: 219 39 119;
+    --accent-800: 157 23 77;
+    --accent-900: 131 24 67;
+    --accent-950: 80 7 36;
+  }
+
+  [data-theme='cyber'] {
+    --accent-200: 165 243 252;
+    --accent-300: 103 232 249;
+    --accent-400: 34 211 238;
+    --accent-500: 6 182 212;
+    --accent-600: 8 145 178;
+    --accent-800: 21 94 117;
+    --accent-900: 22 78 99;
+    --accent-950: 8 51 68;
+  }
+
+  [data-theme='amber'] {
+    --accent-200: 253 230 138;
+    --accent-300: 252 211 77;
+    --accent-400: 251 191 36;
+    --accent-500: 245 158 11;
+    --accent-600: 217 119 6;
+    --accent-800: 146 64 14;
+    --accent-900: 120 53 15;
+    --accent-950: 69 26 3;
+  }
+
+  [data-theme='emerald'] {
+    --accent-200: 167 243 208;
+    --accent-300: 110 231 183;
+    --accent-400: 52 211 153;
+    --accent-500: 16 185 129;
+    --accent-600: 5 150 105;
+    --accent-800: 6 95 70;
+    --accent-900: 6 78 59;
+    --accent-950: 2 44 34;
   }
 
   body {

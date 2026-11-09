@@ -1,180 +1,167 @@
 # 🌸 Sakura Music 2.0
 
-Gestor, reproductor, descargador y etiquetador de música moderno para escritorio, construido con **Tauri 2.0 (Rust)** y **React 18 (TypeScript + Tailwind CSS)**.
+Gestor, reproductor, descargador y etiquetador de música para escritorio, construido con **Tauri 2.0 (Rust)** y **React 19 (TypeScript + Tailwind CSS)**.
 
 ![Tauri](https://img.shields.io/badge/Tauri-2.0-blue?logo=tauri)
-![Rust](https://img.shields.io/badge/Rust-1.80+-orange?logo=rust)
-![React](https://img.shields.io/badge/React-18.3-cyan?logo=react)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.6-blue?logo=typescript)
+![Rust](https://img.shields.io/badge/Rust-1.99-orange?logo=rust)
+![React](https://img.shields.io/badge/React-19.1-cyan?logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-6.0-blue?logo=typescript)
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.4-38B2AC?logo=tailwind-css)
 
----
-
-## ✨ Características Principales
-
-### ⚡ Motor de Escaneo Ultrarrápido en Rust
-- **Paralelismo masivo:** Utiliza `rayon` y `walkdir` para escanear y extraer metadatos de bibliotecas con miles de canciones en cuestión de milisegundos.
-- **Soporte multiformato:** Lee y parsea tags y carátulas de archivos `OPUS`, `MP3`, `FLAC`, `M4A`, `OGG`, `WAV` y `AAC`.
-- **Caché persistente en disco:** La biblioteca se sincroniza en `.tauri_data/library_cache.json` administrada por Rust, eliminando las restricciones de cuota (`QuotaExceededError`) del navegador.
-- **Extracción de carátulas:** Almacenamiento en caché de imágenes locales deduplicadas mediante hashing.
-
-### 🎵 Reproducción Libre de Bloqueos en Caliente
-- **Carga en memoria vía Blob URLs:** El reproductor carga los archivos de audio en memoria RAM a través del protocolo IPC de Tauri.
-- **Descriptores libres:** Cierra de inmediato el *handle* del sistema operativo Windows, permitiendo renombrar, editar metadatos o incrustar carátulas **mientras la canción está sonando en vivo**, sin bloqueos ni errores de *Acceso denegado (os error 5)*.
-- **Controles completos:** Play/pausa, barra de progreso con seek suave, volumen, mute, modo aleatorio (shuffle), repetición (desactivada, todas, una) y avance automático.
-
-### 🏷️ Editor de Metadatos Pro & Edición en Lote
-- **Motor atómico en memoria:** Implementado con `lofty` en Rust puro. Ensambla y valida paquetes de tags (Vorbis Comments, ID3v2, MP4 boxes) en RAM antes de escribirlos atómicamente al disco.
-- **Edición en Lote (Batch Editor):**
-  - Selección múltiple intuitiva mediante casillas en **Vista Cuadrícula** y **Vista Tabla**.
-  - Barra de herramientas con selector rápido (*«Seleccionar Todas»*, *«Deseleccionar»*).
-  - Modal por lote con casillas de activación individual por campo: aplica Álbum, Artista, Artista del Álbum, Año, Género y Portada común a decenas de canciones de una sola vez.
-  - **Filosofía no destructiva:** Todo campo que no esté expresamente marcado para modificar se conserva intacto en cada pista individual.
-- **Campos soportados:** Título, Artista, Artista del Álbum, Álbum, Número de Pista, Año y Género.
-- **Gestión completa de carátulas:**
-  - Selector de imágenes locales (JPG, PNG, WEBP) e incrustación individual o por lote.
-  - Eliminación completa de carátulas incrustadas.
-  - **Pegado directo desde el portapapeles (`Ctrl + V`)**: Copia cualquier imagen de la web o de tu capturador y pégala directamente en el editor.
-- **Buscador en Catálogo Oficial:**
-  - Integración nativa con la API de **Apple Music / iTunes**.
-  - Descarga automática de carátulas oficiales en **Alta Definición (600x600 px)**.
-  - Opciones de *«Aplicar todo»* o *«Solo portada»*.
-- **Control de cambios:** Botones de reversión individual por campo y botón para restablecer todos los valores originales.
-
-### 📥 Búsqueda, Playlists y Descarga en Segundo Plano
-- **Integración nativa con yt-dlp:** Búsqueda en línea en YouTube directamente desde la aplicación.
-- **Descarga de Playlists y Álbumes Completos:**
-  - Detección automática al pegar URLs de playlists o álbumes de YouTube (`playlist?list=...` o enlaces `/album/`).
-  - Previsualización completa de pistas detectadas con canal, duraciones y miniaturas.
-  - Selección individualizada con casillas para elegir exactamente qué pistas descargar.
-  - Opción de organización automática en subcarpeta dedicada con el nombre del álbum/playlist.
-  - Botón de un solo clic *«Descargar N Canciones»* para encolar el lote completo.
-- **Descargas asíncronas:** Procesamiento en segundo plano mediante hilos de Tokio, sin congelar la interfaz.
-- **Formatos de descarga configurables:**
-  - **Opus** (Audio original de YouTube sin pérdidas por transcodificación).
-  - **MP3** (Alta calidad 320 kbps).
-  - **M4A** (AAC 192 kbps).
-  - **FLAC** (Compresión sin pérdidas).
-- **Monitor de progreso en tiempo real:** Barra de porcentaje, velocidad de descarga en vivo y tiempo estimado (ETA).
-
-### 🎨 Interfaz Glassmorphism & Personalización
-- **4 Temas visuales dinámicos:** Sakura (Rosa Neón), Cyber (Azul Ciano), Amber (Dorado Cálido) y Emerald (Verde Neón).
-- **Vistas conmutables:** Vista en cuadrícula (*Grid Cards*) con portadas grandes y vista en tabla (*Table View*) para análisis rápido.
-- **Sistema de favoritos:** Marcado persistente de canciones preferidas.
-- **Filtros rápidos:** Filtros por formato (Todos, FLAC, Recientes, Favoritos) y barra de búsqueda reactiva instantánea.
+> [!NOTE]
+> La versión 1.0 en Python + PySide6 se conserva íntegra en `legacy_python/` como referencia histórica (ver [ADR 0009](docs/adr/0009-migracion-tauri-2-rust.md)). Esta carpeta es la única fuente activa: si un dato no está en el `README` ni en `docs/`, no existe en la app.
 
 ---
 
-## 🏗️ Arquitectura del Sistema
+## ✨ Características principales
 
-```
+### ⚡ Motor de escaneo en Rust
+- **Paralelismo masivo:** `rayon` + `walkdir` escanean carpetas completas en todos los núcleos.
+- **Formatos:** MP3, FLAC, M4A, Opus, OGG, WAV y AAC (leídos con `lofty`).
+- **Caché en disco:** `library_cache.json` en la carpeta de datos del usuario (`app.path().app_local_data_dir()`), escrita de forma atómica. Evita el límite de cuota de `localStorage`.
+- **Carátulas:** se extraen a `covers/` con deduplicación por hash y extensión real según la firma del archivo (JPG/PNG/WebP/GIF/BMP/TIFF), no siempre `.jpg`.
+- **Escritura atómica:** todos los tags, la caché y las portadas se escriben con temporal + `rename`, con reintentos. Un corte de luz no deja el archivo a medio escribir.
+
+### 🎵 Reproducción sin bloqueo de archivos
+- El audio se sirve vía protocolo `asset:` y se carga en memoria como Blob URL.
+- Al soltar el `fetch`, Windows libera el handle: podés renombrar, editar tags o cambiar la carátula **mientras suena**, sin `os error 5`.
+- Play/pausa, seek, volumen, mute, shuffle, repetición (`off` / `all` / `one`) y avance automático que sí respeta "repetición apagada" al llegar al final de la lista.
+
+### 🏷️ Editor de metadatos y edición en lote
+- Edición individual y por lote (Batch Editor) con `lofty` en RAM y escritura atómica.
+- El lote devuelve `{ updated, errors }`: si 2 de 10 archivos fallan, la app te dice **cuáles** en vez de fingir éxito.
+- Campos: título, artista, artista del álbum, álbum, número de pista, año, género y carátula. Lo que no marcás no se toca.
+- Carátulas: archivo local (JPG/PNG/WebP), pegar con `Ctrl+V` y eliminar. Las temporales `temp_*` se borran al abrir la app y antes de guardar una nueva.
+- Catálogo: búsqueda real en **iTunes** y en **Deezer** (`api.deezer.com/search`) con carátula HD, "Aplicar todo" o "Solo portada".
+- Control de cambios por campo con reversión individual y "restablecer valores originales".
+
+### 📥 Búsqueda, playlists y descarga en segundo plano
+- Búsqueda en YouTube con `ytsearch10` vía `yt-dlp`, playlists resueltas con `--flat-playlist` sin descargar, y `--no-playlist` al bajar pistas sueltas.
+- Cola con **máximo 2 descargas en paralelo**, cancelación por ítem y "Cancelar todo", reintento de fallidas/canceladas y limpieza de terminadas.
+- Al salir se cancelan y matan los procesos `yt-dlp`/`ffmpeg` vivos.
+- Formatos: Opus (`--audio-quality 0`), FLAC (sin pérdida), M4A/AAC 192 kbps y MP3 320 kbps, siempre con metadatos y carátula embebidos.
+- Progreso en tiempo real por evento `download-progress` (porcentaje, velocidad, ETA). yt-dlp imprime `after_move:filepath` y si no, se busca el archivo por `[id]` en la carpeta destino.
+- yt-dlp/ffmpeg se buscan en: carpeta de datos de la app (`bin/`), instalación histórica de la v1 (`%APPDATA%/LOCALAPPDATA`), enlaces de winget y `PATH`. Nunca hay rutas hardcodeadas de un usuario.
+- Timeouts y reintentos de red: `--socket-timeout 30`, `--retries 3`, `--fragment-retries 3`, `--windows-filenames`.
+
+### 🎨 Interfaz glassmorphism y temas que sí cambian
+- 5 pestañas: Inicio, Biblioteca, Buscar, Cola y Ajustes.
+- 4 vistas de biblioteca: Carpetas (con breadcrumbs), Cuadrícula, Tabla y Álbumes (con vinilo 3D).
+- 4 temas (Sakura, Cyber, Amber, Emerald) + 2 universos (Sakura Zen, Wuxia Jianghu). Los temas recolorean **toda** la UI vía variables CSS `--accent-*` y la paleta `accent-*` de Tailwind, y se persisten en `localStorage`.
+- Opacidad y blur del vidrio, resplandor ambiental, partículas, estilo de reproductor (flotante/fijo) y favoritos persistentes.
+- Datos técnicos reales: versión de `rustc` (inyectada en `build.rs`) y memoria del proceso en Windows (via `windows-sys`), nunca literales de ejemplo.
+
+---
+
+## 🏗️ Arquitectura del sistema
+
+```text
 ┌─────────────────────────────────────────────────────────────┐
-│              Frontend (React 18 + TypeScript)               │
-│   • Glassmorphism UI (Tailwind CSS) + Lucide Icons          │
-│   • HTML5 Audio Player (In-Memory Blob URL)                 │
-│   • Editor Pro (Catálogo Apple Music + Paste Ctrl+V)        │
+│              Frontend (React 19 + TypeScript)               │
+│   • src/App.tsx (UI, player, editor, cola — monolito)       │
+│   • Tailwind 3 + variables --accent-* para los temas         │
+│   • Audio vía asset: + Blob URL (sin bloqueo en Windows)    │
 └──────────────────────────────┬──────────────────────────────┘
-                               │ IPC Commands & Events
+                               │ IPC invoke + eventos download-progress
 ┌──────────────────────────────▼──────────────────────────────┐
 │                  Backend (Tauri 2.0 / Rust)                 │
-│   • scanner.rs: Rayon Parallel Scan + Lofty In-Memory Engine│
-│   • downloader.rs: yt-dlp Async Orchestration & Events      │
-│   • lib.rs: Tauri Commands, Cache & Window Lifecycle        │
+│   • src-tauri/src/scanner.rs   rayon + lofty + escritura    │
+│                                atómica + batch {updated,errors}│
+│   • src-tauri/src/downloader.rs DownloadManager (2 en        │
+│                                paralelo), cancelación, PIDs  │
+│   • src-tauri/src/paths.rs     carpeta de datos estable      │
+│   • src-tauri/src/lib.rs       comandos Tauri + caché + ciclo│
+│                                de vida + asset scope          │
 └──────────────────────────────┬──────────────────────────────┘
                                │
 ┌──────────────────────────────▼──────────────────────────────┐
-│                    Almacenamiento Local                     │
-│   • .tauri_data/library_cache.json (Caché de canciones)     │
-│   • .tauri_data/covers/ (Caché de carátulas JPG deduplicada)│
-│   • .tauri_data/bin/ (Herramientas portables yt-dlp/ffmpeg) │
+│                    Almacenamiento local                     │
+│ app_local_data_dir() (AppData/Local/com.sakura.music)       │
+│   • library_cache.json  (caché de pistas)                    │
+│   • covers/             (carátulas con extensión real)      │
+│   • bin/                (yt-dlp / ffmpeg opcionales)        │
 └─────────────────────────────────────────────────────────────┘
 ```
 
+Detalle completo en [`docs/arquitectura.md`](docs/arquitectura.md).
+
 ---
 
-## 🚀 Requisitos e Instalación
+## 🚀 Requisitos e instalación
 
-### Requisitos Previos
-1. **Node.js:** Versión 18 o superior ([nodejs.org](https://nodejs.org/)).
-2. **Rust & Cargo:** Versión estable ([rustup.rs](https://rustup.rs/)).
-3. **yt-dlp y FFmpeg:** Opcionales en el `PATH` de Windows (la app también los detecta automáticamente en `.tauri_data/bin/` o Winget).
+### Requisitos previos
+1. **Node.js 20+** ([nodejs.org](https://nodejs.org/)) — el proyecto usa Vite 8.
+2. **Rust estable** ([rustup.rs](https://rustup.rs/)) — el build.rs reporta la versión real con `rustc --version`.
+3. **yt-dlp y FFmpeg en el `PATH`** (o en `bin/` de la carpeta de datos). La app los detecta y lo informa en Cola/Ajustes; sin yt-dlp no podés buscar ni bajar.
 
-### Instalación de Dependencias
-
+### Instalación y desarrollo
 ```powershell
-# Clona el repositorio
 git clone https://github.com/tu-usuario/Sakura_Music.git
 cd Sakura_Music
-
-# Instala dependencias del frontend
 npm install
 ```
 
-### Ejecución en Modo Desarrollo
+```powershell
+npm run tauri dev     # desarrollo (doble clic en iniciar_sakura.bat en Windows)
+npm run build         # tsc --noEmit + vite build
+npm run tauri build   # instalador .exe / .msi
+```
 
-Podés iniciar la aplicación de dos formas:
-
-1. **Vía script directo (Recomendado en Windows):**
-   Hacé doble clic en el archivo:
-   👉 **`iniciar_sakura.bat`**
-
-2. **Vía terminal de comandos:**
-   ```powershell
-   npm run tauri dev
-   ```
-
-### Compilar para Producción (Instalador .exe / .msi)
+Checks de código:
 
 ```powershell
-npm run tauri build
+cargo test --manifest-path src-tauri/Cargo.toml   # 9 tests Rust
+node node_modules/typescript/bin/tsc --noEmit     # tipos del frontend
 ```
-El instalador generado se ubicará en `src-tauri/target/release/bundle/nsis/`.
+
+Guía completa en [`docs/desarrollo.md`](docs/desarrollo.md) y [`docs/manual/instalacion.md`](docs/manual/instalacion.md).
 
 ---
 
-## 📁 Estructura del Proyecto
+## 📁 Estructura del proyecto
 
 ```text
 Sakura_Music/
-├── src/                         # Código fuente Frontend (React + TypeScript)
-│   ├── App.tsx                  # Componente principal (UI, Player, Editor, Descargas)
-│   ├── main.tsx                 # Punto de entrada de React
-│   └── index.css                # Estilos globales y Tailwind CSS
-├── src-tauri/                   # Backend nativo en Rust
+├── src/                          # Frontend (React + TypeScript)
+│   ├── App.tsx                   # UI completa (pestañas, player, editor, cola)
+│   ├── main.tsx                  # entrada de React
+│   └── App.css                   # Tailwind + variables --accent-* de los temas
+├── src-tauri/                    # Backend Rust
 │   ├── src/
-│   │   ├── lib.rs               # Registro de comandos Tauri e inicialización
-│   │   ├── main.rs              # Punto de entrada de la aplicación desktop
-│   │   ├── scanner.rs           # Motor de escaneo Rayon y editor Lofty en memoria
-│   │   └── downloader.rs        # Orquestación de yt-dlp y eventos de descarga
-│   ├── Cargo.toml               # Dependencias de Rust
-│   └── tauri.conf.json          # Configuración de ventana, plugins y permisos Tauri
-├── docs/                        # Documentación técnica completa y manuales
-│   ├── README.md                # Índice general de la documentación
-│   ├── arquitectura.md          # Especificación de capas y modelo de hilos
-│   ├── manual/                  # Manuales de usuario paso a paso
-│   │   ├── instalacion.md       # Guía de instalación y dependencias
-│   │   ├── biblioteca.md        # Uso de la biblioteca y vistas
-│   │   ├── metadatos-y-letras.md# Editor de metadatos y catálogo
-│   │   └── buscar-y-descargar.md# Descargas y búsqueda en YouTube
-│   └── adr/                     # Registros de Decisiones de Arquitectura
-│       └── 0009-migracion-tauri-2-rust.md  # Migración a Tauri 2 y Rust
-├── legacy_python/               # Versión 1.0 histórica (Python + PySide6)
-├── iniciar_sakura.bat           # Lanzador nativo de conveniencia para Windows
-└── package.json                 # Scripts y dependencias de Node.js
+│   │   ├── lib.rs                # comandos Tauri (14), caché, scope asset, ciclo de vida
+│   │   ├── main.rs               # entrada desktop
+│   │   ├── scanner.rs            # escaneo Rayon, tags lofty, escritura atómica, tests
+│   │   ├── downloader.rs         # DownloadManager, yt-dlp, cancelación, tests
+│   │   └── paths.rs              # resolución centralizada de la carpeta de datos
+│   ├── Cargo.toml / Cargo.lock   # dependencias (commiteado: es una app)
+│   ├── tauri.conf.json           # ventana, CSP y asset scope acotado
+│   └── capabilities/default.json
+├── docs/                         # documentación del proyecto (ver abajo)
+├── legacy_python/                # v1.0 histórica (Python + PySide6)
+├── iniciar_sakura.bat            # lanzador de desarrollo para Windows
+└── package.json                  # scripts y dependencias de Node.js
 ```
+
+> Deuda conocida: `src/App.tsx` es un monolito de ~4600 líneas. Funciona, pero cualquier componente grande nuevo debería ir en un archivo propio.
 
 ---
 
-## 📚 Documentación Adicional
+## 📚 Documentación
 
-Para más detalles sobre el funcionamiento interno, diseño y casos de uso, consulta la carpeta [`docs/`](docs/README.md):
-- [Manual de Usuario](docs/manual/README.md)
-- [Arquitectura del Sistema](docs/arquitectura.md)
-- [Registro de Decisiones Técnicas (ADR)](docs/adr/README.md)
-- [Casos de Uso](docs/casos-de-uso.md)
+Todo el detalle vivido en `docs/`, en Markdown plano con Mermaid, sin MkDocs:
+
+- **[Índice de docs](docs/README.md)** — mapa y convenciones.
+- [Arquitectura](docs/arquitectura.md) — capas, hilos, persistencia y secuencias.
+- [Requisitos](docs/requisitos.md) — promesas verificables con su criterio.
+- [Casos de uso](docs/casos-de-uso.md) — actores y flujos contra el código real.
+- [Desarrollo](docs/desarrollo.md) — setup, tests y recetas.
+- [Manual de usuario](docs/manual/README.md) — instalación, buscar/descargar, biblioteca, metadatos y resolución de problemas.
+- [ADRs](docs/adr/README.md) — decisiones. Los 0001–0008 quedaron como histórico de la v1; 0009 y posteriores rigen la v2.
+
+> Las capturas en `docs/img/` son de la UI de la v1 (PySide6). Están pendiente de reemplazo por capturas de la app Tauri/React.
 
 ---
 
 ## 📄 Licencia
 
-Este proyecto está bajo la licencia MIT. Consulta el archivo `LICENSE` para más información.
+Este proyecto está bajo la licencia MIT. Consulta el archivo `LICENSE` para más información (si no existe, el repositorio aún no incluye uno).

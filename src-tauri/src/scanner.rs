@@ -5,6 +5,8 @@ use rayon::prelude::*;
 use lofty::prelude::*;
 use lofty::probe::Probe;
 
+use crate::paths;
+
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct ScannedTrack {
     pub id: String,
@@ -29,12 +31,81 @@ fn format_duration(seconds: u64) -> String {
     format!("{}:{:02}", mins, secs)
 }
 
-pub fn get_covers_dir() -> PathBuf {
-    let mut dir = std::env::current_dir().unwrap_or_else(|_| PathBuf::from("."));
-    dir.push(".tauri_data");
-    dir.push("covers");
-    let _ = std::fs::create_dir_all(&dir);
-    dir
+/// Extensión de imagen a partir de los primeros bytes. El tipo MIME que declara
+/// el tag no siempre es confiable, así que se mira la firma real del archivo.
+pub fn detect_image_ext(bytes: &[u8]) -> &'static str {
+    if bytes.starts_with(&[0x89, b'P', b'N', b'G']) {
+        "png"
+    } else if bytes.starts_with(&[0xFF, 0xD8, 0xFF]) {
+        "jpg"
+    } else if bytes.len() >= 12 && &bytes[0..4] == b"RIFF" && &bytes[8..12] == b"WEBP" {
+        "webp"
+    } else if bytes.starts_with(b"GIF8") {
+        "gif"
+    } else {
+        "jpg"
+    }
+}
+
+fn cover_extension(pic: &lofty::picture::Picture) -> &'static str {
+    match pic.mime_type().map(|m| m.as_str()) {
+        Some("image/png") => "png",
+        Some("image/webp") => "webp",
+        Some("image/gif") => "gif",
+        Some("image/bmp") => "bmp",
+        Some("image/tiff") => "tiff",
+        _ => detect_image_ext(pic.data()),
+    }
+}
+
+/// Escribe un archivo sin dejar el destino a medio escribir: primero un
+/// temporal en la misma carpeta y después un rename atómico.
+pub fn write_atomic(path: &Path, bytes: &[u8]) -> std::io::Result<()> {
+    use std::io::Write;
+
+    let parent = path.parent().unwrap_or_else(|| Path::new("."));
+    let file_name = path
+        .file_name()
+        .and_then(|n| n.to_str())
+        .unwrap_or("sakura");
+    let stamp = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_nanos())
+        .unwrap_or(0);
+    let tmp_path = parent.join(format!(
+        ".{}.{}.{}.tmp",
+        file_name,
+        std::process::id(),
+        stamp
+    ));
+
+    let result = (|| {
+        {
+            let mut file = std::fs::File::create(&tmp_path)?;
+            file.write_all(bytes)?;
+            file.sync_all()?;
+        }
+        std::fs::rename(&tmp_path, path)
+    })();
+
+    if result.is_err() {
+        let _ = std::fs::remove_file(&tmp_path);
+    }
+    result
+}
+
+fn write_atomic_with_retries(path: &Path, bytes: &[u8], attempts: u32) -> std::io::Result<()> {
+    let mut last_err = None;
+    for attempt in 1..=attempts {
+        match write_atomic(path, bytes) {
+            Ok(()) => return Ok(()),
+            Err(err) => {
+                last_err = Some(err);
+                std::thread::sleep(std::time::Duration::from_millis(50 * attempt as u64));
+            }
+        }
+    }
+    Err(last_err.unwrap_or_else(|| std::io::Error::other("la escritura atómica falló")))
 }
 
 fn extract_cover_art(tag: Option<&lofty::tag::Tag>, parent_dir: &Path) -> Option<String> {
@@ -42,12 +113,12 @@ fn extract_cover_art(tag: Option<&lofty::tag::Tag>, parent_dir: &Path) -> Option
     if let Some(t) = tag {
         if let Some(pic) = t.pictures().first() {
             let data = pic.data();
-            let hash = md5_hash(data);
-            let filename = format!("{:x}.jpg", hash);
-            let cover_path = get_covers_dir().join(&filename);
+            let hash = fnv1a_128(data);
+            let filename = format!("{:x}.{}", hash, cover_extension(pic));
+            let cover_path = paths::covers_dir().join(&filename);
 
             if !cover_path.exists() {
-                let _ = std::fs::write(&cover_path, data);
+                let _ = write_atomic(&cover_path, data);
             }
 
             return Some(cover_path.to_string_lossy().to_string());
@@ -105,7 +176,7 @@ pub fn scan_audio_file(path: &Path) -> Option<ScannedTrack> {
             let cover_url = extract_cover_art(tag, parent);
 
             Some(ScannedTrack {
-                id: format!("{:x}", md5_hash(path.to_string_lossy().as_bytes())),
+                id: format!("{:x}", fnv1a_128(path.to_string_lossy().as_bytes())),
                 path: path.to_string_lossy().to_string(),
                 title,
                 artist,
@@ -123,7 +194,7 @@ pub fn scan_audio_file(path: &Path) -> Option<ScannedTrack> {
         }
         Err(_) => {
             Some(ScannedTrack {
-                id: format!("{:x}", md5_hash(path.to_string_lossy().as_bytes())),
+                id: format!("{:x}", fnv1a_128(path.to_string_lossy().as_bytes())),
                 path: path.to_string_lossy().to_string(),
                 title: filename,
                 artist: "Desconocido".to_string(),
@@ -142,7 +213,7 @@ pub fn scan_audio_file(path: &Path) -> Option<ScannedTrack> {
     }
 }
 
-fn md5_hash(data: &[u8]) -> u128 {
+fn fnv1a_128(data: &[u8]) -> u128 {
     let mut hash: u128 = 0xcbf29ce484222325;
     for &byte in data {
         hash ^= byte as u128;
@@ -272,28 +343,19 @@ pub fn update_track_tags(
         }
     }
 
-    // 7. Escribir archivo actualizado al disco
-    let mut last_err = String::new();
-    let mut success = false;
-    for attempt in 1..=4 {
-        match std::fs::write(path, &updated_bytes) {
-            Ok(_) => {
-                success = true;
-                break;
-            }
-            Err(e) => {
-                last_err = format!("{}", e);
-                std::thread::sleep(std::time::Duration::from_millis(50 * attempt));
-            }
-        }
-    }
-
-    if !success {
-        return Err(format!("Error al guardar en disco: {}", last_err));
+    // 7. Escribir archivo actualizado al disco (temporal + rename)
+    if let Err(err) = write_atomic_with_retries(path, &updated_bytes, 4) {
+        return Err(format!("Error al guardar en disco: {}", err));
     }
 
     // 8. Re-escanear para devolver la metadata actualizada
     scan_audio_file(path).ok_or_else(|| "No se pudo re-leer la pista".to_string())
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct BatchUpdateResult {
+    pub updated: Vec<ScannedTrack>,
+    pub errors: Vec<String>,
 }
 
 pub fn update_batch_tags(
@@ -305,9 +367,12 @@ pub fn update_batch_tags(
     genre: Option<String>,
     cover_path: Option<String>,
     remove_cover: bool,
-) -> Result<Vec<ScannedTrack>, String> {
+) -> BatchUpdateResult {
     if paths.is_empty() {
-        return Ok(Vec::new());
+        return BatchUpdateResult {
+            updated: Vec::new(),
+            errors: Vec::new(),
+        };
     }
 
     // Pre-cargar la imagen si se especificó una carátula nueva para reutilizarla en memoria
@@ -440,18 +505,9 @@ pub fn update_batch_tags(
             }
         }
 
-        // 7. Guardar a disco con reintentos
-        let mut written = false;
-        for attempt in 1..=4 {
-            if std::fs::write(path, &updated_bytes).is_ok() {
-                written = true;
-                break;
-            }
-            std::thread::sleep(std::time::Duration::from_millis(40 * attempt));
-        }
-
-        if !written {
-            errors.push(format!("{}: no se pudo escribir en disco", path_str));
+        // 7. Guardar a disco con reintentos (temporal + rename)
+        if let Err(err) = write_atomic_with_retries(path, &updated_bytes, 4) {
+            errors.push(format!("{}: no se pudo escribir en disco: {}", path_str, err));
             continue;
         }
 
@@ -461,11 +517,10 @@ pub fn update_batch_tags(
         }
     }
 
-    if updated_tracks.is_empty() && !errors.is_empty() {
-        return Err(format!("Falló la edición por lotes: {}", errors.join("; ")));
+    BatchUpdateResult {
+        updated: updated_tracks,
+        errors,
     }
-
-    Ok(updated_tracks)
 }
 
 pub fn scan_directory_parallel(dir_path: &Path) -> Vec<ScannedTrack> {
@@ -486,4 +541,67 @@ pub fn scan_directory_parallel(dir_path: &Path) -> Vec<ScannedTrack> {
         .par_iter()
         .filter_map(|path| scan_audio_file(path))
         .collect()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn detecta_extension_por_firma() {
+        assert_eq!(detect_image_ext(&[0x89, b'P', b'N', b'G', 0, 0]), "png");
+        assert_eq!(detect_image_ext(&[0xFF, 0xD8, 0xFF, 0xE0]), "jpg");
+        assert_eq!(
+            detect_image_ext(b"RIFF\0\0\0\0WEBPVP8 "),
+            "webp"
+        );
+        assert_eq!(detect_image_ext(b"GIF89a"), "gif");
+        assert_eq!(detect_image_ext(b"otra cosa"), "jpg");
+    }
+
+    #[test]
+    fn formatea_duracion() {
+        assert_eq!(format_duration(0), "0:00");
+        assert_eq!(format_duration(59), "0:59");
+        assert_eq!(format_duration(125), "2:05");
+    }
+
+    #[test]
+    fn fnv_es_estable_y_distingue_contenido() {
+        let a = fnv1a_128(b"uno");
+        let b = fnv1a_128(b"dos");
+        assert_ne!(a, b);
+        assert_eq!(a, fnv1a_128(b"uno"));
+    }
+
+    #[test]
+    fn escritura_atomica_reemplaza_y_no_deja_temporales() {
+        let dir = std::env::current_dir()
+            .unwrap()
+            .join("target")
+            .join("test-tmp")
+            .join(format!(
+                "sakura-atomic-{}-{}",
+                std::process::id(),
+                std::time::SystemTime::now()
+                    .duration_since(std::time::UNIX_EPOCH)
+                    .unwrap()
+                    .as_nanos()
+            ));
+        std::fs::create_dir_all(&dir).unwrap();
+        let target = dir.join("pista.mp3");
+
+        std::fs::write(&target, b"viejo").unwrap();
+        write_atomic(&target, b"nuevo").unwrap();
+        assert_eq!(std::fs::read(&target).unwrap(), b"nuevo".as_slice());
+
+        let leftovers: Vec<_> = std::fs::read_dir(&dir)
+            .unwrap()
+            .flatten()
+            .filter(|entry| entry.file_name().to_string_lossy().ends_with(".tmp"))
+            .collect();
+        assert!(leftovers.is_empty(), "quedaron temporales");
+
+        let _ = std::fs::remove_dir_all(&dir);
+    }
 }

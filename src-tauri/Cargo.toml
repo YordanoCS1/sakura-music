@@ -1,8 +1,8 @@
 [package]
 name = "sakura-desktop"
-version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
+version = "2.0.0"
+description = "Gestor, reproductor, descargador y etiquetador de música para escritorio"
+authors = ["Sakura Music"]
 edition = "2024"
 
 [lib]
@@ -22,6 +22,13 @@ lofty = "0.21"
 walkdir = "2"
 base64 = "0.22"
 rayon = "1.10"
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.61", features = [
+    "Win32_Foundation",
+    "Win32_System_ProcessStatus",
+    "Win32_System_Threading",
+] }
 
 [profile.release]
 codegen-units = 1

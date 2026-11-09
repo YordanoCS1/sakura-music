@@ -18,6 +18,7 @@ import {
   Cpu,
   FolderOpen,
   RotateCw,
+  RotateCcw,
   Heart,
   Music2,
   Disc3,
@@ -117,6 +118,11 @@ export interface DownloadProgressEvent {
   file_path: string | null;
 }
 
+export interface BatchUpdateResult {
+  updated: ScannedTrack[];
+  errors: string[];
+}
+
 interface AppInfo {
   engine: string;
   rust_version: string;
@@ -145,7 +151,9 @@ export type ViewMode = 'folders' | 'grid' | 'table' | 'albums';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<'home' | 'search' | 'library' | 'queue' | 'settings'>('library');
-  const [theme, setTheme] = useState<ThemeMode>('sakura');
+  const [theme, setTheme] = useState<ThemeMode>(() => {
+    return (localStorage.getItem('sakura_theme') as ThemeMode) || 'sakura';
+  });
   const [themeWorld, setThemeWorld] = useState<ThemeWorld>(() => {
     return (localStorage.getItem('sakura_theme_world') as ThemeWorld) || 'sakura_zen';
   });
@@ -193,6 +201,11 @@ export default function App() {
     setAmbientParticles(val);
     localStorage.setItem('sakura_ambient_particles', String(val));
   };
+
+  // Persistir el tema elegido (los mundos ya se guardan en su handler).
+  useEffect(() => {
+    localStorage.setItem('sakura_theme', theme);
+  }, [theme]);
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
     const saved = localStorage.getItem('sakura_view_mode') as ViewMode | null;
     if (saved && (saved === 'folders' || saved === 'grid' || saved === 'table' || saved === 'albums')) {
@@ -365,7 +378,7 @@ export default function App() {
       })
       .catch(err => console.error("Error al obtener directorio de música:", err));
 
-    // Escuchar eventos en vivo emitidos desde Tokio / Rust
+    // Escuchar eventos en vivo emitidos desde el motor Rust
     const unlistenPromise = listen<DownloadProgressEvent>('download-progress', (event) => {
       const payload = event.payload;
       setDownloads(prev => {
@@ -506,8 +519,9 @@ export default function App() {
     }
   };
 
-  // Pista siguiente
-  const handleNextTrack = () => {
+  // Pista siguiente. `auto` distingue el avance automático (respeta el final
+  // de la lista cuando la repetición está apagada) del clic manual.
+  const handleNextTrack = (auto = false) => {
     if (filteredTracks.length === 0) return;
     if (isShuffle) {
       const randomIndex = Math.floor(Math.random() * filteredTracks.length);
@@ -515,6 +529,16 @@ export default function App() {
       return;
     }
     const currentIndex = filteredTracks.findIndex(t => t.id === activeTrack?.id);
+    if (currentIndex < 0) {
+      handlePlayTrack(filteredTracks[0]);
+      return;
+    }
+    const isLast = currentIndex === filteredTracks.length - 1;
+    if (isLast && auto && repeatMode === 'off') {
+      setIsPlaying(false);
+      if (audioRef.current) audioRef.current.currentTime = 0;
+      return;
+    }
     const nextIndex = (currentIndex + 1) % filteredTracks.length;
     handlePlayTrack(filteredTracks[nextIndex]);
   };
@@ -536,8 +560,17 @@ export default function App() {
     if (repeatMode === 'one' && audioRef.current) {
       audioRef.current.currentTime = 0;
       audioRef.current.play();
-    } else if (repeatMode === 'all' || repeatMode === 'off') {
-      handleNextTrack();
+    } else if (repeatMode === 'all') {
+      handleNextTrack(true);
+    } else {
+      // Repetición apagada: avanzar solo si queda algo en la lista.
+      const currentIndex = filteredTracks.findIndex(t => t.id === activeTrack?.id);
+      if (currentIndex >= 0 && currentIndex < filteredTracks.length - 1) {
+        handleNextTrack(true);
+      } else {
+        setIsPlaying(false);
+        if (audioRef.current) audioRef.current.currentTime = 0;
+      }
     }
   };
 
@@ -691,6 +724,39 @@ export default function App() {
     }
   };
 
+  // Cancelar una descarga puntual (en cola o en curso)
+  const cancelDownload = async (jobId: string) => {
+    try {
+      await invoke('cancel_download', { jobId });
+      setDownloads(prev => prev.map(d =>
+        d.id === jobId && !d.status.startsWith('completado')
+          ? { ...d, status: 'cancelado', speed: '--', eta: '--' }
+          : d
+      ));
+    } catch (err) {
+      console.error("Error al cancelar descarga:", err);
+    }
+  };
+
+  // Cancelar todo lo pendiente y en curso
+  const cancelAllDownloads = async () => {
+    try {
+      await invoke('cancel_all_downloads');
+      setDownloads(prev => prev.map(d =>
+        d.status.startsWith('completado') || d.status.includes('error')
+          ? d
+          : { ...d, status: 'cancelado', speed: '--', eta: '--' }
+      ));
+    } catch (err) {
+      console.error("Error al cancelar descargas:", err);
+    }
+  };
+
+  // Reintentar una descarga con los mismos datos
+  const retryDownload = (item: DownloadItem) => {
+    triggerDownload(item.title, item.artist, item.url, item.thumbnail);
+  };
+
   // Selección múltiple y Batch Editor
   const [selectedTrackIds, setSelectedTrackIds] = useState<Set<string>>(new Set());
   const [isBatchModalOpen, setIsBatchModalOpen] = useState(false);
@@ -795,7 +861,7 @@ export default function App() {
       const paths = selectedTracks.map(t => t.path);
       const yearNum = (applyBatchYear && batchYear.trim()) ? parseInt(batchYear.trim(), 10) : null;
 
-      const updatedTracks = await invoke<ScannedTrack[]>('update_batch_metadata', {
+      const result = await invoke<BatchUpdateResult>('update_batch_metadata', {
         paths,
         artist: applyBatchArtist ? (batchArtist.trim() || null) : null,
         album: applyBatchAlbum ? (batchAlbum.trim() || null) : null,
@@ -807,16 +873,23 @@ export default function App() {
       });
 
       // Actualizar biblioteca local
-      const updatedMap = new Map(updatedTracks.map(t => [t.id, t]));
+      const updatedMap = new Map(result.updated.map(t => [t.id, t]));
       setTracks(prev => prev.map(t => updatedMap.get(t.id) || t));
 
-      setBatchFeedback(`✓ ¡${updatedTracks.length} canciones actualizadas exitosamente!`);
-      setTimeout(() => {
-        setIsBatchModalOpen(false);
+      if (result.errors.length > 0) {
+        setBatchFeedback(
+          `Se actualizaron ${result.updated.length} canciones y ${result.errors.length} fallaron: ${result.errors.slice(0, 3).join(' · ')}`
+        );
         setIsSavingBatch(false);
-        setBatchFeedback(null);
-        clearTrackSelection();
-      }, 1200);
+      } else {
+        setBatchFeedback(`✓ ¡${result.updated.length} canciones actualizadas exitosamente!`);
+        setTimeout(() => {
+          setIsBatchModalOpen(false);
+          setIsSavingBatch(false);
+          setBatchFeedback(null);
+          clearTrackSelection();
+        }, 1200);
+      }
     } catch (err) {
       console.error("Error en batch metadata:", err);
       setBatchFeedback(`Error al guardar lote: ${String(err)}`);
@@ -953,23 +1026,30 @@ export default function App() {
           setCatalogError("No se encontraron coincidencias en Apple Music / iTunes.");
         }
       } else {
-        // Fallback o Deezer
-        const url = `https://itunes.apple.com/search?term=${encodeURIComponent(q)}&entity=musicTrack&limit=16`;
+        // Deezer: la API pública devuelve pistas con carátula en varios tamaños.
+        const url = `https://api.deezer.com/search?q=${encodeURIComponent(q)}&limit=16`;
         const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP error ${res.status}`);
         const data = await res.json();
-        const items = data.results || [];
+        if (data.error) {
+          throw new Error(data.error.message || 'La API de Deezer devolvió un error');
+        }
+        const items = data.data || [];
         const candidates: CatalogCandidate[] = items.map((it: any) => ({
           source: 'deezer',
-          title: it.trackName || '',
-          artist: it.artistName || '',
-          album: it.collectionName || '',
-          album_artist: it.artistName || '',
-          year: it.releaseDate ? it.releaseDate.substring(0, 4) : '',
-          genre: it.primaryGenreName || '',
-          track_number: it.trackNumber ? it.trackNumber.toString() : '',
-          cover_url: (it.artworkUrl100 || '').replace('/100x100bb', '/600x600bb'),
+          title: it.title || '',
+          artist: it.artist?.name || '',
+          album: it.album?.title || '',
+          album_artist: it.artist?.name || '',
+          year: '',
+          genre: '',
+          track_number: '',
+          cover_url: it.album?.cover_xl || it.album?.cover_big || it.album?.cover_medium || '',
         }));
         setCatalogResults(candidates);
+        if (candidates.length === 0) {
+          setCatalogError("No se encontraron coincidencias en Deezer.");
+        }
       }
     } catch (err) {
       console.error("Error al buscar en catálogo:", err);
@@ -1362,11 +1442,11 @@ export default function App() {
   // Configuración de temas dinámicos
   const themeGlows: Record<ThemeMode, { glow1: string; glow2: string; accent: string; badge: string; border: string }> = {
     sakura: {
-      glow1: 'bg-pink-600/30',
+      glow1: 'bg-accent-600/30',
       glow2: 'bg-purple-700/20',
-      accent: 'from-pink-500 to-rose-400',
-      badge: 'bg-pink-500/20 text-pink-300 border-pink-500/30',
-      border: 'border-pink-500/40',
+      accent: 'from-accent-500 to-accent-400',
+      badge: 'bg-accent-500/20 text-accent-300 border-accent-500/30',
+      border: 'border-accent-500/40',
     },
     cyber: {
       glow1: 'bg-cyan-500/30',
@@ -1421,15 +1501,15 @@ export default function App() {
     ambientGlow1: currentTheme.glow1,
     ambientGlow2: currentTheme.glow2,
     accentGradient: currentTheme.accent,
-    accentText: 'text-pink-400',
-    accentTextHover: 'hover:text-pink-300',
+    accentText: 'text-accent-400',
+    accentTextHover: 'hover:text-accent-300',
     accentBadge: currentTheme.badge,
     activeTabBg: 'bg-white/10 text-white shadow-sm border border-white/10',
-    cardBorderHover: 'hover:border-pink-500/40',
+    cardBorderHover: 'hover:border-accent-500/40',
     playButtonGradient: currentTheme.accent,
-    seekAccent: 'accent-pink-500',
-    tagText: 'text-pink-300',
-    glowColor: 'shadow-pink-500/25',
+    seekAccent: 'accent-accent-500',
+    tagText: 'text-accent-300',
+    glowColor: 'shadow-accent-500/25',
     sidebarTitle: 'Sakura Music',
     sidebarSubtitle: 'Tauri 2 · Rust Core',
     logoIcon: '🌸',
@@ -1437,6 +1517,8 @@ export default function App() {
 
   return (
     <div 
+      data-theme={theme}
+      data-world={themeWorld}
       className={`relative w-screen h-screen flex overflow-hidden ${worldStyle.bgClass} font-sans text-gray-100 select-none ${isWWM ? 'theme-where-winds-meet' : ''}`}
       style={{
         '--glass-opacity': `${glassOpacity / 100}`,
@@ -1552,7 +1634,7 @@ export default function App() {
           </div>
           <div>
             <h1 className="font-bold text-sm tracking-wide text-white">{worldStyle.sidebarTitle}</h1>
-            <span className={`text-[10px] ${isWWM ? 'text-emerald-300/90' : 'text-pink-300/90'} font-medium tracking-wider uppercase`}>{worldStyle.sidebarSubtitle}</span>
+            <span className={`text-[10px] ${isWWM ? 'text-emerald-300/90' : 'text-accent-300/90'} font-medium tracking-wider uppercase`}>{worldStyle.sidebarSubtitle}</span>
           </div>
         </div>
 
@@ -1604,7 +1686,7 @@ export default function App() {
             <DownloadCloud className={`w-4 h-4 ${isWWM ? 'text-emerald-400' : 'text-amber-400'}`} />
             <span>Cola de Descargas</span>
             {downloads.some(d => d.status === 'descargando') && (
-              <span className={`ml-auto w-2 h-2 rounded-full ${isWWM ? 'bg-emerald-400' : 'bg-pink-400'} animate-ping`}></span>
+              <span className={`ml-auto w-2 h-2 rounded-full ${isWWM ? 'bg-emerald-400' : 'bg-accent-400'} animate-ping`}></span>
             )}
           </button>
 
@@ -1615,7 +1697,7 @@ export default function App() {
                 ? `${worldStyle.activeTabBg} font-semibold` 
                 : 'text-gray-400 hover:text-white hover:bg-white/5'
             }`}>
-            <Settings className={`w-4 h-4 ${isWWM ? 'text-emerald-400' : 'text-pink-400'}`} />
+            <Settings className={`w-4 h-4 ${isWWM ? 'text-emerald-400' : 'text-accent-400'}`} />
             <span>Ajustes</span>
           </button>
         </nav>
@@ -1624,7 +1706,7 @@ export default function App() {
         <div className="mt-5 pt-3.5 border-t border-white/5">
           <div className="flex items-center justify-between text-[11px] text-gray-400 mb-2 px-1">
             <span>Mundo Visual:</span>
-            <span className={`text-[10px] font-semibold ${isWWM ? 'text-emerald-300' : 'text-pink-300'}`}>
+            <span className={`text-[10px] font-semibold ${isWWM ? 'text-emerald-300' : 'text-accent-300'}`}>
               {worldStyle.name}
             </span>
           </div>
@@ -1633,7 +1715,7 @@ export default function App() {
               onClick={() => handleSetThemeWorld('sakura_zen')}
               className={`flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg text-[11px] font-semibold transition-all ${
                 themeWorld === 'sakura_zen'
-                  ? 'bg-gradient-to-r from-pink-500 to-rose-400 text-white shadow-md'
+                  ? 'bg-gradient-to-r from-accent-500 to-accent-400 text-white shadow-md'
                   : 'text-gray-400 hover:text-white'
               }`}>
               <span>🌸</span>
@@ -1684,17 +1766,17 @@ export default function App() {
 
         {/* Tarjeta de estado de Rust */}
         <div className="mt-auto p-3.5 rounded-2xl bg-white/5 border border-white/5">
-          <div className="flex items-center gap-2 text-[11px] text-pink-300 font-semibold mb-1">
-            <Cpu className="w-3.5 h-3.5 text-pink-400" />
+          <div className="flex items-center gap-2 text-[11px] text-accent-300 font-semibold mb-1">
+            <Cpu className="w-3.5 h-3.5 text-accent-400" />
             <span>{appInfo?.engine ?? 'Tauri 2.0 + Rust Engine'}</span>
           </div>
           <div className="flex items-center justify-between text-[10px] text-gray-400">
             <span>Memoria:</span>
-            <span className="text-white font-mono">{appInfo?.memory_usage ?? '~22 MB'}</span>
+            <span className="text-white font-mono">{appInfo?.memory_usage ?? '—'}</span>
           </div>
           <div className="flex items-center justify-between text-[10px] text-gray-400 mt-1">
             <span>Compilador:</span>
-            <span className="text-white font-mono">{appInfo?.rust_version ?? 'rustc 1.99.1'}</span>
+            <span className="text-white font-mono">{appInfo?.rust_version ?? 'rustc'}</span>
           </div>
         </div>
 
@@ -1713,7 +1795,7 @@ export default function App() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Buscar título, artista o álbum en milisegundos..."
-              className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-xs text-white placeholder-gray-400 focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 transition-all"
+              className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-xs text-white placeholder-gray-400 focus:outline-none focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 transition-all"
             />
             <Search className="w-4 h-4 absolute left-3.5 top-2.5 text-gray-400" />
             {searchQuery && (
@@ -1745,7 +1827,7 @@ export default function App() {
               className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1 ${
                 filterChip === 'favorites' ? currentTheme.badge : 'text-gray-400 hover:text-white hover:bg-white/5'
               }`}>
-              <Heart className="w-3 h-3 fill-current text-pink-400" />
+              <Heart className="w-3 h-3 fill-current text-accent-400" />
               Favoritas ({favorites.length})
             </button>
           </div>
@@ -1753,9 +1835,9 @@ export default function App() {
 
         {/* Mensaje de escaneo / notificaciones */}
         {scanMessage && (
-          <div className="bg-pink-500/10 border-b border-pink-500/20 px-6 py-2 flex items-center justify-between text-xs text-pink-300">
+          <div className="bg-accent-500/10 border-b border-accent-500/20 px-6 py-2 flex items-center justify-between text-xs text-accent-300">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-pink-400 animate-spin" />
+              <Sparkles className="w-4 h-4 text-accent-400 animate-spin" />
               <span>{scanMessage}</span>
             </div>
           </div>
@@ -1774,7 +1856,7 @@ export default function App() {
                 <div>
                   <h2 className="text-base font-bold text-white tracking-wide flex items-center gap-2">
                     <span>Biblioteca Local de Música</span>
-                    {isScanning && <span className="text-[11px] font-normal text-pink-400 animate-pulse">Escaneando...</span>}
+                    {isScanning && <span className="text-[11px] font-normal text-accent-400 animate-pulse">Escaneando...</span>}
                   </h2>
                   <p className="text-xs text-gray-400">
                     {currentFolder ? (
@@ -1789,7 +1871,7 @@ export default function App() {
                   <button 
                     onClick={handleOpenFolderDialog}
                     disabled={isScanning}
-                    className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl ${isWWM ? 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-500/20' : 'bg-pink-600 hover:bg-pink-500 shadow-pink-500/20'} text-white text-xs font-semibold shadow-lg transition-all active:scale-95 disabled:opacity-50`}>
+                    className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl ${isWWM ? 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-500/20' : 'bg-accent-600 hover:bg-accent-500 shadow-accent-500/20'} text-white text-xs font-semibold shadow-lg transition-all active:scale-95 disabled:opacity-50`}>
                     <FolderOpen className="w-3.5 h-3.5" />
                     <span>Seleccionar Carpeta</span>
                   </button>
@@ -1835,16 +1917,16 @@ export default function App() {
 
               {/* Barra de Selección Múltiple y Batch Editor */}
               {selectedTrackIds.size > 0 && (
-                <div className={`flex items-center justify-between p-3.5 mb-5 rounded-2xl bg-gradient-to-r ${isWWM ? 'from-emerald-950/60 via-teal-950/40 to-emerald-950/30 border-emerald-500/30' : 'from-pink-900/40 via-purple-900/40 to-pink-900/20 border-pink-500/30'} shadow-xl backdrop-blur-md animate-in fade-in slide-in-from-top-2`}>
+                <div className={`flex items-center justify-between p-3.5 mb-5 rounded-2xl bg-gradient-to-r ${isWWM ? 'from-emerald-950/60 via-teal-950/40 to-emerald-950/30 border-emerald-500/30' : 'from-accent-900/40 via-purple-900/40 to-accent-900/20 border-accent-500/30'} shadow-xl backdrop-blur-md animate-in fade-in slide-in-from-top-2`}>
                   <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-xl ${isWWM ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-300' : 'bg-pink-500/20 border-pink-500/30 text-pink-300'} flex items-center justify-center`}>
+                    <div className={`w-8 h-8 rounded-xl ${isWWM ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-300' : 'bg-accent-500/20 border-accent-500/30 text-accent-300'} flex items-center justify-center`}>
                       <Layers className="w-4 h-4" />
                     </div>
                     <div>
                       <p className="text-xs font-bold text-white">
                         {selectedTrackIds.size} de {filteredTracks.length} canciones seleccionadas
                       </p>
-                      <p className={`text-[11px] ${isWWM ? 'text-emerald-200/70' : 'text-pink-200/70'}`}>
+                      <p className={`text-[11px] ${isWWM ? 'text-emerald-200/70' : 'text-accent-200/70'}`}>
                         Edición en lote: aplica álbum, artista, año, género o portada compartida
                       </p>
                     </div>
@@ -1863,7 +1945,7 @@ export default function App() {
                     </button>
                     <button 
                       onClick={openBatchModal}
-                      className={`flex items-center gap-2 px-4 py-1.5 rounded-xl bg-gradient-to-r ${isWWM ? 'from-emerald-500 to-teal-400 shadow-emerald-500/25' : 'from-pink-500 to-rose-400 shadow-pink-500/25'} hover:brightness-110 text-white text-xs font-bold shadow-lg active:scale-95 transition-all`}>
+                      className={`flex items-center gap-2 px-4 py-1.5 rounded-xl bg-gradient-to-r ${isWWM ? 'from-emerald-500 to-teal-400 shadow-emerald-500/25' : 'from-accent-500 to-accent-400 shadow-accent-500/25'} hover:brightness-110 text-white text-xs font-bold shadow-lg active:scale-95 transition-all`}>
                       <Pencil className="w-3.5 h-3.5" />
                       <span>Editar en Lote ({selectedTrackIds.size})</span>
                     </button>
@@ -1874,7 +1956,7 @@ export default function App() {
               {/* Estado vacío si no hay canciones */}
               {tracks.length === 0 && !isScanning && (
                 <div className="flex flex-col items-center justify-center p-12 text-center glass-card rounded-3xl border border-white/5 my-6">
-                  <div className={`w-16 h-16 rounded-3xl ${isWWM ? 'bg-emerald-500/10 border border-emerald-500/20' : 'bg-pink-500/10 border border-pink-500/20'} flex items-center justify-center text-3xl mb-4`}>
+                  <div className={`w-16 h-16 rounded-3xl ${isWWM ? 'bg-emerald-500/10 border border-emerald-500/20' : 'bg-accent-500/10 border border-accent-500/20'} flex items-center justify-center text-3xl mb-4`}>
                     {isWWM ? '🎋' : '🌸'}
                   </div>
                   <h3 className="text-base font-bold text-white mb-1">Tu biblioteca aún está vacía</h3>
@@ -1884,7 +1966,7 @@ export default function App() {
                   <div className="flex items-center gap-3">
                     <button 
                       onClick={handleOpenFolderDialog}
-                      className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r ${isWWM ? 'from-emerald-500 to-teal-400 shadow-emerald-500/25' : 'from-pink-500 to-rose-400 shadow-pink-500/25'} text-white text-xs font-bold shadow-xl hover:brightness-110 active:scale-95 transition-all`}>
+                      className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r ${isWWM ? 'from-emerald-500 to-teal-400 shadow-emerald-500/25' : 'from-accent-500 to-accent-400 shadow-accent-500/25'} text-white text-xs font-bold shadow-xl hover:brightness-110 active:scale-95 transition-all`}>
                       <FolderOpen className="w-4 h-4" />
                       <span>Escanear Carpeta de Música</span>
                     </button>
@@ -1903,7 +1985,7 @@ export default function App() {
               {currentFolderNav.length > 0 && viewMode !== 'folders' && (
                 <div className="flex items-center justify-between p-2.5 px-4 mb-4 rounded-xl bg-white/5 border border-white/10 text-xs text-gray-300 animate-in fade-in">
                   <div className="flex items-center gap-2">
-                    <Folder className={`w-3.5 h-3.5 ${isWWM ? 'text-emerald-400' : 'text-pink-400'}`} />
+                    <Folder className={`w-3.5 h-3.5 ${isWWM ? 'text-emerald-400' : 'text-accent-400'}`} />
                     <span>Filtrando por carpeta:</span>
                     <span className="font-semibold text-white">{currentFolderNav.join(' / ')}</span>
                     <span className="text-gray-500 font-mono text-[11px]">({filteredTracks.length} canciones)</span>
@@ -1962,7 +2044,7 @@ export default function App() {
                       <button 
                         onClick={() => handlePlayFolderTracks(folderExplorerData.allFolderTracks)}
                         disabled={folderExplorerData.allFolderTracks.length === 0}
-                        className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-gradient-to-r ${isWWM ? 'from-emerald-500 to-teal-400 shadow-emerald-500/20' : 'from-pink-500 to-rose-400 shadow-pink-500/20'} text-white text-xs font-bold shadow-md hover:brightness-110 active:scale-95 transition-all disabled:opacity-40`}>
+                        className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-gradient-to-r ${isWWM ? 'from-emerald-500 to-teal-400 shadow-emerald-500/20' : 'from-accent-500 to-accent-400 shadow-accent-500/20'} text-white text-xs font-bold shadow-md hover:brightness-110 active:scale-95 transition-all disabled:opacity-40`}>
                         <Play className="w-3.5 h-3.5 fill-current" />
                         <span>Reproducir Carpeta ({folderExplorerData.allFolderTracks.length})</span>
                       </button>
@@ -1983,7 +2065,7 @@ export default function App() {
                     <div>
                       <div className="flex items-center justify-between mb-3 px-1">
                         <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
-                          <Folder className={`w-3.5 h-3.5 ${isWWM ? 'text-emerald-400' : 'text-pink-400'}`} />
+                          <Folder className={`w-3.5 h-3.5 ${isWWM ? 'text-emerald-400' : 'text-accent-400'}`} />
                           <span>Carpetas ({folderExplorerData.subfolders.length})</span>
                         </h3>
                       </div>
@@ -1994,12 +2076,12 @@ export default function App() {
                             key={sub.name}
                             onClick={() => handleNavigateIntoFolder(sub.name)}
                             className={`group relative p-3.5 rounded-2xl glass-card transition-all duration-200 cursor-pointer hover:-translate-y-1 hover:shadow-xl border ${
-                              isWWM ? 'border-white/5 hover:border-emerald-500/40' : 'border-white/5 hover:border-pink-500/40'
+                              isWWM ? 'border-white/5 hover:border-emerald-500/40' : 'border-white/5 hover:border-accent-500/40'
                             } flex flex-col justify-between`}>
                             
                             <div className="flex items-start justify-between">
                               <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${
-                                isWWM ? 'bg-gradient-to-tr from-emerald-950/60 to-teal-900/40 text-emerald-400 border border-emerald-500/30' : 'bg-gradient-to-tr from-pink-950/60 to-purple-900/40 text-pink-400 border border-pink-500/30'
+                                isWWM ? 'bg-gradient-to-tr from-emerald-950/60 to-teal-900/40 text-emerald-400 border border-emerald-500/30' : 'bg-gradient-to-tr from-accent-950/60 to-purple-900/40 text-accent-400 border border-accent-500/30'
                               } shadow-md group-hover:scale-105 transition-transform`}>
                                 <Folder className="w-5 h-5 fill-current/25" />
                               </div>
@@ -2007,7 +2089,7 @@ export default function App() {
                               <button 
                                 onClick={(e) => { e.stopPropagation(); handlePlayFolderTracks(sub.tracks); }}
                                 className={`p-2 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-r ${
-                                  isWWM ? 'from-emerald-500 to-teal-400 shadow-emerald-500/30' : 'from-pink-500 to-rose-400 shadow-pink-500/30'
+                                  isWWM ? 'from-emerald-500 to-teal-400 shadow-emerald-500/30' : 'from-accent-500 to-accent-400 shadow-accent-500/30'
                                 } text-white shadow-md hover:scale-110 active:scale-95`}
                                 title={`Reproducir carpeta ${sub.name}`}>
                                 <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
@@ -2015,7 +2097,7 @@ export default function App() {
                             </div>
 
                             <div className="mt-3">
-                              <h4 className={`text-xs font-bold text-white truncate ${isWWM ? 'group-hover:text-emerald-300' : 'group-hover:text-pink-300'} transition-colors`} title={sub.name}>
+                              <h4 className={`text-xs font-bold text-white truncate ${isWWM ? 'group-hover:text-emerald-300' : 'group-hover:text-accent-300'} transition-colors`} title={sub.name}>
                                 {sub.name}
                               </h4>
                               <div className="flex items-center justify-between text-[10px] text-gray-500 font-mono mt-1">
@@ -2035,7 +2117,7 @@ export default function App() {
                     <div>
                       <div className="flex items-center justify-between mb-3 px-1">
                         <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
-                          <Music2 className={`w-3.5 h-3.5 ${isWWM ? 'text-emerald-400' : 'text-pink-400'}`} />
+                          <Music2 className={`w-3.5 h-3.5 ${isWWM ? 'text-emerald-400' : 'text-accent-400'}`} />
                           <span>Canciones en {currentFolderNav.length === 0 ? 'la raíz' : currentFolderNav[currentFolderNav.length - 1]} ({folderExplorerData.directTracks.length})</span>
                         </h3>
                       </div>
@@ -2050,7 +2132,7 @@ export default function App() {
                                   className="text-gray-400 hover:text-white transition-colors"
                                   title="Seleccionar todas las canciones de este nivel">
                                   {folderExplorerData.directTracks.every(t => selectedTrackIds.has(t.id)) ? (
-                                    <CheckSquare className={`w-3.5 h-3.5 ${isWWM ? 'text-emerald-400' : 'text-pink-400'}`} />
+                                    <CheckSquare className={`w-3.5 h-3.5 ${isWWM ? 'text-emerald-400' : 'text-accent-400'}`} />
                                   ) : (
                                     <Square className="w-3.5 h-3.5" />
                                   )}
@@ -2077,16 +2159,16 @@ export default function App() {
                                   onClick={() => handlePlayTrack(track)}
                                   className={`cursor-pointer transition-colors ${
                                     isSelected
-                                      ? isWWM ? 'bg-emerald-500/20 text-emerald-200' : 'bg-pink-500/20 text-pink-200'
+                                      ? isWWM ? 'bg-emerald-500/20 text-emerald-200' : 'bg-accent-500/20 text-accent-200'
                                       : isCurrent 
-                                        ? isWWM ? 'bg-emerald-500/10 text-emerald-300' : 'bg-pink-500/10 text-pink-300' 
+                                        ? isWWM ? 'bg-emerald-500/10 text-emerald-300' : 'bg-accent-500/10 text-accent-300' 
                                         : 'hover:bg-white/5 text-gray-300'
                                   }`}>
                                   <td className="py-2 px-3 text-center" onClick={(e) => e.stopPropagation()}>
                                     <button 
                                       onClick={(e) => toggleSelectTrack(track.id, e)}
                                       className={`p-1 rounded-md transition-colors ${
-                                        isSelected ? (isWWM ? 'text-emerald-400' : 'text-pink-400') : 'text-gray-600 hover:text-gray-400'
+                                        isSelected ? (isWWM ? 'text-emerald-400' : 'text-accent-400') : 'text-gray-600 hover:text-gray-400'
                                       }`}>
                                       {isSelected ? <CheckSquare className="w-3.5 h-3.5" /> : <Square className="w-3.5 h-3.5" />}
                                     </button>
@@ -2114,7 +2196,7 @@ export default function App() {
                                   <td className="py-2 px-4 truncate max-w-[160px] text-gray-400">
                                     {track.album}
                                   </td>
-                                  <td className={`py-2 px-4 text-center font-mono text-[10px] ${isWWM ? 'text-emerald-300' : 'text-pink-300'}`}>
+                                  <td className={`py-2 px-4 text-center font-mono text-[10px] ${isWWM ? 'text-emerald-300' : 'text-accent-300'}`}>
                                     {track.format}
                                   </td>
                                   <td className="py-2 px-4 text-right font-mono text-gray-400">
@@ -2130,9 +2212,9 @@ export default function App() {
                                       </button>
                                       <button 
                                         onClick={(e) => toggleFavorite(track.id, e)}
-                                        className={`text-gray-500 ${isWWM ? 'hover:text-emerald-400' : 'hover:text-pink-400'} transition-colors p-1`}
+                                        className={`text-gray-500 ${isWWM ? 'hover:text-emerald-400' : 'hover:text-accent-400'} transition-colors p-1`}
                                         title={isFav ? "Quitar de favoritas" : "Marcar como favorita"}>
-                                        <Heart className={`w-3.5 h-3.5 ${isFav ? (isWWM ? 'text-emerald-400 fill-current' : 'text-pink-400 fill-current') : ''}`} />
+                                        <Heart className={`w-3.5 h-3.5 ${isFav ? (isWWM ? 'text-emerald-400 fill-current' : 'text-accent-400 fill-current') : ''}`} />
                                       </button>
                                     </div>
                                   </td>
@@ -2177,9 +2259,9 @@ export default function App() {
                         onClick={() => handlePlayTrack(track)}
                         className={`group relative flex items-center gap-3.5 p-3 rounded-2xl glass-card transition-all duration-200 cursor-pointer ${
                           isSelected
-                            ? isWWM ? 'ring-2 ring-emerald-500 bg-emerald-500/15 shadow-lg shadow-emerald-950/40' : 'ring-2 ring-pink-500 bg-pink-500/15 shadow-lg'
+                            ? isWWM ? 'ring-2 ring-emerald-500 bg-emerald-500/15 shadow-lg shadow-emerald-950/40' : 'ring-2 ring-accent-500 bg-accent-500/15 shadow-lg'
                             : isCurrent 
-                              ? isWWM ? 'ring-1 ring-emerald-500/60 bg-emerald-950/30 shadow-lg shadow-emerald-950/40' : 'ring-1 ring-pink-500/60 bg-white/10 shadow-lg' 
+                              ? isWWM ? 'ring-1 ring-emerald-500/60 bg-emerald-950/30 shadow-lg shadow-emerald-950/40' : 'ring-1 ring-accent-500/60 bg-white/10 shadow-lg' 
                               : isWWM ? 'hover:bg-emerald-950/20 hover:border-emerald-500/20' : 'hover:bg-white/5 hover:border-white/10'
                         }`}>
                         
@@ -2188,7 +2270,7 @@ export default function App() {
                           onClick={(e) => toggleSelectTrack(track.id, e)}
                           className={`absolute top-2.5 left-2.5 z-10 p-1 rounded-lg backdrop-blur-md transition-all ${
                             isSelected 
-                              ? isWWM ? 'bg-emerald-500 text-white shadow-md' : 'bg-pink-500 text-white shadow-md' 
+                              ? isWWM ? 'bg-emerald-500 text-white shadow-md' : 'bg-accent-500 text-white shadow-md' 
                               : 'bg-black/60 text-gray-400 hover:text-white opacity-0 group-hover:opacity-100'
                           }`}
                           title={isSelected ? "Deseleccionar" : "Seleccionar para edición en lote"}>
@@ -2204,13 +2286,13 @@ export default function App() {
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                             />
                           ) : (
-                            <div className={`w-full h-full bg-gradient-to-br ${isWWM ? 'from-emerald-950/60 to-teal-900/40' : 'from-purple-900/40 to-pink-900/40'} flex items-center justify-center`}>
-                              <Music2 className={`w-6 h-6 ${isWWM ? 'text-emerald-400/80' : 'text-pink-400/80'}`} />
+                            <div className={`w-full h-full bg-gradient-to-br ${isWWM ? 'from-emerald-950/60 to-teal-900/40' : 'from-purple-900/40 to-accent-900/40'} flex items-center justify-center`}>
+                              <Music2 className={`w-6 h-6 ${isWWM ? 'text-emerald-400/80' : 'text-accent-400/80'}`} />
                             </div>
                           )}
                           <div className={`absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity ${isCurrent ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
                             {isCurrent && isPlaying ? (
-                              <Pause className={`w-5 h-5 ${isWWM ? 'text-emerald-400' : 'text-pink-400'} fill-current`} />
+                              <Pause className={`w-5 h-5 ${isWWM ? 'text-emerald-400' : 'text-accent-400'} fill-current`} />
                             ) : (
                               <Play className="w-5 h-5 text-white fill-current ml-0.5" />
                             )}
@@ -2221,8 +2303,8 @@ export default function App() {
                         <div className="flex-1 min-w-0">
                           <h3 className={`text-xs font-semibold truncate transition-colors ${
                             isCurrent 
-                              ? isWWM ? 'text-emerald-300' : 'text-pink-300' 
-                              : isWWM ? 'text-white group-hover:text-emerald-200' : 'text-white group-hover:text-pink-200'
+                              ? isWWM ? 'text-emerald-300' : 'text-accent-300' 
+                              : isWWM ? 'text-white group-hover:text-emerald-200' : 'text-white group-hover:text-accent-200'
                           }`}>
                             {track.title}
                           </h3>
@@ -2230,7 +2312,7 @@ export default function App() {
                             {track.artist} {track.album ? `· ${track.album}` : ''}
                           </p>
                           <div className="flex items-center gap-2 mt-1">
-                            <span className={`text-[9px] px-1.5 py-0.5 rounded-md bg-white/10 ${isWWM ? 'text-emerald-300' : 'text-pink-300'} font-mono font-medium`}>
+                            <span className={`text-[9px] px-1.5 py-0.5 rounded-md bg-white/10 ${isWWM ? 'text-emerald-300' : 'text-accent-300'} font-mono font-medium`}>
                               {track.format}
                             </span>
                             {track.year && (
@@ -2253,9 +2335,9 @@ export default function App() {
                             </button>
                             <button 
                               onClick={(e) => toggleFavorite(track.id, e)}
-                              className={`text-gray-500 ${isWWM ? 'hover:text-emerald-400' : 'hover:text-pink-400'} transition-colors p-1`}
+                              className={`text-gray-500 ${isWWM ? 'hover:text-emerald-400' : 'hover:text-accent-400'} transition-colors p-1`}
                               title={isFav ? "Quitar de favoritas" : "Marcar como favorita"}>
-                              <Heart className={`w-3.5 h-3.5 ${isFav ? (isWWM ? 'text-emerald-400 fill-current' : 'text-pink-400 fill-current') : ''}`} />
+                              <Heart className={`w-3.5 h-3.5 ${isFav ? (isWWM ? 'text-emerald-400 fill-current' : 'text-accent-400 fill-current') : ''}`} />
                             </button>
                           </div>
                         </div>
@@ -2278,7 +2360,7 @@ export default function App() {
                             className="text-gray-400 hover:text-white transition-colors"
                             title={selectedTrackIds.size === filteredTracks.length ? "Deseleccionar todas" : "Seleccionar todas"}>
                             {selectedTrackIds.size > 0 && selectedTrackIds.size === filteredTracks.length ? (
-                              <CheckSquare className={`w-3.5 h-3.5 ${isWWM ? 'text-emerald-400' : 'text-pink-400'}`} />
+                              <CheckSquare className={`w-3.5 h-3.5 ${isWWM ? 'text-emerald-400' : 'text-accent-400'}`} />
                             ) : (
                               <Square className="w-3.5 h-3.5" />
                             )}
@@ -2303,16 +2385,16 @@ export default function App() {
                             onClick={() => handlePlayTrack(track)}
                             className={`cursor-pointer transition-colors ${
                               isSelected
-                                ? isWWM ? 'bg-emerald-500/20 text-emerald-200' : 'bg-pink-500/20 text-pink-200'
+                                ? isWWM ? 'bg-emerald-500/20 text-emerald-200' : 'bg-accent-500/20 text-accent-200'
                                 : isCurrent 
-                                  ? isWWM ? 'bg-emerald-500/10 text-emerald-300' : 'bg-pink-500/10 text-pink-300' 
+                                  ? isWWM ? 'bg-emerald-500/10 text-emerald-300' : 'bg-accent-500/10 text-accent-300' 
                                   : 'hover:bg-white/5 text-gray-300'
                             }`}>
                             <td className="py-2 px-3 text-center" onClick={(e) => e.stopPropagation()}>
                               <button 
                                 onClick={(e) => toggleSelectTrack(track.id, e)}
                                 className={`p-1 rounded-md transition-colors ${
-                                  isSelected ? (isWWM ? 'text-emerald-400' : 'text-pink-400') : 'text-gray-600 hover:text-gray-400'
+                                  isSelected ? (isWWM ? 'text-emerald-400' : 'text-accent-400') : 'text-gray-600 hover:text-gray-400'
                                 }`}>
                                 {isSelected ? <CheckSquare className="w-3.5 h-3.5" /> : <Square className="w-3.5 h-3.5" />}
                               </button>
@@ -2329,7 +2411,7 @@ export default function App() {
                             <td className="py-2 px-4 truncate max-w-[160px] text-gray-400">
                               {track.album}
                             </td>
-                            <td className={`py-2 px-4 text-center font-mono text-[10px] ${isWWM ? 'text-emerald-300' : 'text-pink-300'}`}>
+                            <td className={`py-2 px-4 text-center font-mono text-[10px] ${isWWM ? 'text-emerald-300' : 'text-accent-300'}`}>
                               {track.format}
                             </td>
                             <td className="py-2 px-4 text-right font-mono text-gray-400">
@@ -2345,9 +2427,9 @@ export default function App() {
                                 </button>
                                 <button 
                                   onClick={(e) => toggleFavorite(track.id, e)}
-                                  className={`text-gray-500 ${isWWM ? 'hover:text-emerald-400' : 'hover:text-pink-400'} transition-colors p-1`}
+                                  className={`text-gray-500 ${isWWM ? 'hover:text-emerald-400' : 'hover:text-accent-400'} transition-colors p-1`}
                                   title={favorites.includes(track.id) ? "Quitar de favoritas" : "Marcar como favorita"}>
-                                  <Heart className={`w-3.5 h-3.5 ${favorites.includes(track.id) ? (isWWM ? 'text-emerald-400 fill-current' : 'text-pink-400 fill-current') : ''}`} />
+                                  <Heart className={`w-3.5 h-3.5 ${favorites.includes(track.id) ? (isWWM ? 'text-emerald-400 fill-current' : 'text-accent-400 fill-current') : ''}`} />
                                 </button>
                               </div>
                             </td>
@@ -2384,7 +2466,7 @@ export default function App() {
                       </div>
 
                       {/* Hero Banner del Álbum con Funda y Vinilo */}
-                      <div className={`relative overflow-hidden rounded-3xl p-6 sm:p-8 glass-card border border-white/10 bg-gradient-to-r ${isWWM ? 'from-emerald-950/40 via-teal-950/30 to-black/20' : 'from-pink-950/40 via-purple-950/30 to-black/20'}`}>
+                      <div className={`relative overflow-hidden rounded-3xl p-6 sm:p-8 glass-card border border-white/10 bg-gradient-to-r ${isWWM ? 'from-emerald-950/40 via-teal-950/30 to-black/20' : 'from-accent-950/40 via-purple-950/30 to-black/20'}`}>
                         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 sm:gap-8 relative z-10">
                           
                           {/* Portada 3D con disco de vinilo asomándose */}
@@ -2395,7 +2477,7 @@ export default function App() {
                                 ? 'animate-spin-slow shadow-2xl' 
                                 : 'group-hover/sleeve:translate-x-3'
                             }`}>
-                              <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full border border-white/20 ${isWWM ? 'bg-gradient-to-tr from-emerald-800 to-teal-700' : 'bg-gradient-to-tr from-pink-800 to-purple-700'} flex items-center justify-center shadow-inner`}>
+                              <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full border border-white/20 ${isWWM ? 'bg-gradient-to-tr from-emerald-800 to-teal-700' : 'bg-gradient-to-tr from-accent-800 to-purple-700'} flex items-center justify-center shadow-inner`}>
                                 <div className="w-4 h-4 rounded-full bg-black/90 border border-white/10" />
                               </div>
                             </div>
@@ -2409,8 +2491,8 @@ export default function App() {
                                   className="w-full h-full object-cover" 
                                 />
                               ) : (
-                                <div className={`w-full h-full bg-gradient-to-br ${isWWM ? 'from-emerald-950/80 to-teal-900/60' : 'from-purple-900/60 to-pink-900/60'} flex flex-col items-center justify-center p-4 text-center`}>
-                                  <Disc3 className={`w-16 h-16 ${isWWM ? 'text-emerald-400/80' : 'text-pink-400/80'} mb-2`} />
+                                <div className={`w-full h-full bg-gradient-to-br ${isWWM ? 'from-emerald-950/80 to-teal-900/60' : 'from-purple-900/60 to-accent-900/60'} flex flex-col items-center justify-center p-4 text-center`}>
+                                  <Disc3 className={`w-16 h-16 ${isWWM ? 'text-emerald-400/80' : 'text-accent-400/80'} mb-2`} />
                                   <span className="text-xs text-gray-300 font-bold truncate max-w-full">{selectedAlbum.album}</span>
                                 </div>
                               )}
@@ -2421,7 +2503,7 @@ export default function App() {
                           {/* Metadatos y acciones del álbum */}
                           <div className="flex-1 min-w-0 text-center sm:text-left">
                             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider mb-2 border border-white/10 bg-white/5">
-                              <Disc3 className={`w-3.5 h-3.5 ${isWWM ? 'text-emerald-400' : 'text-pink-400'}`} />
+                              <Disc3 className={`w-3.5 h-3.5 ${isWWM ? 'text-emerald-400' : 'text-accent-400'}`} />
                               <span className="text-gray-300">Álbum Completo</span>
                             </div>
                             
@@ -2450,7 +2532,7 @@ export default function App() {
                                 <span>{formatTotalTime(selectedAlbum.totalDurationSec)}</span>
                               </span>
                               {selectedAlbum.formats.map((fmt) => (
-                                <span key={fmt} className={`px-2 py-0.5 rounded-md font-bold text-[10px] ${isWWM ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-pink-500/20 text-pink-300 border border-pink-500/30'}`}>
+                                <span key={fmt} className={`px-2 py-0.5 rounded-md font-bold text-[10px] ${isWWM ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-accent-500/20 text-accent-300 border border-accent-500/30'}`}>
                                   {fmt}
                                 </span>
                               ))}
@@ -2460,7 +2542,7 @@ export default function App() {
                             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3">
                               <button 
                                 onClick={() => handlePlayAlbum(selectedAlbum)}
-                                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r ${isWWM ? 'from-emerald-500 to-teal-400 shadow-emerald-500/25' : 'from-pink-500 to-rose-400 shadow-pink-500/25'} text-white text-xs font-bold shadow-xl hover:brightness-110 active:scale-95 transition-all`}>
+                                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r ${isWWM ? 'from-emerald-500 to-teal-400 shadow-emerald-500/25' : 'from-accent-500 to-accent-400 shadow-accent-500/25'} text-white text-xs font-bold shadow-xl hover:brightness-110 active:scale-95 transition-all`}>
                                 <Play className="w-4 h-4 fill-current" />
                                 <span>Reproducir Álbum</span>
                               </button>
@@ -2492,7 +2574,7 @@ export default function App() {
                                   className="text-gray-400 hover:text-white transition-colors"
                                   title="Seleccionar todas las pistas del álbum">
                                   {selectedAlbum.tracks.every(t => selectedTrackIds.has(t.id)) ? (
-                                    <CheckSquare className={`w-3.5 h-3.5 ${isWWM ? 'text-emerald-400' : 'text-pink-400'}`} />
+                                    <CheckSquare className={`w-3.5 h-3.5 ${isWWM ? 'text-emerald-400' : 'text-accent-400'}`} />
                                   ) : (
                                     <Square className="w-3.5 h-3.5" />
                                   )}
@@ -2517,16 +2599,16 @@ export default function App() {
                                   onClick={() => handlePlayTrack(track)}
                                   className={`cursor-pointer transition-colors ${
                                     isSelected
-                                      ? isWWM ? 'bg-emerald-500/20 text-emerald-200' : 'bg-pink-500/20 text-pink-200'
+                                      ? isWWM ? 'bg-emerald-500/20 text-emerald-200' : 'bg-accent-500/20 text-accent-200'
                                       : isCurrent 
-                                        ? isWWM ? 'bg-emerald-500/10 text-emerald-300' : 'bg-pink-500/10 text-pink-300' 
+                                        ? isWWM ? 'bg-emerald-500/10 text-emerald-300' : 'bg-accent-500/10 text-accent-300' 
                                         : 'hover:bg-white/5 text-gray-300'
                                   }`}>
                                   <td className="py-2 px-3 text-center" onClick={(e) => e.stopPropagation()}>
                                     <button 
                                       onClick={(e) => toggleSelectTrack(track.id, e)}
                                       className={`p-1 rounded-md transition-colors ${
-                                        isSelected ? (isWWM ? 'text-emerald-400' : 'text-pink-400') : 'text-gray-600 hover:text-gray-400'
+                                        isSelected ? (isWWM ? 'text-emerald-400' : 'text-accent-400') : 'text-gray-600 hover:text-gray-400'
                                       }`}>
                                       {isSelected ? <CheckSquare className="w-3.5 h-3.5" /> : <Square className="w-3.5 h-3.5" />}
                                     </button>
@@ -2540,7 +2622,7 @@ export default function App() {
                                   <td className="py-2 px-4 truncate max-w-[160px] text-gray-400">
                                     {track.artist}
                                   </td>
-                                  <td className={`py-2 px-4 text-center font-mono text-[10px] ${isWWM ? 'text-emerald-300' : 'text-pink-300'}`}>
+                                  <td className={`py-2 px-4 text-center font-mono text-[10px] ${isWWM ? 'text-emerald-300' : 'text-accent-300'}`}>
                                     {track.format}
                                   </td>
                                   <td className="py-2 px-4 text-right font-mono text-gray-400">
@@ -2556,9 +2638,9 @@ export default function App() {
                                       </button>
                                       <button 
                                         onClick={(e) => toggleFavorite(track.id, e)}
-                                        className={`text-gray-500 ${isWWM ? 'hover:text-emerald-400' : 'hover:text-pink-400'} transition-colors p-1`}
+                                        className={`text-gray-500 ${isWWM ? 'hover:text-emerald-400' : 'hover:text-accent-400'} transition-colors p-1`}
                                         title={isFav ? "Quitar de favoritas" : "Marcar como favorita"}>
-                                        <Heart className={`w-3.5 h-3.5 ${isFav ? (isWWM ? 'text-emerald-400 fill-current' : 'text-pink-400 fill-current') : ''}`} />
+                                        <Heart className={`w-3.5 h-3.5 ${isFav ? (isWWM ? 'text-emerald-400 fill-current' : 'text-accent-400 fill-current') : ''}`} />
                                       </button>
                                     </div>
                                   </td>
@@ -2591,9 +2673,9 @@ export default function App() {
                               onClick={() => setExpandedAlbumKey(group.key)}
                               className={`group relative flex flex-col p-3 rounded-2xl glass-card transition-all duration-300 cursor-pointer hover:-translate-y-1 hover:shadow-2xl border ${
                                 hasSelectedTracks 
-                                  ? isWWM ? 'border-emerald-500/60 ring-1 ring-emerald-500/40 bg-emerald-950/20' : 'border-pink-500/60 ring-1 ring-pink-500/40 bg-pink-950/20' 
+                                  ? isWWM ? 'border-emerald-500/60 ring-1 ring-emerald-500/40 bg-emerald-950/20' : 'border-accent-500/60 ring-1 ring-accent-500/40 bg-accent-950/20' 
                                   : isAlbumPlaying 
-                                    ? isWWM ? 'border-emerald-500/50 shadow-lg shadow-emerald-950/40' : 'border-pink-500/50 shadow-lg shadow-pink-950/40'
+                                    ? isWWM ? 'border-emerald-500/50 shadow-lg shadow-emerald-950/40' : 'border-accent-500/50 shadow-lg shadow-accent-950/40'
                                     : 'border-white/5 hover:border-white/20'
                               }`}>
                               
@@ -2604,7 +2686,7 @@ export default function App() {
                                 <div className={`absolute right-1 top-1/2 -translate-y-1/2 w-4/5 h-4/5 rounded-full vinyl-disc opacity-0 group-hover:opacity-100 group-hover:translate-x-3 transition-all duration-300 pointer-events-none flex items-center justify-center ${
                                   isAlbumPlaying ? 'opacity-100 translate-x-2 animate-spin-slow' : ''
                                 }`}>
-                                  <div className={`w-8 h-8 rounded-full border border-white/20 ${isWWM ? 'bg-emerald-800' : 'bg-pink-800'} flex items-center justify-center shadow-inner`}>
+                                  <div className={`w-8 h-8 rounded-full border border-white/20 ${isWWM ? 'bg-emerald-800' : 'bg-accent-800'} flex items-center justify-center shadow-inner`}>
                                     <div className="w-2.5 h-2.5 rounded-full bg-black/90" />
                                   </div>
                                 </div>
@@ -2617,8 +2699,8 @@ export default function App() {
                                     className="relative z-10 w-full h-full object-cover rounded-xl group-hover:shadow-lg transition-transform duration-300 group-hover:scale-102" 
                                   />
                                 ) : (
-                                  <div className={`relative z-10 w-full h-full rounded-xl bg-gradient-to-br ${isWWM ? 'from-emerald-950/60 to-teal-900/40' : 'from-purple-900/40 to-pink-900/40'} flex flex-col items-center justify-center text-center p-3`}>
-                                    <Disc3 className={`w-10 h-10 ${isWWM ? 'text-emerald-400/80' : 'text-pink-400/80'} mb-1`} />
+                                  <div className={`relative z-10 w-full h-full rounded-xl bg-gradient-to-br ${isWWM ? 'from-emerald-950/60 to-teal-900/40' : 'from-purple-900/40 to-accent-900/40'} flex flex-col items-center justify-center text-center p-3`}>
+                                    <Disc3 className={`w-10 h-10 ${isWWM ? 'text-emerald-400/80' : 'text-accent-400/80'} mb-1`} />
                                     <span className="text-[10px] text-gray-400 font-mono truncate max-w-full">{group.album}</span>
                                   </div>
                                 )}
@@ -2627,7 +2709,7 @@ export default function App() {
                                 <div className="absolute inset-0 z-20 bg-black/40 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center gap-2">
                                   <button 
                                     onClick={(e) => { e.stopPropagation(); handlePlayAlbum(group); }}
-                                    className={`p-3 rounded-full bg-gradient-to-r ${isWWM ? 'from-emerald-500 to-teal-400 shadow-emerald-500/40' : 'from-pink-500 to-rose-400 shadow-pink-500/40'} text-white shadow-xl hover:scale-110 active:scale-95 transition-all`}
+                                    className={`p-3 rounded-full bg-gradient-to-r ${isWWM ? 'from-emerald-500 to-teal-400 shadow-emerald-500/40' : 'from-accent-500 to-accent-400 shadow-accent-500/40'} text-white shadow-xl hover:scale-110 active:scale-95 transition-all`}
                                     title="Reproducir álbum">
                                     <Play className="w-4 h-4 fill-current ml-0.5" />
                                   </button>
@@ -2642,7 +2724,7 @@ export default function App() {
                               </div>
 
                               {/* Título y Artista */}
-                              <h3 className={`text-xs font-bold text-white truncate ${isWWM ? 'group-hover:text-emerald-300' : 'group-hover:text-pink-300'} transition-colors`} title={group.album}>
+                              <h3 className={`text-xs font-bold text-white truncate ${isWWM ? 'group-hover:text-emerald-300' : 'group-hover:text-accent-300'} transition-colors`} title={group.album}>
                                 {group.album}
                               </h3>
                               <p className="text-[11px] text-gray-400 truncate mt-0.5" title={group.artist}>
@@ -2672,9 +2754,9 @@ export default function App() {
             <div className="space-y-6 mb-24">
               
               {/* Hero Banner */}
-              <div className="relative rounded-3xl overflow-hidden glass-card p-8 border border-white/10 bg-gradient-to-r from-pink-900/20 via-purple-900/20 to-transparent">
+              <div className="relative rounded-3xl overflow-hidden glass-card p-8 border border-white/10 bg-gradient-to-r from-accent-900/20 via-purple-900/20 to-transparent">
                 <div className="max-w-xl">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-pink-500/20 border border-pink-500/30 text-pink-300 text-[11px] font-semibold mb-3">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent-500/20 border border-accent-500/30 text-accent-300 text-[11px] font-semibold mb-3">
                     <Sparkles className="w-3.5 h-3.5" />
                     <span>Experiencia Hi-Res Hi-Fi</span>
                   </div>
@@ -2691,7 +2773,7 @@ export default function App() {
                         if (tracks.length > 0) handlePlayTrack(tracks[0]);
                         else handleOpenFolderDialog();
                       }}
-                      className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 to-rose-400 text-white text-xs font-bold shadow-lg shadow-pink-500/25 hover:brightness-110 active:scale-95 transition-all">
+                      className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-accent-500 to-accent-400 text-white text-xs font-bold shadow-lg shadow-accent-500/25 hover:brightness-110 active:scale-95 transition-all">
                       <Play className="w-4 h-4 fill-current" />
                       <span>{tracks.length > 0 ? 'Reproducir Aleatorio' : 'Escanear Biblioteca'}</span>
                     </button>
@@ -2712,7 +2794,7 @@ export default function App() {
                 </div>
                 <div className="glass-card p-4 rounded-2xl border border-white/5">
                   <div className="text-[11px] text-gray-400 mb-1">Pistas FLAC Lossless</div>
-                  <div className="text-xl font-bold text-pink-400 font-mono">
+                  <div className="text-xl font-bold text-accent-400 font-mono">
                     {tracks.filter(t => t.format.toUpperCase().includes('FLAC')).length}
                   </div>
                 </div>
@@ -2740,7 +2822,7 @@ export default function App() {
                           <img src={getCoverSrc(track.cover_url)} alt={track.title} className="w-full h-full object-cover" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center bg-purple-900/30">
-                            <Music2 className="w-4 h-4 text-pink-400" />
+                            <Music2 className="w-4 h-4 text-accent-400" />
                           </div>
                         )}
                       </div>
@@ -2804,7 +2886,7 @@ export default function App() {
                         value={onlineQuery}
                         onChange={(e) => setOnlineQuery(e.target.value)}
                         placeholder="Ej: LiSA Gurenge, YOASOBI Idol, o https://youtube.com/playlist?list=..."
-                        className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500/30"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-accent-500 focus:ring-1 focus:ring-accent-500/30"
                       />
                       <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-3" />
                     </div>
@@ -2812,7 +2894,7 @@ export default function App() {
                     <button 
                       type="submit"
                       disabled={isSearchingOnline || isResolvingPlaylist || !onlineQuery.trim()}
-                      className="px-5 py-2.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-white text-xs font-semibold shadow-lg shadow-pink-500/20 active:scale-95 disabled:opacity-50 transition-all flex items-center gap-2">
+                      className="px-5 py-2.5 rounded-xl bg-accent-600 hover:bg-accent-500 text-white text-xs font-semibold shadow-lg shadow-accent-500/20 active:scale-95 disabled:opacity-50 transition-all flex items-center gap-2">
                       {isSearchingOnline || isResolvingPlaylist ? (
                         <>
                           <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -2847,7 +2929,7 @@ export default function App() {
                         onClick={() => setDownloadFormat(fmt.id)}
                         className={`px-3 py-1 rounded-lg text-xs transition-colors ${
                           downloadFormat === fmt.id 
-                            ? 'bg-pink-500/20 text-pink-300 border border-pink-500/40 font-semibold shadow-sm' 
+                            ? 'bg-accent-500/20 text-accent-300 border border-accent-500/40 font-semibold shadow-sm' 
                             : 'bg-white/5 text-gray-400 hover:text-white'
                         }`}>
                         {fmt.label}
@@ -2875,8 +2957,8 @@ export default function App() {
 
               {/* Estado de carga de playlist */}
               {isResolvingPlaylist && (
-                <div className="flex flex-col items-center justify-center p-8 rounded-3xl glass-card border border-pink-500/20 text-center animate-pulse">
-                  <Loader2 className="w-8 h-8 text-pink-400 animate-spin mb-3" />
+                <div className="flex flex-col items-center justify-center p-8 rounded-3xl glass-card border border-accent-500/20 text-center animate-pulse">
+                  <Loader2 className="w-8 h-8 text-accent-400 animate-spin mb-3" />
                   <h4 className="text-sm font-bold text-white mb-1">Extrayendo pistas de la Playlist / Álbum...</h4>
                   <p className="text-xs text-gray-400">Consultando los metadatos de todos los videos de la lista con yt-dlp</p>
                 </div>
@@ -2884,16 +2966,16 @@ export default function App() {
 
               {/* Panel de Álbum / Playlist Completa */}
               {playlistInfo && (
-                <div className="glass-card rounded-3xl border border-pink-500/30 overflow-hidden shadow-2xl animate-in fade-in slide-in-from-top-3">
+                <div className="glass-card rounded-3xl border border-accent-500/30 overflow-hidden shadow-2xl animate-in fade-in slide-in-from-top-3">
                   {/* Header de la playlist */}
-                  <div className="p-6 bg-gradient-to-r from-pink-900/40 via-purple-900/30 to-pink-900/20 border-b border-white/10">
+                  <div className="p-6 bg-gradient-to-r from-accent-900/40 via-purple-900/30 to-accent-900/20 border-b border-white/10">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                       <div className="flex items-start gap-4">
-                        <div className="w-14 h-14 rounded-2xl bg-pink-500/20 border border-pink-500/30 flex items-center justify-center text-pink-300 flex-shrink-0 shadow-lg">
+                        <div className="w-14 h-14 rounded-2xl bg-accent-500/20 border border-accent-500/30 flex items-center justify-center text-accent-300 flex-shrink-0 shadow-lg">
                           <ListMusic className="w-7 h-7" />
                         </div>
                         <div>
-                          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-pink-500/20 border border-pink-500/30 text-pink-300 text-[10px] font-semibold mb-1">
+                          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-accent-500/20 border border-accent-500/30 text-accent-300 text-[10px] font-semibold mb-1">
                             <span>Álbum / Playlist Completa</span>
                           </div>
                           <h3 className="text-lg font-black text-white tracking-tight">
@@ -2920,9 +3002,9 @@ export default function App() {
                           type="checkbox" 
                           checked={createAlbumFolder} 
                           onChange={(e) => setCreateAlbumFolder(e.target.checked)}
-                          className="rounded bg-white/10 border-white/20 text-pink-500 focus:ring-0 focus:ring-offset-0"
+                          className="rounded bg-white/10 border-white/20 text-accent-500 focus:ring-0 focus:ring-offset-0"
                         />
-                        <FolderCheck className="w-4 h-4 text-pink-400" />
+                        <FolderCheck className="w-4 h-4 text-accent-400" />
                         <span>Organizar en subcarpeta dedicada</span>
                       </label>
 
@@ -2936,7 +3018,7 @@ export default function App() {
                         <button 
                           onClick={handleDownloadSelectedPlaylist}
                           disabled={selectedPlaylistItems.size === 0}
-                          className="flex items-center gap-2 px-5 py-2 rounded-xl bg-gradient-to-r from-pink-500 to-rose-400 text-white text-xs font-bold shadow-lg shadow-pink-500/25 hover:brightness-110 active:scale-95 disabled:opacity-50 transition-all">
+                          className="flex items-center gap-2 px-5 py-2 rounded-xl bg-gradient-to-r from-accent-500 to-accent-400 text-white text-xs font-bold shadow-lg shadow-accent-500/25 hover:brightness-110 active:scale-95 disabled:opacity-50 transition-all">
                           <ArrowDownToLine className="w-4 h-4" />
                           <span>Descargar {selectedPlaylistItems.size} Canciones</span>
                         </button>
@@ -2953,12 +3035,12 @@ export default function App() {
                           key={it.id}
                           onClick={() => toggleSelectPlaylistItem(it.id)}
                           className={`flex items-center justify-between gap-3 p-2.5 rounded-xl transition-colors cursor-pointer ${
-                            isSelected ? 'bg-pink-500/10' : 'hover:bg-white/5 opacity-70 hover:opacity-100'
+                            isSelected ? 'bg-accent-500/10' : 'hover:bg-white/5 opacity-70 hover:opacity-100'
                           }`}>
                           <div className="flex items-center gap-3 min-w-0">
                             <button 
                               onClick={(e) => { e.stopPropagation(); toggleSelectPlaylistItem(it.id); }}
-                              className={`p-1 rounded transition-colors ${isSelected ? 'text-pink-400' : 'text-gray-500'}`}>
+                              className={`p-1 rounded transition-colors ${isSelected ? 'text-accent-400' : 'text-gray-500'}`}>
                               {isSelected ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
                             </button>
                             
@@ -2971,7 +3053,7 @@ export default function App() {
                                 <img src={it.thumbnail} alt={it.title} className="w-full h-full object-cover" />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center bg-purple-900/20">
-                                  <Music2 className="w-3.5 h-3.5 text-pink-400" />
+                                  <Music2 className="w-3.5 h-3.5 text-accent-400" />
                                 </div>
                               )}
                             </div>
@@ -2993,7 +3075,7 @@ export default function App() {
                                 e.stopPropagation();
                                 triggerDownload(it.title, it.uploader, it.url, it.thumbnail);
                               }}
-                              className="p-1.5 rounded-lg bg-white/5 hover:bg-pink-500/20 text-gray-400 hover:text-pink-300 transition-colors"
+                              className="p-1.5 rounded-lg bg-white/5 hover:bg-accent-500/20 text-gray-400 hover:text-accent-300 transition-colors"
                               title="Descargar solo esta pista">
                               <ArrowDownToLine className="w-3.5 h-3.5" />
                             </button>
@@ -3024,14 +3106,14 @@ export default function App() {
                             <img src={item.thumbnail} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
                           ) : (
                             <div className="w-full h-full bg-purple-900/30 flex items-center justify-center">
-                              <Music2 className="w-4 h-4 text-pink-400" />
+                              <Music2 className="w-4 h-4 text-accent-400" />
                             </div>
                           )}
                         </div>
 
                         {/* Título y canal */}
                         <div className="min-w-0 flex-1">
-                          <h4 className="text-xs font-semibold text-white truncate group-hover:text-pink-300 transition-colors">
+                          <h4 className="text-xs font-semibold text-white truncate group-hover:text-accent-300 transition-colors">
                             {item.title}
                           </h4>
                           <div className="flex items-center gap-2 text-[10px] text-gray-400 mt-0.5">
@@ -3044,7 +3126,7 @@ export default function App() {
                         {/* Botón de Descarga */}
                         <button 
                           onClick={() => triggerDownload(item.title, item.uploader, item.url, item.thumbnail)}
-                          className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-pink-600 hover:bg-pink-500 text-white text-xs font-semibold shadow-md shadow-pink-500/20 active:scale-95 transition-all">
+                          className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-accent-600 hover:bg-accent-500 text-white text-xs font-semibold shadow-md shadow-accent-500/20 active:scale-95 transition-all">
                           <ArrowDownToLine className="w-3.5 h-3.5" />
                           <span>Descargar</span>
                         </button>
@@ -3080,7 +3162,7 @@ export default function App() {
                               .then(res => setOnlineResults(res))
                               .catch(err => console.error(err));
                           }}
-                          className="px-3.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-pink-300 hover:text-white text-[11px] font-medium border border-white/5 transition-colors">
+                          className="px-3.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-accent-300 hover:text-white text-[11px] font-medium border border-white/5 transition-colors">
                           Buscar esta canción
                         </button>
                       </div>
@@ -3098,14 +3180,23 @@ export default function App() {
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-base font-bold text-white">Cola de Descargas</h2>
-                  <p className="text-xs text-gray-400">Procesamiento multihilo asíncrono con Tokio + yt-dlp + ffmpeg</p>
+                  <p className="text-xs text-gray-400">Motor Rust + yt-dlp + ffmpeg · hasta 2 descargas en paralelo</p>
                 </div>
                 {downloads.length > 0 && (
-                  <button 
-                    onClick={() => setDownloads([])}
-                    className="text-xs text-gray-400 hover:text-white px-3 py-1.5 rounded-xl bg-white/5 border border-white/5 transition-colors">
-                    Limpiar historial
-                  </button>
+                  <div className="flex items-center gap-2">
+                    {downloads.some(d => !d.status.startsWith('completado') && !d.status.includes('error') && d.status !== 'cancelado') && (
+                      <button
+                        onClick={cancelAllDownloads}
+                        className="text-xs text-rose-300 hover:text-white px-3 py-1.5 rounded-xl bg-rose-500/10 border border-rose-500/20 transition-colors">
+                        Cancelar todo
+                      </button>
+                    )}
+                    <button 
+                      onClick={() => setDownloads(prev => prev.filter(d => !d.status.startsWith('completado') && !d.status.includes('error') && d.status !== 'cancelado'))}
+                      className="text-xs text-gray-400 hover:text-white px-3 py-1.5 rounded-xl bg-white/5 border border-white/5 transition-colors">
+                      Limpiar terminadas
+                    </button>
+                  </div>
                 )}
               </div>
 
@@ -3119,7 +3210,7 @@ export default function App() {
                   </p>
                   <button 
                     onClick={() => setActiveTab('search')}
-                    className="px-4 py-2 rounded-xl bg-pink-600 hover:bg-pink-500 text-white text-xs font-semibold shadow-lg shadow-pink-500/20 active:scale-95 transition-all">
+                    className="px-4 py-2 rounded-xl bg-accent-600 hover:bg-accent-500 text-white text-xs font-semibold shadow-lg shadow-accent-500/20 active:scale-95 transition-all">
                     Buscar Música
                   </button>
                 </div>
@@ -3130,6 +3221,8 @@ export default function App() {
                 {downloads.map((item) => {
                   const isDone = item.status === 'completado';
                   const isErr = item.status.includes('error');
+                  const isCancelled = item.status === 'cancelado';
+                  const isActive = !isDone && !isErr && !isCancelled;
 
                   return (
                     <div key={item.id} className="p-4 rounded-2xl glass-card border border-white/5 space-y-3">
@@ -3139,7 +3232,7 @@ export default function App() {
                           <div className="flex items-center gap-2 text-[10px] text-gray-400 mt-0.5">
                             <span className="truncate">{item.artist}</span>
                             <span>•</span>
-                            <span className="font-mono text-pink-300">{item.format}</span>
+                            <span className="font-mono text-accent-300">{item.format}</span>
                             {item.speed && item.speed !== '--' && (
                               <>
                                 <span>•</span>
@@ -3162,10 +3255,30 @@ export default function App() {
                               ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' 
                               : isErr 
                               ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                              : isCancelled
+                              ? 'bg-gray-500/20 text-gray-300 border border-gray-500/30'
                               : 'bg-amber-500/20 text-amber-300 border border-amber-500/30 animate-pulse'
                           }`}>
                             {item.status}
                           </span>
+
+                          {isActive && (
+                            <button
+                              onClick={() => cancelDownload(item.id)}
+                              className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 transition-colors"
+                              title="Cancelar esta descarga">
+                              <X className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+
+                          {(isErr || isCancelled) && (
+                            <button
+                              onClick={() => retryDownload(item)}
+                              className="p-1.5 rounded-lg bg-white/5 hover:bg-accent-500/20 text-gray-400 hover:text-accent-300 transition-colors"
+                              title="Reintentar descarga">
+                              <RotateCcw className="w-3.5 h-3.5" />
+                            </button>
+                          )}
 
                           {isDone && (
                             <button 
@@ -3182,7 +3295,7 @@ export default function App() {
                         <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
                           <div 
                             className={`h-full transition-all duration-300 ${
-                              isDone ? 'bg-emerald-400' : isErr ? 'bg-rose-500' : 'bg-gradient-to-r from-pink-500 to-rose-400'
+                              isDone ? 'bg-emerald-400' : isErr ? 'bg-rose-500' : 'bg-gradient-to-r from-accent-500 to-accent-400'
                             }`}
                             style={{ width: `${Math.min(100, Math.max(0, item.progress))}%` }}>
                           </div>
@@ -3229,13 +3342,13 @@ export default function App() {
                     onClick={() => handleSetThemeWorld('sakura_zen')}
                     className={`relative p-4 rounded-2xl cursor-pointer transition-all border ${
                       themeWorld === 'sakura_zen'
-                        ? 'border-pink-500 ring-2 ring-pink-500/50 bg-gradient-to-br from-pink-950/40 via-purple-950/30 to-black/60 shadow-xl'
-                        : 'border-white/5 bg-white/[0.02] hover:border-pink-500/30 hover:bg-white/[0.04]'
+                        ? 'border-accent-500 ring-2 ring-accent-500/50 bg-gradient-to-br from-accent-950/40 via-purple-950/30 to-black/60 shadow-xl'
+                        : 'border-white/5 bg-white/[0.02] hover:border-accent-500/30 hover:bg-white/[0.04]'
                     }`}>
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-2xl">🌸</span>
                       {themeWorld === 'sakura_zen' && (
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-pink-500 text-white shadow-sm">
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-accent-500 text-white shadow-sm">
                           Activo
                         </span>
                       )}
@@ -3245,7 +3358,7 @@ export default function App() {
                       Estética japonesa, flor de cerezo, tonos violetas nocturnos, seda blanca y dock flotante.
                     </p>
                     <div className="flex items-center gap-1.5">
-                      <div className="w-3.5 h-3.5 rounded-full bg-pink-500"></div>
+                      <div className="w-3.5 h-3.5 rounded-full bg-accent-500"></div>
                       <div className="w-3.5 h-3.5 rounded-full bg-purple-500"></div>
                       <div className="w-3.5 h-3.5 rounded-full bg-rose-300"></div>
                       <span className="text-[9px] text-gray-500 font-mono ml-1">Kioto Zen</span>
@@ -3370,7 +3483,7 @@ export default function App() {
                       type="button"
                       onClick={() => handleSetAmbientGlow(!ambientGlow)}
                       className={`w-11 h-6 rounded-full transition-colors relative p-0.5 ${
-                        ambientGlow ? (isWWM ? 'bg-emerald-500' : 'bg-pink-500') : 'bg-white/10'
+                        ambientGlow ? (isWWM ? 'bg-emerald-500' : 'bg-accent-500') : 'bg-white/10'
                       }`}>
                       <div className={`w-5 h-5 rounded-full bg-white transition-transform ${
                         ambientGlow ? 'translate-x-5' : 'translate-x-0'
@@ -3395,7 +3508,7 @@ export default function App() {
                       type="button"
                       onClick={() => handleSetAmbientParticles(!ambientParticles)}
                       className={`w-11 h-6 rounded-full transition-colors relative p-0.5 ${
-                        ambientParticles ? (isWWM ? 'bg-emerald-500' : 'bg-pink-500') : 'bg-white/10'
+                        ambientParticles ? (isWWM ? 'bg-emerald-500' : 'bg-accent-500') : 'bg-white/10'
                       }`}>
                       <div className={`w-5 h-5 rounded-full bg-white transition-transform ${
                         ambientParticles ? 'translate-x-5' : 'translate-x-0'
@@ -3409,22 +3522,22 @@ export default function App() {
               {/* Tarjeta de Especificaciones Técnicas */}
               <div className="glass-card p-5 rounded-2xl border border-white/5 space-y-3">
                 <h3 className="text-xs font-bold text-white flex items-center gap-2">
-                  <Cpu className="w-4 h-4 text-pink-400" />
+                  <Cpu className="w-4 h-4 text-accent-400" />
                   <span>Motor Nativo Tauri 2 + Rust</span>
                 </h3>
                 
                 <div className="space-y-2 text-xs">
                   <div className="flex justify-between py-1 border-b border-white/5">
                     <span className="text-gray-400">Versión del Compilador:</span>
-                    <span className="text-white font-mono">{appInfo?.rust_version ?? 'rustc 1.99.1'}</span>
+                    <span className="text-white font-mono">{appInfo?.rust_version ?? 'rustc'}</span>
                   </div>
                   <div className="flex justify-between py-1 border-b border-white/5">
                     <span className="text-gray-400">Consumo de Memoria Base:</span>
-                    <span className="text-emerald-400 font-mono font-semibold">{appInfo?.memory_usage ?? '~22 MB'}</span>
+                    <span className="text-emerald-400 font-mono font-semibold">{appInfo?.memory_usage ?? '—'}</span>
                   </div>
                   <div className="flex justify-between py-1 border-b border-white/5">
                     <span className="text-gray-400">Escaneo Multihilo:</span>
-                    <span className="text-pink-300 font-mono">Rayon Parallel Engine (Activo)</span>
+                    <span className="text-accent-300 font-mono">Rayon Parallel Engine (Activo)</span>
                   </div>
                   <div className="flex justify-between py-1 border-b border-white/5">
                     <span className="text-gray-400">Decodificador de Tags Hi-Res:</span>
@@ -3470,7 +3583,7 @@ export default function App() {
         }>
           <div className={
             playerStyle === 'floating'
-              ? `glass-surface rounded-2xl p-3.5 flex items-center justify-between gap-6 shadow-2xl border ${isWWM ? 'border-emerald-500/20 shadow-emerald-950/40' : 'border-white/10 shadow-pink-950/30'}`
+              ? `glass-surface rounded-2xl p-3.5 flex items-center justify-between gap-6 shadow-2xl border ${isWWM ? 'border-emerald-500/20 shadow-emerald-950/40' : 'border-white/10 shadow-accent-950/30'}`
               : `glass-surface p-3.5 flex items-center justify-between gap-6 shadow-2xl border-t ${isWWM ? 'border-emerald-500/30 bg-[#07160f]/90' : 'border-white/10 bg-[#12071a]/90'}`
           }>
             
@@ -3559,7 +3672,7 @@ export default function App() {
 
                 {/* Siguiente */}
                 <button 
-                  onClick={handleNextTrack}
+                  onClick={() => handleNextTrack()}
                   className="text-gray-400 hover:text-white transition-colors p-1"
                   title="Siguiente canción">
                   <SkipForward className="w-4 h-4" />
@@ -3642,7 +3755,7 @@ export default function App() {
                     setVolume(newVol);
                     if (isMuted) setIsMuted(false);
                   }}
-                  className="w-20 h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer accent-pink-500 focus:outline-none"
+                  className="w-20 h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer accent-accent-500 focus:outline-none"
                   title={`Volumen: ${Math.round((isMuted ? 0 : volume) * 100)}%`}
                 />
               </div>
@@ -3665,13 +3778,13 @@ export default function App() {
             {/* Header con tabs de navegación */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between px-6 py-4 border-b border-white/10 bg-white/[0.03] gap-3">
               <div className="flex items-center gap-3 min-w-0">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-pink-500/20 to-purple-500/20 border border-pink-500/30 flex items-center justify-center text-pink-400 flex-shrink-0">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-accent-500/20 to-purple-500/20 border border-accent-500/30 flex items-center justify-center text-accent-400 flex-shrink-0">
                   <Tags className="w-5 h-5" />
                 </div>
                 <div className="min-w-0">
                   <h3 className="text-base font-bold text-white flex items-center gap-2">
                     Editor de Metadatos & Catálogo
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-pink-500/20 text-pink-300 border border-pink-500/30">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-accent-500/20 text-accent-300 border border-accent-500/30">
                       {editingTrack.format}
                     </span>
                   </h3>
@@ -3689,7 +3802,7 @@ export default function App() {
                     onClick={() => setEditTab('tags')}
                     className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                       editTab === 'tags' 
-                        ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-md' 
+                        ? 'bg-gradient-to-r from-accent-500 to-purple-600 text-white shadow-md' 
                         : 'text-gray-400 hover:text-white'
                     }`}>
                     <Pencil className="w-3.5 h-3.5" />
@@ -3706,7 +3819,7 @@ export default function App() {
                     }}
                     className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                       editTab === 'catalog' 
-                        ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-md' 
+                        ? 'bg-gradient-to-r from-accent-500 to-purple-600 text-white shadow-md' 
                         : 'text-gray-400 hover:text-white'
                     }`}>
                     <Globe className="w-3.5 h-3.5" />
@@ -3802,7 +3915,7 @@ export default function App() {
                           onClick={pickNewCoverImage}
                           className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-medium transition-colors flex items-center justify-center gap-1.5"
                           title="Seleccionar archivo JPG, PNG o WEBP">
-                          <ImagePlus className="w-3.5 h-3.5 text-pink-400" />
+                          <ImagePlus className="w-3.5 h-3.5 text-accent-400" />
                           <span>Cargar...</span>
                         </button>
 
@@ -3857,7 +3970,7 @@ export default function App() {
                     {/* Sección: Información Principal */}
                     <div className="space-y-3 p-4 rounded-2xl bg-white/[0.02] border border-white/5">
                       <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-pink-400">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-accent-400">
                           Información Principal
                         </span>
                       </div>
@@ -3870,7 +3983,7 @@ export default function App() {
                             <button 
                               type="button" 
                               onClick={() => resetField('title')}
-                              className="text-[10px] text-pink-400 hover:underline flex items-center gap-1">
+                              className="text-[10px] text-accent-400 hover:underline flex items-center gap-1">
                               <Undo2 className="w-2.5 h-2.5" /> Revertir
                             </button>
                           )}
@@ -3879,7 +3992,7 @@ export default function App() {
                           type="text"
                           value={editTitle}
                           onChange={(e) => setEditTitle(e.target.value)}
-                          className="w-full px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:border-pink-500/50 focus:ring-1 focus:ring-pink-500/30 outline-none transition-colors"
+                          className="w-full px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:border-accent-500/50 focus:ring-1 focus:ring-accent-500/30 outline-none transition-colors"
                           placeholder="Título del tema"
                         />
                       </div>
@@ -3893,7 +4006,7 @@ export default function App() {
                               <button 
                                 type="button" 
                                 onClick={() => resetField('artist')}
-                                className="text-[10px] text-pink-400 hover:underline flex items-center gap-1">
+                                className="text-[10px] text-accent-400 hover:underline flex items-center gap-1">
                                 <Undo2 className="w-2.5 h-2.5" /> Revertir
                               </button>
                             )}
@@ -3902,7 +4015,7 @@ export default function App() {
                             type="text"
                             value={editArtist}
                             onChange={(e) => setEditArtist(e.target.value)}
-                            className="w-full px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:border-pink-500/50 focus:ring-1 focus:ring-pink-500/30 outline-none transition-colors"
+                            className="w-full px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:border-accent-500/50 focus:ring-1 focus:ring-accent-500/30 outline-none transition-colors"
                             placeholder="Nombre del artista"
                           />
                         </div>
@@ -3914,7 +4027,7 @@ export default function App() {
                               <button 
                                 type="button" 
                                 onClick={() => resetField('album_artist')}
-                                className="text-[10px] text-pink-400 hover:underline flex items-center gap-1">
+                                className="text-[10px] text-accent-400 hover:underline flex items-center gap-1">
                                 <Undo2 className="w-2.5 h-2.5" /> Revertir
                               </button>
                             )}
@@ -3923,7 +4036,7 @@ export default function App() {
                             type="text"
                             value={editAlbumArtist}
                             onChange={(e) => setEditAlbumArtist(e.target.value)}
-                            className="w-full px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:border-pink-500/50 focus:ring-1 focus:ring-pink-500/30 outline-none transition-colors"
+                            className="w-full px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:border-accent-500/50 focus:ring-1 focus:ring-accent-500/30 outline-none transition-colors"
                             placeholder="Artista del álbum"
                           />
                         </div>
@@ -3944,7 +4057,7 @@ export default function App() {
                               <button 
                                 type="button" 
                                 onClick={() => resetField('album')}
-                                className="text-[10px] text-pink-400 hover:underline flex items-center gap-1">
+                                className="text-[10px] text-accent-400 hover:underline flex items-center gap-1">
                                 <Undo2 className="w-2.5 h-2.5" /> Revertir
                               </button>
                             )}
@@ -3953,7 +4066,7 @@ export default function App() {
                             type="text"
                             value={editAlbum}
                             onChange={(e) => setEditAlbum(e.target.value)}
-                            className="w-full px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:border-pink-500/50 focus:ring-1 focus:ring-pink-500/30 outline-none transition-colors"
+                            className="w-full px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:border-accent-500/50 focus:ring-1 focus:ring-accent-500/30 outline-none transition-colors"
                             placeholder="Nombre del álbum"
                           />
                         </div>
@@ -3965,7 +4078,7 @@ export default function App() {
                               <button 
                                 type="button" 
                                 onClick={() => resetField('track_number')}
-                                className="text-[10px] text-pink-400 hover:underline flex items-center gap-1">
+                                className="text-[10px] text-accent-400 hover:underline flex items-center gap-1">
                                 <Undo2 className="w-2.5 h-2.5" /> Revertir
                               </button>
                             )}
@@ -3975,7 +4088,7 @@ export default function App() {
                             value={editTrackNumber}
                             onChange={(e) => setEditTrackNumber(e.target.value.replace(/[^0-9]/g, ''))}
                             maxLength={4}
-                            className="w-full px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:border-pink-500/50 focus:ring-1 focus:ring-pink-500/30 outline-none transition-colors font-mono"
+                            className="w-full px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:border-accent-500/50 focus:ring-1 focus:ring-accent-500/30 outline-none transition-colors font-mono"
                             placeholder="Ej. 1"
                           />
                         </div>
@@ -3996,7 +4109,7 @@ export default function App() {
                               <button 
                                 type="button" 
                                 onClick={() => resetField('year')}
-                                className="text-[10px] text-pink-400 hover:underline flex items-center gap-1">
+                                className="text-[10px] text-accent-400 hover:underline flex items-center gap-1">
                                 <Undo2 className="w-2.5 h-2.5" /> Revertir
                               </button>
                             )}
@@ -4006,7 +4119,7 @@ export default function App() {
                             value={editYear}
                             onChange={(e) => setEditYear(e.target.value.replace(/[^0-9]/g, ''))}
                             maxLength={4}
-                            className="w-full px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:border-pink-500/50 focus:ring-1 focus:ring-pink-500/30 outline-none transition-colors font-mono"
+                            className="w-full px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:border-accent-500/50 focus:ring-1 focus:ring-accent-500/30 outline-none transition-colors font-mono"
                             placeholder="2024"
                           />
                         </div>
@@ -4018,7 +4131,7 @@ export default function App() {
                               <button 
                                 type="button" 
                                 onClick={() => resetField('genre')}
-                                className="text-[10px] text-pink-400 hover:underline flex items-center gap-1">
+                                className="text-[10px] text-accent-400 hover:underline flex items-center gap-1">
                                 <Undo2 className="w-2.5 h-2.5" /> Revertir
                               </button>
                             )}
@@ -4027,7 +4140,7 @@ export default function App() {
                             type="text"
                             value={editGenre}
                             onChange={(e) => setEditGenre(e.target.value)}
-                            className="w-full px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:border-pink-500/50 focus:ring-1 focus:ring-pink-500/30 outline-none transition-colors"
+                            className="w-full px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs focus:border-accent-500/50 focus:ring-1 focus:ring-accent-500/30 outline-none transition-colors"
                             placeholder="Pop, Rock, Anime, etc."
                           />
                         </div>
@@ -4042,7 +4155,7 @@ export default function App() {
                             onClick={() => setEditGenre(g)}
                             className={`px-2.5 py-1 rounded-lg text-[10px] font-medium transition-colors ${
                               editGenre.toLowerCase() === g.toLowerCase()
-                                ? 'bg-pink-500 text-white'
+                                ? 'bg-accent-500 text-white'
                                 : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'
                             }`}>
                             {g}
@@ -4082,7 +4195,7 @@ export default function App() {
                       onChange={(e) => setCatalogQuery(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && searchCatalog()}
                       placeholder="Buscar por artista y título (ej. LiSA Gurenge)..."
-                      className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-white/5 border border-white/10 text-white text-xs focus:border-pink-500/50 focus:ring-1 focus:ring-pink-500/30 outline-none transition-colors"
+                      className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-white/5 border border-white/10 text-white text-xs focus:border-accent-500/50 focus:ring-1 focus:ring-accent-500/30 outline-none transition-colors"
                     />
                   </div>
 
@@ -4092,14 +4205,14 @@ export default function App() {
                       onChange={(e) => setCatalogSource(e.target.value as any)}
                       className="px-3 py-2.5 rounded-2xl bg-white/5 border border-white/10 text-gray-200 text-xs outline-none cursor-pointer">
                       <option value="itunes" className="bg-gray-900 text-white">Apple Music (iTunes)</option>
-                      <option value="deezer" className="bg-gray-900 text-white">Catálogo Global</option>
+                      <option value="deezer" className="bg-gray-900 text-white">Deezer</option>
                     </select>
 
                     <button
                       type="button"
                       onClick={() => searchCatalog()}
                       disabled={isSearchingCatalog || !catalogQuery.trim()}
-                      className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 text-white text-xs font-bold shadow-lg hover:opacity-90 transition-all disabled:opacity-50 flex items-center justify-center gap-2 flex-shrink-0">
+                      className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-accent-500 to-purple-600 text-white text-xs font-bold shadow-lg hover:opacity-90 transition-all disabled:opacity-50 flex items-center justify-center gap-2 flex-shrink-0">
                       {isSearchingCatalog ? (
                         <>
                           <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -4139,7 +4252,7 @@ export default function App() {
                       {catalogResults.map((item, idx) => (
                         <div 
                           key={idx}
-                          className="p-3 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 hover:border-pink-500/30 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 group">
+                          className="p-3 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 hover:border-accent-500/30 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 group">
                           
                           <div className="flex items-center gap-3 min-w-0">
                             {item.cover_url ? (
@@ -4155,7 +4268,7 @@ export default function App() {
                             )}
 
                             <div className="min-w-0">
-                              <h4 className="text-xs font-bold text-white truncate group-hover:text-pink-300 transition-colors">
+                              <h4 className="text-xs font-bold text-white truncate group-hover:text-accent-300 transition-colors">
                                 {item.title}
                               </h4>
                               <p className="text-[11px] text-gray-300 truncate">
@@ -4185,7 +4298,7 @@ export default function App() {
                             <button
                               type="button"
                               onClick={() => applyCandidate(item, false)}
-                              className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 hover:opacity-90 text-white text-xs font-bold shadow-md transition-all flex items-center gap-1.5">
+                              className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-accent-500 to-purple-600 hover:opacity-90 text-white text-xs font-bold shadow-md transition-all flex items-center gap-1.5">
                               <Sparkles className="w-3.5 h-3.5" />
                               <span>Aplicar todo</span>
                             </button>
@@ -4223,7 +4336,7 @@ export default function App() {
                   type="button"
                   onClick={handleSaveMetadata}
                   disabled={isSavingMetadata}
-                  className="flex-1 sm:flex-none px-6 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 via-pink-600 to-purple-600 text-white text-xs font-bold shadow-xl hover:shadow-pink-500/25 hover:opacity-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                  className="flex-1 sm:flex-none px-6 py-2.5 rounded-xl bg-gradient-to-r from-accent-500 via-accent-600 to-purple-600 text-white text-xs font-bold shadow-xl hover:shadow-accent-500/25 hover:opacity-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
                   {isSavingMetadata ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -4257,13 +4370,13 @@ export default function App() {
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-white/[0.03]">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-pink-500/20 to-purple-500/20 border border-pink-500/30 flex items-center justify-center text-pink-400 flex-shrink-0">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-accent-500/20 to-purple-500/20 border border-accent-500/30 flex items-center justify-center text-accent-400 flex-shrink-0">
                   <Layers className="w-5 h-5" />
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-white flex items-center gap-2">
                     <span>Edición de Metadatos en Lote</span>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-pink-500/20 text-pink-300 border border-pink-500/30">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-accent-500/20 text-accent-300 border border-accent-500/30">
                       {selectedTrackIds.size} pistas
                     </span>
                   </h3>
@@ -4296,14 +4409,14 @@ export default function App() {
               )}
 
               {/* Artista */}
-              <div className={`p-3.5 rounded-2xl border transition-all ${applyBatchArtist ? 'bg-white/5 border-pink-500/40' : 'bg-white/[0.02] border-white/5 opacity-80'}`}>
+              <div className={`p-3.5 rounded-2xl border transition-all ${applyBatchArtist ? 'bg-white/5 border-accent-500/40' : 'bg-white/[0.02] border-white/5 opacity-80'}`}>
                 <div className="flex items-center justify-between mb-2">
                   <label className="flex items-center gap-2 font-medium text-gray-300 cursor-pointer select-none">
                     <input 
                       type="checkbox"
                       checked={applyBatchArtist}
                       onChange={(e) => setApplyBatchArtist(e.target.checked)}
-                      className="rounded bg-white/10 border-white/20 text-pink-500 focus:ring-0"
+                      className="rounded bg-white/10 border-white/20 text-accent-500 focus:ring-0"
                     />
                     <span>Artista</span>
                   </label>
@@ -4315,19 +4428,19 @@ export default function App() {
                   disabled={!applyBatchArtist}
                   onChange={(e) => setBatchArtist(e.target.value)}
                   placeholder="Ej: LiSA, Aimer, Queen"
-                  className="w-full bg-black/30 border border-white/10 rounded-xl px-3 py-2 text-white placeholder-gray-600 focus:outline-none focus:border-pink-500 disabled:opacity-40"
+                  className="w-full bg-black/30 border border-white/10 rounded-xl px-3 py-2 text-white placeholder-gray-600 focus:outline-none focus:border-accent-500 disabled:opacity-40"
                 />
               </div>
 
               {/* Álbum */}
-              <div className={`p-3.5 rounded-2xl border transition-all ${applyBatchAlbum ? 'bg-white/5 border-pink-500/40' : 'bg-white/[0.02] border-white/5 opacity-80'}`}>
+              <div className={`p-3.5 rounded-2xl border transition-all ${applyBatchAlbum ? 'bg-white/5 border-accent-500/40' : 'bg-white/[0.02] border-white/5 opacity-80'}`}>
                 <div className="flex items-center justify-between mb-2">
                   <label className="flex items-center gap-2 font-medium text-gray-300 cursor-pointer select-none">
                     <input 
                       type="checkbox"
                       checked={applyBatchAlbum}
                       onChange={(e) => setApplyBatchAlbum(e.target.checked)}
-                      className="rounded bg-white/10 border-white/20 text-pink-500 focus:ring-0"
+                      className="rounded bg-white/10 border-white/20 text-accent-500 focus:ring-0"
                     />
                     <span>Álbum</span>
                   </label>
@@ -4339,19 +4452,19 @@ export default function App() {
                   disabled={!applyBatchAlbum}
                   onChange={(e) => setBatchAlbum(e.target.value)}
                   placeholder="Ej: THE BOOK, Greatest Hits"
-                  className="w-full bg-black/30 border border-white/10 rounded-xl px-3 py-2 text-white placeholder-gray-600 focus:outline-none focus:border-pink-500 disabled:opacity-40"
+                  className="w-full bg-black/30 border border-white/10 rounded-xl px-3 py-2 text-white placeholder-gray-600 focus:outline-none focus:border-accent-500 disabled:opacity-40"
                 />
               </div>
 
               {/* Artista del Álbum */}
-              <div className={`p-3.5 rounded-2xl border transition-all ${applyBatchAlbumArtist ? 'bg-white/5 border-pink-500/40' : 'bg-white/[0.02] border-white/5 opacity-80'}`}>
+              <div className={`p-3.5 rounded-2xl border transition-all ${applyBatchAlbumArtist ? 'bg-white/5 border-accent-500/40' : 'bg-white/[0.02] border-white/5 opacity-80'}`}>
                 <div className="flex items-center justify-between mb-2">
                   <label className="flex items-center gap-2 font-medium text-gray-300 cursor-pointer select-none">
                     <input 
                       type="checkbox"
                       checked={applyBatchAlbumArtist}
                       onChange={(e) => setApplyBatchAlbumArtist(e.target.checked)}
-                      className="rounded bg-white/10 border-white/20 text-pink-500 focus:ring-0"
+                      className="rounded bg-white/10 border-white/20 text-accent-500 focus:ring-0"
                     />
                     <span>Artista del Álbum</span>
                   </label>
@@ -4363,21 +4476,21 @@ export default function App() {
                   disabled={!applyBatchAlbumArtist}
                   onChange={(e) => setBatchAlbumArtist(e.target.value)}
                   placeholder="Ej: Varios Artistas, Banda Sonora"
-                  className="w-full bg-black/30 border border-white/10 rounded-xl px-3 py-2 text-white placeholder-gray-600 focus:outline-none focus:border-pink-500 disabled:opacity-40"
+                  className="w-full bg-black/30 border border-white/10 rounded-xl px-3 py-2 text-white placeholder-gray-600 focus:outline-none focus:border-accent-500 disabled:opacity-40"
                 />
               </div>
 
               {/* Año y Género en 2 columnas */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {/* Año */}
-                <div className={`p-3.5 rounded-2xl border transition-all ${applyBatchYear ? 'bg-white/5 border-pink-500/40' : 'bg-white/[0.02] border-white/5 opacity-80'}`}>
+                <div className={`p-3.5 rounded-2xl border transition-all ${applyBatchYear ? 'bg-white/5 border-accent-500/40' : 'bg-white/[0.02] border-white/5 opacity-80'}`}>
                   <div className="flex items-center justify-between mb-2">
                     <label className="flex items-center gap-2 font-medium text-gray-300 cursor-pointer select-none">
                       <input 
                         type="checkbox"
                         checked={applyBatchYear}
                         onChange={(e) => setApplyBatchYear(e.target.checked)}
-                        className="rounded bg-white/10 border-white/20 text-pink-500 focus:ring-0"
+                        className="rounded bg-white/10 border-white/20 text-accent-500 focus:ring-0"
                       />
                       <span>Año</span>
                     </label>
@@ -4389,19 +4502,19 @@ export default function App() {
                     disabled={!applyBatchYear}
                     onChange={(e) => setBatchYear(e.target.value)}
                     placeholder="Ej: 2024"
-                    className="w-full bg-black/30 border border-white/10 rounded-xl px-3 py-2 text-white placeholder-gray-600 focus:outline-none focus:border-pink-500 disabled:opacity-40"
+                    className="w-full bg-black/30 border border-white/10 rounded-xl px-3 py-2 text-white placeholder-gray-600 focus:outline-none focus:border-accent-500 disabled:opacity-40"
                   />
                 </div>
 
                 {/* Género */}
-                <div className={`p-3.5 rounded-2xl border transition-all ${applyBatchGenre ? 'bg-white/5 border-pink-500/40' : 'bg-white/[0.02] border-white/5 opacity-80'}`}>
+                <div className={`p-3.5 rounded-2xl border transition-all ${applyBatchGenre ? 'bg-white/5 border-accent-500/40' : 'bg-white/[0.02] border-white/5 opacity-80'}`}>
                   <div className="flex items-center justify-between mb-2">
                     <label className="flex items-center gap-2 font-medium text-gray-300 cursor-pointer select-none">
                       <input 
                         type="checkbox"
                         checked={applyBatchGenre}
                         onChange={(e) => setApplyBatchGenre(e.target.checked)}
-                        className="rounded bg-white/10 border-white/20 text-pink-500 focus:ring-0"
+                        className="rounded bg-white/10 border-white/20 text-accent-500 focus:ring-0"
                       />
                       <span>Género</span>
                     </label>
@@ -4413,20 +4526,20 @@ export default function App() {
                     disabled={!applyBatchGenre}
                     onChange={(e) => setBatchGenre(e.target.value)}
                     placeholder="Ej: J-Pop, Rock, Anison"
-                    className="w-full bg-black/30 border border-white/10 rounded-xl px-3 py-2 text-white placeholder-gray-600 focus:outline-none focus:border-pink-500 disabled:opacity-40"
+                    className="w-full bg-black/30 border border-white/10 rounded-xl px-3 py-2 text-white placeholder-gray-600 focus:outline-none focus:border-accent-500 disabled:opacity-40"
                   />
                 </div>
               </div>
 
               {/* Carátula en Lote */}
-              <div className={`p-4 rounded-2xl border transition-all ${applyBatchCover ? 'bg-white/5 border-pink-500/40' : 'bg-white/[0.02] border-white/5 opacity-80'}`}>
+              <div className={`p-4 rounded-2xl border transition-all ${applyBatchCover ? 'bg-white/5 border-accent-500/40' : 'bg-white/[0.02] border-white/5 opacity-80'}`}>
                 <div className="flex items-center justify-between mb-3">
                   <label className="flex items-center gap-2 font-medium text-gray-300 cursor-pointer select-none">
                     <input 
                       type="checkbox"
                       checked={applyBatchCover}
                       onChange={(e) => setApplyBatchCover(e.target.checked)}
-                      className="rounded bg-white/10 border-white/20 text-pink-500 focus:ring-0"
+                      className="rounded bg-white/10 border-white/20 text-accent-500 focus:ring-0"
                     />
                     <span>Portada / Carátula Compartida</span>
                   </label>
@@ -4453,7 +4566,7 @@ export default function App() {
                         <button
                           type="button"
                           onClick={pickBatchCoverImage}
-                          className="px-3.5 py-1.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-white text-xs font-semibold shadow-md shadow-pink-500/20 transition-all flex items-center gap-1.5">
+                          className="px-3.5 py-1.5 rounded-xl bg-accent-600 hover:bg-accent-500 text-white text-xs font-semibold shadow-md shadow-accent-500/20 transition-all flex items-center gap-1.5">
                           <ImagePlus className="w-3.5 h-3.5" />
                           <span>Seleccionar Imagen...</span>
                         </button>
@@ -4508,7 +4621,7 @@ export default function App() {
                   type="button"
                   onClick={handleSaveBatchMetadata}
                   disabled={isSavingBatch || (!applyBatchArtist && !applyBatchAlbum && !applyBatchAlbumArtist && !applyBatchYear && !applyBatchGenre && !applyBatchCover)}
-                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 via-pink-600 to-purple-600 text-white text-xs font-bold shadow-xl hover:shadow-pink-500/25 hover:opacity-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-accent-500 via-accent-600 to-purple-600 text-white text-xs font-bold shadow-xl hover:shadow-accent-500/25 hover:opacity-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
                   {isSavingBatch ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />

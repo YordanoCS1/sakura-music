@@ -1,300 +1,204 @@
 # Arquitectura
 
-Sakura Music es una aplicación de escritorio monousuario: una ventana Qt que
-orquesta procesos externos (`yt-dlp`, `ffmpeg`), lee y escribe archivos de audio
-y guarda su propio estado en JSON y SQLite. No hay servidor, no hay cuentas y no
-hay base de datos remota. Esta página describe cómo está partido el código, qué
-corre en cada hilo y dónde vive cada dato.
+Sakura Music 2.0 es una app de escritorio monousuario: una ventana Tauri que
+renderiza React, un backend Rust que escanea el disco, edita tags y orquesta
+`yt-dlp` / `ffmpeg`, y un sistema de archivos local. No hay servidor, cuentas ni
+base de datos remota. La versión 1.0 en PySide6 vive en `legacy_python/`.
 
 ## Vista de contexto
 
 ```mermaid
 flowchart LR
-    U["Usuario"] --> APP["Sakura Music<br/>(Qt / PySide6)"]
+    U["Usuario"] --> APP["Sakura Music<br/>Tauri 2 + React 19"]
     APP -->|"busca, enumera, descarga"| YT["YouTube<br/>vía yt-dlp"]
-    APP -->|"convierte y mezcla"| FF["ffmpeg / ffprobe"]
-    APP -->|"fichas y portadas"| CAT["iTunes · Deezer ·<br/>MusicBrainz"]
-    APP -->|"letras"| LRC["LRCLIB"]
+    APP -->|"convierte y mezcla"| FF["ffmpeg"]
+    APP -->|"fichas y portadas"| CAT["iTunes · Deezer"]
     APP -->|"lee y escribe"| FS["Sistema de archivos<br/>biblioteca + datos"]
-    FS -->|"tags, portadas, letras"| AUDIO["Archivos de audio"]
+    FS -->|"tags, portadas"| AUDIO["Archivos de audio"]
 ```
 
-La app es el único componente con estado propio. Todo lo demás es una fuente o un
-destino: YouTube y los catálogos se consultan, `ffmpeg` transforma, y el sistema
-de archivos guarda el resultado.
+Todo lo externo es fuente o destino: YouTube y los catálogos se consultan,
+`ffmpeg` transforma y el disco guarda el resultado. El único estado propio es la
+caché de biblioteca, la carpeta de carátulas y las preferencias del navegador.
 
 ## Capas
 
 ```mermaid
 flowchart TB
-    subgraph UI["ui/ · presentación"]
-        PAGES["pages/<br/>home · search · queue<br/>library · settings"]
-        WIDGETS["widgets/ · dialogs/<br/>toolbar · views · editors"]
-        MODELS["models/<br/>track_model · album_model"]
-        THEME["theme/<br/>tokens · palettes · qss · ambient"]
+    subgraph UI["src/App.tsx · presentación"]
+        HOME["home · search · queue<br/>library · settings"]
+        PLAYER["player HTML5<br/>asset: + Blob URL"]
+        EDITOR["editor proveído<br/>lote {updated,errors}"]
+        THEME["temas vía --accent-*<br/>4 temas + 2 universos"]
     end
 
-    subgraph SERVICES["ui/services/ · orquestación"]
-        DL["downloader"]
-        SCAN["library (scanner, delta, refresher)"]
-        SEARCH["searcher · playlist"]
-        META["metadata_search · album_resolver"]
-        LYR["lyrics"]
-        PROC["process · thumbnails · watcher"]
+    subgraph IPC["IPC Tauri"]
+        CMD["invoke(): 14 comandos"]
+        EVT["evento download-progress"]
     end
 
-    subgraph CORE["core/ · dominio puro"]
-        LIB["library · library_index"]
-        MD["metadata · metadata_sources"]
-        MATCH["album_match · text"]
-        HIST["tag_history · download_history"]
-        TOOLS["tools · formats · models"]
+    subgraph CORE["src-tauri/src/ · backend Rust"]
+        SCAN["scanner.rs<br/>walkdir + rayon + lofty"]
+        DL["downloader.rs<br/>DownloadManager, 2 en paralelo"]
+        PATH["paths.rs<br/>app_local_data_dir, OnceLock"]
+        LIB["lib.rs<br/>comandos, caché, scope asset"]
     end
 
     subgraph EXT["Externos"]
         YTDLP["yt-dlp"]
         FFMPEG["ffmpeg"]
-        NET["HTTP: iTunes, Deezer,<br/>MusicBrainz, LRCLIB"]
+        NET["HTTP: iTunes, Deezer"]
         DISK["Disco"]
     end
 
-    PAGES --> WIDGETS
-    PAGES --> MODELS
-    PAGES --> SERVICES
-    WIDGETS --> THEME
-    SERVICES --> CORE
-    SERVICES --> PROC
-    PROC --> YTDLP
-    PROC --> FFMPEG
-    META --> NET
-    LYR --> NET
+    UI --> CMD
+    UI --> EVT
+    CORE --> YTDLP
+    CORE --> FFMPEG
+    LIB --> NET
     CORE --> DISK
 ```
 
-**La regla de dependencia va en un solo sentido:** `ui/pages` y `ui/widgets`
-pueden importar `ui/services` y `core`; `ui/services` puede importar `core`;
-`core` no importa nada de `ui` ni de Qt. Esa pureza es la que permite probar
-`album_match`, `metadata`, `library_index` y `tag_history` sin levantar una
-`QApplication`.
-
 | Capa | Responsabilidad | No debe |
 |---|---|---|
-| `core/` | Modelos, parsing, tags, matching, persistencia de datos | Tocar widgets, hilos de Qt ni lanzar procesos |
-| `ui/services/` | Hilos, subprocesos, señales de progreso, coordinación | Pintar ni decidir layout |
-| `ui/pages/` | Componer páginas, conectar señales, validar entrada | Leer tags o lanzar `yt-dlp` directamente |
-| `ui/widgets/` | Piezas reutilizables y diálogos | Guardar estado de negocio |
-| `ui/theme/` | Tokens, paletas, QSS y variante ambiente | Contener lógica de páginas |
+| `src/App.tsx` | Pestañas, reproductor, editor, cola, temas. Lee `localStorage` para preferencias. | Leer tags ni lanzar `yt-dlp` directamente |
+| `lib.rs` | Registrar comandos, inicializar carpeta de datos, autorizar carpetas en el scope `asset:`, cancelar descargas al salir. | Contener lógica de parsing o pesos |
+| `scanner.rs` | Escaneo paralelo, lectura/escritura de tags con `lofty`, carátulas con extensión real, escritura atómica. | Conocer React ni `localStorage` |
+| `downloader.rs` | Búsqueda, resolución de playlists, cola con `Mutex` + `Condvar`, cancelación por PID, parsing de progreso. | Pintar UI |
+| `paths.rs` | Única verdad sobre la carpeta de datos (`OnceLock` + fallback a `.tauri_data`). | Duplicar resolución de rutas |
+
+> Deuda conocida: `App.tsx` es un monolito de ~4600 líneas. Funciona, pero un
+> componente grande nuevo debería vivir en su propio archivo.
 
 ## Modelo de hilos
 
-El hilo de la UI nunca hace trabajo pesado. Cada operación que puede tardar vive
-en un `QThread` propio o en un subproceso, y se comunica por señales.
+- **Escaneo:** `rayon` con `par_iter` sobre la lista de archivos. Sin hilo principal bloqueado.
+- **Descargas:** cada `start_download` crea un hilo Rust (`std::thread::spawn`) que espera turno en `DownloadManager::acquire` y corre `yt-dlp` como proceso hijo. El `DownloadManager` es `Arc<Mutex<...>>` compartido vía `State`.
+- **Progreso:** el hilo lee `stdout` línea por línea y emite `download-progress`. El frontend escucha y actualiza la fila por `id`.
+- **Cancelación:** `cancel_download(job_id)` marca el job como cancelado y mata el PID (`taskkill /T /F` en Windows). Si el job aún no tomó turno, el `acquire` devuelve `false` y se emite `cancelado`.
+- **Cierre:** en `RunEvent::Exit` se llama `manager.cancel_all()`, que marca todos los jobs y mata todos los PIDs registrados. No quedan `yt-dlp` huérfanos.
 
-```mermaid
-flowchart LR
-    subgraph MAIN["Hilo principal (Qt)"]
-        MW["MainWindow"]
-        PG["Páginas y widgets"]
-        DM["DownloadManager<br/>(coordina, no descarga)"]
-    end
+### Reglas
 
-    subgraph THREADS["QThread / subprocesos"]
-        SS["SearchService"]
-        PR["PlaylistResolver"]
-        LS["LibraryScanner<br/>DeltaScanner · Refresher"]
-        AR["AlbumResolver"]
-        MS["MetadataSearch"]
-        LE["LyricsEmbedder"]
-        TL["ThumbnailLoader"]
-        YT["yt-dlp (proceso)"]
-        FF["ffmpeg (proceso)"]
-    end
-
-    PG -->|"señal de intención"| DM
-    PG -->|"consulta"| SS
-    PG -->|"URL"| PR
-    PG -->|"carpeta"| LS
-    PG -->|"álbum"| AR
-    PG -->|"texto"| MS
-    PG -->|"pistas"| LE
-    PG -->|"URL de imagen"| TL
-
-    DM -->|"ProcessRunner"| YT
-    DM -->|"ProcessRunner"| FF
-    AR --> YT
-    SS --> YT
-    PR --> YT
-
-    SS -.->|"result_found / finished"| PG
-    LS -.->|"batch / progress / finished"| PG
-    DM -.->|"job_added / job_updated"| PG
-    AR -.->|"progress / matches"| PG
-    MS -.->|"results_ready / failed"| PG
-    LE -.->|"progress / completed"| PG
-```
-
-### Reglas del modelo
-
-1. **Un servicio, un hilo.** `SearchService`, `PlaylistResolver`,
-   `LibraryScanner`, `AlbumResolver`, `MetadataSearch`, `LyricsEmbedder` y
-   `ThumbnailLoader` encapsulan su `QThread` y exponen señales. La página no
-   hereda de `QThread`.
-2. **Los subprocesos no compiten por el GIL.** `yt-dlp` y `ffmpeg` corren con
-   `subprocess.Popen`, no con `QProcess`, para poder usar `CREATE_NO_WINDOW` en
-   Windows y para que su trabajo de CPU no bloquee la interfaz.
-3. **El estado del proceso vive en el slot.** `DownloadManager` tiene
-   `MAX_CONCURRENT` slots; cada uno sabe qué `DownloadJob` y qué staging le
-   corresponden. Con dos descargas en paralelo, una línea de progreso no puede
-   atribuirse al trabajo equivocado.
-4. **Todo servicio tiene `shutdown()`.** Cancela su hilo y espera. La limpieza se
-   hace en `app.main()` después de `exec()`, no en `closeEvent`.
-5. **La UI solo reacciona a señales.** No hay `sleep`, ni `wait()`, ni lectura de
-   disco dentro de un `clicked`.
-
-### Por qué el cierre es especial
-
-`MainWindow.closeEvent` marca `_cerrando` y detiene el watcher, pero **no espera
-hilos**. Si lo hiciera, un `QThread` seguiría vivo mientras Qt destruye objetos y
-la salida se colgaría de forma intermitente. La secuencia correcta es:
-
-```text
-closeEvent → acepta el cierre
-exec() vuelve
-app.main() → window.shutdown()
-              ├─ watcher.stop()
-              ├─ downloads.shutdown()   (mata procesos, borra staging, guarda cola)
-              ├─ search.shutdown()
-              ├─ queue.shutdown()
-              ├─ library.shutdown()
-              └─ home_review_scanner.shutdown()
-del window
-```
+1. Nada pesado corre en el hilo de la WebView: escaneo, tags y descargas viven en Rust.
+2. Como máximo 2 descargas corren a la vez (`DownloadManager::new(2)`). La tercera espera turno.
+3. El frontend es el único dueño de la cola visual; el backend es el dueño de los procesos.
+4. `stderr` de `yt-dlp` se captura en su propio hilo para no bloquear `stdout`.
+5. Si el usuario cancela mientras `yt-dlp` está en `finished`/convirtiendo, el estado final sigue respeta la cancelación (`is_cancelled` se chequea tras `wait`).
 
 ## Persistencia
 
-No hay una base de datos central. Cada tipo de dato tiene el formato que mejor le
-sirve y todos viven bajo la carpeta de datos de la app.
+No hay SQLite en la v2. Cada dato tiene el formato más simple que le sirve:
 
 ```mermaid
 flowchart TB
-    BASE["base_dir()<br/>%LOCALAPPDATA%\\SakuraMusic"]
-    BASE --> CFG["config.json<br/>ajustes del usuario"]
-    BASE --> QUEUE["download_queue.json<br/>trabajos reanudables"]
-    BASE --> HIST["download_history.json<br/>últimos 1000 resultados"]
-    BASE --> IDX["library_index.sqlite3<br/>índice por mtime_ns + tamaño"]
-    BASE --> TAGS["Historial/<br/>manifiestos de tags (20)"]
-    BASE --> ICONS["Iconos/<br/>copias estables de PNG"]
-    BASE --> CACHE["Cache/Portadas/<br/>miniaturas y carátulas"]
-    BASE --> MUSIC["Musica/<br/>biblioteca por defecto"]
-    BASE --> DL["Descargas/<br/>staging job-XXXX"]
-    MUSIC --> TRACKS["audio + .lrc/.txt + folder.jpg"]
+    BASE["app_local_data_dir()<br/>AppData/Local/com.sakura.music"]
+    BASE --> CACHE["library_cache.json<br/>caché de pistas"]
+    BASE --> COVERS["covers/<br/>carátulas con extensión real"]
+    BASE --> BIN["bin/<br/>yt-dlp / ffmpeg opcionales"]
+    BASE --> WEB["WebView data directory<br/>localStorage + IndexedDB"]
+    WEB --> PREF["localStorage<br/>tema, vista, carpeta, favoritos"]
 ```
 
-| Dato | Archivo | Formato | Retención |
+| Dato | Archivo / clave | Formato | Retención |
 |---|---|---|---|
-| Ajustes | `config.json` | JSON atómico (`.tmp` + `replace`) | Permanente |
-| Cola | `download_queue.json` | JSON | Hasta que se limpia |
-| Historial | `download_history.json` | JSON | 1000 entradas |
-| Índice | `library_index.sqlite3` | SQLite WAL, `SCHEMA_VERSION = 1` | Descartable |
-| Manifiestos | `Historial/*.json` | JSON por lote | 20 más nuevos |
-| Portadas | `Cache/Portadas/` | PNG/JPG | Descartable |
+| Biblioteca | `library_cache.json` | JSON, escritura atómica | Descartable, se reconstruye |
+| Carátulas | `covers/` | JPG/PNG/WebP/GIF/BMP/TIFF reales | Cache, deduplicada por hash |
+| Portadas temporales | `covers/temp_*` | Imagen cualquiera | Se borran al arrancar y antes de guardar una nueva |
+| Preferencias | `localStorage` (`sakura_*`) | JSON/strings | Permanente |
+| Audio | biblioteca del usuario | MP3/FLAC/M4A/Opus/OGG/WAV/AAC | Los tags son la fuente de verdad |
 
-**Los tags del archivo son la fuente de verdad.** El índice SQLite es una caché
-para no releer miles de archivos en cada arranque; si se borra o se corrompe, la
-biblioteca se reconstruye desde el disco. La cola y el historial son estado de la
-app, no del audio: se pueden borrar sin perder música.
+**Los tags del archivo son la fuente de verdad.** La caché es solo para arrancar
+rápido; si se borra o se corrompe, `get_cached_library` devuelve `[]` y un
+escaneo completo la reconstruye.
 
 ### Resolución de la carpeta de datos
 
-`base_dir()` prueba `%LOCALAPPDATA%\SakuraMusic`; si detecta que la build de
-Microsoft Store redirige las escrituras a `VirtualStore`, cae a
-`%USERPROFILE%\SakuraMusic` y, si tampoco es visible para procesos externos, a la
-carpeta temporal. La comprobación escribe una sonda y compara la ruta física con
-la lógica, porque `ffmpeg` no está sandboxeado y necesita ver los mismos bytes.
+`paths::init()` se llama una sola vez en `setup()` con
+`app.path().app_local_data_dir()`. `paths::data_dir()` la lee vía `OnceLock`
+y cae a `./.tauri_data` en tests o llamadas tempranas. Nunca se usa el
+`current_dir()` como carpeta de datos en producción (en Windows puede ser
+`System32`).
 
-## Secuencia: descarga de una canción
+### Escritura atómica
+
+`scanner::write_atomic()` escribe a un temporal en la misma carpeta
+(`.<nombre>.<pid>.<timestamp>.tmp`), hace `sync_all()` y luego `rename`.
+`write_atomic_with_retries(..., 4)` reintenta con pausa lineal. Se usa para
+tags, caché y portadas. En Windows el archivo temporal se cierra antes del
+rename (el handle abierto bloquea el reemplazo).
+
+## Seguridad
+
+- **CSP estricta** en `tauri.conf.json` (no es `null`): `default-src 'self'`,
+  `script-src 'self'`, `style-src` con Google Fonts, `img-src`/`media-src`
+  limitados a `asset:`, `data:`, `blob:` y `https:`, `connect-src` solo a
+  `ipc:`, `asset:`, dev (`localhost:1420`) e iTunes/Deezer. `frame-ancestors
+  'none'` y `object-src 'none'`.
+- **Asset scope acotado:** `["$AUDIO/**", "$APPLOCALDATA/**", "$TEMP/**"]`.
+  Como el usuario puede elegir cualquier unidad como biblioteca,
+  `scan_library` y `get_cached_library` autorizan en runtime cada carpeta
+  (`asset_protocol_scope().allow_directory(parent, true)`) y existe el comando
+  `allow_music_dir` para el diálogo de carpeta.
+- **Sin rutas hardcodeadas:** la búsqueda de binarios nunca apunta a un usuario
+  concreto. yt-dlp: carpeta de datos `bin/`, legado `%APPDATA%/sakura-music/bin`,
+  `PATH`. ffmpeg: `bin/`, legado `%LOCALAPPDATA%/SakuraMusic/bin`, enlaces de
+  winget, `PATH`.
+- **Cancelación real:** los PIDs se registran al hacer `spawn` y se matan con
+  el árbol completo (`taskkill /T`), porque `yt-dlp` tiene hijos `ffmpeg`.
+
+## Secuencia: escaneo de biblioteca
 
 ```mermaid
 sequenceDiagram
     autonumber
     actor U as Usuario
-    participant SP as SearchPage
-    participant SS as SearchService
-    participant YT as yt-dlp
-    participant MW as MainWindow
-    participant DM as DownloadManager
-    participant PR as ProcessRunner
+    participant ALT as App.tsx
+    participant SC as scan_library
+    participant RD as rayon + lofty
     participant FS as Disco
 
-    U->>SP: escribe consulta
-    SP->>SP: espera 450 ms (debounce)
-    SP->>SS: search(query)
-    SS->>YT: ytsearch20:query
-    YT-->>SS: JSON por línea
-    SS-->>SP: result_found(SearchResult)
-    SP-->>U: tarjeta con portada y duración
-    U->>SP: clic en descargar
-    SP->>MW: download_requested(result, format)
-    MW->>MW: require_ffmpeg()
-    MW->>DM: enqueue(job)
-    DM->>DM: ¿duplicado en cola o disco?
-    alt ya existe
-        DM-->>MW: job SKIPPED
-    else nuevo
-        DM->>PR: start(yt-dlp, staging)
-        PR->>YT: subprocess.Popen
-        loop progreso
-            YT-->>PR: línea de progreso
-            PR-->>DM: progress
-            DM-->>SP: job_updated
-        end
-        YT-->>PR: exit 0
-        PR-->>DM: completed(0)
-        DM->>FS: mover staging → destino
-        DM->>FS: escribir tags saneados
-        DM-->>MW: job_finished(DONE)
-        MW-->>U: fila con badge y ruta
+    U->>ALT: elige carpeta
+    ALT->>SC: invoke(scan_library, carpeta)
+    SC->>SC: allow_directory(carpeta, recursive)
+    SC->>RD: scan_directory_parallel
+    loop cada archivo de audio
+        RD->>FS: leer tags + carátula
+        RD-->>RD: ScannedTrack
     end
+    RD-->>SC: Vec<ScannedTrack>
+    SC->>FS: write_atomic(library_cache.json)
+    SC-->>ALT: tracks
+    ALT-->>U: lista + filtro por carpeta
 ```
 
-## Secuencia: escaneo incremental
+## Secuencia: descarga con cancelación
 
 ```mermaid
 sequenceDiagram
     autonumber
-    participant W as LibraryWatcher
-    participant LP as LibraryPage
-    participant DS as LibraryDeltaScanner
-    participant IDX as LibraryIndex
-    participant FS as Disco
-    participant UI as Modelo y vista
+    actor U as Usuario
+    participant ALT as App.tsx
+    participant DM as DownloadManager
+    participant YT as yt-dlp
 
-    Note over W: QFileSystemWatcher no es recursivo
-    W->>W: registra cada subcarpeta
-    FS-->>W: directoryChanged
-    W->>W: debounce 900 ms
-    W-->>LP: changed()
-    LP->>LP: ¿escaneo en curso?
-    alt ocupado
-        LP->>LP: _changes_pending = True
-    else libre
-        LP->>DS: start()
-        DS->>IDX: cargar filas cacheadas
-        DS->>FS: recorrer árbol (scan_paths)
-        loop por archivo
-            DS->>DS: comparar mtime_ns + tamaño
-            alt sin cambios
-                DS->>DS: usar fila del índice
-            else nuevo o modificado
-                DS->>FS: leer tags, portada, letra
-                DS->>IDX: guardar fila
-            end
-        end
-        DS->>IDX: podar rutas inexistentes
-        DS-->>LP: tracks_changed / tracks_removed
-        LP->>UI: reemplazar o quitar filas
+    U->>ALT: Buscar → Descargar
+    ALT->>ALT: crea DownloadItem en cola
+    ALT->>DM: invoke(start_download, job_id)
+    DM->>DM: spawn hilo, acquire (máx 2)
+    DM->>YT: spawn yt-dlp --no-playlist --print after_move
+    loop progreso
+        YT-->>DM: sakuradl|pct|speed|eta|status
+        DM-->>ALT: evento download-progress
     end
-    Note over LP: al terminar, si _changes_pending,<br/>se relanza el delta
+    opt usuario cancela
+        U->>ALT: X en la fila
+        ALT->>DM: invoke(cancel_download, job_id)
+        DM->>DM: marca cancelado, taskkill PID
+    end
+    YT-->>DM: exit
+    DM-->>ALT: completado (+ file_path) o cancelado o error
+    ALT-->>U: badge, rutas, reintentar si hace falta
 ```
 
 ## Secuencia: cambio de tema
@@ -303,75 +207,41 @@ sequenceDiagram
 sequenceDiagram
     autonumber
     actor U as Usuario
-    participant SET as SettingsPage
-    participant MW as MainWindow
-    participant TH as theme
-    participant QSS as build_qss
-    participant APP as QApplication
-    participant W as Widgets
-
-    U->>SET: elige un tema
-    SET->>SET: save_settings({"theme": id})
-    SET-->>MW: theme_changed(id)
-    MW->>TH: get_theme(id)
-    MW->>MW: apply_theme(theme)
-    MW->>MW: _apply_theme_variant()
-    alt tema ambiente activo y hay portada
-        MW->>TH: theme.with_ambient(color)
-    end
-    MW->>TH: set_active(theme)
-    MW->>QSS: build_qss(theme)
-    QSS-->>MW: hoja de estilos completa
-    MW->>APP: setStyleSheet(qss)
-    MW->>APP: setWindowIcon(icono del tema)
-    MW->>MW: set_shell_layout(theme.shell)
-    MW->>W: refresh() en barras, botones y páginas
-    W-->>U: misma ventana, colores y forma nuevos
+    participant ALT as App.tsx
+    participant CSS as App.css + tailwind
+    ALT->>ALT: setTheme + localStorage sakura_theme
+    ALT->>ALT: data-theme en el contenedor raíz
+    ALT-->>CSS: --accent-* cambian
+    CSS-->>U: toda la UI recolorea al instante
 ```
 
-## Flujo de datos de una descarga de álbum
-
-El camino del álbum agrega dos pasos entre la búsqueda y la descarga: el catálogo
-y la revisión.
-
-```text
-texto → iTunes/Deezer → AlbumEntry (título, año, género, pistas)
-      → por pista: yt-dlp ytsearch5 → candidatos
-      → album_match: duración + título + canal → Verdict
-      → Revisar álbum (tabla editable)
-      → DownloadManager.enqueue_album_track(video, candidate, carpeta)
-      → al terminar: tags del catálogo + portada + folder.jpg
-```
-
-La revisión existe porque los tags salen del catálogo y quedan correctos elija el
-video que elija. Si el cruce se equivoca, el archivo sale con metadata impecable y
-el audio de otra canción, y eso no se detecta nunca. Por eso se ve cada elección
-y su motivo antes de encolar.
+Cada tema define 8 valores `--accent-200…950` en `App.css` (`:root` es Sakura;
+`[data-theme='cyber'|'amber'|'emerald']` los pisan). Tailwind mapea
+`accent-*` a esos valores, así que `from-accent-500` o `text-accent-300` siguen
+al tema sin duplicar clases. Los universos Sakura Zen / Wuxia Jianghu fuerzan
+sus propios fondos, glows y textos; el tema de color sigue aplicando dentro.
 
 ## Manejo de errores
 
-| Situación | Qué hace la app |
+| Situación | Qué hace |
 |---|---|
-| `yt-dlp` falla | Vuelve a **PENDING** y reintenta hasta 3 veces; al final **FAILED** con mensaje traducido |
-| `ffmpeg` ausente | No encola y avisa que hace falta para procesar medios |
-| Catálogo sin respuesta | Cae de iTunes a Deezer; si ambos fallan, informa y no encola |
-| Una pista del álbum sin match | Esa pista queda fuera; el resto sigue |
-| Archivo ilegible | Se descarta del índice y se quita de la lista |
-| Índice corrupto | Se ignora y se reescanea |
-| JSON de config corrupto | Se usan los valores por defecto |
-| Cola corrupta | Se avisa y se arranca con la cola vacía |
-| Manifiesto corrupto | Se descarta y se busca el anterior |
-| Portada no descargable | Se conserva la portada actual |
+| `yt-dlp` ausente | `check_downloader_tools` informa el faltante; `search_online` / `start_download` devuelven error legible |
+| `ffmpeg` ausente | La descarga falla en la conversión; no se inventa un binario |
+| Corte de red | `--retries 3`, `--socket-timeout 30`; al fallar se emite `error: <última línea de stderr>` y la fila ofrece Reintentar |
+| Lote parcial | `update_batch_metadata` devuelve `{ updated, errors }`; la UI muestra cuántos fallaron y las 3 primeras razones |
+| Caché corrupta | `get_cached_library` devuelve `[]`; el próximo escaneo la reconstruye |
+| Carpeta inexistente | `scan_library` devuelve `[]` sin escribir caché |
+| Archivo con solo-lectura | Se quita el flag antes de escribir y se reintenta 4 veces |
+| Portada temporal vieja | `cleanup_temp_covers` borra `temp_*` al arrancar |
 
 ## Puntos de extensión
 
 | Querés agregar… | Tocá | Cuidá |
 |---|---|---|
-| Un tema | `ui/theme/palettes.py` + `THEME_LIST` | Pasar `test_theme_contrast` |
-| Una vista | `widgets/track_delegates.py`, `library_views.py`, `VIEW_SPECS`, `VIEW_ORDER` | El orden del stack y el de los botones deben coincidir |
-| Una fuente de catálogo | `core/metadata_sources.py`, `services/metadata_search.py` | Timeouts, User-Agent y fixtures en `tests/data/` |
-| Un servicio con hilo | Patrón `QObject` + `QThread` | Señales de progreso/fin/error y `shutdown()` |
-| Un ajuste | `config.DEFAULTS`, `pages/settings.py` | Persistencia atómica y valor por defecto |
-| Un formato | `core/formats.py` | Extensión, calidad y si transcodifica |
+| Un comando Tauri | `src-tauri/src/lib.rs` + `App.tsx` (`invoke`) | Registrarlo en `invoke_handler!` y mapear errores como `String` |
+| Un formato de descarga | `src-tauri/src/downloader.rs` (rama `fmt_lower` en `run_download`) | Agregar tests de parsing si cambia el progreso |
+| Un tema nuevo | `src/App.css` (`[data-theme='...']`) + tipo `ThemeMode` en `App.tsx` | Definir los 8 `--accent-*`; el selector del sidebar es fijo (4 botones) |
+| Una vista nueva | `src/App.tsx` (ramas `viewMode`) | El tipo `ViewMode` y las 4 ramas no se antipan |
+| Una fuente de catálogo | `src/App.tsx` (`searchCatalog`) | Respetar el CSP: solo `itunes.apple.com` y `api.deezer.com` están permitidos |
 
 Los detalles de cada receta están en [desarrollo.md](desarrollo.md).

@@ -5,9 +5,9 @@ contexto que la originó, las alternativas consideradas y las consecuencias de
 elegirla. Sirve para que quien lea el código dentro de seis meses entienda
 **por qué** es así y no de otra forma.
 
-Las decisiones acá ya estaban tomadas en el código y descritas en el
-[README principal](../../README.md). Se formalizaron el **2026-11-07** en este
-formato, sin cambiar su contenido.
+Los ADRs 0001–0008 describen la **versión 1.0 en Python/PySide6** y quedaron como
+histórico al migrar: no se reescriben, se marcan como reemplazados. Los 0009 en
+adelante rigen la v2.
 
 ## Reglas
 
@@ -22,20 +22,21 @@ formato, sin cambiar su contenido.
 
 | ADR | Título | Estado |
 |---|---|---|
-| [0001](0001-pyside6.md) | Reescribir en Python + PySide6 en vez de Electron | Vigente |
-| [0002](0002-yt-dlp-subproceso.md) | Ejecutar yt-dlp y ffmpeg como subprocesos | Vigente |
-| [0003](0003-tags-fuente-de-verdad.md) | Los tags del archivo son la fuente de verdad | Vigente |
-| [0004](0004-indice-por-mtime-y-tamano.md) | Índice SQLite descartable validado por `mtime_ns` + tamaño | Vigente |
-| [0005](0005-modelo-no-widgets.md) | Biblioteca con modelo Qt, no con un widget por fila | Vigente |
-| [0006](0006-temas-por-tokens.md) | Temas como tokens y dimensiones, no como colores sueltos | Vigente |
-| [0007](0007-deshacer-con-manifiestos.md) | Deshacer un lote de tags con manifiestos JSON | Vigente |
-| [0008](0008-hilos-y-cierre-limpio.md) | Nada pesado en el hilo de la UI y cierre limpio de hilos | Vigente |
+| [0001](0001-pyside6.md) | Reescribir en Python + PySide6 en vez de Electron | Reemplazado por 0009 (histórico v1) |
+| [0002](0002-yt-dlp-subproceso.md) | Ejecutar yt-dlp y ffmpeg como subprocesos | Vigente en concepto; implementación v2 en `downloader.rs` |
+| [0003](0003-tags-fuente-de-verdad.md) | Los tags del archivo son la fuente de verdad | Vigente en concepto; implementación v2 en `scanner.rs` |
+| [0004](0004-indice-por-mtime-y-tamano.md) | Índice SQLite descartable validado por `mtime_ns` + tamaño | Reemplazado: en v2 hay caché JSON descartable + escaneo completo |
+| [0005](0005-modelo-no-widgets.md) | Biblioteca con modelo Qt, no con un widget por fila | Reemplazado: en v2 es `App.tsx` (React, monolito) |
+| [0006](0006-temas-por-tokens.md) | Temas como tokens y dimensiones, no como colores sueltos | Vigente en concepto; en v2 son variables `--accent-*` + paleta Tailwind |
+| [0007](0007-deshacer-con-manifiestos.md) | Deshacer un lote de tags con manifiestos JSON | Retirado en v2: no hay manifiestos ni deshacer |
+| [0008](0008-hilos-y-cierre-limpio.md) | Nada pesado en el hilo de la UI y cierre limpio de hilos | Vigente en concepto; en v2 es Rust (`rayon`/hilos) + `cancel_all()` al salir |
 | [0009](0009-migracion-tauri-2-rust.md) | Migración de PySide6 a Tauri 2.0 y Rust nativo | Vigente |
+| [0010](0010-cierre-seguridad-atomicidad.md) | Cierre de deuda: seguridad, atomicidad y cancelación | Vigente |
 
 ## Cómo agregar una decisión
 
 1. Copiá la estructura de cualquier ADR existente (Estado, Contexto, Decisión,
    Consecuencias, Reflejo en el código).
-2. Numerá con el siguiente número libre (`0009-...`) y agregá la fila a la tabla.
+2. Numerá con el siguiente número libre (`0011-...`) y agregá la fila a la tabla.
 3. Linkeá desde el documento que corresponda (`arquitectura.md`, `requisitos.md`
    o el manual).
