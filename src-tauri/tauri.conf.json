@@ -12,7 +12,6 @@
   "app": {
     "windows": [
       {
-        "create": false,
         "label": "main",
         "title": "Sakura Music",
         "width": 1200,

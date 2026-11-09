@@ -320,8 +320,6 @@ pub fn run() {
     let app = tauri::Builder::default()
         .manage(Arc::new(DownloadManager::new(2)))
         .setup(|app| {
-            let handle = app.handle().clone();
-
             // Carpeta de datos estable por usuario. En producción no se puede
             // depender de `current_dir()`, que puede ser System32.
             let data_dir = app
@@ -333,19 +331,8 @@ pub fn run() {
                     dir
                 });
             let _ = std::fs::create_dir_all(&data_dir);
-            paths::init(data_dir.clone());
+            paths::init(data_dir);
             cleanup_temp_covers();
-
-            let _window = tauri::WebviewWindowBuilder::new(
-                &handle,
-                "main",
-                tauri::WebviewUrl::default(),
-            )
-            .title("Sakura Music")
-            .inner_size(1200.0, 760.0)
-            .min_inner_size(940.0, 600.0)
-            .center()
-            .build()?;
 
             Ok(())
         })
