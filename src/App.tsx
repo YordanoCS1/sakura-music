@@ -59,10 +59,6 @@ export default function App() {
     return saved !== null ? saved === 'true' : true;
   });
 
-  const handleSetThemeWorld = (w: ThemeWorld) => {
-    setThemeWorld(w);
-    localStorage.setItem('sakura_theme_world', w);
-  };
   const handleSetPlayerStyle = (s: PlayerStyle) => {
     setPlayerStyle(s);
     localStorage.setItem('sakura_player_style', s);

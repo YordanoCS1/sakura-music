@@ -1,11 +1,11 @@
 import { Palette, Sparkles, Layers, Sliders, Cpu, FolderOpen } from 'lucide-react';
-import type { AppInfo, PlayerStyle, ThemeWorld } from '../types';
+import type { AppInfo, PlayerStyle } from '../types';
 
 interface SettingsTabProps {
   accentGradient: string;
   accentBadge: string;
-  themeWorld: ThemeWorld;
   isWWM: boolean;
+  coverGlowActive: boolean;
   playerStyle: PlayerStyle;
   glassOpacity: number;
   glassBlur: number;
