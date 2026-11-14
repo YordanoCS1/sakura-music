@@ -21,10 +21,15 @@ Formatos soportados: MP3, FLAC, M4A, Opus, OGG, WAV y AAC.
 
 ### La caché
 
-La biblioteca se guarda en `library_cache.json` en la carpeta de datos de la
-app y se escribe de forma atómica. Al arrancar, la app la reutiliza para no
-reescanear todo. Si la borrás o se corrompe, se reconstruye al escanear: no
-perdés música ni tags.
+La biblioteca se guarda en `library.sqlite3` en la carpeta de datos de la app.
+Al iniciar, Sakura revisa la carpeta elegida y la vigila mientras la app está
+abierta. Compara tamaño y fecha de modificación: lee los tags solo de pistas
+nuevas o modificadas y quita del índice los archivos que ya no existen. La
+primera apertura importa automáticamente la caché antigua `library_cache.json`,
+si está presente; el archivo original se conserva.
+
+La opción **Limpiar Caché** en Ajustes borra el índice SQLite; el siguiente
+escaneo lo reconstruye desde los archivos. No se pierde música ni tags.
 
 > La música no vive en la carpeta de datos: vive en la carpeta que elegiste
 > como biblioteca.
@@ -54,7 +59,9 @@ carpetas filtra la lista (con indicador "Filtrando por carpeta: …" y opción d
 
 En Cuadrícula y Tabla, marcá casillas para seleccionar. Al seleccionar más de
 una aparece la barra de lote con **Seleccionar todas**, **Deseleccionar** y
-**Editar en lote (N)**. El detalle está en
+**Editar en lote (N)**. También podés usar **Eliminar (N)** para borrar los
+archivos seleccionados del disco; la app pide confirmación antes de hacerlo.
+El borrado es permanente. El detalle de edición está en
 [metadatos-y-letras.md](metadatos-y-letras.md).
 
 ## Reproducción

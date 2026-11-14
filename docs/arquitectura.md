@@ -29,16 +29,18 @@ flowchart TB
         HOME["home · search · queue<br/>library · settings"]
         PLAYER["player HTML5<br/>asset: + Blob URL"]
         EDITOR["editor proveído<br/>lote {updated,errors}"]
-        THEME["temas vía --accent-*<br/>4 temas + 2 universos"]
+        THEME["temas vía --accent-*<br/>10 temas + 2 universos"]
     end
 
     subgraph IPC["IPC Tauri"]
         CMD["invoke(): 14 comandos"]
-        EVT["evento download-progress"]
+        EVT["eventos de progreso y resultados"]
     end
 
     subgraph CORE["src-tauri/src/ · backend Rust"]
         SCAN["scanner.rs<br/>walkdir + rayon + lofty"]
+        DB["library_db.rs<br/>SQLite + índice incremental"]
+        WATCH["library_watcher.rs<br/>notify + debounce"]
         DL["downloader.rs<br/>DownloadManager, 2 en paralelo"]
         PATH["paths.rs<br/>app_local_data_dir, OnceLock"]
         LIB["lib.rs<br/>comandos, caché, scope asset"]
@@ -53,6 +55,8 @@ flowchart TB
 
     UI --> CMD
     UI --> EVT
+    LIB --> DB
+    LIB --> WATCH
     CORE --> YTDLP
     CORE --> FFMPEG
     LIB --> NET
@@ -63,7 +67,9 @@ flowchart TB
 |---|---|---|
 | `src/App.tsx` | Pestañas, reproductor, editor, cola, temas. Lee `localStorage` para preferencias. | Leer tags ni lanzar `yt-dlp` directamente |
 | `lib.rs` | Registrar comandos, inicializar carpeta de datos, autorizar carpetas en el scope `asset:`, cancelar descargas al salir. | Contener lógica de parsing o pesos |
-| `scanner.rs` | Escaneo paralelo, lectura/escritura de tags con `lofty`, carátulas con extensión real, escritura atómica. | Conocer React ni `localStorage` |
+| `scanner.rs` | Enumerar y leer pistas en paralelo, lectura/escritura de tags con `lofty`, carátulas con extensión real. | Conocer React ni `localStorage` |
+| `library_db.rs` | Persistir la biblioteca en SQLite, importar la caché antigua y sincronizar escaneos diferenciales. | Leer tags o conocer React |
+| `library_watcher.rs` | Vigilar recursivamente la carpeta seleccionada y agrupar cambios del sistema de archivos. | Leer tags o modificar la biblioteca directamente |
 | `downloader.rs` | Búsqueda, resolución de playlists, cola con `Mutex` + `Condvar`, cancelación por PID, parsing de progreso. | Pintar UI |
 | `paths.rs` | Única verdad sobre la carpeta de datos (`OnceLock` + fallback a `.tauri_data`). | Duplicar resolución de rutas |
 
@@ -72,9 +78,10 @@ flowchart TB
 
 ## Modelo de hilos
 
-- **Escaneo:** `rayon` con `par_iter` sobre la lista de archivos. Sin hilo principal bloqueado.
+- **Escaneo:** `rayon` con `par_iter` solo sobre pistas nuevas o modificadas. El vigilante agrupa eventos por 700 ms y dispara una resincronización incremental.
 - **Descargas:** cada `start_download` crea un hilo Rust (`std::thread::spawn`) que espera turno en `DownloadManager::acquire` y corre `yt-dlp` como proceso hijo. El `DownloadManager` es `Arc<Mutex<...>>` compartido vía `State`.
-- **Progreso:** el hilo lee `stdout` línea por línea y emite `download-progress`. El frontend escucha y actualiza la fila por `id`.
+- **Progreso y resultados:** los procesos de búsqueda/playlist emiten cada pista al leerla; las descargas emiten `download-progress`. El frontend correlaciona resultados con un id de solicitud.
+- **Cola:** rechaza duplicados activos por pista, carpeta y formato. Al relanzar una descarga, `yt-dlp --continue` permite reutilizar el archivo parcial.
 - **Cancelación:** `cancel_download(job_id)` marca el job como cancelado y mata el PID (`taskkill /T /F` en Windows). Si el job aún no tomó turno, el `acquire` devuelve `false` y se emite `cancelado`.
 - **Cierre:** en `RunEvent::Exit` se llama `manager.cancel_all()`, que marca todos los jobs y mata todos los PIDs registrados. No quedan `yt-dlp` huérfanos.
 
@@ -88,12 +95,13 @@ flowchart TB
 
 ## Persistencia
 
-No hay SQLite en la v2. Cada dato tiene el formato más simple que le sirve:
+La biblioteca usa SQLite para conservar sus pistas y detectar cambios entre
+escaneos. La cola de descargas sigue guardándose como JSON.
 
 ```mermaid
 flowchart TB
     BASE["app_local_data_dir()<br/>AppData/Local/com.sakura.music"]
-    BASE --> CACHE["library_cache.json<br/>caché de pistas"]
+    BASE --> CACHE["library.sqlite3<br/>índice de pistas"]
     BASE --> QUEUE["download_queue.json<br/>foto de la cola (100 filas)"]
     BASE --> COVERS["covers/<br/>carátulas con extensión real"]
     BASE --> BIN["bin/<br/>yt-dlp / ffmpeg opcionales"]
@@ -103,7 +111,7 @@ flowchart TB
 
 | Dato | Archivo / clave | Formato | Retención |
 |---|---|---|---|
-| Biblioteca | `library_cache.json` | JSON, escritura atómica | Descartable, se reconstruye |
+| Biblioteca | `library.sqlite3` | SQLite; importación inicial desde JSON legado | Índice reconstruible desde los audios |
 | Cola | `download_queue.json` | JSON, escritura atómica | 100 filas más recientes; lo activo vuelve como `interrumpida` |
 | Carátulas | `covers/` | JPG/PNG/WebP/GIF/BMP/TIFF reales | Cache, deduplicada por hash |
 | Portadas temporales | `covers/temp_*` | Imagen cualquiera | Se borran al arrancar y antes de guardar una nueva |
@@ -144,8 +152,9 @@ rename (el handle abierto bloquea el reemplazo).
 - **Asset scope acotado:** `["$AUDIO/**", "$APPLOCALDATA/**", "$TEMP/**"]`.
   Como el usuario puede elegir cualquier unidad como biblioteca,
   `scan_library` y `get_cached_library` autorizan en runtime cada carpeta
-  (`asset_protocol_scope().allow_directory(parent, true)`) y existe el comando
-  `allow_music_dir` para el diálogo de carpeta.
+  (`asset_protocol_scope().allow_directory(parent, true)`), y el arranque
+  autoriza la caché de portadas en `.tauri_data/covers`. También existe el
+  comando `allow_music_dir` para el diálogo de carpeta.
 - **Sin rutas hardcodeadas:** la búsqueda de binarios nunca apunta a un usuario
   concreto. yt-dlp: carpeta de datos `bin/`, legado `%APPDATA%/sakura-music/bin`,
   `PATH`. ffmpeg: `bin/`, legado `%LOCALAPPDATA%/SakuraMusic/bin`, enlaces de
@@ -167,13 +176,13 @@ sequenceDiagram
     U->>ALT: elige carpeta
     ALT->>SC: invoke(scan_library, carpeta)
     SC->>SC: allow_directory(carpeta, recursive)
-    SC->>RD: scan_directory_parallel
-    loop cada archivo de audio
+    SC->>DB: cargar pistas y fingerprints
+    SC->>RD: enumerar archivos y comparar tamaño + modificación
+    loop pistas nuevas o modificadas
         RD->>FS: leer tags + carátula
         RD-->>RD: ScannedTrack
     end
-    RD-->>SC: Vec<ScannedTrack>
-    SC->>FS: write_atomic(library_cache.json)
+    SC->>DB: guardar cambios y quitar pistas ausentes
     SC-->>ALT: tracks
     ALT-->>U: lista + filtro por carpeta
 ```
@@ -222,7 +231,7 @@ sequenceDiagram
 ```
 
 Cada tema define 8 valores `--accent-200…950` en `App.css` (`:root` es Sakura;
-`[data-theme='cyber'|'amber'|'emerald']` los pisan). Tailwind mapea
+los selectores `[data-theme]` los pisan). Tailwind mapea
 `accent-*` a esos valores, así que `from-accent-500` o `text-accent-300` siguen
 al tema sin duplicar clases. Los universos Sakura Zen / Wuxia Jianghu fuerzan
 sus propios fondos, glows y textos; el tema de color sigue aplicando dentro.
@@ -234,6 +243,8 @@ sus propios fondos, glows y textos; el tema de color sigue aplicando dentro.
 | `yt-dlp` ausente | `check_downloader_tools` informa el faltante; `search_online` / `start_download` devuelven error legible |
 | `ffmpeg` ausente | La descarga falla en la conversión; no se inventa un binario |
 | Corte de red | `--retries 3`, `--socket-timeout 30`; al fallar se emite `error: <última línea de stderr>` y la fila ofrece Reintentar |
+| Resultado lento | Búsqueda y playlist muestran las pistas a medida que llegan de `yt-dlp` |
+| Descarga duplicada | Se impide encolar la misma pista, carpeta y formato mientras siga activa |
 | Lote parcial | `update_batch_metadata` devuelve `{ updated, errors }`; la UI muestra cuántos fallaron y las 3 primeras razones |
 | Caché corrupta | `get_cached_library` devuelve `[]`; el próximo escaneo la reconstruye |
 | Carpeta inexistente | `scan_library` devuelve `[]` sin escribir caché |
@@ -246,7 +257,7 @@ sus propios fondos, glows y textos; el tema de color sigue aplicando dentro.
 |---|---|---|
 | Un comando Tauri | `src-tauri/src/lib.rs` + `App.tsx` (`invoke`) | Registrarlo en `invoke_handler!` y mapear errores como `String` |
 | Un formato de descarga | `src-tauri/src/downloader.rs` (rama `fmt_lower` en `run_download`) | Agregar tests de parsing si cambia el progreso |
-| Un tema nuevo | `src/App.css` (`[data-theme='...']`) + tipo `ThemeMode` en `App.tsx` | Definir los 8 `--accent-*`; el selector del sidebar es fijo (4 botones) |
+| Un tema nuevo | `src/App.css` (`[data-theme='...']`) + tipo `ThemeMode` en `src/types.ts` | Definir los 8 `--accent-*` y añadir su opción al selector del sidebar |
 | Una vista nueva | `src/App.tsx` (ramas `viewMode`) | El tipo `ViewMode` y las 4 ramas no se antipan |
 | Una fuente de catálogo | `src/App.tsx` (`searchCatalog`) | Respetar el CSP: solo `itunes.apple.com` y `api.deezer.com` están permitidos |
 

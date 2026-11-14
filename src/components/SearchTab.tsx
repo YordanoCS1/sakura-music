@@ -1,5 +1,5 @@
-import { AlertCircle, ArrowDownToLine, CheckSquare, FolderCheck, ListMusic, Loader2, Music2, Search, Square, X } from 'lucide-react';
-import type { DownloaderStatus, OnlineSearchResult, PlaylistInfo } from '../types';
+import { AlertCircle, ArrowDownToLine, CheckSquare, DownloadCloud, FolderCheck, ListMusic, Loader2, Music2, Search, Square, X } from 'lucide-react';
+import type { DownloadItem, DownloaderStatus, OnlineSearchResult, PlaylistInfo } from '../types';
 
 interface SearchTabProps {
   toolsStatus: DownloaderStatus | null;
@@ -11,11 +11,14 @@ interface SearchTabProps {
   isResolvingPlaylist: boolean;
   playlistInfo: PlaylistInfo | null;
   downloadFormat: string;
+  downloads: DownloadItem[];
   createAlbumFolder: boolean;
   selectedPlaylistItems: Set<string>;
   onQueryChange: (v: string) => void;
   onSearchSubmit: (e?: React.FormEvent) => void;
   onFormatChange: (f: string) => void;
+  onGoQueue: () => void;
+  onCancelDownload: (jobId: string) => void;
   onClosePlaylist: () => void;
   onCreateFolderChange: (v: boolean) => void;
   onSelectAllPlaylist: () => void;
@@ -36,11 +39,14 @@ export default function SearchTab({
   isResolvingPlaylist,
   playlistInfo,
   downloadFormat,
+  downloads,
   createAlbumFolder,
   selectedPlaylistItems,
   onQueryChange,
   onSearchSubmit,
   onFormatChange,
+  onGoQueue,
+  onCancelDownload,
   onClosePlaylist,
   onCreateFolderChange,
   onSelectAllPlaylist,
@@ -50,8 +56,16 @@ export default function SearchTab({
   onTriggerDownload,
   onSuggestionSearch,
 }: SearchTabProps) {
+  const activeDownloads = downloads.filter(
+    (item) =>
+      !item.status.startsWith('completado') &&
+      !item.status.includes('error') &&
+      item.status !== 'cancelado'
+  );
+  const visibleDownloads = activeDownloads.slice(0, 3);
+
   return (
-    <div className="space-y-6 max-w-3xl mb-24">
+    <div className="w-full max-w-6xl mx-auto space-y-6 mb-24">
       {/* Encabezado y Estado de Herramientas */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
@@ -123,31 +137,105 @@ export default function SearchTab({
           </div>
         </form>
 
-        {/* Formato deseado */}
-        <div className="flex items-center gap-4 text-xs text-gray-300 pt-1">
-          <span className="text-[11px] text-gray-400">Calidad de audio:</span>
-          <div className="flex gap-2">
-            {[
-              { id: 'OPUS', label: 'Opus (Original 129 kbps)' },
-              { id: 'M4A', label: 'm4a · AAC (192 kbps)' },
-              { id: 'MP3', label: 'mp3 (320 kbps)' },
-              { id: 'FLAC', label: 'FLAC (Sin pérdida)' }
-            ].map(fmt => (
-              <button
-                key={fmt.id}
-                type="button"
-                onClick={() => onFormatChange(fmt.id)}
-                className={`px-3 py-1 rounded-lg text-xs transition-colors ${
-                  downloadFormat === fmt.id
-                    ? 'bg-accent-500/20 text-accent-300 border border-accent-500/40 font-semibold shadow-sm'
-                    : 'bg-white/5 text-gray-400 hover:text-white'
-                }`}>
-                {fmt.label}
-              </button>
-            ))}
-          </div>
+        {/* Calidad deseada en un selector compacto */}
+        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-white/5 pt-3">
+          <label htmlFor="download-format" className="text-[11px] text-gray-400">
+            Calidad de audio
+          </label>
+          <select
+            id="download-format"
+            value={downloadFormat}
+            onChange={(event) => onFormatChange(event.target.value)}
+            className="min-w-48 bg-[#17111e] border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-accent-500 focus:ring-1 focus:ring-accent-500/30">
+            <option value="OPUS">Opus · calidad original</option>
+            <option value="M4A">M4A · AAC 192 kbps</option>
+            <option value="MP3">MP3 · 320 kbps</option>
+            <option value="FLAC">FLAC · sin pérdida</option>
+          </select>
         </div>
       </div>
+
+      {/* Descargas pendientes y en curso */}
+      <section className="glass-card p-4 rounded-2xl border border-white/10 space-y-3">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <DownloadCloud className="w-4 h-4 text-accent-300" />
+            <div>
+              <h3 className="text-xs font-bold text-white">Descargas en curso</h3>
+              <p className="text-[10px] text-gray-400">
+                {activeDownloads.length === 0
+                  ? 'Al añadir una canción a la cola, su progreso aparecerá aquí.'
+                  : `${activeDownloads.length} pendiente${activeDownloads.length === 1 ? '' : 's'} o en curso`}
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onGoQueue}
+            className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[10px] font-semibold text-gray-300 hover:text-white transition-colors">
+            Ver cola completa
+          </button>
+        </div>
+
+        {activeDownloads.length > 0 && (
+          <div className="space-y-2">
+            {visibleDownloads.map((item) => (
+              <div key={item.id} className="rounded-xl bg-black/20 border border-white/5 p-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg overflow-hidden bg-white/5 flex-shrink-0">
+                    {item.thumbnail ? (
+                      <img src={item.thumbnail} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Music2 className="w-4 h-4 text-accent-400" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <h4 className="text-[11px] font-semibold text-white truncate">{item.title}</h4>
+                      <span className="text-[9px] text-amber-300 whitespace-nowrap">{item.status}</span>
+                    </div>
+                    <p className="text-[10px] text-gray-400 truncate">{item.artist} · {item.format}</p>
+                    <div
+                      className="mt-2 h-1.5 rounded-full bg-white/10 overflow-hidden"
+                      role="progressbar"
+                      aria-label={`Progreso de ${item.title}`}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-valuenow={Math.min(100, Math.max(0, item.progress))}>
+                      <div
+                        className="h-full bg-gradient-to-r from-accent-500 to-accent-300 transition-all duration-300"
+                        style={{ width: `${Math.min(100, Math.max(0, item.progress))}%` }}
+                      />
+                    </div>
+                    <div className="mt-1 flex justify-between text-[9px] text-gray-500 font-mono">
+                      <span>{item.progress.toFixed(0)}%{item.speed && item.speed !== '--' ? ` · ${item.speed}` : ''}</span>
+                      <span>{item.eta && item.eta !== '--' && item.eta !== '00:00' ? `ETA ${item.eta}` : ''}</span>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => onCancelDownload(item.id)}
+                    className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 transition-colors"
+                    title="Cancelar descarga"
+                    aria-label={`Cancelar descarga de ${item.title}`}>
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            ))}
+            {activeDownloads.length > visibleDownloads.length && (
+              <button
+                type="button"
+                onClick={onGoQueue}
+                className="w-full py-1.5 text-[10px] text-accent-300 hover:text-white transition-colors">
+                Ver {activeDownloads.length - visibleDownloads.length} descargas más
+              </button>
+            )}
+          </div>
+        )}
+      </section>
 
       {/* Mensaje de error si la búsqueda falla */}
       {onlineSearchError && (
@@ -170,7 +258,11 @@ export default function SearchTab({
         <div className="flex flex-col items-center justify-center p-8 rounded-3xl glass-card border border-accent-500/20 text-center animate-pulse">
           <Loader2 className="w-8 h-8 text-accent-400 animate-spin mb-3" />
           <h4 className="text-sm font-bold text-white mb-1">Extrayendo pistas de la Playlist / Álbum...</h4>
-          <p className="text-xs text-gray-400">Consultando los metadatos de todos los videos de la lista con yt-dlp</p>
+          <p className="text-xs text-gray-400">
+            {playlistInfo
+              ? `${playlistInfo.items.length} pistas recibidas; la lista sigue cargando`
+              : 'Esperando las primeras pistas de yt-dlp'}
+          </p>
         </div>
       )}
 
@@ -192,7 +284,7 @@ export default function SearchTab({
                     {playlistInfo.title}
                   </h3>
                   <p className="text-xs text-gray-300">
-                    Canal: <span className="font-semibold text-white">{playlistInfo.uploader || 'YouTube'}</span> · {playlistInfo.track_count} pistas totales
+                    Canal: <span className="font-semibold text-white">{playlistInfo.uploader || 'YouTube'}</span> · {playlistInfo.track_count} pistas {isResolvingPlaylist ? 'recibidas' : 'totales'}
                   </p>
                 </div>
               </div>
@@ -227,10 +319,10 @@ export default function SearchTab({
 
                 <button
                   onClick={onDownloadSelectedPlaylist}
-                  disabled={selectedPlaylistItems.size === 0}
+                  disabled={selectedPlaylistItems.size === 0 || isResolvingPlaylist}
                   className="flex items-center gap-2 px-5 py-2 rounded-xl bg-gradient-to-r from-accent-500 to-accent-400 text-white text-xs font-bold shadow-lg shadow-accent-500/25 hover:brightness-110 active:scale-95 disabled:opacity-50 transition-all">
                   <ArrowDownToLine className="w-4 h-4" />
-                  <span>Descargar {selectedPlaylistItems.size} Canciones</span>
+                  <span>Añadir {selectedPlaylistItems.size} a la cola</span>
                 </button>
               </div>
             </div>
@@ -286,7 +378,7 @@ export default function SearchTab({
                         onTriggerDownload(it.title, it.uploader, it.url, it.thumbnail);
                       }}
                       className="p-1.5 rounded-lg bg-white/5 hover:bg-accent-500/20 text-gray-400 hover:text-accent-300 transition-colors"
-                      title="Descargar solo esta pista">
+                      title="Añadir solo esta pista a la cola">
                       <ArrowDownToLine className="w-3.5 h-3.5" />
                     </button>
                   </div>
@@ -338,7 +430,7 @@ export default function SearchTab({
                   onClick={() => onTriggerDownload(item.title, item.uploader, item.url, item.thumbnail)}
                   className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-accent-600 hover:bg-accent-500 text-white text-xs font-semibold shadow-md shadow-accent-500/20 active:scale-95 transition-all">
                   <ArrowDownToLine className="w-3.5 h-3.5" />
-                  <span>Descargar</span>
+                  <span>Añadir a la cola</span>
                 </button>
 
               </div>
@@ -347,28 +439,26 @@ export default function SearchTab({
         </div>
       )}
 
-      {/* Tendencias Sakura / Sugerencias */}
-      {onlineResults.length === 0 && (
-        <div>
-          <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Tendencias Populares</h3>
-          <div className="space-y-2">
+      {/* Sugerencias compactas */}
+      {onlineResults.length === 0 && !isSearchingOnline && (
+        <div className="space-y-2">
+          <h3 className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Búsquedas sugeridas</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             {[
               { title: 'LiSA - Gurenge (紅蓮華)', genre: 'Demon Slayer OP', duration: '3:58' },
-              { title: 'YOASOBI - Idol (アイドル)', genre: 'Oshi no Ko OP', duration: '3:33' },
-              { title: 'Kenshi Yonezu - KICK BACK', genre: 'Chainsaw Man OP', duration: '3:13' },
-              { title: 'Ado - Usseewa (うっせぇわ)', genre: 'J-Pop / Rock', duration: '3:24' }
-            ].map((sug, i) => (
+              { title: 'YOASOBI - Idol (アイドル)', genre: 'Oshi no Ko OP', duration: '3:33' }
+            ].map((sug) => (
               <div
-                key={i}
-                className="flex items-center justify-between p-3 rounded-2xl glass-card hover:bg-white/5 border border-white/5">
-                <div>
-                  <div className="text-xs font-semibold text-white">{sug.title}</div>
-                  <div className="text-[10px] text-gray-400">{sug.genre} · {sug.duration}</div>
+                key={sug.title}
+                className="flex items-center justify-between gap-3 p-2.5 rounded-xl glass-card hover:bg-white/5 border border-white/5">
+                <div className="min-w-0">
+                  <div className="text-[11px] font-semibold text-white truncate">{sug.title}</div>
+                  <div className="text-[10px] text-gray-500">{sug.genre} · {sug.duration}</div>
                 </div>
                 <button
                   onClick={() => onSuggestionSearch(sug.title)}
-                  className="px-3.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-accent-300 hover:text-white text-[11px] font-medium border border-white/5 transition-colors">
-                  Buscar esta canción
+                  className="flex-shrink-0 px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-accent-300 hover:text-white text-[10px] font-medium border border-white/5 transition-colors">
+                  Buscar
                 </button>
               </div>
             ))}

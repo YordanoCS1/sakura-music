@@ -47,7 +47,7 @@ Gestor, reproductor, descargador y etiquetador de música para escritorio, const
 ### 🎨 Interfaz glassmorphism y temas que sí cambian
 - 5 pestañas: Inicio, Biblioteca, Buscar, Cola y Ajustes.
 - 4 vistas de biblioteca: Carpetas (con breadcrumbs), Cuadrícula, Tabla y Álbumes (con vinilo 3D).
-- 4 temas (Sakura, Cyber, Amber, Emerald) + 2 universos (Sakura Zen, Wuxia Jianghu). Los temas recolorean **toda** la UI vía variables CSS `--accent-*` y la paleta `accent-*` de Tailwind, y se persisten en `localStorage`.
+- 10 temas visuales (Sakura, Cyan, Ámbar, Jade, Glass, Vinilo, Cyberpunk, Jazz Club, Editorial Hi-Fi y Shanshui) + 2 universos (Sakura Zen, Wuxia Jianghu). Editorial y Shanshui cambian por completo la composición de la navegación, biblioteca y reproductor, y se guardan en `localStorage`.
 - Opacidad y blur del vidrio, resplandor ambiental, partículas, estilo de reproductor (flotante/fijo) y favoritos persistentes.
 - Datos técnicos reales: versión de `rustc` (inyectada en `build.rs`) y memoria del proceso en Windows (via `windows-sys`), nunca literales de ejemplo.
 

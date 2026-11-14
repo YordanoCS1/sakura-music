@@ -33,6 +33,7 @@ que se parezca al tuyo y seguí la causa probable.
 | `node` / `cargo` no reconocido | Node o Rust no están en `PATH` | Instalalos y reabrí la terminal |
 | La ventana no aparece | Vite no levantó | Corré `npm run tauri dev` desde terminal y leé el error |
 | Se cierra al instante | Error en el backend o falta WebView2 | Abrí desde terminal y probá dev; en prod, reinstalá WebView2 |
+| WebView2 falla con `0x800700AA` | El perfil está ocupado por otra instancia/proceso | Cerrá Sakura duplicada y las apps que estén usando `%LOCALAPPDATA%\SakuraMusic\webview`; no borres `.tauri_data` |
 | “yt-dlp no encontrado” | Falta el binario | Instalalo en `PATH` o en la carpeta de datos `bin\` |
 | “ffmpeg no encontrado” | Falta el binario | Instalalo en `PATH`, con winget o en `bin\` |
 
@@ -42,6 +43,7 @@ que se parezca al tuyo y seguí la causa probable.
 |---|---|---|
 | “Sin resultados” | La consulta no devuelve nada en YouTube | Probá con artista + título, o pegá una URL |
 | La búsqueda tarda | yt-dlp arrancando o red lenta | Esperá unos segundos; no es un cuelgue |
+| `PYI-... Could not create temporary directory` | yt-dlp no pudo crear su carpeta de extracción temporal | Reiniciá la app; Sakura prepara una carpeta temporal propia para yt-dlp. Si persiste, revisá permisos y espacio libre en la carpeta de datos |
 | El video es privado/eliminado | El dueño lo restringió | Probá otro resultado |
 | “Restricción de edad” / “solo miembros” | YouTube pide sesión | La v2 no soporta cookies de navegador (era la v1); buscá otro video |
 | La fila queda en `en cola` | Ya hay 2 descargas en curso | Esperá: solo 2 corren a la vez |
@@ -76,11 +78,10 @@ romperse.
 
 ### La caché
 
-`library_cache.json` es descartable. Si sospechás que quedó desincronizada:
-
-1. Cerrá la app.
-2. Borrá `%LOCALAPPDATA%\com.sakura.music\library_cache.json`.
-3. Abrí la app y dejá que escanee.
+La biblioteca ahora se guarda en `library.sqlite3`. Si sospechás que quedó
+desincronizada, usá **Ajustes → Limpiar Caché** y luego volvé a escanear la
+carpeta. La caché anterior `library_cache.json` se importa una sola vez si
+está presente.
 
 No perdés tags ni portadas: todo eso vive en los archivos de audio.
 
@@ -107,7 +108,8 @@ No perdés tags ni portadas: todo eso vive en los archivos de audio.
 
 ```text
 %LOCALAPPDATA%\com.sakura.music\
-  library_cache.json     ← caché (descartable)
+  library.sqlite3        ← índice local de la biblioteca
+  library_cache.json     ← caché antigua (se conserva tras importarla)
   covers\                ← carátulas (con extensión real)
   bin\                   ← yt-dlp / ffmpeg opcionales
 ```

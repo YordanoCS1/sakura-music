@@ -35,6 +35,20 @@ pub struct PlaylistInfo {
     pub items: Vec<OnlineSearchResult>,
 }
 
+#[derive(Serialize, Clone, Debug)]
+pub struct OnlineSearchEvent {
+    pub request_id: String,
+    pub result: OnlineSearchResult,
+}
+
+#[derive(Serialize, Clone, Debug)]
+pub struct PlaylistItemEvent {
+    pub request_id: String,
+    pub title: String,
+    pub uploader: String,
+    pub item: OnlineSearchResult,
+}
+
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct DownloadProgressEvent {
     pub id: String,
@@ -58,6 +72,8 @@ struct ManagerInner {
     pids: HashMap<String, u32>,
     cancelled: HashSet<String>,
     jobs: HashSet<String>,
+    job_keys: HashMap<String, (String, String, String)>,
+    active_keys: HashSet<(String, String, String)>,
 }
 
 impl DownloadManager {
@@ -69,16 +85,47 @@ impl DownloadManager {
                 pids: HashMap::new(),
                 cancelled: HashSet::new(),
                 jobs: HashSet::new(),
+                job_keys: HashMap::new(),
+                active_keys: HashSet::new(),
             }),
             cv: Condvar::new(),
         }
+    }
+
+    fn register_job(
+        &self,
+        job_id: &str,
+        url: &str,
+        output_folder: &str,
+        format: &str,
+    ) -> bool {
+        let url_key = extract_video_id(url)
+            .map(|id| format!("youtube:{}", id))
+            .unwrap_or_else(|| url.trim().to_string());
+        let mut folder_key = PathBuf::from(output_folder)
+            .components()
+            .collect::<PathBuf>()
+            .to_string_lossy()
+            .to_string();
+        if cfg!(windows) {
+            folder_key = folder_key.to_lowercase();
+        }
+        let key = (url_key, folder_key, format.trim().to_ascii_lowercase());
+
+        let mut inner = self.inner.lock().unwrap();
+        if inner.jobs.contains(job_id) || inner.active_keys.contains(&key) {
+            return false;
+        }
+        inner.jobs.insert(job_id.to_string());
+        inner.job_keys.insert(job_id.to_string(), key.clone());
+        inner.active_keys.insert(key);
+        true
     }
 
     /// Espera un turno. Devuelve `false` si el trabajo se canceló mientras
     /// estaba en cola.
     pub fn acquire(&self, job_id: &str) -> bool {
         let mut inner = self.inner.lock().unwrap();
-        inner.jobs.insert(job_id.to_string());
         while inner.active >= inner.max_concurrent && !inner.cancelled.contains(job_id) {
             inner = self.cv.wait(inner).unwrap();
         }
@@ -120,6 +167,9 @@ impl DownloadManager {
         inner.pids.remove(job_id);
         inner.cancelled.remove(job_id);
         inner.jobs.remove(job_id);
+        if let Some(key) = inner.job_keys.remove(job_id) {
+            inner.active_keys.remove(&key);
+        }
     }
 
     pub fn cancel(&self, job_id: &str) -> bool {
@@ -204,6 +254,21 @@ fn binary_name(base: &str) -> String {
     } else {
         base.to_string()
     }
+}
+
+fn configure_ytdlp_temp_dir(cmd: &mut Command) -> Result<(), String> {
+    let temp_dir = paths::data_dir().join("yt-dlp-temp");
+    std::fs::create_dir_all(&temp_dir).map_err(|error| {
+        format!(
+            "No se pudo preparar la carpeta temporal de yt-dlp {}: {}",
+            temp_dir.display(),
+            error
+        )
+    })?;
+    cmd.env("TEMP", &temp_dir)
+        .env("TMP", &temp_dir)
+        .env("TMPDIR", &temp_dir);
+    Ok(())
 }
 
 pub fn find_ytdlp_binary() -> Option<PathBuf> {
@@ -309,7 +374,11 @@ fn parse_result_line(line: &str) -> Option<(OnlineSearchResult, Option<String>)>
     ))
 }
 
-pub fn search_youtube(query: &str) -> Result<Vec<OnlineSearchResult>, String> {
+pub fn search_youtube(
+    app: &tauri::AppHandle,
+    request_id: &str,
+    query: &str,
+) -> Result<Vec<OnlineSearchResult>, String> {
     let ytdlp =
         find_ytdlp_binary().ok_or_else(|| "yt-dlp no encontrado en el sistema".to_string())?;
 
@@ -320,6 +389,7 @@ pub fn search_youtube(query: &str) -> Result<Vec<OnlineSearchResult>, String> {
     };
 
     let mut cmd = Command::new(ytdlp);
+    configure_ytdlp_temp_dir(&mut cmd)?;
     cmd.args([
         "--flat-playlist",
         "--print",
@@ -327,26 +397,74 @@ pub fn search_youtube(query: &str) -> Result<Vec<OnlineSearchResult>, String> {
         &search_arg,
     ]);
 
-    let output = cmd
-        .output()
-        .map_err(|e| format!("Fallo al ejecutar búsqueda: {}", e))?;
-    if !output.status.success() {
-        let err = String::from_utf8_lossy(&output.stderr);
-        return Err(format!("Error en búsqueda: {}", err));
+    cmd.stdout(Stdio::piped()).stderr(Stdio::piped());
+    let mut child = cmd
+        .spawn()
+        .map_err(|error| format!("Fallo al ejecutar búsqueda: {}", error))?;
+    let stderr = child.stderr.take();
+    let stderr_thread = std::thread::spawn(move || {
+        let mut output = String::new();
+        if let Some(stderr) = stderr {
+            for line in BufReader::new(stderr).lines().map_while(Result::ok) {
+                if output.len() < 8_000 {
+                    output.push_str(&line);
+                    output.push('\n');
+                }
+            }
+        }
+        output
+    });
+
+    let stdout = child
+        .stdout
+        .take()
+        .ok_or_else(|| "No se pudo leer la salida de búsqueda de yt-dlp".to_string())?;
+    let mut results = Vec::new();
+    for line in BufReader::new(stdout).lines() {
+        let line = match line {
+            Ok(line) => line,
+            Err(error) => {
+                let _ = child.kill();
+                return Err(format!("Error al leer resultados de yt-dlp: {}", error));
+            }
+        };
+        let Some((result, _)) = parse_result_line(&line) else {
+            continue;
+        };
+        if let Err(error) = app.emit(
+            "online-search-result",
+            OnlineSearchEvent {
+                request_id: request_id.to_string(),
+                result: result.clone(),
+            },
+        ) {
+            let _ = child.kill();
+            return Err(format!("No se pudo enviar un resultado de búsqueda: {}", error));
+        }
+        results.push(result);
     }
 
-    let stdout = String::from_utf8_lossy(&output.stdout);
-    Ok(stdout
-        .lines()
-        .filter_map(|line| parse_result_line(line).map(|(result, _)| result))
-        .collect())
+    let status = child
+        .wait()
+        .map_err(|error| format!("No se pudo finalizar búsqueda de yt-dlp: {}", error))?;
+    let stderr = stderr_thread.join().unwrap_or_default();
+    if !status.success() {
+        return Err(format!("Error en búsqueda: {}", stderr.trim()));
+    }
+    Ok(results)
 }
 
-pub fn resolve_playlist(url: &str) -> Result<PlaylistInfo, String> {
+pub fn resolve_playlist(
+    app: &tauri::AppHandle,
+    request_id: &str,
+    url: &str,
+) -> Result<PlaylistInfo, String> {
     let ytdlp =
         find_ytdlp_binary().ok_or_else(|| "yt-dlp no encontrado en el sistema".to_string())?;
 
     let mut cmd = Command::new(ytdlp);
+    configure_ytdlp_temp_dir(&mut cmd)
+        .map_err(|error| format!("Error al resolver playlist: {}", error))?;
     cmd.args([
         "--flat-playlist",
         "--print",
@@ -354,21 +472,41 @@ pub fn resolve_playlist(url: &str) -> Result<PlaylistInfo, String> {
         url,
     ]);
 
-    let output = cmd
-        .output()
-        .map_err(|e| format!("Fallo al consultar lista con yt-dlp: {}", e))?;
-    if !output.status.success() {
-        let err = String::from_utf8_lossy(&output.stderr);
-        return Err(format!("Error al resolver playlist: {}", err));
-    }
+    cmd.stdout(Stdio::piped()).stderr(Stdio::piped());
+    let mut child = cmd
+        .spawn()
+        .map_err(|error| format!("Fallo al consultar lista con yt-dlp: {}", error))?;
+    let stderr = child.stderr.take();
+    let stderr_thread = std::thread::spawn(move || {
+        let mut output = String::new();
+        if let Some(stderr) = stderr {
+            for line in BufReader::new(stderr).lines().map_while(Result::ok) {
+                if output.len() < 8_000 {
+                    output.push_str(&line);
+                    output.push('\n');
+                }
+            }
+        }
+        output
+    });
 
-    let stdout = String::from_utf8_lossy(&output.stdout);
+    let stdout = child
+        .stdout
+        .take()
+        .ok_or_else(|| "No se pudo leer la salida de la playlist".to_string())?;
     let mut items = Vec::new();
     let mut detected_title = String::new();
     let mut detected_uploader = String::new();
 
-    for line in stdout.lines() {
-        if let Some((item, playlist_title)) = parse_result_line(line) {
+    for line in BufReader::new(stdout).lines() {
+        let line = match line {
+            Ok(line) => line,
+            Err(error) => {
+                let _ = child.kill();
+                return Err(format!("Error al leer pistas de la playlist: {}", error));
+            }
+        };
+        if let Some((item, playlist_title)) = parse_result_line(&line) {
             if detected_title.is_empty() {
                 if let Some(title) = playlist_title {
                     detected_title = title;
@@ -377,8 +515,32 @@ pub fn resolve_playlist(url: &str) -> Result<PlaylistInfo, String> {
             if detected_uploader.is_empty() && !item.uploader.is_empty() && item.uploader != "NA" {
                 detected_uploader = item.uploader.clone();
             }
+            if let Err(error) = app.emit(
+                "playlist-item",
+                PlaylistItemEvent {
+                    request_id: request_id.to_string(),
+                    title: if detected_title.is_empty() {
+                        "Playlist / Álbum".to_string()
+                    } else {
+                        detected_title.clone()
+                    },
+                    uploader: detected_uploader.clone(),
+                    item: item.clone(),
+                },
+            ) {
+                let _ = child.kill();
+                return Err(format!("No se pudo enviar una pista de la playlist: {}", error));
+            }
             items.push(item);
         }
+    }
+
+    let status = child
+        .wait()
+        .map_err(|error| format!("No se pudo finalizar consulta de playlist: {}", error))?;
+    let stderr = stderr_thread.join().unwrap_or_default();
+    if !status.success() {
+        return Err(format!("Error al resolver playlist: {}", stderr.trim()));
     }
 
     if items.is_empty() {
@@ -500,7 +662,10 @@ pub fn execute_download(
     url: String,
     format_opt: String,
     output_folder: String,
-) {
+) -> Result<(), String> {
+    if !manager.register_job(&job_id, &url, &output_folder, &format_opt) {
+        return Err("Ya existe una descarga activa para esta pista y carpeta.".to_string());
+    }
     std::thread::spawn(move || {
         if !manager.acquire(&job_id) {
             emit_progress(&app, &job_id, 0.0, "--", "--", "cancelado", None);
@@ -513,6 +678,7 @@ pub fn execute_download(
         manager.release();
         manager.finish(&job_id);
     });
+    Ok(())
 }
 
 fn run_download(
@@ -539,6 +705,20 @@ fn run_download(
         }
     };
 
+    let mut cmd = Command::new(ytdlp);
+    if let Err(error) = configure_ytdlp_temp_dir(&mut cmd) {
+        emit_progress(
+            app,
+            job_id,
+            0.0,
+            "--",
+            "--",
+            &format!("error: {}", error),
+            None,
+        );
+        return;
+    }
+
     let out_dir = Path::new(output_folder);
     let _ = std::fs::create_dir_all(out_dir);
 
@@ -547,10 +727,10 @@ fn run_download(
         .to_string_lossy()
         .to_string();
 
-    let mut cmd = Command::new(ytdlp);
     cmd.arg(url);
     cmd.args(["-o", &out_template]);
     cmd.arg("--extract-audio");
+    cmd.arg("--continue");
 
     let fmt_lower = format_opt.to_lowercase();
     if fmt_lower.contains("flac") {
@@ -726,5 +906,39 @@ mod tests {
             Some("xyz789")
         );
         assert_eq!(extract_video_id("https://example.com/video"), None);
+    }
+
+    #[test]
+    fn rechaza_duplicados_activos_y_permite_reintentar_al_terminar() {
+        let manager = DownloadManager::new(1);
+        assert!(manager.register_job(
+            "first",
+            "https://www.youtube.com/watch?v=abc123",
+            r"C:\Music",
+            "FLAC",
+        ));
+        assert!(!manager.register_job(
+            "duplicate",
+            "https://www.youtube.com/watch?v=abc123&list=PL1",
+            r"c:\music",
+            "flac",
+        ));
+        assert!(manager.register_job(
+            "other-format",
+            "https://www.youtube.com/watch?v=abc123",
+            r"C:\Music",
+            "MP3",
+        ));
+        manager.finish("other-format");
+
+        assert!(manager.cancel("first"));
+        assert!(!manager.acquire("first"));
+        manager.finish("first");
+        assert!(manager.register_job(
+            "retry",
+            "https://www.youtube.com/watch?v=abc123",
+            r"C:\Music",
+            "FLAC",
+        ));
     }
 }

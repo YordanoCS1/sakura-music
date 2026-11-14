@@ -43,16 +43,17 @@ regla vive en un módulo Rust o en `src/App.tsx`, se nombra el archivo.
 **Flujo principal**
 
 1. El usuario escribe en **Buscar** y pulsa Enter o el botón de búsqueda.
-2. `App.tsx` llama `invoke('search_online', { query })`, que corre
-   `yt-dlp --flat-playlist --print` con `ytsearch10:` y devuelve hasta 10
-   resultados con título, canal, duración, miniatura y URL.
+2. `App.tsx` llama `invoke('search_online', { query, requestId })`, que corre
+   `yt-dlp --flat-playlist --print` con `ytsearch10:`. Cada resultado se envía
+   al frontend conforme llega; al terminar se devuelven hasta 10 con título,
+   canal, duración, miniatura y URL.
 3. El usuario pulsa el botón de descarga de una tarjeta. Se usa el formato
    elegido (Opus, FLAC, M4A o MP3; por defecto FLAC en la v2).
 4. `App.tsx` crea un `DownloadItem` en estado `en cola` con `job_id` único y
    llama `invoke('start_download', { jobId, url, format, outputDir })`.
 5. El hilo Rust espera turno en `DownloadManager` (2 en paralelo), lanza
    `yt-dlp` con `--no-playlist`, `--windows-filenames`, `--socket-timeout 30`,
-   `--retries 3`, `--print after_move:filepath` y el formato elegido.
+   `--retries 3`, `--continue`, `--print after_move:filepath` y el formato elegido.
 6. yt-dlp emite líneas `sakuradl|pct|speed|eta|status`; cada una se reenvía
    como evento `download-progress` y la fila actualiza porcentaje, velocidad y
    ETA.
@@ -73,8 +74,8 @@ regla vive en un módulo Rust o en `src/App.tsx`, se nombra el archivo.
 **Postcondiciones:** el archivo queda en la carpeta de descarga elegida
 (carpetas de carpetas si venía de una playlist) con tags y carátula.
 
-**Dónde está:** `src/App.tsx` (pestaña Buscar), `src-tauri/src/downloader.rs`
-(`search_youtube`, `execute_download`, `run_download`),
+**Dónde está:** `src/hooks/useOnlineSearch.ts`, `src-tauri/src/downloader.rs`
+(`search_youtube`, `resolve_playlist`, `execute_download`, `run_download`),
 `src-tauri/src/lib.rs` (`search_online`, `start_download`).
 
 ---
@@ -160,29 +161,31 @@ cada cambio),
 
 1. Al elegir carpeta (explorador Tauri) o "Escanear Música de Windows",
    `App.tsx` llama `invoke('scan_library', { folderPath })`.
-2. `lib.rs` autoriza la carpeta en el scope `asset:` y delega a
-   `scan_directory_parallel`, que recolecta archivos con `walkdir` y los lee
-   con `rayon`. Solo entran MP3, FLAC, M4A, Opus, OGG, WAV y AAC.
-3. Cada pista se lee con `lofty` en memoria: título, artista, álbum, artista del
-   álbum, número de pista, duración, formato, año, género y carátula.
+2. `lib.rs` autoriza la carpeta en el scope `asset:` y enumera con `walkdir`
+   los archivos MP3, FLAC, M4A, Opus, OGG, WAV y AAC.
+3. Compara tamaño y fecha de modificación con `library.sqlite3`; las pistas
+   nuevas o modificadas se leen en paralelo con `rayon` y `lofty`.
+   De cada una toma título, artista, álbum, artista del álbum, número de pista,
+   duración, formato, año, género y carátula.
 4. La carátula embebida se guarda en `covers/` con hash FNV-1a y extensión real
    (JPG/PNG/WebP/GIF/BMP/TIFF). Si no hay carátula embebida, se busca
    `folder.jpg`/`cover.*` en la carpeta padre.
-5. La lista completa se escribe atómicamente en `library_cache.json` y se
-   devuelve al frontend. La UI muestra el total y permite filtrar por carpeta
-   con breadcrumbs.
+5. SQLite guarda los cambios y quita del índice los archivos ausentes. La lista
+   completa se devuelve al frontend, que muestra el total y permite filtrar por
+   carpeta con breadcrumbs.
 
 **Flujo de arranque con caché**
 
 1. Al arrancar, `App.tsx` llama `invoke('get_cached_library')`.
-2. `lib.rs` lee `library_cache.json`, autoriza las carpetas de cada pista y la
-   devuelve. Caché corrupta o ausente → `[]` y escaneo manual.
+2. `lib.rs` lee SQLite, autoriza las carpetas de cada pista y la devuelve. La
+   caché anterior `library_cache.json` se importa una vez si existe.
 
 **Postcondiciones:** la caché queda regenerada. Borrarla no pierde música.
 
-**Dónde está:** `src-tauri/src/scanner.rs` (`scan_directory_parallel`,
-`scan_audio_file`), `src-tauri/src/lib.rs` (`scan_library`,
-`get_cached_library`), `src-tauri/src/paths.rs` (`cache_file`).
+**Dónde está:** `src-tauri/src/scanner.rs` (`list_audio_files`,
+`file_fingerprint`, `scan_audio_file`), `src-tauri/src/library_db.rs`,
+`src-tauri/src/lib.rs` (`scan_library`, `get_cached_library`) y
+`src-tauri/src/paths.rs` (`library_db_file`).
 
 ---
 
@@ -356,9 +359,9 @@ Ajustes).
 2. Para un **comando** nuevo, agregalo en `src-tauri/src/lib.rs`, registralo en
    `invoke_handler!` y consumilo con `invoke` desde `App.tsx`. Mapeá errores
    como `String`.
-3. Para un **tema** nuevo, agregá `[data-theme='...']` con los 8 `--accent-*`
-   en `App.css` y un valor en `ThemeMode` (`App.tsx`). El selector del sidebar
-   es fijo de 4 botones: si agregás un quinto, tocá también esa grilla.
+3. Para un **tema** nuevo, agregá `[data-theme='...']` y sus 8 `--accent-*`
+   en `App.css`, el valor en `ThemeMode` (`src/types.ts`) y sus glows en
+   `App.tsx`; agrega también su opción accesible al selector del sidebar.
 4. Para una **vista** nueva, agregá `ViewMode` y una rama en `App.tsx` sin
    antiparse con las otras tres.
 5. Para un **formato** nuevo, sumá la rama en `run_download` (`downloader.rs`).

@@ -11,12 +11,14 @@ import { toPersisted, fromPersisted } from '../lib/queue';
 interface UseDownloadQueueDeps {
   currentFolder: string | null;
   defaultMusicDir: string | null;
+  downloadFolder: string | null;
   rescanAfterDownload: () => void;
 }
 
 export function useDownloadQueue({
   currentFolder,
   defaultMusicDir,
+  downloadFolder,
   rescanAfterDownload,
 }: UseDownloadQueueDeps) {
   const [downloads, setDownloads] = useState<DownloadItem[]>([]);
@@ -42,7 +44,13 @@ export function useDownloadQueue({
           );
         }
         for (const item of interrupted) {
-          const dest = item.outputDir || localStorage.getItem('sakura_current_folder') || null;
+          const dest =
+            item.outputDir ||
+            downloadFolder ||
+            currentFolder ||
+            defaultMusicDir ||
+            localStorage.getItem('sakura_current_folder') ||
+            null;
           invoke('start_download', {
             jobId: item.id,
             url: item.url,
@@ -106,7 +114,7 @@ export function useDownloadQueue({
   // Iniciar descarga asíncrona real en segundo plano
   const triggerDownload = async (title: string, artist: string, url: string, thumbnail?: string | null, customFolder?: string) => {
     const jobId = `dl-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
-    const destFolder = customFolder || currentFolder || defaultMusicDir || '.';
+    const destFolder = customFolder || downloadFolder || currentFolder || defaultMusicDir || '.';
     const newJob: DownloadItem = {
       id: jobId,
       title,

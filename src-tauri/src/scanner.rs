@@ -1,7 +1,6 @@
 use std::path::{Path, PathBuf};
 use serde::{Deserialize, Serialize};
 use walkdir::WalkDir;
-use rayon::prelude::*;
 use lofty::prelude::*;
 use lofty::probe::Probe;
 
@@ -19,6 +18,7 @@ pub struct ScannedTrack {
     pub duration: u64,
     pub duration_str: String,
     pub format: String,
+    pub bitrate_kbps: Option<u32>,
     pub cover_url: Option<String>,
     pub year: Option<u32>,
     pub genre: Option<String>,
@@ -168,6 +168,7 @@ pub fn scan_audio_file(path: &Path) -> Option<ScannedTrack> {
             let tag = tagged_file.primary_tag().or_else(|| tagged_file.first_tag());
             let properties = tagged_file.properties();
             let duration = properties.duration().as_secs();
+            let bitrate_kbps = properties.audio_bitrate();
 
             let title = tag
                 .and_then(|t| t.title())
@@ -197,6 +198,7 @@ pub fn scan_audio_file(path: &Path) -> Option<ScannedTrack> {
                 duration,
                 duration_str: format_duration(duration),
                 format: ext.to_uppercase(),
+                bitrate_kbps,
                 cover_url,
                 year,
                 genre,
@@ -215,6 +217,7 @@ pub fn scan_audio_file(path: &Path) -> Option<ScannedTrack> {
                 duration: 0,
                 duration_str: "--:--".to_string(),
                 format: ext.to_uppercase(),
+                bitrate_kbps: None,
                 cover_url: extract_cover_art(None, parent),
                 year: None,
                 genre: None,
@@ -222,6 +225,36 @@ pub fn scan_audio_file(path: &Path) -> Option<ScannedTrack> {
             })
         }
     }
+}
+
+pub fn file_fingerprint(path: &Path) -> std::io::Result<(u64, i64)> {
+    let metadata = std::fs::metadata(path)?;
+    let modified_ns = metadata
+        .modified()
+        .ok()
+        .and_then(|modified| modified.duration_since(std::time::UNIX_EPOCH).ok())
+        .map(|elapsed| elapsed.as_nanos().min(i64::MAX as u128) as i64)
+        .unwrap_or(0);
+    Ok((metadata.len(), modified_ns))
+}
+
+pub fn list_audio_files(dir_path: &Path) -> Vec<PathBuf> {
+    WalkDir::new(dir_path)
+        .follow_links(true)
+        .into_iter()
+        .filter_map(|entry| entry.ok())
+        .filter(|entry| entry.file_type().is_file())
+        .map(|entry| entry.into_path())
+        .filter(|path| {
+            path.extension()
+                .and_then(|extension| extension.to_str())
+                .map(|extension| {
+                    ["mp3", "flac", "m4a", "opus", "ogg", "wav", "aac"]
+                        .contains(&extension.to_lowercase().as_str())
+                })
+                .unwrap_or(false)
+        })
+        .collect()
 }
 
 fn fnv1a_128(data: &[u8]) -> u128 {
@@ -532,26 +565,6 @@ pub fn update_batch_tags(
         updated: updated_tracks,
         errors,
     }
-}
-
-pub fn scan_directory_parallel(dir_path: &Path) -> Vec<ScannedTrack> {
-    let mut files: Vec<PathBuf> = Vec::new();
-
-    for entry in WalkDir::new(dir_path)
-        .follow_links(true)
-        .into_iter()
-        .filter_map(|e| e.ok())
-    {
-        if entry.file_type().is_file() {
-            files.push(entry.into_path());
-        }
-    }
-
-    // Escaneo multihilo instantáneo con Rayon
-    files
-        .par_iter()
-        .filter_map(|path| scan_audio_file(path))
-        .collect()
 }
 
 #[cfg(test)]

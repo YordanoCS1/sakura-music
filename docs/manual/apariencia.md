@@ -1,30 +1,36 @@
 # Apariencia
 
-Sakura Music 2.0 tiene **4 temas de color** (Sakura, Cyber, Amber, Emerald) y
+Sakura Music 2.0 tiene **10 temas visuales** y
 **2 universos visuales** (Sakura Zen y Wuxia Jianghu). Cambiar de tema conserva
 tu música y recolorea toda la interfaz al instante.
 
 ## Cambiar de tema
 
-1. En el **sidebar**, al pie de **Tema visual**, elegí uno de los cuatro colores.
+1. En el **sidebar**, en **Estilo visual**, elegí uno de los diez temas.
 2. En **Ajustes**, en **Universo y Diseño Visual**, elegí la atmósfera cultural:
    **Sakura Zen** (rosa y violeta, 🌸) o **Wuxia Jianghu** (esmeralda y bambú, 🎋).
 
 El tema se guarda en `localStorage` (`sakura_theme`) y el universo en
 `sakura_theme_world`: al reabrir la app, vuelve lo que elegiste.
 
-### Los cuatro temas
+### Los diez temas
 
 | Tema | Carácter |
 |---|---|
 | **Sakura** | Rosa neón (por defecto) |
-| **Cyber** | Azul ciano neón |
-| **Amber** | Dorado cálido |
-| **Emerald** | Verde neón |
+| **Cyan** | Azul ciano neón |
+| **Ámbar** | Dorado cálido |
+| **Jade** | Verde neón |
+| **Glass** | Superficies translúcidas, tonos rosa, violeta y azul |
+| **Vinilo** | Madera oscura, acentos cálidos y disco giratorio en el reproductor |
+| **Cyberpunk** | Fondo con grid, detalles neón rosa/cyan y visualizador en el reproductor |
+| **Jazz Club** | Sala de escucha Art déco: navegación horizontal, colección en fundas horizontales y reproductor tipo consola, en verde botella y oro |
+| **Editorial Hi-Fi** | Interfaz clara como revista musical, con navegación lateral y portadas verticales |
+| **Shanshui** | Paisaje de tinta, biblioteca en filas ilustradas y reproductor de papel de arroz |
 
-Los temas definen 8 variables (`--accent-200…950`) y toda la UI usa la paleta
-`accent-*` de Tailwind. Sin recolorear a mano: botones, badges, glows y acentos
-siguen al tema en tiempo real.
+Los temas recolorean acentos, fondos, superficies y reproductor en tiempo real.
+Jazz Club, Editorial Hi-Fi y Shanshui además cambian la composición de la
+navegación, la biblioteca y el reproductor sin modificar sus controles.
 
 ### Los dos universos
 
@@ -63,7 +69,7 @@ En **Biblioteca** cambiás entre **Carpetas**, **Cuadrícula**, **Tabla** y
 
 | Cambia | No cambia |
 |---|---|
-| Colores de fondo, texto, acentos, glows | Tu música, tags y portadas |
+| Colores, superficies, acentos, glows y detalles del reproductor | Tu música, tags y portadas |
 | Título y subtítulo del sidebar | Las vistas de biblioteca |
 | Partículas según universo | Los atajos y controles |
 | Efectos de vidrio (opacidad/blur) | La lógica de descargas o escaneo |

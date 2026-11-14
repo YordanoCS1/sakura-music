@@ -35,6 +35,10 @@ pub fn cache_file() -> PathBuf {
     ensure_data_dir().join("library_cache.json")
 }
 
+pub fn library_db_file() -> PathBuf {
+    ensure_data_dir().join("library.sqlite3")
+}
+
 pub fn queue_file() -> PathBuf {
     ensure_data_dir().join("download_queue.json")
 }

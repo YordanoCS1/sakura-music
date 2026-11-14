@@ -36,8 +36,8 @@ En todos los casos la app embebe carátula y metadatos.
 ## Descargar una playlist
 
 1. Pegá una URL de playlist o de álbum de YouTube y pulsá **Cargar Playlist**.
-2. La app enumera la lista completa (título, canal, cantidad y pistas) sin
-   descargar nada.
+2. Las pistas aparecen conforme `yt-dlp` las va encontrando; la lista sigue
+   cargando hasta que termine la consulta. Esto no descarga nada.
 3. Marcá o desmarcá pistas con las casillas, o usá **Seleccionar todas**.
 4. Elegí si **organizar en subcarpeta dedicada** con el nombre de la playlist.
 5. Pulsá **Descargar N Canciones**. Cada pista baja como descarga independiente;

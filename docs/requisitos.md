@@ -90,20 +90,23 @@ verifica manualmente.
 
 #### RF-08 · Escanear carpetas en paralelo
 
-**Criterio:** `scan_directory_parallel` recorre con `walkdir` (sigue symlinks) y
-lee cada pista con `rayon`. Solo entran MP3, FLAC, M4A, Opus, OGG, WAV y AAC.
-Carpeta inexistente → `[]` sin escribir caché.
+**Criterio:** `scan_library` recorre con `walkdir` (sigue symlinks) y procesa
+pistas nuevas o modificadas con `rayon`, comparando tamaño y fecha de
+modificación con SQLite. Un vigilante recursivo agrupa cambios del sistema de
+archivos y actualiza la biblioteca; solo entran MP3, FLAC, M4A, Opus, OGG, WAV y
+AAC. Carpeta inexistente → error explícito sin modificar el índice.
 
-**Test:** `scanner::tests::formatea_duracion`,
-`scanner::tests::fnv_es_estable_y_distingue_contenido`.
+**Test:** `library_db::tests::scan_sync_actualiza_y_quita_pistas_ausentes`,
+`library_db::tests::scan_de_otra_carpeta_reemplaza_la_biblioteca_activa`.
 
 #### RF-09 · Cachear y restaurar la biblioteca
 
-**Criterio:** `scan_library` escribe `library_cache.json` de forma atómica;
+**Criterio:** `scan_library` persiste las pistas en `library.sqlite3`;
 `get_cached_library` la devuelve al arrancar y autoriza en el scope `asset:`
-todas las carpetas de las pistas. Caché corrupta → `[]` y reescaneo.
+todas las carpetas de las pistas. La caché anterior `library_cache.json` se
+importa una vez y se conserva.
 
-**Test:** `scanner::tests::escritura_atomica_reemplaza_y_no_deja_temporales`.
+**Test:** `library_db::tests::scan_sync_actualiza_y_quita_pistas_ausentes`.
 
 #### RF-10 · Extraer carátulas con extensión real
 
@@ -171,9 +174,10 @@ guardado. La carpeta `covers/` no crece sin control entre sesiones.
 
 #### RF-17 · Temas que recolorean toda la UI
 
-**Criterio:** los 4 temas (Sakura, Cyber, Amber, Emerald) cambian las variables
-`--accent-200…950` y toda la UI usa la paleta `accent-*` de Tailwind asociada.
-Cambiar de tema recolorea botones, badges, glows y acentos al instante y se
+**Criterio:** los 10 temas (Sakura, Cyan, Ámbar, Jade, Glass, Vinilo, Cyberpunk,
+Jazz Club, Editorial Hi-Fi y Shanshui)
+cambian las variables `--accent-200…950` y la apariencia correspondiente.
+Cambiar de tema recolorea acentos, fondos, superficies y reproductor al instante y se
 persiste en `localStorage` (`sakura_theme`).
 
 **Test:** `tsc --noEmit` + `npm run build` (verifica que Tailwind genera las

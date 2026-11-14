@@ -12,6 +12,7 @@ export interface ScannedTrack {
   duration: number;
   duration_str: string;
   format: string;
+  bitrate_kbps?: number | null;
   cover_url: string | null;
   year: number | null;
   genre: string | null;
@@ -91,10 +92,10 @@ export interface DownloadItem {
   createdAt: number;
 }
 
-export type ThemeMode = 'sakura' | 'cyber' | 'amber' | 'emerald';
+export type ThemeMode = 'sakura' | 'cyber' | 'amber' | 'emerald' | 'glass' | 'retro' | 'cyberpunk' | 'artdeco' | 'editorial' | 'shanshui' | 'm3zen';
 export type ThemeWorld = 'sakura_zen' | 'where_winds_meet';
 export type PlayerStyle = 'floating' | 'fixed';
-export type ViewMode = 'folders' | 'grid' | 'table' | 'albums';
+export type ViewMode = 'folders' | 'grid' | 'table' | 'albums' | 'makimono' | 'lanterns' | 'shoji' | 'hanafuda';
 
 export interface AlbumGroup {
   key: string;

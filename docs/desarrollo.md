@@ -98,12 +98,14 @@ de filas.
 
 1. En `src/App.css`, agregá `[data-theme='nuevo']` con los 8 valores
    `--accent-200…950` en formato `R G B`.
-2. En `src/App.tsx`, sumá `'nuevo'` a `ThemeMode` y su `themeGlows` (glow/acento/
-   badge/borde). El selector del sidebar es una grilla fija de 4 botones: si
-   querés 5 temas, hay que expandirla.
-3. Corré `npm run build`: Tailwind debe generar las clases `accent-*` usadas.
+2. En `src/types.ts`, sumá `'nuevo'` a `ThemeMode`; en `src/App.tsx`, agrega su
+   entrada a `themeGlows` (glow/acento/badge/borde) y valida su persistencia.
+3. En `src/components/AppSidebar.tsx`, añadí una opción accesible al selector.
+4. Si el tema cambia fondos o superficies, define sus estilos en `App.css`.
+   Corré `npm run build` para validar tipos y clases Tailwind.
 
-No toques ningún componente: toda la UI usa `accent-*` y sigue al tema sola.
+Los cambios limitados a la paleta usan `accent-*`; los temas visuales completos
+requieren estilos de superficie además de los tokens de color.
 
 ### Agregar una vista de biblioteca
 

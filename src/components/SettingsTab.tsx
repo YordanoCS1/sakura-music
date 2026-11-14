@@ -1,5 +1,7 @@
-import { Palette, Wind, Sparkles, Layers, Sliders, Cpu } from 'lucide-react';
+import { Palette, Wind, Sparkles, Layers, Sliders, Cpu, FolderOpen } from 'lucide-react';
 import type { AppInfo, PlayerStyle, ThemeWorld } from '../types';
+import DesignConceptGallery from './DesignConceptGallery';
+import UiLookGallery from './UiLookGallery';
 
 interface SettingsTabProps {
   accentGradient: string;
@@ -14,6 +16,10 @@ interface SettingsTabProps {
   ambientParticles: boolean;
   appInfo: AppInfo | null;
   currentFolder: string | null;
+  downloadFolder: string | null;
+  downloadFolderError: string | null;
+  onChooseDownloadFolder: () => void;
+  onResetDownloadFolder: () => void;
   onSetThemeWorld: (w: ThemeWorld) => void;
   onSetPlayerStyle: (s: PlayerStyle) => void;
   onSetGlassOpacity: (v: number) => void;
@@ -36,6 +42,10 @@ export default function SettingsTab({
   ambientParticles,
   appInfo,
   currentFolder,
+  downloadFolder,
+  downloadFolderError,
+  onChooseDownloadFolder,
+  onResetDownloadFolder,
   onSetThemeWorld,
   onSetPlayerStyle,
   onSetGlassOpacity,
@@ -45,10 +55,47 @@ export default function SettingsTab({
   onClearCache,
 }: SettingsTabProps) {
   return (
-    <div className="space-y-6 max-w-xl mb-24">
+    <div className="w-full max-w-6xl mx-auto space-y-6 mb-24">
       <div>
         <h2 className="text-base font-bold text-white mb-1">Ajustes de Sakura Music</h2>
         <p className="text-xs text-gray-400">Personalización visual, diseño de interfaz y motor nativo</p>
+      </div>
+
+      <div className="glass-card p-5 rounded-2xl border border-white/10 space-y-3">
+        <div>
+          <h3 className="text-sm font-bold text-white">Carpeta de descargas</h3>
+          <p className="text-xs text-gray-400 mt-1">
+            Las nuevas descargas se guardarán aquí. Si no eliges una carpeta, se usará la biblioteca actual o Música.
+          </p>
+        </div>
+        <div className="rounded-xl bg-black/20 border border-white/5 px-3 py-2">
+          <p className="text-[11px] text-gray-300 font-mono break-all">
+            {downloadFolder || currentFolder || 'Carpeta Música predeterminada'}
+          </p>
+          {!downloadFolder && (
+            <p className="text-[10px] text-gray-500 mt-1">Destino automático (no se fijó una carpeta)</p>
+          )}
+        </div>
+        {downloadFolderError && (
+          <p role="alert" className="text-xs text-rose-300">{downloadFolderError}</p>
+        )}
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={onChooseDownloadFolder}
+            className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-colors ${accentBadge}`}>
+            <FolderOpen className="w-3.5 h-3.5" />
+            Elegir carpeta
+          </button>
+          {downloadFolder && (
+            <button
+              type="button"
+              onClick={onResetDownloadFolder}
+              className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10 text-xs font-semibold transition-colors">
+              Usar destino automático
+            </button>
+          )}
+        </div>
       </div>
 
       {/* SECCIÓN: UNIVERSO VISUAL & ESTILO GLOBAL */}
@@ -247,6 +294,10 @@ export default function SettingsTab({
         </div>
 
       </div>
+
+      <DesignConceptGallery />
+
+      <UiLookGallery />
 
       {/* Tarjeta de Especificaciones Técnicas */}
       <div className="glass-card p-5 rounded-2xl border border-white/5 space-y-3">

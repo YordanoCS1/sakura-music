@@ -1,14 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { convertFileSrc } from '@tauri-apps/api/core';
+import { listen } from '@tauri-apps/api/event';
 import { open } from '@tauri-apps/plugin-dialog';
 import { 
-  Home, 
   Search, 
-  Library, 
-  DownloadCloud, 
-  Settings, 
-  Cpu,
   Heart,
   Sparkles,
 } from 'lucide-react';
@@ -23,6 +19,8 @@ import type {
   PlayerStyle,
   ViewMode,
 } from './types';
+import AppSidebar, { type AppTab } from './components/AppSidebar';
+import ZenTopNav from './components/ZenTopNav';
 import { useBatchEditor } from './hooks/useBatchEditor';
 import { useMetadataEditor } from './hooks/useMetadataEditor';
 import QueueTab from './components/QueueTab';
@@ -31,16 +29,22 @@ import SettingsTab from './components/SettingsTab';
 import PlayerBar from './components/PlayerBar';
 import SearchTab from './components/SearchTab';
 import LibraryTab from './components/LibraryTab';
+import LibraryToolbar from './components/LibraryToolbar';
 import MetadataModal from './components/MetadataModal';
 import BatchModal from './components/BatchModal';
+import DeleteTracksDialog from './components/DeleteTracksDialog';
 import { useDownloadQueue } from './hooks/useDownloadQueue';
 import { useOnlineSearch } from './hooks/useOnlineSearch';
 import { useFolderExplorer } from './hooks/useFolderExplorer';
+import { usePlayer } from './hooks/usePlayer';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'home' | 'search' | 'library' | 'queue' | 'settings'>('library');
+  const [activeTab, setActiveTab] = useState<AppTab>('library');
+  const libraryScrollRef = useRef<HTMLDivElement>(null);
   const [theme, setTheme] = useState<ThemeMode>(() => {
-    return (localStorage.getItem('sakura_theme') as ThemeMode) || 'sakura';
+    const savedTheme = localStorage.getItem('sakura_theme');
+    const themes: ThemeMode[] = ['sakura', 'cyber', 'amber', 'emerald', 'glass', 'retro', 'cyberpunk', 'artdeco', 'editorial', 'shanshui', 'm3zen'];
+    return themes.find(option => option === savedTheme) ?? 'sakura';
   });
   const [themeWorld, setThemeWorld] = useState<ThemeWorld>(() => {
     return (localStorage.getItem('sakura_theme_world') as ThemeWorld) || 'sakura_zen';
@@ -96,7 +100,7 @@ export default function App() {
   }, [theme]);
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
     const saved = localStorage.getItem('sakura_view_mode') as ViewMode | null;
-    if (saved && (saved === 'folders' || saved === 'grid' || saved === 'table' || saved === 'albums')) {
+    if (saved && (saved === 'folders' || saved === 'grid' || saved === 'table' || saved === 'albums' || saved === 'makimono' || saved === 'lanterns' || saved === 'shoji' || saved === 'hanafuda')) {
       return saved;
     }
     return 'folders';
@@ -108,20 +112,69 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [tracks, setTracks] = useState<ScannedTrack[]>([]);
   const [activeTrack, setActiveTrack] = useState<ScannedTrack | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(0.85);
-  const [isMuted, setIsMuted] = useState(false);
-  const [isShuffle, setIsShuffle] = useState(false);
-  const [repeatMode, setRepeatMode] = useState<'off' | 'all' | 'one'>('off');
   const [appInfo, setAppInfo] = useState<AppInfo | null>(null);
   const [filterChip, setFilterChip] = useState<'all' | 'flac' | 'recent' | 'favorites'>('all');
   const [favorites, setFavorites] = useState<string[]>([]);
   const [isScanning, setIsScanning] = useState(false);
+  const [isDeletingTracks, setIsDeletingTracks] = useState(false);
   const [scanMessage, setScanMessage] = useState<string | null>(null);
   const [currentFolder, setCurrentFolder] = useState<string | null>(null);
   const [defaultMusicDir, setDefaultMusicDir] = useState<string | null>(null);
+  const [downloadFolder, setDownloadFolder] = useState<string | null>(() =>
+    localStorage.getItem('sakura_download_folder')
+  );
+  const [downloadFolderError, setDownloadFolderError] = useState<string | null>(null);
+  const handleChooseDownloadFolder = async () => {
+    try {
+      const selected = await open({
+        directory: true,
+        multiple: false,
+        title: 'Seleccionar carpeta de descargas',
+        ...(downloadFolder ? { defaultPath: downloadFolder } : {}),
+      });
+      if (typeof selected === 'string') {
+        setDownloadFolder(selected);
+        localStorage.setItem('sakura_download_folder', selected);
+        setDownloadFolderError(null);
+      }
+    } catch (error) {
+      console.error('Error al seleccionar la carpeta de descargas:', error);
+      setDownloadFolderError(`No se pudo seleccionar la carpeta: ${String(error)}`);
+    }
+  };
+  const handleResetDownloadFolder = () => {
+    setDownloadFolder(null);
+    localStorage.removeItem('sakura_download_folder');
+    setDownloadFolderError(null);
+  };
+  const playbackQueueRef = useRef<ScannedTrack[]>([]);
+  const {
+    audioRef,
+    isPlaying,
+    setIsPlaying,
+    duration,
+    volume,
+    isMuted,
+    isShuffle,
+    repeatMode,
+    handlePlayTrack,
+    togglePlay,
+    handleNextTrack,
+    handlePreviousTrack,
+    handleSongEnded,
+    handleSeek,
+    handleTimeUpdate,
+    handleLoadedMetadata,
+    handleVolumeChange,
+    toggleShuffle,
+    toggleMute,
+    cycleRepeatMode,
+  } = usePlayer({
+    tracks,
+    activeTrack,
+    setActiveTrack,
+    playbackQueueRef,
+  });
 
   // Estado del motor de descargas
   const [toolsStatus, setToolsStatus] = useState<DownloaderStatus | null>(null);
@@ -136,6 +189,28 @@ export default function App() {
     }
   }, []);
 
+  useEffect(() => {
+    let active = true;
+    let unlisten: (() => void) | undefined;
+    listen<string>('library-changed', ({ payload }) => {
+      const folder = localStorage.getItem('sakura_current_folder');
+      if (!folder || folder !== payload) return;
+      invoke<ScannedTrack[]>('scan_library', { folderPath: folder })
+        .then(setTracks)
+        .catch(error => console.error('Error al actualizar biblioteca tras un cambio:', error));
+    })
+      .then(stopListening => {
+        if (active) unlisten = stopListening;
+        else stopListening();
+      })
+      .catch(error => console.error('No se pudo escuchar cambios de biblioteca:', error));
+
+    return () => {
+      active = false;
+      unlisten?.();
+    };
+  }, []);
+
   const {
     downloads, setDownloads,
     downloadFormat, setDownloadFormat,
@@ -147,6 +222,7 @@ export default function App() {
   } = useDownloadQueue({
     currentFolder,
     defaultMusicDir,
+    downloadFolder,
     rescanAfterDownload,
   });
 
@@ -169,13 +245,10 @@ export default function App() {
     triggerDownload,
     currentFolder,
     defaultMusicDir,
+    downloadFolder,
     setActiveTab,
   });
 
-
-  // Referencia al elemento nativo de audio y al Blob URL activo
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const currentBlobUrlRef = useRef<string | null>(null);
 
   // Helper para resolver portadas (locales o base64) de forma óptima
   const getCoverSrc = (coverUrl: string | null) => {
@@ -267,12 +340,13 @@ export default function App() {
 
   // Inicialización: cargar favoritos, pistas previas y solicitar info del sistema
   useEffect(() => {
+    let savedFolder: string | null = null;
     try {
       // Liberar cualquier residuo de caché en localStorage
       localStorage.removeItem('sakura_library_cache');
       const savedFavs = localStorage.getItem('sakura_favorites');
       if (savedFavs) setFavorites(JSON.parse(savedFavs));
-      const savedFolder = localStorage.getItem('sakura_current_folder');
+      savedFolder = localStorage.getItem('sakura_current_folder');
       if (savedFolder) setCurrentFolder(savedFolder);
     } catch (e) {
       console.warn("No se pudieron cargar datos en caché:", e);
@@ -285,13 +359,24 @@ export default function App() {
 
     // Cargar biblioteca desde la caché persistente en disco de Rust (sin límites de navegador)
     invoke<ScannedTrack[]>('get_cached_library')
-      .then(cached => {
+      .then(async cached => {
         if (cached && cached.length > 0) {
           setTracks(cached);
           setActiveTrack(cached[0]);
         }
+        if (savedFolder) {
+          const refreshed = await invoke<ScannedTrack[]>('scan_library', {
+            folderPath: savedFolder,
+          });
+          setTracks(refreshed);
+          setActiveTrack(current =>
+            current
+              ? refreshed.find(track => track.id === current.id) ?? current
+              : refreshed[0] ?? null
+          );
+        }
       })
-      .catch(err => console.error("Error al cargar biblioteca en caché:", err));
+      .catch(err => console.error("Error al cargar o actualizar biblioteca:", err));
 
     // Solicitar info de Rust
     invoke<AppInfo>('get_app_info', { tracksCount: tracks.length })
@@ -313,13 +398,6 @@ export default function App() {
       setAppInfo(prev => prev ? { ...prev, tracks_loaded: tracks.length } : null);
     }
   }, [tracks.length]);
-
-  // Sincronizar volumen del reproductor
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = isMuted ? 0 : volume;
-    }
-  }, [volume, isMuted]);
 
   // Formatear segundos en mm:ss
   const formatTime = (secs: number) => {
@@ -368,116 +446,6 @@ export default function App() {
     }
   };
 
-  // Reproducir una canción específica
-  // IMPORTANTE: Se carga vía Blob URL en memoria para que Windows NUNCA bloquee el archivo en disco,
-  // permitiendo editar metadatos o carátulas en tiempo real incluso mientras suena la música.
-  const handlePlayTrack = async (track: ScannedTrack) => {
-    setActiveTrack(track);
-    if (!audioRef.current) return;
-
-    try {
-      // Liberar Blob URL anterior de memoria
-      if (currentBlobUrlRef.current) {
-        URL.revokeObjectURL(currentBlobUrlRef.current);
-        currentBlobUrlRef.current = null;
-      }
-
-      const assetUrl = convertFileSrc(track.path);
-      const res = await fetch(assetUrl);
-      const blob = await res.blob();
-      const blobUrl = URL.createObjectURL(blob);
-      currentBlobUrlRef.current = blobUrl;
-
-      audioRef.current.src = blobUrl;
-      await audioRef.current.play();
-      setIsPlaying(true);
-    } catch (err) {
-      console.error("Error al reproducir audio:", err);
-      setIsPlaying(false);
-    }
-  };
-
-  // Alternar Play/Pausa
-  const togglePlay = () => {
-    if (!audioRef.current) return;
-    if (!activeTrack && tracks.length > 0) {
-      handlePlayTrack(tracks[0]);
-      return;
-    }
-    if (isPlaying) {
-      audioRef.current.pause();
-      setIsPlaying(false);
-    } else {
-      audioRef.current.play()
-        .then(() => setIsPlaying(true))
-        .catch(err => console.error("Error al reanudar:", err));
-    }
-  };
-
-  // Pista siguiente. `auto` distingue el avance automático (respeta el final
-  // de la lista cuando la repetición está apagada) del clic manual.
-  const handleNextTrack = (auto = false) => {
-    if (filteredTracks.length === 0) return;
-    if (isShuffle) {
-      const randomIndex = Math.floor(Math.random() * filteredTracks.length);
-      handlePlayTrack(filteredTracks[randomIndex]);
-      return;
-    }
-    const currentIndex = filteredTracks.findIndex(t => t.id === activeTrack?.id);
-    if (currentIndex < 0) {
-      handlePlayTrack(filteredTracks[0]);
-      return;
-    }
-    const isLast = currentIndex === filteredTracks.length - 1;
-    if (isLast && auto && repeatMode === 'off') {
-      setIsPlaying(false);
-      if (audioRef.current) audioRef.current.currentTime = 0;
-      return;
-    }
-    const nextIndex = (currentIndex + 1) % filteredTracks.length;
-    handlePlayTrack(filteredTracks[nextIndex]);
-  };
-
-  // Pista anterior
-  const handlePreviousTrack = () => {
-    if (filteredTracks.length === 0) return;
-    if (currentTime > 3) {
-      if (audioRef.current) audioRef.current.currentTime = 0;
-      return;
-    }
-    const currentIndex = filteredTracks.findIndex(t => t.id === activeTrack?.id);
-    const prevIndex = (currentIndex - 1 + filteredTracks.length) % filteredTracks.length;
-    handlePlayTrack(filteredTracks[prevIndex]);
-  };
-
-  // Al finalizar una canción
-  const handleSongEnded = () => {
-    if (repeatMode === 'one' && audioRef.current) {
-      audioRef.current.currentTime = 0;
-      audioRef.current.play();
-    } else if (repeatMode === 'all') {
-      handleNextTrack(true);
-    } else {
-      // Repetición apagada: avanzar solo si queda algo en la lista.
-      const currentIndex = filteredTracks.findIndex(t => t.id === activeTrack?.id);
-      if (currentIndex >= 0 && currentIndex < filteredTracks.length - 1) {
-        handleNextTrack(true);
-      } else {
-        setIsPlaying(false);
-        if (audioRef.current) audioRef.current.currentTime = 0;
-      }
-    }
-  };
-
-  // Control del Scrubber / Progreso
-  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const targetTime = parseFloat(e.target.value);
-    setCurrentTime(targetTime);
-    if (audioRef.current) {
-      audioRef.current.currentTime = targetTime;
-    }
-  };
-
   // Alternar favorito
   const toggleFavorite = (trackId: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -494,6 +462,7 @@ export default function App() {
 
   // Selección múltiple y Batch Editor
   const [selectedTrackIds, setSelectedTrackIds] = useState<Set<string>>(new Set());
+  const [pendingDeleteTracks, setPendingDeleteTracks] = useState<ScannedTrack[]>([]);
   // (estado y lógica del editor de metadatos: ver src/hooks/useBatchEditor.ts
   // y src/hooks/useMetadataEditor.ts)
   const toggleSelectTrack = (trackId: string, e?: React.MouseEvent) => {
@@ -515,6 +484,70 @@ export default function App() {
 
   const clearTrackSelection = () => {
     setSelectedTrackIds(new Set());
+  };
+
+  const requestDeleteSelectedTracks = () => {
+    const selectedTracks = tracks.filter(track => selectedTrackIds.has(track.id));
+    if (selectedTracks.length === 0 || isDeletingTracks || isScanning) return;
+    setPendingDeleteTracks(selectedTracks);
+  };
+
+  const confirmDeleteSelectedTracks = async () => {
+    const selectedTracks = pendingDeleteTracks;
+    if (selectedTracks.length === 0 || isDeletingTracks || isScanning) return;
+    setIsDeletingTracks(true);
+    const deletedIds = new Set<string>();
+    const failures: { title: string; error: unknown }[] = [];
+    try {
+      for (const track of selectedTracks) {
+        try {
+          await invoke<boolean>('delete_library_track', { path: track.path });
+          deletedIds.add(track.id);
+        } catch (error) {
+          failures.push({ title: track.title, error });
+          console.error(`No se pudo eliminar "${track.title}" (${track.path}):`, error);
+        }
+      }
+
+      if (deletedIds.size > 0) {
+        setTracks(current => current.filter(track => !deletedIds.has(track.id)));
+        setSelectedTrackIds(current => new Set(
+          [...current].filter(trackId => !deletedIds.has(trackId))
+        ));
+        setFavorites(current => {
+          const next = current.filter(trackId => !deletedIds.has(trackId));
+          localStorage.setItem('sakura_favorites', JSON.stringify(next));
+          return next;
+        });
+
+        if (activeTrack && deletedIds.has(activeTrack.id)) {
+          audioRef.current?.pause();
+          if (audioRef.current) {
+            audioRef.current.removeAttribute('src');
+            audioRef.current.load();
+          }
+          setIsPlaying(false);
+          setActiveTrack(null);
+        }
+      }
+
+      if (failures.length > 0) {
+        const firstFailure = failures[0];
+        setScanMessage(
+          `Se eliminaron ${deletedIds.size}; ${failures.length} no se pudieron eliminar. ` +
+          `Error en "${firstFailure.title}": ${String(firstFailure.error)}`
+        );
+      } else {
+        setScanMessage(
+          `Se ${deletedIds.size === 1 ? 'eliminó' : 'eliminaron'} ${deletedIds.size} ` +
+          `${deletedIds.size === 1 ? 'canción' : 'canciones'} del disco.`
+        );
+      }
+      setTimeout(() => setScanMessage(null), 6000);
+    } finally {
+      setIsDeletingTracks(false);
+      setPendingDeleteTracks([]);
+    }
   };
 
   // Estado y lógica de edición (lote + individual). Vive en hooks propios;
@@ -617,6 +650,7 @@ export default function App() {
     setSelectedTrackIds,
     handlePlayTrack,
   });
+  playbackQueueRef.current = filteredTracks;
 
   // Configuración de temas dinámicos
   const themeGlows: Record<ThemeMode, { glow1: string; glow2: string; accent: string; badge: string; border: string }> = {
@@ -647,6 +681,55 @@ export default function App() {
       accent: 'from-emerald-400 to-teal-500',
       badge: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
       border: 'border-emerald-500/40',
+    },
+    glass: {
+      glow1: 'bg-fuchsia-500/30',
+      glow2: 'bg-blue-600/25',
+      accent: 'from-fuchsia-400 to-blue-500',
+      badge: 'bg-fuchsia-500/20 text-fuchsia-200 border-fuchsia-400/30',
+      border: 'border-fuchsia-400/40',
+    },
+    retro: {
+      glow1: 'bg-amber-500/25',
+      glow2: 'bg-orange-800/25',
+      accent: 'from-amber-500 to-orange-700',
+      badge: 'bg-amber-500/20 text-amber-200 border-amber-400/30',
+      border: 'border-amber-400/40',
+    },
+    cyberpunk: {
+      glow1: 'bg-fuchsia-500/30',
+      glow2: 'bg-cyan-500/25',
+      accent: 'from-fuchsia-500 to-cyan-400',
+      badge: 'bg-fuchsia-500/20 text-fuchsia-200 border-fuchsia-400/30',
+      border: 'border-fuchsia-400/40',
+    },
+    artdeco: {
+      glow1: 'bg-amber-500/20',
+      glow2: 'bg-emerald-700/20',
+      accent: 'from-amber-400 to-yellow-700',
+      badge: 'bg-amber-500/15 text-amber-200 border-amber-400/30',
+      border: 'border-amber-400/35',
+    },
+    editorial: {
+      glow1: 'bg-rose-200/50',
+      glow2: 'bg-amber-200/35',
+      accent: 'from-rose-700 to-orange-700',
+      badge: 'bg-rose-900/10 text-rose-900 border-rose-900/20',
+      border: 'border-rose-800/25',
+    },
+    shanshui: {
+      glow1: 'bg-emerald-700/20',
+      glow2: 'bg-amber-600/15',
+      accent: 'from-emerald-800 to-emerald-600',
+      badge: 'bg-emerald-900/10 text-emerald-950 border-emerald-900/20',
+      border: 'border-emerald-800/25',
+    },
+    m3zen: {
+      glow1: 'bg-rose-400/25',
+      glow2: 'bg-pink-600/15',
+      accent: 'from-rose-500 to-pink-500',
+      badge: 'bg-rose-500/15 text-rose-200 border-rose-400/30',
+      border: 'border-rose-400/40',
     },
   };
 
@@ -693,12 +776,11 @@ export default function App() {
     sidebarSubtitle: 'Tauri 2 · Rust Core',
     logoIcon: '🌸',
   };
-
   return (
     <div 
       data-theme={theme}
       data-world={themeWorld}
-      className={`relative w-screen h-screen flex overflow-hidden ${worldStyle.bgClass} font-sans text-gray-100 select-none ${isWWM ? 'theme-where-winds-meet' : ''}`}
+      className={`app-shell relative w-screen h-screen flex overflow-hidden ${worldStyle.bgClass} font-sans text-gray-100 select-none ${isWWM ? 'theme-where-winds-meet' : ''}`}
       style={{
         '--glass-opacity': `${glassOpacity / 100}`,
         '--glass-blur': `${glassBlur}px`,
@@ -707,18 +789,14 @@ export default function App() {
       {/* Elemento de Audio Nativo HTML5 */}
       <audio
         ref={audioRef}
-        onTimeUpdate={() => {
-          if (audioRef.current) setCurrentTime(audioRef.current.currentTime);
-        }}
-        onLoadedMetadata={() => {
-          if (audioRef.current) setDuration(audioRef.current.duration);
-        }}
+        onTimeUpdate={handleTimeUpdate}
+        onLoadedMetadata={handleLoadedMetadata}
         onEnded={handleSongEnded}
         onError={(e) => console.error("Error nativo del elemento audio:", e)}
       />
 
       {/* Resplandor ambiental de fondo dinámico (Acelerado por GPU) */}
-      {ambientGlow && (
+      {ambientGlow && !(activeTab === 'library' && (viewMode === 'shoji' || viewMode === 'hanafuda')) && (
         <>
           {coverGlowColors ? (
             <>
@@ -745,7 +823,7 @@ export default function App() {
       )}
 
       {/* Capa de Partículas Atmosféricas (Pétalos de Sakura / Chispas & Bruma Jianghu) */}
-      {ambientParticles && (
+      {ambientParticles && !(activeTab === 'library' && (viewMode === 'shoji' || viewMode === 'hanafuda')) && (
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 select-none">
           {isWWM ? (
             // Partículas Jianghu: Chispas doradas de linterna y bruma ascendente
@@ -801,165 +879,28 @@ export default function App() {
         </div>
       )}
 
-      {/* ========================================================= */}
-      {/* SIDEBAR NATIVO CON EFECTO VIDRIO                           */}
-      {/* ========================================================= */}
-      <aside className="w-64 glass-surface flex flex-col p-4 z-20 border-r border-white/5 flex-shrink-0">
-        
-        {/* Logotipo Sakura / Jianghu */}
-        <div className="flex items-center gap-3 px-3 py-2 mb-6">
-          <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${worldStyle.accentGradient} flex items-center justify-center text-white font-bold text-lg shadow-lg ${worldStyle.glowColor} transform hover:scale-105 transition-transform`}>
-            {worldStyle.logoIcon}
-          </div>
-          <div>
-            <h1 className="font-bold text-sm tracking-wide text-white">{worldStyle.sidebarTitle}</h1>
-            <span className={`text-[10px] ${isWWM ? 'text-emerald-300/90' : 'text-accent-300/90'} font-medium tracking-wider uppercase`}>{worldStyle.sidebarSubtitle}</span>
-          </div>
-        </div>
-
-        {/* Menú de Navegación */}
-        <nav className="space-y-1">
-          <button 
-            onClick={() => setActiveTab('home')}
-            className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all ${
-              activeTab === 'home' 
-                ? `${worldStyle.activeTabBg} font-semibold` 
-                : 'text-gray-400 hover:text-white hover:bg-white/5'
-            }`}>
-            <Home className={`w-4 h-4 ${worldStyle.accentText}`} />
-            <span>Inicio</span>
-          </button>
-
-          <button 
-            onClick={() => setActiveTab('library')}
-            className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all ${
-              activeTab === 'library' 
-                ? `${worldStyle.activeTabBg} font-semibold` 
-                : 'text-gray-400 hover:text-white hover:bg-white/5'
-            }`}>
-            <Library className={`w-4 h-4 ${isWWM ? 'text-teal-400' : 'text-purple-400'}`} />
-            <span>Biblioteca</span>
-            <span className="ml-auto text-[10px] bg-white/10 px-2 py-0.5 rounded-full text-gray-300 font-mono">
-              {tracks.length}
-            </span>
-          </button>
-
-          <button 
-            onClick={() => setActiveTab('search')}
-            className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all ${
-              activeTab === 'search' 
-                ? `${worldStyle.activeTabBg} font-semibold` 
-                : 'text-gray-400 hover:text-white hover:bg-white/5'
-            }`}>
-            <Search className={`w-4 h-4 ${isWWM ? 'text-amber-400' : 'text-cyan-400'}`} />
-            <span>Buscar y Descargar</span>
-          </button>
-
-          <button 
-            onClick={() => setActiveTab('queue')}
-            className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all ${
-              activeTab === 'queue' 
-                ? `${worldStyle.activeTabBg} font-semibold` 
-                : 'text-gray-400 hover:text-white hover:bg-white/5'
-            }`}>
-            <DownloadCloud className={`w-4 h-4 ${isWWM ? 'text-emerald-400' : 'text-amber-400'}`} />
-            <span>Cola de Descargas</span>
-            {downloads.some(d => d.status === 'descargando') && (
-              <span className={`ml-auto w-2 h-2 rounded-full ${isWWM ? 'bg-emerald-400' : 'bg-accent-400'} animate-ping`}></span>
-            )}
-          </button>
-
-          <button 
-            onClick={() => setActiveTab('settings')}
-            className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all ${
-              activeTab === 'settings' 
-                ? `${worldStyle.activeTabBg} font-semibold` 
-                : 'text-gray-400 hover:text-white hover:bg-white/5'
-            }`}>
-            <Settings className={`w-4 h-4 ${isWWM ? 'text-emerald-400' : 'text-accent-400'}`} />
-            <span>Ajustes</span>
-          </button>
-        </nav>
-
-        {/* Conmutador rápido de Universo Zen / Wuxia */}
-        <div className="mt-5 pt-3.5 border-t border-white/5">
-          <div className="flex items-center justify-between text-[11px] text-gray-400 mb-2 px-1">
-            <span>Mundo Visual:</span>
-            <span className={`text-[10px] font-semibold ${isWWM ? 'text-emerald-300' : 'text-accent-300'}`}>
-              {worldStyle.name}
-            </span>
-          </div>
-          <div className="grid grid-cols-2 gap-1.5 p-1 rounded-xl bg-white/5 border border-white/5">
-            <button
-              onClick={() => handleSetThemeWorld('sakura_zen')}
-              className={`flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg text-[11px] font-semibold transition-all ${
-                themeWorld === 'sakura_zen'
-                  ? 'bg-gradient-to-r from-accent-500 to-accent-400 text-white shadow-md'
-                  : 'text-gray-400 hover:text-white'
-              }`}>
-              <span>🌸</span>
-              <span>Sakura</span>
-            </button>
-            <button
-              onClick={() => handleSetThemeWorld('where_winds_meet')}
-              className={`flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg text-[11px] font-semibold transition-all ${
-                themeWorld === 'where_winds_meet'
-                  ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md'
-                  : 'text-gray-400 hover:text-white'
-              }`}>
-              <span>🎋</span>
-              <span>Wuxia</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Selector de temas dinámicos */}
-        <div className="mt-3 pt-3 border-t border-white/5">
-          <div className="flex items-center justify-between text-[11px] text-gray-400 mb-2 px-1">
-            <span>Tema visual:</span>
-            <span className="capitalize text-xs font-medium text-white">{theme}</span>
-          </div>
-          <div className="grid grid-cols-4 gap-1.5 p-1 rounded-xl bg-white/5 border border-white/5">
-            <button 
-              onClick={() => setTheme('sakura')} 
-              className={`h-6 rounded-lg bg-gradient-to-tr from-pink-500 to-rose-400 transition-transform ${theme === 'sakura' ? 'ring-2 ring-white scale-105' : 'opacity-70 hover:opacity-100'}`} 
-              title="Sakura Blossom"
-            />
-            <button 
-              onClick={() => setTheme('cyber')} 
-              className={`h-6 rounded-lg bg-gradient-to-tr from-cyan-400 to-blue-500 transition-transform ${theme === 'cyber' ? 'ring-2 ring-white scale-105' : 'opacity-70 hover:opacity-100'}`} 
-              title="Cyber Neon"
-            />
-            <button 
-              onClick={() => setTheme('amber')} 
-              className={`h-6 rounded-lg bg-gradient-to-tr from-amber-400 to-orange-500 transition-transform ${theme === 'amber' ? 'ring-2 ring-white scale-105' : 'opacity-70 hover:opacity-100'}`} 
-              title="Sunset Amber"
-            />
-            <button 
-              onClick={() => setTheme('emerald')} 
-              className={`h-6 rounded-lg bg-gradient-to-tr from-emerald-400 to-teal-500 transition-transform ${theme === 'emerald' ? 'ring-2 ring-white scale-105' : 'opacity-70 hover:opacity-100'}`} 
-              title="Forest Emerald"
-            />
-          </div>
-        </div>
-
-        {/* Tarjeta de estado de Rust */}
-        <div className="mt-auto p-3.5 rounded-2xl bg-white/5 border border-white/5">
-          <div className="flex items-center gap-2 text-[11px] text-accent-300 font-semibold mb-1">
-            <Cpu className="w-3.5 h-3.5 text-accent-400" />
-            <span>{appInfo?.engine ?? 'Tauri 2.0 + Rust Engine'}</span>
-          </div>
-          <div className="flex items-center justify-between text-[10px] text-gray-400">
-            <span>Memoria:</span>
-            <span className="text-white font-mono">{appInfo?.memory_usage ?? '—'}</span>
-          </div>
-          <div className="flex items-center justify-between text-[10px] text-gray-400 mt-1">
-            <span>Compilador:</span>
-            <span className="text-white font-mono">{appInfo?.rust_version ?? 'rustc'}</span>
-          </div>
-        </div>
-
-      </aside>
+      {theme === 'm3zen' ? (
+        <ZenTopNav
+          activeTab={activeTab}
+          onNavigate={setActiveTab}
+          trackCount={tracks.length}
+          downloads={downloads}
+        />
+      ) : (
+        <AppSidebar
+          activeTab={activeTab}
+          onNavigate={setActiveTab}
+          worldStyle={worldStyle}
+          isWWM={isWWM}
+          trackCount={tracks.length}
+          downloads={downloads}
+          themeWorld={themeWorld}
+          onSetThemeWorld={handleSetThemeWorld}
+          theme={theme}
+          onSetTheme={setTheme}
+          appInfo={appInfo}
+        />
+      )}
 
       {/* ========================================================= */}
       {/* ÁREA PRINCIPAL CON VISTA DINÁMICA                        */}
@@ -1025,15 +966,34 @@ export default function App() {
         {/* ========================================================= */}
         {/* VISTAS DE PESTAÑAS (TABS)                                 */}
         {/* ========================================================= */}
-        <div className="flex-1 overflow-y-auto p-6 custom-scroll">
+        {activeTab === 'library' && (
+          <LibraryToolbar
+            currentFolder={currentFolder}
+            isScanning={isScanning}
+            isWWM={isWWM}
+            viewMode={viewMode}
+            selectedCount={selectedTrackIds.size}
+            filteredCount={filteredTracks.length}
+            isDeleting={isDeletingTracks}
+            onOpenFolderDialog={handleOpenFolderDialog}
+            onScanFolder={scanFolder}
+            onSetViewMode={handleSetViewMode}
+            onClearExpandedAlbum={() => setExpandedAlbumKey(null)}
+            onSelectAllFiltered={selectAllFilteredTracks}
+            onClearSelection={clearTrackSelection}
+            onOpenBatchModal={openBatchModal}
+            onDeleteSelected={requestDeleteSelectedTracks}
+          />
+        )}
+        <div ref={libraryScrollRef} className="main-scroll-region flex-1 overflow-y-auto p-6 custom-scroll">
 
           {/* TAB: BIBLIOTECA */}
           {activeTab === 'library' && (
             <LibraryTab
               tracks={tracks}
+              scrollElementRef={libraryScrollRef}
               filteredTracks={filteredTracks}
               favorites={favorites}
-              currentFolder={currentFolder}
               defaultMusicDir={defaultMusicDir}
               isScanning={isScanning}
               isPlaying={isPlaying}
@@ -1047,7 +1007,6 @@ export default function App() {
               selectedAlbum={selectedAlbum}
               getCoverSrc={getCoverSrc}
               formatTotalTime={formatTotalTime}
-              onSetViewMode={handleSetViewMode}
               onOpenFolderDialog={handleOpenFolderDialog}
               onScanFolder={scanFolder}
               onNavigateUp={handleNavigateUp}
@@ -1061,7 +1020,6 @@ export default function App() {
               onToggleSelectTrack={toggleSelectTrack}
               onSelectAllFiltered={selectAllFilteredTracks}
               onClearSelection={clearTrackSelection}
-              onOpenBatchModal={openBatchModal}
               onSetFolderNav={setCurrentFolderNav}
               onSetExpandedAlbumKey={setExpandedAlbumKey}
               onPlayAlbum={handlePlayAlbum}
@@ -1097,11 +1055,14 @@ export default function App() {
               isResolvingPlaylist={isResolvingPlaylist}
               playlistInfo={playlistInfo}
               downloadFormat={downloadFormat}
+              downloads={downloads}
               createAlbumFolder={createAlbumFolder}
               selectedPlaylistItems={selectedPlaylistItems}
               onQueryChange={setOnlineQuery}
               onSearchSubmit={handleOnlineSearch}
               onFormatChange={setDownloadFormat}
+              onGoQueue={() => setActiveTab('queue')}
+              onCancelDownload={cancelDownload}
               onClosePlaylist={() => setPlaylistInfo(null)}
               onCreateFolderChange={setCreateAlbumFolder}
               onSelectAllPlaylist={selectAllPlaylistItems}
@@ -1148,6 +1109,10 @@ export default function App() {
               ambientParticles={ambientParticles}
               appInfo={appInfo}
               currentFolder={currentFolder}
+              downloadFolder={downloadFolder}
+              downloadFolderError={downloadFolderError}
+              onChooseDownloadFolder={handleChooseDownloadFolder}
+              onResetDownloadFolder={handleResetDownloadFolder}
               onSetThemeWorld={handleSetThemeWorld}
               onSetPlayerStyle={handleSetPlayerStyle}
               onSetGlassOpacity={handleSetGlassOpacity}
@@ -1155,10 +1120,15 @@ export default function App() {
               onSetAmbientGlow={handleSetAmbientGlow}
               onSetAmbientParticles={handleSetAmbientParticles}
               onClearCache={async () => {
-                await invoke('clear_library_cache').catch(() => {});
-                localStorage.removeItem('sakura_library_cache');
-                setTracks([]);
-                setActiveTrack(null);
+                try {
+                  await invoke('clear_library_cache');
+                  localStorage.removeItem('sakura_library_cache');
+                  setTracks([]);
+                  setActiveTrack(null);
+                } catch (error) {
+                  console.error('Error al limpiar la caché de biblioteca:', error);
+                  setScanMessage(`No se pudo limpiar la caché: ${String(error)}`);
+                }
               }}
             />
           )}
@@ -1181,7 +1151,7 @@ export default function App() {
           isPlaying={isPlaying}
           isShuffle={isShuffle}
           repeatMode={repeatMode}
-          currentTime={currentTime}
+          audioRef={audioRef}
           duration={duration}
           volume={volume}
           isMuted={isMuted}
@@ -1191,17 +1161,10 @@ export default function App() {
           onNext={() => handleNextTrack()}
           onPrevious={handlePreviousTrack}
           onSeek={handleSeek}
-          onToggleShuffle={() => setIsShuffle(!isShuffle)}
-          onCycleRepeat={() => {
-            if (repeatMode === 'off') setRepeatMode('all');
-            else if (repeatMode === 'all') setRepeatMode('one');
-            else setRepeatMode('off');
-          }}
-          onToggleMute={() => setIsMuted(!isMuted)}
-          onVolumeChange={(newVol: number) => {
-            setVolume(newVol);
-            if (isMuted) setIsMuted(false);
-          }}
+          onToggleShuffle={toggleShuffle}
+          onCycleRepeat={cycleRepeatMode}
+          onToggleMute={toggleMute}
+          onVolumeChange={handleVolumeChange}
           onOpenEdit={(track: ScannedTrack) => openEditModal(track)}
           onToggleFavorite={toggleFavorite}
         />
@@ -1252,6 +1215,15 @@ export default function App() {
     onCatalogSourceChange={(v) => setCatalogSource(v)}
         />
       )}
+
+      <DeleteTracksDialog
+        tracks={pendingDeleteTracks}
+        isDeleting={isDeletingTracks}
+        onCancel={() => {
+          if (!isDeletingTracks) setPendingDeleteTracks([]);
+        }}
+        onConfirm={confirmDeleteSelectedTracks}
+      />
 
       {/* ========================================================= */}
       {/* MODAL: EDITOR DE METADATOS EN LOTE (BATCH EDITOR)         */}

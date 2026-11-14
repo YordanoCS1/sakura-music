@@ -2,9 +2,12 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use serde::{Deserialize, Serialize};
 use tauri::{Manager, State};
+use rayon::prelude::*;
 
 mod scanner;
 mod downloader;
+mod library_db;
+mod library_watcher;
 mod paths;
 mod queue;
 use queue::PersistedDownload;
@@ -17,8 +20,12 @@ fn check_downloader_tools() -> DownloaderStatus {
 }
 
 #[tauri::command]
-fn search_online(query: String) -> Result<Vec<OnlineSearchResult>, String> {
-    downloader::search_youtube(&query)
+fn search_online(
+    app: tauri::AppHandle,
+    request_id: String,
+    query: String,
+) -> Result<Vec<OnlineSearchResult>, String> {
+    downloader::search_youtube(&app, &request_id, &query)
 }
 
 #[tauri::command]
@@ -44,7 +51,7 @@ fn start_download(
         url,
         format,
         out,
-    );
+    )?;
     Ok(true)
 }
 
@@ -150,31 +157,26 @@ fn allow_music_dir(app: tauri::AppHandle, path: String) {
         .allow_directory(Path::new(&path), true);
 }
 
-fn get_cache_file_path() -> PathBuf {
-    paths::cache_file()
+#[tauri::command]
+fn get_cached_library(app: tauri::AppHandle) -> Result<Vec<ScannedTrack>, String> {
+    let tracks = library_db::cached_tracks()?
+        .into_iter()
+        .map(|entry| entry.track)
+        .collect::<Vec<_>>();
+    allow_track_paths(&app, &tracks);
+    Ok(tracks)
 }
 
 #[tauri::command]
-fn get_cached_library(app: tauri::AppHandle) -> Vec<ScannedTrack> {
-    let cache_file = get_cache_file_path();
-    if cache_file.exists() {
-        if let Ok(data) = std::fs::read_to_string(&cache_file) {
-            if let Ok(tracks) = serde_json::from_str::<Vec<ScannedTrack>>(&data) {
-                allow_track_paths(&app, &tracks);
-                return tracks;
-            }
-        }
-    }
-    Vec::new()
+fn clear_library_cache() -> Result<bool, String> {
+    library_db::clear()?;
+    Ok(true)
 }
 
 #[tauri::command]
-fn clear_library_cache() -> bool {
-    let cache_file = get_cache_file_path();
-    if cache_file.exists() {
-        let _ = std::fs::remove_file(cache_file);
-    }
-    true
+fn delete_library_track(path: String) -> Result<bool, String> {
+    library_db::delete_track(&path)?;
+    Ok(true)
 }
 
 /// Borra las portadas temporales de sesiones anteriores. El frontend solo usa
@@ -232,20 +234,8 @@ fn update_track_metadata(
         remove_cover.unwrap_or(false)
     )?;
     
-    // Sincronizar en la caché de disco
-    let cache_file = get_cache_file_path();
-    if cache_file.exists() {
-        if let Ok(data) = std::fs::read_to_string(&cache_file) {
-            if let Ok(mut tracks) = serde_json::from_str::<Vec<ScannedTrack>>(&data) {
-                if let Some(pos) = tracks.iter().position(|t| t.path == path) {
-                    tracks[pos] = updated.clone();
-                    if let Ok(json) = serde_json::to_string(&tracks) {
-                        let _ = scanner::write_atomic(&cache_file, json.as_bytes());
-                    }
-                }
-            }
-        }
-    }
+    library_db::upsert_track(&updated)
+        .map_err(|error| format!("Metadatos guardados, pero falló la caché: {}", error))?;
 
     Ok(updated)
 }
@@ -261,7 +251,7 @@ fn update_batch_metadata(
     cover_path: Option<String>,
     remove_cover: Option<bool>,
 ) -> BatchUpdateResult {
-    let result = scanner::update_batch_tags(
+    let mut result = scanner::update_batch_tags(
         paths,
         artist,
         album,
@@ -272,20 +262,12 @@ fn update_batch_metadata(
         remove_cover.unwrap_or(false),
     );
 
-    // Sincronizar en la caché de disco
-    let cache_file = get_cache_file_path();
-    if cache_file.exists() {
-        if let Ok(data) = std::fs::read_to_string(&cache_file) {
-            if let Ok(mut tracks) = serde_json::from_str::<Vec<ScannedTrack>>(&data) {
-                for updated in &result.updated {
-                    if let Some(pos) = tracks.iter().position(|t| t.path == updated.path) {
-                        tracks[pos] = updated.clone();
-                    }
-                }
-                if let Ok(json) = serde_json::to_string(&tracks) {
-                    let _ = scanner::write_atomic(&cache_file, json.as_bytes());
-                }
-            }
+    for updated in &result.updated {
+        if let Err(error) = library_db::upsert_track(updated) {
+            result.errors.push(format!(
+                "{}: tags guardados, pero falló la caché: {}",
+                updated.path, error
+            ));
         }
     }
 
@@ -293,32 +275,70 @@ fn update_batch_metadata(
 }
 
 #[tauri::command]
-fn resolve_playlist(url: String) -> Result<downloader::PlaylistInfo, String> {
-    downloader::resolve_playlist(&url)
+fn resolve_playlist(
+    app: tauri::AppHandle,
+    request_id: String,
+    url: String,
+) -> Result<downloader::PlaylistInfo, String> {
+    downloader::resolve_playlist(&app, &request_id, &url)
 }
 
 #[tauri::command]
-fn scan_library(app: tauri::AppHandle, folder_path: String) -> Vec<ScannedTrack> {
+fn scan_library(
+    app: tauri::AppHandle,
+    watcher: State<'_, library_watcher::LibraryWatcher>,
+    folder_path: String,
+) -> Result<Vec<ScannedTrack>, String> {
     let p = Path::new(&folder_path);
-    if !p.exists() {
-        return Vec::new();
+    if !p.is_dir() {
+        return Err(format!("La carpeta de biblioteca no existe: {}", folder_path));
     }
+    watcher.watch(app.clone(), p)?;
     let _ = app.asset_protocol_scope().allow_directory(p, true);
-    let tracks = scanner::scan_directory_parallel(p);
+    let cached = library_db::cached_tracks()?
+        .into_iter()
+        .map(|entry| (entry.track.path.clone(), entry))
+        .collect::<std::collections::HashMap<_, _>>();
+    let entries = scanner::list_audio_files(p)
+        .par_iter()
+        .map(|path| -> Result<Option<library_db::ScanEntry>, String> {
+            let (file_size, modified_ns) = match scanner::file_fingerprint(path) {
+                Ok(fingerprint) => fingerprint,
+                Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
+                Err(error) => {
+                    return Err(format!("No se pudo consultar {}: {}", path.display(), error));
+                }
+            };
+            let path_string = path.to_string_lossy().to_string();
+            if let Some(entry) = cached.get(&path_string) {
+                if entry.track.file_size == file_size && entry.modified_ns == modified_ns {
+                    return Ok(Some(entry.clone()));
+                }
+            }
+            Ok(scanner::scan_audio_file(path).map(|track| library_db::ScanEntry {
+                track,
+                modified_ns,
+            }))
+        })
+        .collect::<Result<Vec<_>, _>>()?
+        .into_iter()
+        .flatten()
+        .collect::<Vec<_>>();
 
-    // Guardar en disco sin límites de cuota de navegador
-    let cache_file = get_cache_file_path();
-    if let Ok(json) = serde_json::to_string(&tracks) {
-        let _ = scanner::write_atomic(&cache_file, json.as_bytes());
-    }
-
-    tracks
+    library_db::sync_scan(p, &entries)?;
+    let tracks = entries
+        .into_iter()
+        .map(|entry| entry.track)
+        .collect::<Vec<_>>();
+    allow_track_paths(&app, &tracks);
+    Ok(tracks)
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let app = tauri::Builder::default()
         .manage(Arc::new(DownloadManager::new(2)))
+        .manage(library_watcher::LibraryWatcher::new())
         .setup(|app| {
             let handle = app.handle().clone();
 
@@ -327,7 +347,11 @@ pub fn run() {
             data_dir.push(".tauri_data");
             let _ = std::fs::create_dir_all(&data_dir);
             paths::init(data_dir.clone());
+            library_db::initialize().map_err(std::io::Error::other)?;
             cleanup_temp_covers();
+            let covers_dir = paths::covers_dir();
+            app.asset_protocol_scope()
+                .allow_directory(&covers_dir, true)?;
 
             let _window = tauri::WebviewWindowBuilder::new(
                 &handle,
@@ -351,6 +375,7 @@ pub fn run() {
             allow_music_dir,
             get_cached_library,
             clear_library_cache,
+            delete_library_track,
             scan_library,
             check_downloader_tools,
             search_online,

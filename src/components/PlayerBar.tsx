@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import { Disc3, Heart, Music2, Pause, Pencil, Play, Repeat, Repeat1, Shuffle, SkipBack, SkipForward, Volume2, VolumeX } from 'lucide-react';
 import type { PlayerStyle, ScannedTrack } from '../types';
 
@@ -14,7 +15,7 @@ interface PlayerBarProps {
   isPlaying: boolean;
   isShuffle: boolean;
   repeatMode: 'off' | 'all' | 'one';
-  currentTime: number;
+  audioRef: React.RefObject<HTMLAudioElement | null>;
   duration: number;
   volume: number;
   isMuted: boolean;
@@ -45,7 +46,7 @@ export default function PlayerBar({
   isPlaying,
   isShuffle,
   repeatMode,
-  currentTime,
+  audioRef,
   duration,
   volume,
   isMuted,
@@ -62,25 +63,86 @@ export default function PlayerBar({
   onOpenEdit,
   onToggleFavorite,
 }: PlayerBarProps) {
+  const [currentTime, setCurrentTime] = useState(0);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const updateTime = () => setCurrentTime(audio.currentTime);
+    audio.addEventListener('timeupdate', updateTime);
+    audio.addEventListener('seeked', updateTime);
+    audio.addEventListener('loadedmetadata', updateTime);
+    audio.addEventListener('durationchange', updateTime);
+    updateTime();
+
+    return () => {
+      audio.removeEventListener('timeupdate', updateTime);
+      audio.removeEventListener('seeked', updateTime);
+      audio.removeEventListener('loadedmetadata', updateTime);
+      audio.removeEventListener('durationchange', updateTime);
+    };
+  }, [audioRef]);
+
+  const handleSeek = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setCurrentTime(Number(event.currentTarget.value));
+    onSeek(event);
+  };
+
+  const [expanded, setExpanded] = useState(false);
+  const [dominantColor, setDominantColor] = useState<string>('180, 26, 90');
+  const coverColorRef = useRef<HTMLImageElement | null>(null);
+
+  useEffect(() => {
+    if (!activeTrack?.cover_url) { setDominantColor('180, 26, 90'); return; }
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 48;
+      canvas.height = 48;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      ctx.drawImage(img, 0, 0, 48, 48);
+      try {
+        const data = ctx.getImageData(0, 0, 48, 48).data;
+        let r = 0, g = 0, b = 0, n = 0;
+        for (let i = 0; i < data.length; i += 4) {
+          if (data[i + 3] < 125) continue;
+          r += data[i]; g += data[i + 1]; b += data[i + 2]; n++;
+        }
+        if (n) { r = Math.round(r / n); g = Math.round(g / n); b = Math.round(b / n); setDominantColor(`${r}, ${g}, ${b}`); }
+      } catch { /* cross-origin ignorado */ }
+    };
+    img.src = getCoverSrc(activeTrack.cover_url);
+  }, [activeTrack?.cover_url]);
+
   return (
-    <div className={
+    <div className={`player-dock ${
       playerStyle === 'floating'
         ? "absolute bottom-4 left-72 right-8 z-30 transition-all duration-300"
         : "absolute bottom-0 left-64 right-0 z-30 transition-all duration-300"
-    }>
-      <div className={
+    }`}>
+      <div className={`player-bar-inner ${
         playerStyle === 'floating'
           ? `glass-surface rounded-2xl p-3.5 flex items-center justify-between gap-6 shadow-2xl border ${isWWM ? 'border-emerald-500/20 shadow-emerald-950/40' : 'border-white/10 shadow-accent-950/30'}`
           : `glass-surface p-3.5 flex items-center justify-between gap-6 shadow-2xl border-t ${isWWM ? 'border-emerald-500/30 bg-[#07160f]/90' : 'border-white/10 bg-[#12071a]/90'}`
-      }>
+      }`}>
+        <div className="player-vinyl" aria-hidden="true"><span /></div>
 
         {/* Información de Pista Actual */}
         <div className="flex items-center gap-3.5 min-w-[220px] max-w-xs">
           {activeTrack ? (
             <>
-              <div className="w-12 h-12 rounded-xl overflow-hidden bg-white/5 flex-shrink-0 shadow-md border border-white/10">
+              <button
+                type="button"
+                onClick={() => setExpanded(true)}
+                title="Ver ahora reproduciendo"
+                aria-label="Abrir vista grande de la canción"
+                className="w-12 h-12 rounded-xl overflow-hidden bg-white/5 flex-shrink-0 shadow-md border border-white/10 cursor-pointer transition-transform hover:scale-105 focus:outline-none group">
                 {activeTrack.cover_url ? (
                   <img
+                    ref={coverColorRef}
                     src={getCoverSrc(activeTrack.cover_url)}
                     alt={activeTrack.title}
                     className="w-full h-full object-cover"
@@ -90,7 +152,7 @@ export default function PlayerBar({
                     <Music2 className={`w-5 h-5 ${accentText}`} />
                   </div>
                 )}
-              </div>
+              </button>
               <div className="min-w-0 flex-1 max-w-[200px] sm:max-w-xs overflow-hidden">
                 {activeTrack.title.length > 25 ? (
                   <div className="marquee-container" title={activeTrack.title}>
@@ -127,7 +189,7 @@ export default function PlayerBar({
         </div>
 
         {/* Controles de Reproducción y Scrubber Real */}
-        <div className="flex-1 max-w-lg flex flex-col items-center gap-1.5">
+        <div className={`player-center flex-1 max-w-lg flex flex-col items-center gap-1.5 ${isPlaying ? 'is-playing' : ''}`}>
           <div className="flex items-center gap-4">
 
             {/* Shuffle */}
@@ -172,6 +234,9 @@ export default function PlayerBar({
               title={`Modo de repetición: ${repeatMode}`}>
               {repeatMode === 'one' ? <Repeat1 className="w-3.5 h-3.5" /> : <Repeat className="w-3.5 h-3.5" />}
             </button>
+            <div className="player-visualizer" aria-hidden="true">
+              {Array.from({ length: 10 }, (_, index) => <span key={index} />)}
+            </div>
           </div>
 
           {/* Barra de progreso real e interactiva */}
@@ -184,7 +249,7 @@ export default function PlayerBar({
                 min={0}
                 max={duration || 100}
                 value={currentTime}
-                onChange={onSeek}
+                onChange={handleSeek}
                 className={`w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer ${seekAccent} focus:outline-none`}
               />
             </div>
@@ -245,6 +310,64 @@ export default function PlayerBar({
         </div>
 
       </div>
+
+      {expanded && (
+        <div
+          className="player-nowplaying"
+          onClick={() => setExpanded(false)}
+          style={{ background: `linear-gradient(160deg, rgba(${dominantColor}, 0.94), rgba(28, 12, 20, 0.97))` }}>
+          <div className="np-sheen" aria-hidden="true" />
+
+          <button
+            type="button"
+            onClick={() => setExpanded(false)}
+            className="np-close"
+            aria-label="Cerrar vista inmersiva">
+            ×
+          </button>
+
+          <div className="np-stage">
+            <div className="np-art">
+              {activeTrack?.cover_url ? (
+                <img src={getCoverSrc(activeTrack.cover_url)} alt={activeTrack?.title ?? ''} />
+              ) : (
+                <div className="np-art-fallback"><Music2 /></div>
+              )}
+            </div>
+
+            <div className="np-copy">
+              <small>AHORA REPRODUCIENDO</small>
+              <h2>{activeTrack?.title ?? 'Sin pista'}</h2>
+              <p>{activeTrack?.artist ?? ''}{activeTrack?.album ? ` · ${activeTrack.album}` : ''}</p>
+            </div>
+
+            <div className="np-controls">
+              <button onClick={onToggleShuffle} className={`np-ctl ${isShuffle ? 'is-on' : ''}`} title="Aleatorio"><Shuffle /></button>
+              <button onClick={onPrevious} className="np-ctl" title="Anterior"><SkipBack /></button>
+              <button onClick={onTogglePlay} className="np-play">
+                {isPlaying ? <Pause /> : <Play />}
+              </button>
+              <button onClick={onNext} className="np-ctl" title="Siguiente"><SkipForward /></button>
+              <button onClick={onCycleRepeat} className={`np-ctl ${repeatMode !== 'off' ? 'is-on' : ''}`} title={`Repetición: ${repeatMode}`}>
+                {repeatMode === 'one' ? <Repeat1 /> : <Repeat />}
+              </button>
+            </div>
+
+            <div className="np-seek">
+              <span>{formatTime(currentTime)}</span>
+              <input
+                type="range"
+                min={0}
+                max={duration || 100}
+                value={currentTime}
+                onChange={handleSeek}
+                className="np-seekbar"
+              />
+              <span>{formatTime(duration || (activeTrack?.duration ?? 0))}</span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

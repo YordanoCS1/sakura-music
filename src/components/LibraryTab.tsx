@@ -1,12 +1,27 @@
-import { ArrowLeft, Calendar, CheckSquare, ChevronRight, Clock, CornerLeftUp, Disc3, Folder, FolderOpen, Heart, Layers, Music2, Pause, Pencil, Play, Square } from 'lucide-react';
+import { useMemo, useRef, useState } from 'react';
+import { ArrowLeft, Calendar, CheckSquare, ChevronLeft, ChevronRight, Clock, CornerLeftUp, Disc3, Folder, FolderOpen, Heart, Layers, Music2, Pause, Pencil, Play, Square } from 'lucide-react';
+import type { RefObject } from 'react';
 import type { AlbumGroup, FolderExplorerData, ScannedTrack, ViewMode } from '../types';
-import LibraryToolbar from './LibraryToolbar';
+import VirtualizedGrid from './VirtualizedGrid';
+
+type TableSortKey = 'track_number' | 'title' | 'artist' | 'album' | 'year' | 'format' | 'bitrate_kbps' | 'duration';
+
+function getHanafudaSeason(track: ScannedTrack) {
+  const genre = track.genre?.toLocaleLowerCase() ?? '';
+  const format = track.format.toLocaleUpperCase();
+  if (/jazz|classical|clásic|tradicional/.test(genre)) return { label: 'Crisantemo', symbol: '菊', className: 'hanafuda-autumn' };
+  if (/rock|metal|punk/.test(genre)) return { label: 'Arce', symbol: '紅', className: 'hanafuda-maple' };
+  if (/electronic|electrónica|ambient|chill/.test(genre) || format === 'FLAC') {
+    return { label: 'Luna y bambú', symbol: '月', className: 'hanafuda-moon' };
+  }
+  return { label: 'Cerezo', symbol: '桜', className: 'hanafuda-spring' };
+}
 
 interface LibraryTabProps {
   tracks: ScannedTrack[];
+  scrollElementRef: RefObject<HTMLDivElement | null>;
   filteredTracks: ScannedTrack[];
   favorites: string[];
-  currentFolder: string | null;
   defaultMusicDir: string | null;
   isScanning: boolean;
   isPlaying: boolean;
@@ -20,7 +35,6 @@ interface LibraryTabProps {
   selectedAlbum: AlbumGroup | null;
   getCoverSrc: (coverUrl: string | null) => string;
   formatTotalTime: (secs: number) => string;
-  onSetViewMode: (mode: ViewMode) => void;
   onOpenFolderDialog: () => void;
   onScanFolder: (folderPath: string) => void;
   onNavigateUp: () => void;
@@ -34,7 +48,6 @@ interface LibraryTabProps {
   onToggleSelectTrack: (id: string, e: React.MouseEvent) => void;
   onSelectAllFiltered: () => void;
   onClearSelection: () => void;
-  onOpenBatchModal: () => void;
   onSetFolderNav: (nav: string[]) => void;
   onSetExpandedAlbumKey: (key: string | null) => void;
   onPlayAlbum: (group: AlbumGroup) => void;
@@ -43,9 +56,9 @@ interface LibraryTabProps {
 
 export default function LibraryTab({
   tracks,
+  scrollElementRef,
   filteredTracks,
   favorites,
-  currentFolder,
   defaultMusicDir,
   isScanning,
   isPlaying,
@@ -59,7 +72,6 @@ export default function LibraryTab({
   selectedAlbum,
   getCoverSrc,
   formatTotalTime,
-  onSetViewMode,
   onOpenFolderDialog,
   onScanFolder,
   onNavigateUp,
@@ -73,33 +85,61 @@ export default function LibraryTab({
   onToggleSelectTrack,
   onSelectAllFiltered,
   onClearSelection,
-  onOpenBatchModal,
   onSetFolderNav,
   onSetExpandedAlbumKey,
   onPlayAlbum,
   onSelectAlbumTracks,
 }: LibraryTabProps) {
-  return (
-            <div>
-              <LibraryToolbar
-                currentFolder={currentFolder}
-                isScanning={isScanning}
-                isWWM={isWWM}
-                viewMode={viewMode}
-                selectedCount={selectedTrackIds.size}
-                filteredCount={filteredTracks.length}
-                onOpenFolderDialog={onOpenFolderDialog}
-                onScanFolder={onScanFolder}
-                onSetViewMode={onSetViewMode}
-                onClearExpandedAlbum={() => onSetExpandedAlbumKey(null)}
-                onSelectAllFiltered={onSelectAllFiltered}
-                onClearSelection={onClearSelection}
-                onOpenBatchModal={onOpenBatchModal}
-              />
+  const makimonoScrollRef = useRef<HTMLDivElement>(null);
+  const favoriteTrackIds = useMemo(() => new Set(favorites), [favorites]);
+  const [tableSort, setTableSort] = useState<{ key: TableSortKey; direction: 'asc' | 'desc' }>({
+    key: 'track_number',
+    direction: 'asc',
+  });
+  const makimonoTracks = filteredTracks;
+  const sortedTableTracks = useMemo(() => {
+    if (viewMode !== 'table') return filteredTracks;
+    const direction = tableSort.direction === 'asc' ? 1 : -1;
+    return [...filteredTracks].sort((a, b) => {
+      const left = a[tableSort.key];
+      const right = b[tableSort.key];
+      if (left == null && right == null) return 0;
+      if (left == null) return 1;
+      if (right == null) return -1;
+      if (typeof left === 'number' && typeof right === 'number') {
+        return (left - right) * direction;
+      }
+      return String(left).localeCompare(String(right), undefined, { sensitivity: 'base', numeric: true }) * direction;
+    });
+  }, [filteredTracks, tableSort, viewMode]);
 
+  const changeTableSort = (key: TableSortKey) => {
+    setTableSort(current => ({
+      key,
+      direction: current.key === key && current.direction === 'asc' ? 'desc' : 'asc',
+    }));
+  };
+
+  const tableSortButton = (key: TableSortKey, label: string, align = 'text-left') => (
+    <button
+      type="button"
+      onClick={() => changeTableSort(key)}
+      aria-sort={tableSort.key === key ? (tableSort.direction === 'asc' ? 'ascending' : 'descending') : 'none'}
+      className={`w-full inline-flex items-center gap-1 ${
+        align === 'text-center' ? 'justify-center' : align === 'text-right' ? 'justify-end' : 'justify-start'
+      } ${align} hover:text-white transition-colors`}>
+      <span>{label}</span>
+      <span className="text-[9px] text-accent-300">
+        {tableSort.key === key ? (tableSort.direction === 'asc' ? '↑' : '↓') : '↕'}
+      </span>
+    </button>
+  );
+
+  return (
+            <div className={`library-tab-content ${viewMode === 'albums' ? 'library-albums-view' : ''}`}>
               {/* Estado vacío si no hay canciones */}
               {tracks.length === 0 && !isScanning && (
-                <div className="flex flex-col items-center justify-center p-12 text-center glass-card rounded-3xl border border-white/5 my-6">
+                <div className="library-empty-state flex flex-col items-center justify-center p-12 text-center glass-card rounded-3xl border border-white/5 my-6">
                   <div className={`w-16 h-16 rounded-3xl ${isWWM ? 'bg-emerald-500/10 border border-emerald-500/20' : 'bg-accent-500/10 border border-accent-500/20'} flex items-center justify-center text-3xl mb-4`}>
                     {isWWM ? '🎋' : '🌸'}
                   </div>
@@ -295,7 +335,7 @@ export default function LibraryTab({
                             {folderExplorerData.directTracks.map((track, idx) => {
                               const isCurrent = activeTrack?.id === track.id;
                               const isSelected = selectedTrackIds.has(track.id);
-                              const isFav = favorites.includes(track.id);
+                              const isFav = favoriteTrackIds.has(track.id);
 
                               return (
                                 <tr 
@@ -394,7 +434,7 @@ export default function LibraryTab({
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-24">
                   {filteredTracks.map((track) => {
                     const isCurrent = activeTrack?.id === track.id;
-                    const isFav = favorites.includes(track.id);
+                    const isFav = favoriteTrackIds.has(track.id);
                     const isSelected = selectedTrackIds.has(track.id);
 
                     return (
@@ -492,13 +532,377 @@ export default function LibraryTab({
                 </div>
               )}
 
+              {/* VISTA PERGAMINO MAKIMONO */}
+              {viewMode === 'makimono' && tracks.length > 0 && (
+                <section className={`makimono-scene mb-24 rounded-3xl ${isWWM ? 'makimono-wwm' : 'makimono-sakura'}`}>
+                  <div className="flex items-center justify-between gap-4 px-5 pt-4 pb-3">
+                    <div className="min-w-0">
+                      <p className="text-[10px] uppercase tracking-[0.24em] text-amber-100/70">巻物 · Makimono</p>
+                      <h3 className="text-sm font-semibold text-white">Rollo de canciones</h3>
+                    </div>
+                    <p className="hidden sm:block text-[11px] text-gray-300/70">
+                      {makimonoTracks.length} {makimonoTracks.length === 1 ? 'canción' : 'canciones'} · rueda para recorrer
+                    </p>
+                  </div>
+
+                  <div className="makimono-roller" aria-hidden="true" />
+                  <div className="relative px-3 sm:px-5 pb-5">
+                    <button
+                      type="button"
+                      onClick={() => makimonoScrollRef.current?.scrollBy({ left: -480, behavior: 'smooth' })}
+                      className="makimono-arrow left-1 sm:left-3"
+                      aria-label="Desplazar pergamino hacia la izquierda">
+                      <ChevronLeft className="w-5 h-5" />
+                    </button>
+                    <div
+                      ref={makimonoScrollRef}
+                      className="makimono-scroll custom-scroll"
+                      role="region"
+                      aria-label="Canciones en el pergamino horizontal"
+                      tabIndex={0}
+                      onWheel={(event) => {
+                        const container = event.currentTarget;
+                        const maxScroll = container.scrollWidth - container.clientWidth;
+                        const canScrollInDirection = event.deltaY > 0
+                          ? container.scrollLeft < maxScroll
+                          : container.scrollLeft > 0;
+                        if (Math.abs(event.deltaY) > Math.abs(event.deltaX) && canScrollInDirection) {
+                          container.scrollLeft = Math.max(0, Math.min(maxScroll, container.scrollLeft + event.deltaY));
+                          event.preventDefault();
+                        }
+                      }}>
+                      <div className="makimono-shelf">
+                        {makimonoTracks.length === 0 ? (
+                          <p className="px-8 py-16 text-sm text-gray-300">No hay canciones para mostrar con este filtro.</p>
+                        ) : (
+                          makimonoTracks.map((track, index) => {
+                            const isCurrent = activeTrack?.id === track.id;
+                            const isSelected = selectedTrackIds.has(track.id);
+                            const isFav = favoriteTrackIds.has(track.id);
+                            const startsArtistSection = index === 0 || makimonoTracks[index - 1].artist !== track.artist;
+                            return (
+                              <div className="makimono-item" key={track.id}>
+                                {startsArtistSection && (
+                                  <div className="makimono-seal" title={track.artist || 'Artista desconocido'}>
+                                    {(track.artist || '?').slice(0, 1).toLocaleUpperCase()}
+                                  </div>
+                                )}
+                                <article className={`makimono-card ${isCurrent && isPlaying ? 'is-playing' : ''} ${isSelected ? 'is-selected' : ''}`}>
+                                  <div className="makimono-cover">
+                                    {track.cover_url ? (
+                                      <img src={getCoverSrc(track.cover_url)} alt={`Portada de ${track.album || track.title}`} loading="lazy" decoding="async" />
+                                    ) : (
+                                      <div className="makimono-cover-fallback">
+                                        <Music2 className="w-10 h-10" />
+                                        <span>{track.title}</span>
+                                      </div>
+                                    )}
+                                    <span className="makimono-format">{track.format}</span>
+                                    {isCurrent && isPlaying && <span className="makimono-playing">En reproducción</span>}
+                                  </div>
+                                  <div className="makimono-track-copy">
+                                    <h4 title={track.title}>{track.title}</h4>
+                                    <p title={track.artist}>{track.artist || 'Artista desconocido'}</p>
+                                    <div>
+                                      <span title={track.album || 'Sin álbum'}>{track.album || 'Sin álbum'}</span>
+                                      <span>{track.duration_str}{track.year ? ` · ${track.year}` : ''}</span>
+                                    </div>
+                                  </div>
+                                  <div className="makimono-track-actions">
+                                    <button
+                                      type="button"
+                                      onClick={() => onPlayTrack(track)}
+                                      className="makimono-play"
+                                      aria-label={`Reproducir ${track.title} de ${track.artist}`}>
+                                      <Play className="h-3.5 w-3.5 fill-current" />
+                                      Escuchar
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={(event) => onToggleSelectTrack(track.id, event)}
+                                      className={`makimono-select ${isSelected ? 'is-selected' : ''}`}
+                                      aria-label={isSelected ? `Quitar selección de ${track.title}` : `Seleccionar ${track.title}`}>
+                                      {isSelected ? <CheckSquare className="h-3.5 w-3.5" /> : <Square className="h-3.5 w-3.5" />}
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={(event) => onToggleFavorite(track.id, event)}
+                                      className={`makimono-select ${isFav ? 'is-favorite' : ''}`}
+                                      aria-label={isFav ? `Quitar ${track.title} de favoritas` : `Marcar ${track.title} como favorita`}>
+                                      <Heart className={`h-3.5 w-3.5 ${isFav ? 'fill-current' : ''}`} />
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={(event) => onOpenEdit(track, event)}
+                                      className="makimono-select"
+                                      aria-label={`Editar metadatos de ${track.title}`}>
+                                      <Pencil className="h-3.5 w-3.5" />
+                                    </button>
+                                  </div>
+                                </article>
+                              </div>
+                            );
+                          })
+                        )}
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => makimonoScrollRef.current?.scrollBy({ left: 480, behavior: 'smooth' })}
+                      className="makimono-arrow right-1 sm:right-3"
+                      aria-label="Desplazar pergamino hacia la derecha">
+                      <ChevronRight className="w-5 h-5" />
+                    </button>
+                  </div>
+                  <div className="makimono-roller" aria-hidden="true" />
+                </section>
+              )}
+
+              {/* VISTA JARDÍN NOCTURNO */}
+              {viewMode === 'lanterns' && tracks.length > 0 && (
+                <section className={`lantern-scene mb-24 rounded-3xl ${isWWM ? 'lantern-wwm' : 'lantern-sakura'}`}>
+                  <header className="lantern-heading">
+                    <div className="min-w-0">
+                      <p className="lantern-kicker">夜 · Biblioteca nocturna</p>
+                      <h3>Jardín de canciones</h3>
+                    </div>
+                    <span>{filteredTracks.length} {filteredTracks.length === 1 ? 'canción' : 'canciones'}</span>
+                  </header>
+                  <div className="lantern-river" role="list">
+                    {filteredTracks.map((track, index) => {
+                      const isCurrent = activeTrack?.id === track.id;
+                      const isSelected = selectedTrackIds.has(track.id);
+                      const isFav = favoriteTrackIds.has(track.id);
+                      return (
+                        <article
+                          key={track.id}
+                          className={`lantern-item ${isCurrent && isPlaying ? 'is-lit' : ''}`}
+                          role="listitem">
+                          <button
+                            type="button"
+                            className="lantern-play-target"
+                            onClick={() => onPlayTrack(track)}
+                            aria-label={`Reproducir ${track.title} de ${track.artist}`}>
+                            <span className="lantern-index">{String(index + 1).padStart(2, '0')}</span>
+                            <span className="lantern-cover">
+                              {track.cover_url ? (
+                                <img src={getCoverSrc(track.cover_url)} alt="" loading="lazy" decoding="async" />
+                              ) : (
+                                <Music2 className="h-5 w-5" />
+                              )}
+                              <span className="lantern-cover-play">
+                                {isCurrent && isPlaying
+                                  ? <Pause className="h-4 w-4 fill-current" />
+                                  : <Play className="h-4 w-4 fill-current" />}
+                              </span>
+                            </span>
+                            <span className="lantern-copy">
+                              <strong title={track.title}>{track.title}</strong>
+                              <span title={track.artist}>{track.artist || 'Artista desconocido'}</span>
+                            </span>
+                            <span className="lantern-meta">
+                              <span>{track.format}</span>
+                              <span>{track.duration_str}{track.year ? ` · ${track.year}` : ''}</span>
+                            </span>
+                          </button>
+                          <div className="lantern-controls">
+                            <button
+                              type="button"
+                              onClick={(event) => onToggleSelectTrack(track.id, event)}
+                              className={isSelected ? 'is-selected' : ''}
+                              aria-label={isSelected ? `Quitar selección de ${track.title}` : `Seleccionar ${track.title} para edición en lote`}
+                              title={isSelected ? 'Quitar selección' : 'Seleccionar para edición en lote'}>
+                              {isSelected ? <CheckSquare className="h-3.5 w-3.5" /> : <Square className="h-3.5 w-3.5" />}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(event) => onToggleFavorite(track.id, event)}
+                              className={isFav ? 'is-favorite' : ''}
+                              aria-label={isFav ? `Quitar ${track.title} de favoritas` : `Marcar ${track.title} como favorita`}
+                              title={isFav ? 'Quitar de favoritas' : 'Marcar como favorita'}>
+                              <Heart className={`h-3.5 w-3.5 ${isFav ? 'fill-current' : ''}`} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(event) => onOpenEdit(track, event)}
+                              aria-label={`Editar metadatos de ${track.title}`}
+                              title="Editar metadatos">
+                              <Pencil className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+                        </article>
+                      );
+                    })}
+                    {filteredTracks.length === 0 && (
+                      <p className="py-12 text-center text-sm text-gray-300">No hay canciones para mostrar con este filtro.</p>
+                    )}
+                  </div>
+                </section>
+              )}
+
+              {/* VISTA CELOSÍAS SHŌJI */}
+              {viewMode === 'shoji' && tracks.length > 0 && (
+                <section className={`shoji-scene mb-24 rounded-3xl ${isWWM ? 'shoji-wwm' : ''}`}>
+                  <header className="shoji-heading">
+                    <div>
+                      <p className="shoji-kicker">障子 · Shōji</p>
+                      <h3>Galería de canciones</h3>
+                    </div>
+                    <span>{filteredTracks.length} {filteredTracks.length === 1 ? 'canción' : 'canciones'}</span>
+                  </header>
+
+                  {filteredTracks.length > 0 ? (
+                      <VirtualizedGrid
+                        items={filteredTracks}
+                        scrollElementRef={scrollElementRef}
+                        minItemWidth={340}
+                        itemHeight={146}
+                        className="shoji-grid"
+                        renderItem={(track) => {
+                        const isCurrent = track.id === activeTrack?.id && isPlaying;
+                        const isSelected = selectedTrackIds.has(track.id);
+                        const isFav = favoriteTrackIds.has(track.id);
+                        return (
+                          <article className={`shoji-panel shoji-song-panel ${isSelected ? 'is-selected' : ''} ${isCurrent ? 'is-playing' : ''}`}>
+                            <span className="shoji-panel-cover">
+                              {track.cover_url ? (
+                                <img src={getCoverSrc(track.cover_url)} alt="" loading="lazy" decoding="async" />
+                              ) : (
+                                <Music2 className="h-8 w-8" />
+                              )}
+                            </span>
+                            <button
+                              type="button"
+                              className="shoji-panel-copy shoji-song-play"
+                              onClick={() => onPlayTrack(track)}
+                              aria-label={`Reproducir ${track.title} de ${track.artist}`}>
+                              <strong title={track.title}>{track.title}</strong>
+                              <span title={track.artist}>{track.artist || 'Artista desconocido'}</span>
+                              <small title={track.album || 'Sin álbum'}>
+                                {track.album || 'Sin álbum'} · {track.format} · {track.duration_str}
+                              </small>
+                            </button>
+                            <div className="shoji-song-actions">
+                              <button
+                                type="button"
+                                className={`shoji-action shoji-action-small ${isSelected ? 'is-selected' : ''}`}
+                                onClick={(event) => onToggleSelectTrack(track.id, event)}
+                                aria-label={isSelected ? `Quitar selección de ${track.title}` : `Seleccionar ${track.title}`}>
+                                {isSelected ? <CheckSquare className="h-3.5 w-3.5" /> : <Square className="h-3.5 w-3.5" />}
+                              </button>
+                              <button
+                                type="button"
+                                className={`shoji-action shoji-action-small ${isFav ? 'is-favorite' : ''}`}
+                                onClick={(event) => onToggleFavorite(track.id, event)}
+                                aria-label={isFav ? `Quitar ${track.title} de favoritas` : `Marcar ${track.title} como favorita`}>
+                                <Heart className={`h-3.5 w-3.5 ${isFav ? 'fill-current' : ''}`} />
+                              </button>
+                              <button
+                                type="button"
+                                className="shoji-action shoji-action-small"
+                                onClick={(event) => onOpenEdit(track, event)}
+                                aria-label={`Editar metadatos de ${track.title}`}>
+                                <Pencil className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          </article>
+                        );
+                        }}
+                      />
+                  ) : (
+                    <p className="px-6 py-16 text-center text-sm text-gray-300">No hay canciones para mostrar con este filtro.</p>
+                  )}
+                </section>
+              )}
+
+              {/* VISTA CARTAS HANAFUDA */}
+              {viewMode === 'hanafuda' && tracks.length > 0 && (
+                <section className={`hanafuda-scene mb-24 ${isWWM ? 'hanafuda-wwm' : ''}`}>
+                  <header className="hanafuda-heading">
+                    <div>
+                      <p className="hanafuda-kicker">花札 · Hanafuda</p>
+                      <h3>Cartas de la colección</h3>
+                    </div>
+                    <span>{filteredTracks.length} {filteredTracks.length === 1 ? 'carta' : 'cartas'}</span>
+                  </header>
+                  {filteredTracks.length > 0 ? (
+                    <VirtualizedGrid
+                      items={filteredTracks}
+                      scrollElementRef={scrollElementRef}
+                      minItemWidth={150}
+                      itemHeight={278}
+                      className="hanafuda-grid"
+                      renderItem={(track) => {
+                      const season = getHanafudaSeason(track);
+                      const isCurrent = activeTrack?.id === track.id;
+                      const isSelected = selectedTrackIds.has(track.id);
+                      const isFav = favoriteTrackIds.has(track.id);
+                      return (
+                        <article
+                          key={track.id}
+                          className={`hanafuda-card ${season.className} ${isCurrent && isPlaying ? 'is-playing' : ''} ${isSelected ? 'is-selected' : ''}`}>
+                          <button
+                            type="button"
+                            className="hanafuda-play-target"
+                            onClick={() => onPlayTrack(track)}
+                            aria-label={`Reproducir ${track.title} de ${track.artist}`}>
+                            <span className="hanafuda-card-top">
+                              <span className="hanafuda-month">{season.label}</span>
+                              <span className="hanafuda-seal" aria-label={`Estación: ${season.label}`}>{season.symbol}</span>
+                            </span>
+                            <span className="hanafuda-art">
+                              {track.cover_url ? (
+                                <img src={getCoverSrc(track.cover_url)} alt="" loading="lazy" decoding="async" />
+                              ) : (
+                                <span className="hanafuda-art-fallback"><Music2 className="h-10 w-10" /></span>
+                              )}
+                              <span className="hanafuda-audio">{track.format}</span>
+                            </span>
+                            <span className="hanafuda-caption">
+                              <strong title={track.title}>{track.title}</strong>
+                              <span title={track.artist}>{track.artist || 'Artista desconocido'}</span>
+                              <small>{track.duration_str}{track.year ? ` · ${track.year}` : ''}</small>
+                            </span>
+                          </button>
+                          <div className="hanafuda-actions">
+                            <button
+                              type="button"
+                              className={isSelected ? 'is-selected' : ''}
+                              onClick={(event) => onToggleSelectTrack(track.id, event)}
+                              aria-label={isSelected ? `Quitar selección de ${track.title}` : `Seleccionar ${track.title} para edición en lote`}>
+                              {isSelected ? <CheckSquare className="h-3.5 w-3.5" /> : <Square className="h-3.5 w-3.5" />}
+                            </button>
+                            <button
+                              type="button"
+                              className={isFav ? 'is-favorite' : ''}
+                              onClick={(event) => onToggleFavorite(track.id, event)}
+                              aria-label={isFav ? `Quitar ${track.title} de favoritas` : `Marcar ${track.title} como favorita`}>
+                              <Heart className={`h-3.5 w-3.5 ${isFav ? 'fill-current' : ''}`} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(event) => onOpenEdit(track, event)}
+                              aria-label={`Editar metadatos de ${track.title}`}>
+                              <Pencil className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+                        </article>
+                      );
+                      }}
+                    />
+                  ) : (
+                    <p className="py-16 text-center text-sm text-gray-300">No hay canciones para mostrar con este filtro.</p>
+                  )}
+                </section>
+              )}
+
               {/* VISTA TABLA (LIST) */}
               {viewMode === 'table' && tracks.length > 0 && (
-                <div className="glass-card rounded-2xl overflow-hidden border border-white/5 mb-24">
-                  <table className="w-full text-left text-xs">
-                    <thead className="bg-white/5 text-[11px] uppercase tracking-wider text-gray-400 border-b border-white/5">
+                <div className="glass-card rounded-2xl overflow-x-auto border border-white/5 mb-24 custom-scroll">
+                  <table className="w-full min-w-[980px] table-fixed text-left text-[11px]">
+                    <thead className="sticky top-0 z-10 bg-[#17111e] text-[10px] uppercase tracking-wider text-gray-400 border-b border-white/5">
                       <tr>
-                        <th className="py-2.5 px-3 w-10 text-center">
+                        <th className="py-1.5 px-2 w-9 text-center">
                           <button 
                             onClick={selectedTrackIds.size === filteredTracks.length ? onClearSelection : onSelectAllFiltered}
                             className="text-gray-400 hover:text-white transition-colors"
@@ -510,70 +914,78 @@ export default function LibraryTab({
                             )}
                           </button>
                         </th>
-                        <th className="py-2.5 px-4 w-12 text-center">#</th>
-                        <th className="py-2.5 px-4">Título</th>
-                        <th className="py-2.5 px-4">Artista</th>
-                        <th className="py-2.5 px-4">Álbum</th>
-                        <th className="py-2.5 px-4 w-20 text-center">Formato</th>
-                        <th className="py-2.5 px-4 w-20 text-right">Duración</th>
-                        <th className="py-2.5 px-4 w-20 text-center">Acciones</th>
+                        <th className="py-1.5 px-2 w-12 text-center">{tableSortButton('track_number', '#', 'text-center')}</th>
+                        <th className="py-1.5 px-2 min-w-48">{tableSortButton('title', 'Título')}</th>
+                        <th className="py-1.5 px-2 min-w-36">{tableSortButton('artist', 'Artista')}</th>
+                        <th className="py-1.5 px-2 min-w-36">{tableSortButton('album', 'Álbum')}</th>
+                        <th className="py-1.5 px-2 w-16 text-center">{tableSortButton('year', 'Año', 'text-center')}</th>
+                        <th className="py-1.5 px-2 w-20 text-center">{tableSortButton('format', 'Formato', 'text-center')}</th>
+                        <th className="py-1.5 px-2 w-20 text-right">{tableSortButton('bitrate_kbps', 'Bitrate', 'text-right')}</th>
+                        <th className="py-1.5 px-2 w-20 text-right">{tableSortButton('duration', 'Duración', 'text-right')}</th>
+                        <th className="py-1.5 px-2 w-16 text-center">Acciones</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-white/5">
-                      {filteredTracks.map((track, idx) => {
+                      {sortedTableTracks.map((track, idx) => {
                         const isCurrent = activeTrack?.id === track.id;
                         const isSelected = selectedTrackIds.has(track.id);
                         return (
                           <tr 
                             key={track.id}
                             onClick={() => onPlayTrack(track)}
-                            className={`cursor-pointer transition-colors ${
+                            className={`h-7 cursor-pointer transition-colors ${
                               isSelected
                                 ? isWWM ? 'bg-emerald-500/20 text-emerald-200' : 'bg-accent-500/20 text-accent-200'
                                 : isCurrent 
                                   ? isWWM ? 'bg-emerald-500/10 text-emerald-300' : 'bg-accent-500/10 text-accent-300' 
                                   : 'hover:bg-white/5 text-gray-300'
                             }`}>
-                            <td className="py-2 px-3 text-center" onClick={(e) => e.stopPropagation()}>
+                            <td className="px-2 text-center" onClick={(e) => e.stopPropagation()}>
                               <button 
                                 onClick={(e) => onToggleSelectTrack(track.id, e)}
-                                className={`p-1 rounded-md transition-colors ${
+                                className={`p-0.5 rounded-md transition-colors ${
                                   isSelected ? (isWWM ? 'text-emerald-400' : 'text-accent-400') : 'text-gray-600 hover:text-gray-400'
                                 }`}>
-                                {isSelected ? <CheckSquare className="w-3.5 h-3.5" /> : <Square className="w-3.5 h-3.5" />}
+                                {isSelected ? <CheckSquare className="w-3 h-3" /> : <Square className="w-3 h-3" />}
                               </button>
                             </td>
-                            <td className="py-2 px-4 text-center text-gray-500 font-mono">
-                              {isCurrent && isPlaying ? '▶' : idx + 1}
+                            <td className="px-2 text-center text-gray-500 font-mono">
+                              {isCurrent && isPlaying ? '▶' : track.track_number ?? idx + 1}
                             </td>
-                            <td className="py-2 px-4 font-semibold text-white truncate max-w-xs">
+                            <td className="px-2 font-semibold text-white truncate max-w-[240px]" title={track.title}>
                               {track.title}
                             </td>
-                            <td className="py-2 px-4 truncate max-w-[160px] text-gray-400">
+                            <td className="px-2 truncate max-w-[180px] text-gray-400" title={track.artist}>
                               {track.artist || '—'}
                             </td>
-                            <td className="py-2 px-4 truncate max-w-[160px] text-gray-400">
+                            <td className="px-2 truncate max-w-[180px] text-gray-400" title={track.album}>
                               {track.album || '—'}
                             </td>
-                            <td className={`py-2 px-4 text-center font-mono text-[10px] ${isWWM ? 'text-emerald-300' : 'text-accent-300'}`}>
+                            <td className="px-2 text-center text-gray-400 font-mono">
+                              {track.year ?? '—'}
+                            </td>
+                            <td className={`px-2 text-center font-mono text-[10px] ${isWWM ? 'text-emerald-300' : 'text-accent-300'}`}>
                               {track.format}
                             </td>
-                            <td className="py-2 px-4 text-right font-mono text-gray-400">
+                            <td className="px-2 text-right font-mono text-gray-400">
+                              {track.bitrate_kbps ? `${track.bitrate_kbps} kbps` : '—'}
+                            </td>
+                            <td className="px-2 text-right font-mono text-gray-400">
                               {track.duration_str}
                             </td>
-                            <td className="py-2 px-4 text-center">
+                            <td className="px-2 text-center">
                               <div className="flex items-center justify-center gap-1">
                                 <button 
                                   onClick={(e) => { e.stopPropagation(); onOpenEdit(track, e); }}
-                                  className="text-gray-500 hover:text-cyan-400 transition-colors p-1"
+                                  className="text-gray-500 hover:text-cyan-400 transition-colors p-0.5"
                                   title="Editar metadatos">
-                                  <Pencil className="w-3.5 h-3.5" />
+                                  <Pencil className="w-3 h-3" />
                                 </button>
                                 <button 
                                   onClick={(e) => onToggleFavorite(track.id, e)}
-                                  className={`text-gray-500 ${isWWM ? 'hover:text-emerald-400' : 'hover:text-accent-400'} transition-colors p-1`}
-                                  title={favorites.includes(track.id) ? "Quitar de favoritas" : "Marcar como favorita"}>
-                                  <Heart className={`w-3.5 h-3.5 ${favorites.includes(track.id) ? (isWWM ? 'text-emerald-400 fill-current' : 'text-accent-400 fill-current') : ''}`} />
+                                  className={`text-gray-500 ${isWWM ? 'hover:text-emerald-400' : 'hover:text-accent-400'} transition-colors p-0.5`}
+                                  title={favoriteTrackIds.has(track.id) ? "Quitar de favoritas" : "Marcar como favorita"}>
+                                  <Heart className={`w-3 h-3 ${favoriteTrackIds.has(track.id) ? (isWWM ? 'text-emerald-400 fill-current' : 'text-accent-400 fill-current') : ''}`} />
                                 </button>
                               </div>
                             </td>
@@ -736,7 +1148,7 @@ export default function LibraryTab({
                             {selectedAlbum.tracks.map((track, idx) => {
                               const isCurrent = activeTrack?.id === track.id;
                               const isSelected = selectedTrackIds.has(track.id);
-                              const isFav = favorites.includes(track.id);
+                              const isFav = favoriteTrackIds.has(track.id);
                               return (
                                 <tr 
                                   key={track.id}
@@ -806,7 +1218,7 @@ export default function LibraryTab({
                         </p>
                       </div>
 
-                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+                      <div className="library-album-grid grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                         {albumGroups.map((group) => {
                           const isAlbumPlaying = group.tracks.some(t => t.id === activeTrack?.id) && isPlaying;
                           const hasSelectedTracks = group.tracks.some(t => selectedTrackIds.has(t.id));

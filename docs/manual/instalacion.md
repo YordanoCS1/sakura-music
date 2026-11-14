@@ -51,7 +51,8 @@ Por defecto, en Windows:
 
 ```text
 %LOCALAPPDATA%\com.sakura.music\
-  library_cache.json     ← caché de la biblioteca (descartable)
+  library.sqlite3        ← índice local de la biblioteca
+  library_cache.json     ← caché antigua; se importa una vez si existe
   covers\                ← carátulas con extensión real
   bin\                   ← yt-dlp / ffmpeg opcionales
 ```
@@ -61,8 +62,9 @@ Tu música **no vive ahí**: vive en la carpeta que elegiste como biblioteca
 carpeta actual, favoritos) viven en el almacenamiento del navegador
 (`localStorage`, claves `sakura_*`), no en archivos sueltos.
 
-Si borrás `library_cache.json`, la app arranca vacía y la reconstruye al
-escanear. No perdés tags ni audio.
+La caché anterior `library_cache.json` se conserva después de importarla. Para
+reconstruir el índice nuevo, usá **Ajustes → Limpiar Caché** y luego escaneá de
+nuevo. No perdés tags ni audio.
 
 ## Primer recorrido
 
