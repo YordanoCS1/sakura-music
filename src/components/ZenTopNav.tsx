@@ -1,7 +1,6 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 import { DownloadCloud, Heart, Home, Library, Search, Settings } from 'lucide-react';
-import type { DownloadItem } from '../types';
-import type { AppTab } from './AppSidebar';
+import type { AppTab, DownloadItem } from '../types';
 
 interface ZenTopNavProps {
   activeTab: AppTab;

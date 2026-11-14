@@ -18,8 +18,8 @@ import type {
   ThemeWorld,
   PlayerStyle,
   ViewMode,
+  AppTab,
 } from './types';
-import AppSidebar, { type AppTab } from './components/AppSidebar';
 import ZenTopNav from './components/ZenTopNav';
 import { useBatchEditor } from './hooks/useBatchEditor';
 import { useMetadataEditor } from './hooks/useMetadataEditor';
@@ -41,14 +41,8 @@ import { usePlayer } from './hooks/usePlayer';
 export default function App() {
   const [activeTab, setActiveTab] = useState<AppTab>('library');
   const libraryScrollRef = useRef<HTMLDivElement>(null);
-  const [theme, setTheme] = useState<ThemeMode>(() => {
-    const savedTheme = localStorage.getItem('sakura_theme');
-    const themes: ThemeMode[] = ['sakura', 'cyber', 'amber', 'emerald', 'glass', 'retro', 'cyberpunk', 'artdeco', 'editorial', 'shanshui', 'm3zen'];
-    return themes.find(option => option === savedTheme) ?? 'sakura';
-  });
-  const [themeWorld, setThemeWorld] = useState<ThemeWorld>(() => {
-    return (localStorage.getItem('sakura_theme_world') as ThemeWorld) || 'sakura_zen';
-  });
+  const theme = 'm3zen' as ThemeMode;
+  const themeWorld = 'sakura_zen' as ThemeWorld;
   const [playerStyle, setPlayerStyle] = useState<PlayerStyle>(() => {
     return (localStorage.getItem('sakura_player_style') as PlayerStyle) || 'floating';
   });
@@ -654,76 +648,6 @@ export default function App() {
 
   // Configuración de temas dinámicos
   const themeGlows: Record<ThemeMode, { glow1: string; glow2: string; accent: string; badge: string; border: string }> = {
-    sakura: {
-      glow1: 'bg-accent-600/30',
-      glow2: 'bg-purple-700/20',
-      accent: 'from-accent-500 to-accent-400',
-      badge: 'bg-accent-500/20 text-accent-300 border-accent-500/30',
-      border: 'border-accent-500/40',
-    },
-    cyber: {
-      glow1: 'bg-cyan-500/30',
-      glow2: 'bg-blue-600/20',
-      accent: 'from-cyan-400 to-blue-500',
-      badge: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30',
-      border: 'border-cyan-500/40',
-    },
-    amber: {
-      glow1: 'bg-amber-500/30',
-      glow2: 'bg-orange-600/20',
-      accent: 'from-amber-400 to-orange-500',
-      badge: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
-      border: 'border-amber-500/40',
-    },
-    emerald: {
-      glow1: 'bg-emerald-500/30',
-      glow2: 'bg-teal-600/20',
-      accent: 'from-emerald-400 to-teal-500',
-      badge: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
-      border: 'border-emerald-500/40',
-    },
-    glass: {
-      glow1: 'bg-fuchsia-500/30',
-      glow2: 'bg-blue-600/25',
-      accent: 'from-fuchsia-400 to-blue-500',
-      badge: 'bg-fuchsia-500/20 text-fuchsia-200 border-fuchsia-400/30',
-      border: 'border-fuchsia-400/40',
-    },
-    retro: {
-      glow1: 'bg-amber-500/25',
-      glow2: 'bg-orange-800/25',
-      accent: 'from-amber-500 to-orange-700',
-      badge: 'bg-amber-500/20 text-amber-200 border-amber-400/30',
-      border: 'border-amber-400/40',
-    },
-    cyberpunk: {
-      glow1: 'bg-fuchsia-500/30',
-      glow2: 'bg-cyan-500/25',
-      accent: 'from-fuchsia-500 to-cyan-400',
-      badge: 'bg-fuchsia-500/20 text-fuchsia-200 border-fuchsia-400/30',
-      border: 'border-fuchsia-400/40',
-    },
-    artdeco: {
-      glow1: 'bg-amber-500/20',
-      glow2: 'bg-emerald-700/20',
-      accent: 'from-amber-400 to-yellow-700',
-      badge: 'bg-amber-500/15 text-amber-200 border-amber-400/30',
-      border: 'border-amber-400/35',
-    },
-    editorial: {
-      glow1: 'bg-rose-200/50',
-      glow2: 'bg-amber-200/35',
-      accent: 'from-rose-700 to-orange-700',
-      badge: 'bg-rose-900/10 text-rose-900 border-rose-900/20',
-      border: 'border-rose-800/25',
-    },
-    shanshui: {
-      glow1: 'bg-emerald-700/20',
-      glow2: 'bg-amber-600/15',
-      accent: 'from-emerald-800 to-emerald-600',
-      badge: 'bg-emerald-900/10 text-emerald-950 border-emerald-900/20',
-      border: 'border-emerald-800/25',
-    },
     m3zen: {
       glow1: 'bg-rose-400/25',
       glow2: 'bg-pink-600/15',
@@ -734,28 +658,8 @@ export default function App() {
   };
 
   const currentTheme = themeGlows[theme];
-  const isWWM = themeWorld === 'where_winds_meet';
-  const worldStyle = isWWM ? {
-    id: 'where_winds_meet',
-    name: 'Wuxia Jianghu',
-    icon: '🎋',
-    bgClass: 'bg-[#040e09]',
-    ambientGlow1: 'bg-emerald-600/25',
-    ambientGlow2: 'bg-amber-600/20',
-    accentGradient: 'from-emerald-500 via-teal-500 to-amber-500',
-    accentText: 'text-emerald-400',
-    accentTextHover: 'hover:text-emerald-300',
-    accentBadge: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
-    activeTabBg: 'bg-emerald-500/20 text-emerald-200 border-emerald-500/30',
-    cardBorderHover: 'hover:border-amber-500/40',
-    playButtonGradient: 'from-emerald-500 to-teal-400',
-    seekAccent: 'accent-emerald-400',
-    tagText: 'text-emerald-300',
-    glowColor: 'shadow-emerald-500/25',
-    sidebarTitle: 'Wuxia Jianghu',
-    sidebarSubtitle: 'Sendero Jianghu & Bambú',
-    logoIcon: '🎋',
-  } : {
+  const isWWM = false;
+  const worldStyle = {
     id: 'sakura_zen',
     name: 'Sakura Zen',
     icon: '🌸',
@@ -879,28 +783,13 @@ export default function App() {
         </div>
       )}
 
-      {theme === 'm3zen' ? (
-        <ZenTopNav
-          activeTab={activeTab}
-          onNavigate={setActiveTab}
-          trackCount={tracks.length}
-          downloads={downloads}
-        />
-      ) : (
-        <AppSidebar
-          activeTab={activeTab}
-          onNavigate={setActiveTab}
-          worldStyle={worldStyle}
-          isWWM={isWWM}
-          trackCount={tracks.length}
-          downloads={downloads}
-          themeWorld={themeWorld}
-          onSetThemeWorld={handleSetThemeWorld}
-          theme={theme}
-          onSetTheme={setTheme}
-          appInfo={appInfo}
-        />
-      )}
+      {/* Navegación superior (M3 Zen) */}
+      <ZenTopNav
+        activeTab={activeTab}
+        onNavigate={setActiveTab}
+        trackCount={tracks.length}
+        downloads={downloads}
+      />
 
       {/* ========================================================= */}
       {/* ÁREA PRINCIPAL CON VISTA DINÁMICA                        */}
@@ -1099,8 +988,7 @@ export default function App() {
             <SettingsTab
               accentGradient={worldStyle.accentGradient}
               accentBadge={worldStyle.accentBadge}
-              themeWorld={themeWorld}
-              isWWM={isWWM}
+              isWWM={false}
               coverGlowActive={!!coverGlowColors}
               playerStyle={playerStyle}
               glassOpacity={glassOpacity}
@@ -1113,7 +1001,6 @@ export default function App() {
               downloadFolderError={downloadFolderError}
               onChooseDownloadFolder={handleChooseDownloadFolder}
               onResetDownloadFolder={handleResetDownloadFolder}
-              onSetThemeWorld={handleSetThemeWorld}
               onSetPlayerStyle={handleSetPlayerStyle}
               onSetGlassOpacity={handleSetGlassOpacity}
               onSetGlassBlur={handleSetGlassBlur}

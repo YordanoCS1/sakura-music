@@ -1,14 +1,11 @@
-import { Palette, Wind, Sparkles, Layers, Sliders, Cpu, FolderOpen } from 'lucide-react';
+import { Palette, Sparkles, Layers, Sliders, Cpu, FolderOpen } from 'lucide-react';
 import type { AppInfo, PlayerStyle, ThemeWorld } from '../types';
-import DesignConceptGallery from './DesignConceptGallery';
-import UiLookGallery from './UiLookGallery';
 
 interface SettingsTabProps {
   accentGradient: string;
   accentBadge: string;
   themeWorld: ThemeWorld;
   isWWM: boolean;
-  coverGlowActive: boolean;
   playerStyle: PlayerStyle;
   glassOpacity: number;
   glassBlur: number;
@@ -20,7 +17,6 @@ interface SettingsTabProps {
   downloadFolderError: string | null;
   onChooseDownloadFolder: () => void;
   onResetDownloadFolder: () => void;
-  onSetThemeWorld: (w: ThemeWorld) => void;
   onSetPlayerStyle: (s: PlayerStyle) => void;
   onSetGlassOpacity: (v: number) => void;
   onSetGlassBlur: (v: number) => void;
@@ -32,7 +28,6 @@ interface SettingsTabProps {
 export default function SettingsTab({
   accentGradient,
   accentBadge,
-  themeWorld,
   isWWM,
   coverGlowActive,
   playerStyle,
@@ -46,7 +41,6 @@ export default function SettingsTab({
   downloadFolderError,
   onChooseDownloadFolder,
   onResetDownloadFolder,
-  onSetThemeWorld,
   onSetPlayerStyle,
   onSetGlassOpacity,
   onSetGlassBlur,
@@ -105,73 +99,27 @@ export default function SettingsTab({
             <Palette className="w-4 h-4" />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-white">Universo y Diseño Visual</h3>
-            <p className="text-xs text-gray-400">Elige la atmósfera cultural y estructural de la aplicación</p>
+            <h3 className="text-sm font-bold text-white">Diseño Visual</h3>
+            <p className="text-xs text-gray-400">La aplicación usa el tema único M3 Zen · Material 3 con calma japonesa</p>
           </div>
         </div>
 
-        {/* Tarjetas interactivas de mundos */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-
-          {/* Tarjeta 1: Sakura Zen */}
-          <div
-            onClick={() => onSetThemeWorld('sakura_zen')}
-            className={`relative p-4 rounded-2xl cursor-pointer transition-all border ${
-              themeWorld === 'sakura_zen'
-                ? 'border-accent-500 ring-2 ring-accent-500/50 bg-gradient-to-br from-accent-950/40 via-purple-950/30 to-black/60 shadow-xl'
-                : 'border-white/5 bg-white/[0.02] hover:border-accent-500/30 hover:bg-white/[0.04]'
-            }`}>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-2xl">🌸</span>
-              {themeWorld === 'sakura_zen' && (
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-accent-500 text-white shadow-sm">
-                  Activo
-                </span>
-              )}
-            </div>
-            <h4 className="text-xs font-bold text-white mb-1">Sakura Zen</h4>
-            <p className="text-[11px] text-gray-400 leading-relaxed mb-3">
-              Estética japonesa, flor de cerezo, tonos violetas nocturnos, seda blanca y dock flotante.
-            </p>
-            <div className="flex items-center gap-1.5">
-              <div className="w-3.5 h-3.5 rounded-full bg-accent-500"></div>
-              <div className="w-3.5 h-3.5 rounded-full bg-purple-500"></div>
-              <div className="w-3.5 h-3.5 rounded-full bg-rose-300"></div>
-              <span className="text-[9px] text-gray-500 font-mono ml-1">Kioto Zen</span>
-            </div>
+        {/* Info del tema M3 Zen */}
+        <div className="relative p-4 rounded-2xl border border-accent-500/40 ring-2 ring-accent-500/30 bg-gradient-to-br from-accent-950/40 via-purple-950/30 to-black/60">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-2xl">🌸</span>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-accent-500 text-white shadow-sm">Activo</span>
           </div>
-
-          {/* Tarjeta 2: Wuxia Jianghu */}
-          <div
-            onClick={() => onSetThemeWorld('where_winds_meet')}
-            className={`relative p-4 rounded-2xl cursor-pointer transition-all border ${
-              themeWorld === 'where_winds_meet'
-                ? 'border-emerald-500 ring-2 ring-emerald-500/50 bg-gradient-to-br from-emerald-950/50 via-teal-950/40 to-black/60 shadow-xl'
-                : 'border-white/5 bg-white/[0.02] hover:border-emerald-500/30 hover:bg-white/[0.04]'
-            }`}>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-2xl">🎋</span>
-              {themeWorld === 'where_winds_meet' && (
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500 text-white shadow-sm">
-                  Activo
-                </span>
-              )}
-            </div>
-            <h4 className="text-xs font-bold text-white mb-1">Wuxia (武侠 · Jianghu)</h4>
-            <p className="text-[11px] text-gray-400 leading-relaxed mb-3">
-              Estética tradicional china Wuxia: bosque de bambú brumoso, jade imperial, linternas cálidas de ámbar y libertad marcial.
-            </p>
-            <div className="flex items-center gap-1.5">
-              <div className="w-3.5 h-3.5 rounded-full bg-emerald-500"></div>
-              <div className="w-3.5 h-3.5 rounded-full bg-teal-400"></div>
-              <div className="w-3.5 h-3.5 rounded-full bg-amber-400"></div>
-              <span className="text-[9px] text-emerald-400 font-mono ml-1 flex items-center gap-1">
-                <Wind className="w-3 h-3" />
-                <span>Jianghu Nature</span>
-              </span>
-            </div>
+          <h4 className="text-xs font-bold text-white mb-1">M3 Zen · Sakura</h4>
+          <p className="text-[11px] text-gray-400 leading-relaxed mb-3">
+            Superficies claras de Material 3, acento rosa sakura, calma zen y un reproductor inmersivo con la portada protagonista.
+          </p>
+          <div className="flex items-center gap-1.5">
+            <div className="w-3.5 h-3.5 rounded-full bg-rose-500"></div>
+            <div className="w-3.5 h-3.5 rounded-full bg-pink-400"></div>
+            <div className="w-3.5 h-3.5 rounded-full bg-rose-200"></div>
+            <span className="text-[9px] text-gray-500 font-mono ml-1">Sakura Zen</span>
           </div>
-
         </div>
 
         {/* Estilo del Reproductor */}
@@ -294,10 +242,6 @@ export default function SettingsTab({
         </div>
 
       </div>
-
-      <DesignConceptGallery />
-
-      <UiLookGallery />
 
       {/* Tarjeta de Especificaciones Técnicas */}
       <div className="glass-card p-5 rounded-2xl border border-white/5 space-y-3">
