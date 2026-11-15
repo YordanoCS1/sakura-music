@@ -29,11 +29,11 @@ flowchart TB
         HOME["home · search · queue<br/>library · settings"]
         PLAYER["player HTML5<br/>asset: + Blob URL"]
         EDITOR["editor proveído<br/>lote {updated,errors}"]
-        THEME["temas vía --accent-*<br/>10 temas + 2 universos"]
+        THEME["tema vía --accent-*<br/>M3 Zen (claro)"]
     end
 
     subgraph IPC["IPC Tauri"]
-        CMD["invoke(): 14 comandos"]
+        CMD["invoke(): 19 comandos"]
         EVT["eventos de progreso y resultados"]
     end
 
@@ -73,8 +73,9 @@ flowchart TB
 | `downloader.rs` | Búsqueda, resolución de playlists, cola con `Mutex` + `Condvar`, cancelación por PID, parsing de progreso. | Pintar UI |
 | `paths.rs` | Única verdad sobre la carpeta de datos (`OnceLock` + fallback a `.tauri_data`). | Duplicar resolución de rutas |
 
-> Deuda conocida: `App.tsx` es un monolito de ~4600 líneas. Funciona, pero un
-> componente grande nuevo debería vivir en su propio archivo.
+> Deuda conocida: LibraryTab.tsx concentra las vistas de biblioteca (~1265 lineas);
+> App.tsx (~1080 lineas) mantiene el estado y el player. Componentes u hooks nuevos
+> grandes deberian vivir en su propio archivo.
 
 ## Modelo de hilos
 
@@ -257,8 +258,8 @@ sus propios fondos, glows y textos; el tema de color sigue aplicando dentro.
 |---|---|---|
 | Un comando Tauri | `src-tauri/src/lib.rs` + `App.tsx` (`invoke`) | Registrarlo en `invoke_handler!` y mapear errores como `String` |
 | Un formato de descarga | `src-tauri/src/downloader.rs` (rama `fmt_lower` en `run_download`) | Agregar tests de parsing si cambia el progreso |
-| Un tema nuevo | `src/App.css` (`[data-theme='...']`) + tipo `ThemeMode` en `src/types.ts` | Definir los 8 `--accent-*` y añadir su opción al selector del sidebar |
-| Una vista nueva | `src/App.tsx` (ramas `viewMode`) | El tipo `ViewMode` y las 4 ramas no se antipan |
+| Un tema nuevo | `src/App.css` (`.app-shell[data-theme='m3zen']`) + tipo `ThemeMode` en `src/types.ts` | Hoy hay un único tema `m3zen`; si se agregan, seguir el patrón de tokens `--m3-*` |
+| Una vista nueva | `src/components/LibraryTab.tsx` (ramas `viewMode`) y `src/components/LibraryShowcase.tsx` | El tipo `ViewMode`, el switcher en `LibraryToolbar.tsx` y las 5 vistas existentes |
 | Una fuente de catálogo | `src/App.tsx` (`searchCatalog`) | Respetar el CSP: solo `itunes.apple.com` y `api.deezer.com` están permitidos |
 
 Los detalles de cada receta están en [desarrollo.md](desarrollo.md).
