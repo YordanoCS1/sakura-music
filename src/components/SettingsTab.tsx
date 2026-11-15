@@ -1,6 +1,7 @@
 import { Palette, Sparkles, Layers, Sliders, Cpu, FolderOpen } from 'lucide-react';
 import type { AppInfo, PlayerStyle } from '../types';
 import LibraryDesignGallery from './LibraryDesignGallery';
+import LibraryConceptsGallery from './LibraryConceptsGallery';
 
 interface SettingsTabProps {
   accentGradient: string;
@@ -245,6 +246,8 @@ export default function SettingsTab({
       </div>
 
       <LibraryDesignGallery />
+
+      <LibraryConceptsGallery />
 
       {/* Tarjeta de Especificaciones Técnicas */}
       <div className="glass-card p-5 rounded-2xl border border-white/5 space-y-3">
