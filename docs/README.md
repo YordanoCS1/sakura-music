@@ -99,7 +99,7 @@ docs/
 | Documento | Última revisión | Fuente principal |
 |---|---|---|
 | `casos-de-uso.md` | 2026-11-09 | `src/App.tsx`, `src-tauri/src/` |
-| `requisitos.md` | 2026-11-09 | código + `cargo test` (9 tests) + `tsc` |
+| `requisitos.md` | 2026-11-15 | código + `cargo test` (17 tests) + `tsc` |
 | `arquitectura.md` | 2026-11-09 | `src-tauri/src/`, `src/App.tsx`, `tauri.conf.json` |
 | `manual/` | 2026-11-09 | interfaz real + `tauri.conf.json` |
 | `adr/` | 2026-11-09 | 0009 (migración) + 0010 (cierre) |

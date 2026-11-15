@@ -172,22 +172,25 @@ guardado. La carpeta `covers/` no crece sin control entre sesiones.
 
 ### Apariencia
 
-#### RF-17 · Temas que recolorean toda la UI
+#### RF-17 · Tema único M3 Zen
 
-**Criterio:** los 10 temas (Sakura, Cyan, Ámbar, Jade, Glass, Vinilo, Cyberpunk,
-Jazz Club, Editorial Hi-Fi y Shanshui)
-cambian las variables `--accent-200…950` y la apariencia correspondiente.
-Cambiar de tema recolorea acentos, fondos, superficies y reproductor al instante y se
-persiste en `localStorage` (`sakura_theme`).
+**Criterio:** la app tiene un solo tema visual, **M3 Zen**: superficies claras
+marfil (`--m3-surface`), tarjetas blancas con sombras suaves, acento rosa sakura
+(`--m3-primary`) y sin glassmorphism ni blur. Define las variables semánticas
+`--m3-*` en `App.css` (`[data-theme='m3zen']`) y se persiste en `localStorage`
+(`sakura_theme`). No hay selector de temas: el `ThemeMode` es fijo.
 
 **Test:** `tsc --noEmit` + `npm run build` (verifica que Tailwind genera las
-clases `accent-*`).
+clases `accent-*` que usan los tokens).
 
-#### RF-18 · Universos visuales Sakura Zen y Wuxia Jianghu
+#### RF-18 · Navegación superior y vista Pared
 
-**Criterio:** el selector de mundo cambia fondos, glows, títulos, partículas y
-nombres ("Sakura Music" vs "Wuxia Jianghu") sin perder el tema de color activo.
-Se persiste en `localStorage` (`sakura_theme_world`).
+**Criterio:** la navegación principal es una barra superior de pestañas
+(Inicio, Biblioteca, Buscar, Cola, Ajustes) con un indicador deslizante sobre la
+pestaña activa, en lugar del antiguo rail/sidebar. La biblioteca ofrece 5 vistas:
+**Carpetas, Cuadrícula, Lista, Álbumes y Pared**; la vista Pared muestra un mosaico
+de portadas filtrado por la carpeta seleccionada, con el nombre y artista de cada
+pista.
 
 **Test:** verificación manual.
 
@@ -280,8 +283,8 @@ enlaza a `docs/`.
 
 | Módulo | Requisitos | Tests |
 |---|---|---|
-| Búsqueda y descargas | RF-01 … RF-07 | `cargo test` (5 tests de `downloader`), manual |
-| Biblioteca y reproducción | RF-08 … RF-12 | `cargo test` (4 tests de `scanner`), manual |
+| Búsqueda y descargas | RF-01 … RF-07 | `cargo test` (6 tests de `downloader`, 4 de `queue`), manual |
+| Biblioteca y reproducción | RF-08 … RF-12 | `cargo test` (4 tests de `scanner`, 3 de `library_db`), manual |
 | Metadatos y catálogo | RF-13 … RF-16 | `cargo test` + `tsc`, manual |
 | Apariencia | RF-17 … RF-18 | `tsc` + `npm run build`, manual |
 | Transversales | RNF-01 … RNF-08 | suite completa |

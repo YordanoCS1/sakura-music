@@ -285,27 +285,25 @@ Tabla).
 
 ---
 
-## CU-09 · Cambiar la apariencia
+## CU-09 · Ajustar la apariencia
 
 **Actor:** Usuario.
 
 **Flujo principal**
 
-1. En el sidebar o en **Ajustes**, el usuario elige un tema (Sakura, Cyber,
-   Amber, Emerald) o un universo (Sakura Zen, Wuxia Jianghu).
-2. `App.tsx` setea `data-theme` en el contenedor raíz y persiste en
-   `localStorage` (`sakura_theme`, `sakura_theme_world`). Los valores
-   `--accent-*` de `App.css` cambian y toda la UI recolorea al instante,
-   porque Tailwind mapea `accent-*` a esas variables.
-3. El universo fuerza fondos, glows, títulos y partículas (`theme-where-winds-meet`),
-   sin perder el tema de color.
-4. Opacidad/blur del vidrio, resplandor ambiental, partículas y estilo de
-   reproductor (flotante/fijo) se ajustan con sliders/toggles y también se
-   persisten.
+1. La app usa **un único tema visual: M3 Zen** (Material 3 con calma japonesa).
+   No hay selector de temas ni de universos: `data-theme='m3zen'` se fija en el
+   contenedor raíz y `ThemeMode`/`ThemeWorld` tienen un solo valor.
+2. Los valores de superficie (`--m3-surface`, `--m3-primary`, etc.) y los
+   `--accent-*` de `App.css` definen la paleta; Tailwind mapea `accent-*` a esas
+   variables, así que toda la UI usa la misma identidad.
+3. En **Ajustes** se ajustan los efectos que quedan: opacidad/blur del vidrio,
+   resplandor ambiental, partículas y estilo del reproductor (flotante/fijo).
+   Se persisten en `localStorage` (`sakura_*`).
 
-**Dónde está:** `src/App.tsx` (`theme`, `themeWorld`, `data-theme`),
-`src/App.css` (`:root`, `[data-theme=...]`), `tailwind.config.js` (paleta
-`accent-*`).
+**Dónde está:** `src/types.ts` (`ThemeMode`, `ThemeWorld`), `src/App.tsx`
+(`data-theme`), `src/App.css` (`[data-theme='m3zen']`), `tailwind.config.js`
+(paleta `accent-*`).
 
 ---
 

@@ -1,85 +1,98 @@
 # Apariencia
 
-Sakura Music 2.0 tiene **10 temas visuales** y
-**2 universos visuales** (Sakura Zen y Wuxia Jianghu). Cambiar de tema conserva
-tu música y recolorea toda la interfaz al instante.
+Sakura Music 2.0 usa **un único tema visual: M3 Zen**, basado en *Material 3*
+con calma japonesa. No hay selector de temas ni de universos: la app siempre
+arranca con la misma identidad y las preferencias guardadas se respetan.
 
-## Cambiar de tema
+## Identidad del tema M3 Zen
 
-1. En el **sidebar**, en **Estilo visual**, elegí uno de los diez temas.
-2. En **Ajustes**, en **Universo y Diseño Visual**, elegí la atmósfera cultural:
-   **Sakura Zen** (rosa y violeta, 🌸) o **Wuxia Jianghu** (esmeralda y bambú, 🎋).
-
-El tema se guarda en `localStorage` (`sakura_theme`) y el universo en
-`sakura_theme_world`: al reabrir la app, vuelve lo que elegiste.
-
-### Los diez temas
-
-| Tema | Carácter |
+| Rasgo | Descripción |
 |---|---|
-| **Sakura** | Rosa neón (por defecto) |
-| **Cyan** | Azul ciano neón |
-| **Ámbar** | Dorado cálido |
-| **Jade** | Verde neón |
-| **Glass** | Superficies translúcidas, tonos rosa, violeta y azul |
-| **Vinilo** | Madera oscura, acentos cálidos y disco giratorio en el reproductor |
-| **Cyberpunk** | Fondo con grid, detalles neón rosa/cyan y visualizador en el reproductor |
-| **Jazz Club** | Sala de escucha Art déco: navegación horizontal, colección en fundas horizontales y reproductor tipo consola, en verde botella y oro |
-| **Editorial Hi-Fi** | Interfaz clara como revista musical, con navegación lateral y portadas verticales |
-| **Shanshui** | Paisaje de tinta, biblioteca en filas ilustradas y reproductor de papel de arroz |
+| Superficies | Marfil cálido (`--m3-surface`) con tarjetas blancas y sombras suaves |
+| Acento | Rosa sakura (`--m3-primary`: `#b5126a`) en botones, foco y pistas activas |
+| Estilo | Sin glassmorphism ni blur; bordes redondeados suaves (radio ~20 px) |
+| Tipografía | Base 14 px y tamaños mayores que la v1, pensada para lectura cómoda |
+| Emblema | Disco de vinilo con el kanji **桜** (sakura) en la navegación superior |
+| Navegación | Barra superior de pestañas con indicador deslizante animado |
 
-Los temas recolorean acentos, fondos, superficies y reproductor en tiempo real.
-Jazz Club, Editorial Hi-Fi y Shanshui además cambian la composición de la
-navegación, la biblioteca y el reproductor sin modificar sus controles.
+Detalle claro: los estados condicionales (éxito/error/aviso) mantienen sus
+colores verdes/rojos/ámbar; no se recolorean con el tema.
 
-### Los dos universos
+## Preferencias que se guardan
 
-| Universo | Carácter |
+Todas viven en `localStorage` y se restauran al reabrir la app:
+
+| Clave | Qué guarda |
 |---|---|
-| **Sakura Zen** | Fondo oscuro rosado, títulos "Sakura Music", pétalos cayendo |
-| **Wuxia Jianghu** | Fondo esmeralda, títulos "Wuxia Jianghu", bruma y chispas |
+| `sakura_theme` | Tema visual (hoy siempre `m3zen`) |
+| `sakura_theme_world` | Mundo (hoy siempre `sakura_zen`) |
+| `sakura_view_mode` | Vista de biblioteca activa (`folders`, `grid`, `table`, `albums`, `mosaic`) |
+| `sakura_player_style` | Estilo del reproductor (`floating` / `fixed`) |
+| `sakura_glass_opacity` | Opacidad del vidrio |
+| `sakura_glass_blur` | Desenfoque (backdrop blur) |
+| `sakura_ambient_glow` | Resplandor ambiental |
+| `sakura_ambient_particles` | Partículas atmosféricas |
+| `sakura_download_folder` | Carpeta destino de descargas |
 
-El universo fuerza fondos, títulos y partículas; el tema de color sigue
-aplicando dentro. Podés combinar Sakura Zen + Cyber, o Wuxia + Amber.
+## Efectos (Ajustes)
 
-## Efectos de vidrio (Glassmorphism)
-
-En **Ajustes**, ajustá:
+En **Ajustes** todavía podés ajustar lo que queda del sistema visual:
 
 - **Opacidad del vidrio** (15–95 %): qué tan transparente se ve el panel.
 - **Desenfoque (Backdrop Blur)** (0–32 px): cuánto se difumina el fondo.
 - **Resplandor ambiental fluido (Dynamic Glow)**: si está activo, los glows
   siguen los colores de la carátula que suena.
-- **Efectos atmosféricos de partículas**: pétalos de cerezo o chispas de bambú
-  según el universo.
+- **Efectos atmosféricos de partículas**: pétalos de cerezo o chispas según el
+  mundo.
+
+> Nota: con M3 Zen estas tres opciones (vidrio, blur, resplandor) son de bajo
+> impacto visual, porque las superficies son sólidas y claras. Siguen
+> funcionando para quien las active.
 
 Todo se aplica en tiempo real.
 
 ## Estilo de reproductor
 
-- **Cápsula Flotante (Dock)**: el reproductor flotante clásico.
+- **Cápsula Flotante (Dock)**: el reproductor flota sobre el contenido.
 - **Barra Fija Continua**: reproductor anclado abajo, siempre visible.
+
+En ambos, hacer clic en la **portada** del reproductor abre el **Now Playing
+inmersivo**: portada grande, fondo teñido con el color dominante de la carátula
+y controles amplios. Clic fuera o el botón × lo cierra.
 
 ## Vistas de biblioteca
 
-En **Biblioteca** cambiás entre **Carpetas**, **Cuadrícula**, **Tabla** y
-**Álbumes**. La vista se persiste (`sakura_view_mode`).
+En **Biblioteca** cambiás entre cinco vistas, disponibles en el switcher del
+toolbar:
 
-## Qué cambia y qué no al cambiar de tema
-
-| Cambia | No cambia |
+| Vista | Qué muestra |
 |---|---|
-| Colores, superficies, acentos, glows y detalles del reproductor | Tu música, tags y portadas |
-| Título y subtítulo del sidebar | Las vistas de biblioteca |
-| Partículas según universo | Los atajos y controles |
-| Efectos de vidrio (opacidad/blur) | La lógica de descargas o escaneo |
+| **Carpetas** | Explorador de carpetas con breadcrumbs y subcarpetas |
+| **Cuadrícula** | Tarjetas con portada, título y artista |
+| **Lista** | Tabla de columnas ordenables |
+| **Álbumes** | Colección agrupada por disco |
+| **Pared** | Mosaico de portadas a escala variable, filtrado por la carpeta seleccionada y con el nombre y artista de cada pista |
+
+La vista se persiste en `sakura_view_mode`.
+
+## Qué cambia y qué no
+
+Como solo hay un tema, no hay conmutación visual que explique cambios de
+colores entre secciones. Aun así:
+
+| Sí | No |
+|---|---|
+| El layout de cada vista de biblioteca (Carpetas/Cuadrícula/Lista/Álbumes/Pared) | Tu música, tags y portadas |
+| El tamaño/orientación del reproductor (flotante o fijo) | Los atajos y controles |
+| Los efectos de vidrio, glow y partículas (opcionales) | La lógica de descargas o escaneo |
 
 ## Problemas frecuentes
 
 | Síntoma | Causa probable | Qué hacer |
 |---|---|---|
-| El tema no cambia un botón | Ese botón usa un color de estado fijo (rojo/ámbar/verde) | Es intencional: los estados de condición no siguen el tema |
-| El tema no se guarda | `localStorage` bloqueado por el WebView | Limpiá los datos del sitio en WebView2 y volvé a elegir |
+| El botón no cambia de color | Usa un color de estado fijo (rojo/ámbar/verde) | Es intencional: los estados de condición no siguen el tema |
+| La preferencia no se guarda | `localStorage` bloqueado por el WebView | Limpiá los datos del sitio en WebView2 y volvé a elegir |
 | Las partículas no aparecen | Están apagadas en Ajustes | Activá **Efectos atmosféricos de partículas** |
+| Texto poco legible en algún modal | Superficie heredada del tema oscuro | Reportalo: los modales nuevos usan las superficies claras de M3 Zen |
 
 Más en [problemas.md](problemas.md).

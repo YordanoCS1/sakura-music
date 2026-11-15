@@ -25,16 +25,35 @@ La versión real de `rustc` se captura en `src-tauri/build.rs` y se muestra en
 ```text
 Sakura_Music/
 ├── src/                          # Frontend (React 19 + TypeScript)
-│   ├── App.tsx                   # UI completa: tabs, player, editor, cola (~4600 líneas)
+│   ├── App.tsx                   # estado raíz: pestañas, player, editor, cola (~1080 líneas)
 │   ├── main.tsx                  # entrada de React
-│   ├── App.css                   # Tailwind + --accent-* por tema
+│   ├── App.css                   # Tailwind + tokens --m3-* / --accent-* del tema M3 Zen
+│   ├── types.ts                  # tipos compartidos (ScannedTrack, ViewMode, …)
+│   ├── components/
+│   │   ├── ZenTopNav.tsx         # navegación superior (pestañas + indicador)
+│   │   ├── HomeTab.tsx
+│   │   ├── LibraryTab.tsx        # vistas de biblioteca (Carpetas/Cuadrícula/Lista/Álbumes/Pared)
+│   │   ├── LibraryShowcase.tsx   # vista Pared (mosaico de portadas)
+│   │   ├── LibraryToolbar.tsx    # cabecera y switcher de vistas
+│   │   ├── PlayerBar.tsx         # reproductor + Now Playing inmersivo
+│   │   ├── MetadataModal.tsx     # editor de metadatos
+│   │   ├── BatchModal.tsx        # edición en lote
+│   │   ├── SearchTab.tsx         # buscar y descargar
+│   │   ├── QueueTab.tsx          # cola de descargas
+│   │   ├── SettingsTab.tsx
+│   │   └── DeleteTracksDialog.tsx
+│   ├── hooks/                    # usePlayer, useDownloadQueue, useOnlineSearch,
+│   │    └── …                    # useFolderExplorer, useMetadataEditor, useBatchEditor
 │   └── assets/
 ├── src-tauri/                    # Backend (Tauri 2 + Rust)
 │   ├── src/
 │   │   ├── main.rs               # callback mínimo para desktop
-│   │   ├── lib.rs                # comandos Tauri (14), caché, scope asset, ciclo de vida
+│   │   ├── lib.rs                # comandos Tauri (19), caché, scope asset, ciclo de vida
 │   │   ├── scanner.rs            # walkdir + rayon + lofty, escritura atómica, tests
 │   │   ├── downloader.rs         # DownloadManager, yt-dlp, cancelación, tests
+│   │   ├── library_db.rs         # índice SQLite (rusqlite), tests
+│   │   ├── library_watcher.rs    # vigilante de carpeta (notify), evento library-changed
+│   │   ├── queue.rs              # cola de descargas persistente, tests
 │   │   └── paths.rs              # carpeta de datos estable (OnceLock)
 │   ├── Cargo.toml / Cargo.lock   # dependencias (Cargo.lock commiteado: es una app)
 │   ├── build.rs                  # inyecta RUSTC_VERSION real
@@ -57,7 +76,7 @@ comandos; `App.tsx` solo habla con `invoke` y eventos, nunca con `lofty` ni
 npm run tauri dev       # desarrollo (o doble clic en iniciar_sakura.bat)
 npm run build           # tsc + vite build → dist/
 npm run tauri build     # instalador .exe / .msi
-cargo test --manifest-path src-tauri/Cargo.toml   # 9 tests Rust
+cargo test --manifest-path src-tauri/Cargo.toml   # 17 tests Rust
 node node_modules/typescript/bin/tsc --noEmit      # tipos del frontend
 ```
 
@@ -109,9 +128,11 @@ requieren estilos de superficie además de los tokens de color.
 
 ### Agregar una vista de biblioteca
 
-1. Sumá el valor a `ViewMode` en `src/App.tsx`.
-2. Agregá su rama de render (`viewMode === 'nueva'`) sin antiparse con las
-   otras tres y respetando el filtro por carpeta activa.
+1. Sumá el valor a `ViewMode` en `src/types.ts`.
+2. Agregá su rama de render (`viewMode === 'nueva'`) en
+   `src/components/LibraryTab.tsx` (o directamente en `LibraryShowcase.tsx` si
+   es una vista de mosaico) respetando el filtro por carpeta activa, y su botón
+   en el switcher de `src/components/LibraryToolbar.tsx`.
 3. Si necesita selección múltiple, reusá `selectedTrackIds` y las casillas ya
    existentes.
 

@@ -231,11 +231,10 @@ sequenceDiagram
     CSS-->>U: toda la UI recolorea al instante
 ```
 
-Cada tema define 8 valores `--accent-200…950` en `App.css` (`:root` es Sakura;
-los selectores `[data-theme]` los pisan). Tailwind mapea
-`accent-*` a esos valores, así que `from-accent-500` o `text-accent-300` siguen
-al tema sin duplicar clases. Los universos Sakura Zen / Wuxia Jianghu fuerzan
-sus propios fondos, glows y textos; el tema de color sigue aplicando dentro.
+La app usa un único tema, **M3 Zen**, definido con variables semánticas `--m3-*`
+en `App.css` (`[data-theme='m3zen']`). Tailwind mapea `accent-*` a esas variables,
+así que `from-accent-500` o `text-accent-300` siguen al tema sin duplicar clases.
+No hay universos ni conmutación de paleta.
 
 ## Manejo de errores
 
