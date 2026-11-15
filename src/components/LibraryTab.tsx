@@ -3,6 +3,7 @@ import { ArrowLeft, Calendar, CheckSquare, ChevronLeft, ChevronRight, Clock, Cor
 import type { RefObject } from 'react';
 import type { AlbumGroup, FolderExplorerData, ScannedTrack, ViewMode } from '../types';
 import VirtualizedGrid from './VirtualizedGrid';
+import LibraryShowcase from './LibraryShowcase';
 
 type TableSortKey = 'track_number' | 'title' | 'artist' | 'album' | 'year' | 'format' | 'bitrate_kbps' | 'duration';
 
@@ -138,7 +139,7 @@ export default function LibraryTab({
   return (
             <div className={`library-tab-content ${viewMode === 'albums' ? 'library-albums-view' : ''}`}>
               {/* Estado vacío si no hay canciones */}
-              {tracks.length === 0 && !isScanning && (
+              {tracks.length === 0 && !isScanning && !(viewMode === 'mosaic' || viewMode === 'timeline' || viewMode === 'spines' || viewMode === 'board' || viewMode === 'editorial') && (
                 <div className="library-empty-state flex flex-col items-center justify-center p-12 text-center glass-card rounded-3xl border border-white/5 my-6">
                   <div className={`w-16 h-16 rounded-3xl ${isWWM ? 'bg-emerald-500/10 border border-emerald-500/20' : 'bg-accent-500/10 border border-accent-500/20'} flex items-center justify-center text-3xl mb-4`}>
                     {isWWM ? '🎋' : '🌸'}
@@ -180,6 +181,22 @@ export default function LibraryTab({
                     Mostrar toda la biblioteca
                   </button>
                 </div>
+              )}
+
+              {/* VISTAS NUEVAS (MOSAIC / TIMELINE / SPINES / BOARD / EDITORIAL) */}
+              {(viewMode === 'mosaic' || viewMode === 'timeline' || viewMode === 'spines' || viewMode === 'board' || viewMode === 'editorial') && (
+                <LibraryShowcase
+                  mode={viewMode}
+                  tracks={tracks}
+                  albumGroups={albumGroups}
+                  favorites={favorites}
+                  activeTrack={activeTrack}
+                  isPlaying={isPlaying}
+                  getCoverSrc={getCoverSrc}
+                  onPlayTrack={onPlayTrack}
+                  onToggleFavorite={onToggleFavorite}
+                  onOpenEdit={onOpenEdit}
+                />
               )}
 
               {/* VISTA EXPLORADOR POR CARPETAS (FOLDERS) */}
@@ -533,7 +550,7 @@ export default function LibraryTab({
               )}
 
               {/* VISTA PERGAMINO MAKIMONO */}
-              {viewMode === 'makimono' && tracks.length > 0 && (
+              {false && ( /* makimono (reemplazada) */
                 <section className={`makimono-scene mb-24 rounded-3xl ${isWWM ? 'makimono-wwm' : 'makimono-sakura'}`}>
                   <div className="flex items-center justify-between gap-4 px-5 pt-4 pb-3">
                     <div className="min-w-0">
@@ -659,7 +676,7 @@ export default function LibraryTab({
               )}
 
               {/* VISTA JARDÍN NOCTURNO */}
-              {viewMode === 'lanterns' && tracks.length > 0 && (
+              {false && ( /* lanterns (reemplazada) */
                 <section className={`lantern-scene mb-24 rounded-3xl ${isWWM ? 'lantern-wwm' : 'lantern-sakura'}`}>
                   <header className="lantern-heading">
                     <div className="min-w-0">
@@ -741,7 +758,7 @@ export default function LibraryTab({
               )}
 
               {/* VISTA CELOSÍAS SHŌJI */}
-              {viewMode === 'shoji' && tracks.length > 0 && (
+              {false && ( /* shoji (reemplazada) */
                 <section className={`shoji-scene mb-24 rounded-3xl ${isWWM ? 'shoji-wwm' : ''}`}>
                   <header className="shoji-heading">
                     <div>
@@ -816,7 +833,7 @@ export default function LibraryTab({
               )}
 
               {/* VISTA CARTAS HANAFUDA */}
-              {viewMode === 'hanafuda' && tracks.length > 0 && (
+              {false && ( /* hanafuda (reemplazada) */
                 <section className={`hanafuda-scene mb-24 ${isWWM ? 'hanafuda-wwm' : ''}`}>
                   <header className="hanafuda-heading">
                     <div>

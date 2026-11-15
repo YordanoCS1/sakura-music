@@ -1,4 +1,4 @@
-import { Disc3, Flower2, FolderOpen, FolderTree, Layers, LayoutGrid, Lightbulb, List, Loader2, PanelTop, Pencil, RotateCw, ScrollText, Trash2 } from 'lucide-react';
+import { Clock, Disc3, FolderOpen, FolderTree, Layers, LayoutGrid, List, Loader2, Pencil, RotateCw, Rows3, ScrollText, Trash2 } from 'lucide-react';
 import type { ViewMode } from '../types';
 
 interface LibraryToolbarProps {
@@ -41,10 +41,11 @@ export default function LibraryToolbar({
     { id: 'grid', label: 'Cuadrícula', icon: LayoutGrid },
     { id: 'table', label: 'Lista', icon: List },
     { id: 'albums', label: 'Álbumes', icon: Disc3 },
-    { id: 'makimono', label: 'Makimono', icon: ScrollText },
-    { id: 'lanterns', label: 'Jardín', icon: Lightbulb },
-    { id: 'shoji', label: 'Shōji', icon: PanelTop },
-    { id: 'hanafuda', label: 'Hanafuda', icon: Flower2 },
+    { id: 'mosaic', label: 'Pared', icon: LayoutGrid },
+    { id: 'timeline', label: 'Décadas', icon: Clock },
+    { id: 'spines', label: 'Estantería', icon: Layers },
+    { id: 'board', label: 'Tablero', icon: Rows3 },
+    { id: 'editorial', label: 'Portafolio', icon: ScrollText },
   ];
 
   return (
@@ -89,7 +90,7 @@ export default function LibraryToolbar({
               type="button"
               onClick={() => {
                 onSetViewMode(id);
-                if (id === 'albums' || id === 'shoji') onClearExpandedAlbum();
+                if (id === 'albums') onClearExpandedAlbum();
               }}
               aria-pressed={viewMode === id}
               className={`library-view-button ${viewMode === id ? 'is-active' : ''}`}>

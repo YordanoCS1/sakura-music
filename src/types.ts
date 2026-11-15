@@ -96,7 +96,7 @@ export type ThemeMode = 'm3zen';
 export type ThemeWorld = 'sakura_zen';
 export type AppTab = 'home' | 'search' | 'library' | 'queue' | 'settings';
 export type PlayerStyle = 'floating' | 'fixed';
-export type ViewMode = 'folders' | 'grid' | 'table' | 'albums' | 'makimono' | 'lanterns' | 'shoji' | 'hanafuda';
+export type ViewMode = 'folders' | 'grid' | 'table' | 'albums' | 'mosaic' | 'timeline' | 'spines' | 'board' | 'editorial';
 
 export interface AlbumGroup {
   key: string;

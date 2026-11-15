@@ -90,7 +90,7 @@ export default function App() {
   }, [theme]);
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
     const saved = localStorage.getItem('sakura_view_mode') as ViewMode | null;
-    if (saved && (saved === 'folders' || saved === 'grid' || saved === 'table' || saved === 'albums' || saved === 'makimono' || saved === 'lanterns' || saved === 'shoji' || saved === 'hanafuda')) {
+    if (saved && (saved === 'folders' || saved === 'grid' || saved === 'table' || saved === 'albums' || saved === 'mosaic' || saved === 'timeline' || saved === 'spines' || saved === 'board' || saved === 'editorial')) {
       return saved;
     }
     return 'folders';
@@ -696,7 +696,7 @@ export default function App() {
       />
 
       {/* Resplandor ambiental de fondo dinámico (Acelerado por GPU) */}
-      {ambientGlow && !(activeTab === 'library' && (viewMode === 'shoji' || viewMode === 'hanafuda')) && (
+      {(ambientGlow) && (
         <>
           {coverGlowColors ? (
             <>
@@ -723,7 +723,7 @@ export default function App() {
       )}
 
       {/* Capa de Partículas Atmosféricas (Pétalos de Sakura / Chispas & Bruma Jianghu) */}
-      {ambientParticles && !(activeTab === 'library' && (viewMode === 'shoji' || viewMode === 'hanafuda')) && (
+      {ambientParticles && (
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 select-none">
           {isWWM ? (
             // Partículas Jianghu: Chispas doradas de linterna y bruma ascendente
