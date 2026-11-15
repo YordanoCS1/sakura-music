@@ -1,4 +1,4 @@
-import { Clock, Disc3, FolderOpen, FolderTree, Layers, LayoutGrid, List, Loader2, Pencil, RotateCw, Rows3, ScrollText, Trash2 } from 'lucide-react';
+import { Disc3, FolderOpen, FolderTree, Layers, LayoutGrid, List, Loader2, Pencil, RotateCw, Trash2 } from 'lucide-react';
 import type { ViewMode } from '../types';
 
 interface LibraryToolbarProps {
@@ -42,10 +42,6 @@ export default function LibraryToolbar({
     { id: 'table', label: 'Lista', icon: List },
     { id: 'albums', label: 'Álbumes', icon: Disc3 },
     { id: 'mosaic', label: 'Pared', icon: LayoutGrid },
-    { id: 'timeline', label: 'Décadas', icon: Clock },
-    { id: 'spines', label: 'Estantería', icon: Layers },
-    { id: 'board', label: 'Tablero', icon: Rows3 },
-    { id: 'editorial', label: 'Portafolio', icon: ScrollText },
   ];
 
   return (

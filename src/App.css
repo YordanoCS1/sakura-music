@@ -7903,3 +7903,10 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .show-ed-actions button svg { width: 15px; height: 15px; }
 .show-ed-actions .is-fav { color: var(--m3-primary); fill: currentColor; }
 @media (min-width: 760px) { .show-ed-meta { display: block; } }
+
+/* --- Pared de portadas: caption con nombre --- */
+.show-mos-fallback { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #f9a8d4, #9d174d); color: rgba(255,255,255,0.85); }
+.show-mos-fallback svg { width: 26px; height: 26px; }
+.show-mos-caption { position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; gap: 1px; padding: 16px 8px 7px; background: linear-gradient(180deg, transparent, rgba(0,0,0,0.72)); color: #fff; text-align: left; }
+.show-mos-caption-title { font-size: 11px; font-weight: 700; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.show-mos-caption-artist { font-size: 9px; opacity: 0.82; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

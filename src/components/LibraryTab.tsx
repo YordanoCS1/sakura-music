@@ -139,7 +139,7 @@ export default function LibraryTab({
   return (
             <div className={`library-tab-content ${viewMode === 'albums' ? 'library-albums-view' : ''}`}>
               {/* Estado vacío si no hay canciones */}
-              {tracks.length === 0 && !isScanning && !(viewMode === 'mosaic' || viewMode === 'timeline' || viewMode === 'spines' || viewMode === 'board' || viewMode === 'editorial') && (
+              {tracks.length === 0 && !isScanning && !(viewMode === 'mosaic') && (
                 <div className="library-empty-state flex flex-col items-center justify-center p-12 text-center glass-card rounded-3xl border border-white/5 my-6">
                   <div className={`w-16 h-16 rounded-3xl ${isWWM ? 'bg-emerald-500/10 border border-emerald-500/20' : 'bg-accent-500/10 border border-accent-500/20'} flex items-center justify-center text-3xl mb-4`}>
                     {isWWM ? '🎋' : '🌸'}
@@ -183,19 +183,15 @@ export default function LibraryTab({
                 </div>
               )}
 
-              {/* VISTAS NUEVAS (MOSAIC / TIMELINE / SPINES / BOARD / EDITORIAL) */}
-              {(viewMode === 'mosaic' || viewMode === 'timeline' || viewMode === 'spines' || viewMode === 'board' || viewMode === 'editorial') && (
+              {/* VISTA PARED DE PORTADAS (MOSAIC) */}
+              {viewMode === 'mosaic' && (
                 <LibraryShowcase
                   mode={viewMode}
-                  tracks={tracks}
-                  albumGroups={albumGroups}
-                  favorites={favorites}
+                  tracks={filteredTracks}
                   activeTrack={activeTrack}
                   isPlaying={isPlaying}
                   getCoverSrc={getCoverSrc}
                   onPlayTrack={onPlayTrack}
-                  onToggleFavorite={onToggleFavorite}
-                  onOpenEdit={onOpenEdit}
                 />
               )}
 

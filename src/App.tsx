@@ -90,7 +90,7 @@ export default function App() {
   }, [theme]);
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
     const saved = localStorage.getItem('sakura_view_mode') as ViewMode | null;
-    if (saved && (saved === 'folders' || saved === 'grid' || saved === 'table' || saved === 'albums' || saved === 'mosaic' || saved === 'timeline' || saved === 'spines' || saved === 'board' || saved === 'editorial')) {
+    if (saved && (saved === 'folders' || saved === 'grid' || saved === 'table' || saved === 'albums' || saved === 'mosaic')) {
       return saved;
     }
     return 'folders';
