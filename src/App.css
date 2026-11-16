@@ -7999,3 +7999,37 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .app-shell[data-theme='m3zen'] .glass-card button.bg-white\/5:hover {
   background: var(--m3-surface-card);
 }
+
+/* ================================================================== */
+/* ARRANQUE · entrada escalonada de la UI (M3 Zen)                     */
+/* ================================================================== */
+/* Animaciones auto-contenidas: se disparan al montar el elemento (no    */
+/* dependen de una clase que ponga JS), así nunca quedan en opacity 0.   */
+@keyframes sakura-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.app-shell .zen-topnav { animation: sakura-enter 480ms cubic-bezier(0.22, 1, 0.36, 1) 40ms both; }
+.app-shell > main > header { animation: sakura-enter 480ms cubic-bezier(0.22, 1, 0.36, 1) 110ms both; }
+.app-shell .library-toolbar-dock { animation: sakura-enter 480ms cubic-bezier(0.22, 1, 0.36, 1) 160ms both; }
+.app-shell .main-scroll-region { animation: sakura-enter 480ms cubic-bezier(0.22, 1, 0.36, 1) 210ms both; }
+.app-shell .player-dock { animation: sakura-enter 480ms cubic-bezier(0.22, 1, 0.36, 1) 280ms both; }
+
+/* Con movimiento reducido: solo fundido, sin desplazamiento ni retardos. */
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .zen-topnav,
+  .app-shell > main > header,
+  .app-shell .library-toolbar-dock,
+  .app-shell .main-scroll-region,
+  .app-shell .player-dock {
+    animation: sakura-enter 200ms ease both !important;
+    animation-delay: 0ms !important;
+  }
+}

@@ -3,8 +3,27 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./App.css";
 
-ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
+const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
+
+root.render(
   <React.StrictMode>
     <App />
   </React.StrictMode>,
 );
+
+// Oculta el splash de index.html. La entrada de la UI la anima CSS
+// (ver "ARRANQUE" en App.css), así que no hace falta tocar clases del body.
+const splash = document.getElementById("sakura-splash");
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const minSplashMs = reduceMotion ? 250 : 1100;
+const startedAt = performance.now();
+
+function dismissSplash() {
+  if (splash) {
+    splash.classList.add("is-hidden");
+    window.setTimeout(() => splash.remove(), reduceMotion ? 200 : 500);
+  }
+}
+
+const wait = Math.max(0, minSplashMs - (performance.now() - startedAt));
+window.setTimeout(dismissSplash, wait);

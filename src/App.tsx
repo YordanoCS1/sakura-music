@@ -659,7 +659,7 @@ export default function App() {
     id: 'sakura_zen',
     name: 'Sakura Zen',
     icon: '🌸',
-    bgClass: 'bg-[#0a060e]',
+    bgClass: 'bg-[#fbf7f4]',
     ambientGlow1: currentTheme.glow1,
     ambientGlow2: currentTheme.glow2,
     accentGradient: currentTheme.accent,

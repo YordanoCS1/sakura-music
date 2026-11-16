@@ -7,9 +7,130 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+      /* ---- Splash de arranque (M3 Zen) ---- */
+      html, body { margin: 0; background: #fbf7f4; }
+      #sakura-splash {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 26px;
+        background: #fbf7f4;
+        font-family: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+        transition: opacity 420ms ease, visibility 420ms ease;
+      }
+      #sakura-splash::before {
+        content: "";
+        position: absolute;
+        width: 520px;
+        height: 520px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(236, 72, 153, 0.18), transparent 62%);
+        filter: blur(10px);
+        animation: sakura-glow 2.6s ease-in-out infinite;
+        pointer-events: none;
+      }
+      #sakura-splash.is-hidden { opacity: 0; visibility: hidden; }
+
+      .splash-vinyl {
+        position: relative;
+        width: 128px;
+        height: 128px;
+        border-radius: 50%;
+        background: #1a1029;
+        box-shadow: 0 18px 50px rgba(181, 18, 106, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.06);
+        animation: sakura-spin 4s linear infinite;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .splash-vinyl::before {
+        content: "";
+        position: absolute;
+        inset: 14px;
+        border-radius: 50%;
+        border: 1.5px solid rgba(255, 255, 255, 0.08);
+      }
+      .splash-vinyl::after {
+        content: "";
+        position: absolute;
+        inset: 28px;
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .splash-label {
+        width: 74px;
+        height: 74px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #d13f87, #b5126a);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 26px;
+        font-family: "Hiragino Kaku Gothic", "Yu Gothic", "Meiryo", sans-serif;
+        animation: sakura-counter 4s linear infinite;
+        box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.25);
+      }
+      .splash-word {
+        font-size: 30px;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: #22181d;
+        background: #22181d;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: #22181d;
+        clip-path: inset(0 100% 0 0);
+        animation: sakura-reveal 1.1s cubic-bezier(0.22, 1, 0.36, 1) 240ms forwards;
+      }
+      .splash-bar {
+        width: 190px;
+        height: 3px;
+        border-radius: 999px;
+        background: #e7dcd6;
+        overflow: hidden;
+      }
+      .splash-bar > i {
+        display: block;
+        width: 0;
+        height: 100%;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #d13f87, #b5126a);
+        animation: sakura-fill 900ms cubic-bezier(0.22, 1, 0.36, 1) 120ms forwards;
+      }
+
+      @keyframes sakura-spin { to { transform: rotate(360deg); } }
+      @keyframes sakura-counter { to { transform: rotate(-360deg); } }
+      @keyframes sakura-fill { to { width: 100%; } }
+      @keyframes sakura-reveal { to { clip-path: inset(0 0 0 0); } }
+      @keyframes sakura-glow {
+        0%, 100% { opacity: 0.55; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.08); }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .splash-vinyl, .splash-label { animation: none; }
+        .splash-word { animation-duration: 300ms; }
+        .splash-bar > i { animation-duration: 300ms; }
+        #sakura-splash::before { animation: none; }
+      }
+    </style>
   </head>
 
-  <body class="bg-[#0c0710] text-gray-100 antialiased overflow-hidden select-none">
+  <body class="bg-[#fbf7f4] text-[#22181d] antialiased overflow-hidden select-none">
+    <div id="sakura-splash" role="status" aria-label="Cargando Sakura Music">
+      <div class="splash-vinyl">
+        <div class="splash-label" aria-hidden="true">桜</div>
+      </div>
+      <div class="splash-word" aria-hidden="true">Sakura</div>
+      <div class="splash-bar" aria-hidden="true"><i></i></div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
