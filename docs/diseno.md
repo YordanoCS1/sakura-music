@@ -13,8 +13,11 @@ Sakura Music usa cinco temas: **M3 Zen** (por defecto), Sumi-e, Yoru, Hanabi y A
 | `aizuri` | Aizuri | Índigo teñido, blanco hueso y cian, serif |
 
 Cada tema define `--m3-*`, `--space-*`, `--accent-*` y `--theme-*` en su bloque
-`.app-shell[data-skin='id']`. Las reglas comunes leen `--theme-*` para cambiar
-canvas, navegación, tarjetas, dock, tipografía de display, radio y sombra.
+`.app-shell[data-skin='id']`, **y además reescribe la estructura**: disposición de
+la navegación (banda horizontal, rail de iconos o lateral), forma de las tarjetas,
+bordes del reproductor, tipografía de las pestañas y sistema de sombras. Los
+bloques de identidad están al final de `App.css`, bajo el encabezado
+`IDENTIDAD POR TEMA`.
 
 ## Tipografía
 

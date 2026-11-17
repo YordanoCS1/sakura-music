@@ -16,7 +16,8 @@ El usuario pidió explícitamente varios diseños nuevos "totalmente diferentes"
 2. El tema se lee de `localStorage` (`sakura_theme`) al arrancar, con `space` como valor por defecto. El selector vive en **Ajustes → Diseño Visual** y aplica el cambio sin recargar.
 3. Se mantiene `data-theme="space"` fijo para que **todas** las reglas existentes sigan aplicando. El tema elegido se expone como `data-skin` en el contenedor raíz; los bloques nuevos se keyean por `[data-skin='id']`. Así no hay que duplicar ni romper cientos de selectores.
 4. Cada tema nuevo define un bloque `.app-shell[data-skin='id']` que sobrescribe `--m3-*`, `--space-*`, `--accent-*` y un conjunto de variables `--theme-*` (canvas, topnav, tarjeta, borde, texto, dock, tipografía de display, radio y sombra).
-5. Las reglas comunes de los temas nuevos leen esas variables `--theme-*`, de modo que agregar un sexto tema sólo requiere un bloque nuevo de tokens.
+5. Cada tema tiene además un bloque de **identidad estructural**: redefine la navegación (banda editorial, rail de iconos, lateral angular o banda serif), el radio y borde de las tarjetas, el reproductor y el estilo de las pestañas. Un tema no es una paleta: cambia la composición.
+6. Las reglas comunes leen `--theme-*`; agregar un sexto tema requiere un bloque de tokens y su bloque de identidad.
 
 ## Consecuencias
 

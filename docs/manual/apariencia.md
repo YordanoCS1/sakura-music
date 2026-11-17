@@ -14,7 +14,7 @@ inmediato y se recuerda al reabrir la app.
 | **Hanabi** | Azul noche con cian y magenta, tipografía monoespacio y esquinas vivas. |
 | **Aizuri** | Índigo profundo, blanco hueso y cian, con serif. |
 
-Los cinco comparten la misma distribución; cambian color, tipografía, bordes y sombras.
+Cada tema tiene identidad propia, no es sólo un cambio de color: Sumi-e usa una banda editorial con regla bermellón y tarjetas sin sombra; Yoru reduce la navegación a un rail de iconos ámbar; Hanabi es angular, monoespacio y con neón; Aizuri usa una banda horizontal serif en índigo. M3 Zen conserva su diseño original.
 
 ## Identidad del tema M3 Zen
 
