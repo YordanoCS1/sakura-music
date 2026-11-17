@@ -1,4 +1,8 @@
-import { Disc3, FolderOpen, FolderTree, Layers, LayoutGrid, List, Loader2, Pencil, RotateCw, Trash2 } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import {
+  Disc3, FolderOpen, FolderTree, Layers, LayoutGrid, List,
+  Loader2, Pencil, RotateCw, Sparkles, Trash2, ChevronDown, Check,
+} from 'lucide-react';
 import type { ViewMode } from '../types';
 
 interface LibraryToolbarProps {
@@ -19,6 +23,30 @@ interface LibraryToolbarProps {
   onDeleteSelected: () => void;
 }
 
+const VIEW_GROUPS: { label: string; items: { id: ViewMode; label: string; desc: string; icon: typeof Disc3 }[] }[] = [
+  {
+    label: 'Clásicas',
+    items: [
+      { id: 'folders', label: 'Carpetas', desc: 'Explorar por ubicación', icon: FolderTree },
+      { id: 'grid', label: 'Cuadrícula', desc: 'Portadas en rejilla', icon: LayoutGrid },
+      { id: 'table', label: 'Lista', desc: 'Tabla detallada', icon: List },
+      { id: 'albums', label: 'Álbumes', desc: 'Agrupado por álbum', icon: Disc3 },
+      { id: 'mosaic', label: 'Pared', desc: 'Mosaico visual', icon: Layers },
+    ],
+  },
+  {
+    label: 'Visuales',
+    items: [
+      { id: 'cds', label: 'CDs', desc: 'Portadas circulares', icon: Disc3 },
+      { id: 'tilt', label: '3D', desc: 'Tarjetas con profundidad', icon: Layers },
+      { id: 'glow', label: 'Luz', desc: 'Brillo y reflejos', icon: Sparkles },
+      { id: 'portadas', label: 'Portadas', desc: 'Álbumes luminosos', icon: Disc3 },
+    ],
+  },
+];
+
+const ALL_VIEWS = VIEW_GROUPS.flatMap(g => g.items);
+
 export default function LibraryToolbar({
   currentFolder,
   isScanning,
@@ -36,109 +64,120 @@ export default function LibraryToolbar({
   onOpenBatchModal,
   onDeleteSelected,
 }: LibraryToolbarProps) {
-  const viewModes: { id: ViewMode; label: string; icon: typeof FolderTree }[] = [
-    { id: 'folders', label: 'Carpetas', icon: FolderTree },
-    { id: 'grid', label: 'Cuadrícula', icon: LayoutGrid },
-    { id: 'table', label: 'Lista', icon: List },
-    { id: 'albums', label: 'Álbumes', icon: Disc3 },
-    { id: 'mosaic', label: 'Pared', icon: LayoutGrid },
-  ];
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const current = ALL_VIEWS.find(v => v.id === viewMode) ?? ALL_VIEWS[0];
+  const CurrentIcon = current.icon;
+
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', onDown);
+    return () => document.removeEventListener('mousedown', onDown);
+  }, [open]);
+
+  const choose = (id: ViewMode) => {
+    onSetViewMode(id);
+    if (id === 'albums') onClearExpandedAlbum();
+    setOpen(false);
+  };
 
   return (
-    <div className="library-toolbar-dock">
-      <div className="library-toolbar">
-        <div className="library-toolbar-main">
-          <div className="library-toolbar-heading">
-            <h2>
-              Biblioteca
-              {isScanning && <span className="library-scanning">Escaneando…</span>}
-            </h2>
-            <p title={currentFolder || undefined}>
-              {currentFolder || 'Tu colección musical'}
-            </p>
-          </div>
-          <div className="library-toolbar-actions">
-          <button
-            onClick={onOpenFolderDialog}
-            disabled={isScanning || isDeleting}
-            className="library-folder-button">
-            <FolderOpen className="h-4 w-4" />
-            <span>Carpeta</span>
-          </button>
+    <div className="lt-dock">
+      <div className="lt-bar">
+        {/* Título */}
+        <div className="lt-heading">
+          <h2>Biblioteca</h2>
+          <p title={currentFolder || undefined}>
+            {isScanning ? (
+              <span className="lt-scanning"><Loader2 className="w-3 h-3 animate-spin" /> Escaneando…</span>
+            ) : (
+              currentFolder || `${filteredCount} canciones en tu colección`
+            )}
+          </p>
+        </div>
 
+        {/* Selector de vista (dropdown) */}
+        <div className="lt-view-select" ref={ref}>
+          <button
+            type="button"
+            className={`lt-view-trigger ${open ? 'is-open' : ''}`}
+            onClick={() => setOpen(o => !o)}
+            aria-expanded={open}>
+            <CurrentIcon className="w-4 h-4" />
+            <span>{current.label}</span>
+            <ChevronDown className={`w-3.5 h-3.5 lt-chevron ${open ? 'is-open' : ''}`} />
+          </button>
+          {open && (
+            <div className="lt-view-menu">
+              {VIEW_GROUPS.map(group => (
+                <div key={group.label} className="lt-view-group">
+                  <div className="lt-view-group-label">{group.label}</div>
+                  {group.items.map(({ id, label, desc, icon: Icon }) => (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() => choose(id)}
+                      className={`lt-view-option ${viewMode === id ? 'is-active' : ''}`}>
+                      <span className="lt-view-option-icon"><Icon className="w-4 h-4" /></span>
+                      <span className="lt-view-option-copy">
+                        <strong>{label}</strong>
+                        <small>{desc}</small>
+                      </span>
+                      {viewMode === id && <Check className="w-4 h-4 lt-view-check" />}
+                    </button>
+                  ))}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Acciones */}
+        <div className="lt-actions">
           {currentFolder && (
             <button
               onClick={() => onScanFolder(currentFolder)}
               disabled={isScanning || isDeleting}
-              className="library-refresh-button"
-              title="Volver a escanear la carpeta actual"
-              aria-label="Volver a escanear la carpeta actual">
-              <RotateCw className={`w-3.5 h-3.5 ${isScanning ? 'animate-spin' : ''}`} />
+              className="lt-icon-btn"
+              title="Volver a escanear la carpeta">
+              <RotateCw className={`w-4 h-4 ${isScanning ? 'animate-spin' : ''}`} />
             </button>
           )}
-          </div>
+          <button
+            onClick={onOpenFolderDialog}
+            disabled={isScanning || isDeleting}
+            className="lt-folder-btn">
+            <FolderOpen className="w-4 h-4" />
+            <span>Carpeta</span>
+          </button>
         </div>
-
-        <nav className="library-view-switcher custom-scroll" role="group" aria-label="Vista de biblioteca">
-          {viewModes.map(({ id, label, icon: Icon }) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => {
-                onSetViewMode(id);
-                if (id === 'albums') onClearExpandedAlbum();
-              }}
-              aria-pressed={viewMode === id}
-              className={`library-view-button ${viewMode === id ? 'is-active' : ''}`}>
-              <Icon className="h-4 w-4" />
-              <span>{label}</span>
-            </button>
-          ))}
-        </nav>
       </div>
+
+      {/* Barra de selección */}
       {selectedCount > 0 && (
-        <div className={`library-selection-bar ${isWWM ? 'is-wwm' : ''}`}>
-          <div className="library-selection-info">
-            <div className="library-selection-icon">
-              <Layers className="w-4 h-4" />
-            </div>
+        <div className={`lt-selection ${isWWM ? 'is-wwm' : ''}`}>
+          <div className="lt-selection-info">
+            <span className="lt-selection-icon"><Layers className="w-4 h-4" /></span>
             <div>
-              <p className="library-selection-title">
-                {selectedCount} de {filteredCount} canciones seleccionadas
-              </p>
-              <p className="library-selection-hint">
-                Edición en lote: aplica álbum, artista, año, género o portada compartida
-              </p>
+              <p><strong>{selectedCount}</strong> de {filteredCount} canciones seleccionadas</p>
+              <small>Edición en lote: álbum, artista, año, género o portada</small>
             </div>
           </div>
-
-          <div className="library-selection-actions">
-            <button
-              onClick={onSelectAllFiltered}
-              className="library-selection-secondary">
-              Seleccionar Todas
+          <div className="lt-selection-actions">
+            <button onClick={onSelectAllFiltered} className="lt-sel-secondary">Todas</button>
+            <button onClick={onClearSelection} className="lt-sel-secondary">Limpiar</button>
+            <button onClick={onOpenBatchModal} className="lt-sel-primary">
+              <Pencil className="w-3.5 h-3.5" /> Editar ({selectedCount})
             </button>
             <button
-              onClick={onClearSelection}
-              className="library-selection-secondary">
-              Deseleccionar
-            </button>
-            <button
-              onClick={onOpenBatchModal}
-              className="library-selection-primary">
-              <Pencil className="w-3.5 h-3.5" />
-              <span>Editar en Lote ({selectedCount})</span>
-            </button>
-            <button
-              type="button"
               onClick={onDeleteSelected}
               disabled={isDeleting || isScanning}
-              className="library-selection-delete"
-              title="Borrar permanentemente del disco">
-              {isDeleting
-                ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                : <Trash2 className="w-3.5 h-3.5" />}
-              <span>{isDeleting ? 'Eliminando…' : `Eliminar (${selectedCount})`}</span>
+              className="lt-sel-delete"
+              title="Borrar del disco">
+              {isDeleting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
             </button>
           </div>
         </div>

@@ -1,106 +1,152 @@
-import { Play, Sparkles, Music2 } from 'lucide-react';
-import type { ScannedTrack, DownloadItem } from '../types';
+import { useMemo } from 'react';
+import {
+  Sparkles, Library, Search, DownloadCloud, Settings, Disc3,
+  Cpu, ShieldCheck, ArrowRight, Waves,
+} from 'lucide-react';
+import type { AppTab } from '../types';
 
 interface HomeTabProps {
-  tracks: ScannedTrack[];
-  favorites: string[];
-  downloads: DownloadItem[];
-  getCoverSrc: (coverUrl: string | null) => string;
-  onPlayFirst: () => void;
-  onPlayTrack: (track: ScannedTrack) => void;
-  onGoLibrary: () => void;
+  trackCount: number;
+  onNavigate: (tab: AppTab) => void;
 }
 
-export default function HomeTab({
-  tracks,
-  favorites,
-  downloads,
-  getCoverSrc,
-  onPlayFirst,
-  onPlayTrack,
-  onGoLibrary,
-}: HomeTabProps) {
+const FEATURES = [
+  {
+    icon: Waves,
+    title: 'Sonido sin pérdida',
+    desc: 'Reproducción Hi-Res de FLAC, ALAC y más, con motores de audio nativos.',
+    tone: 'violet',
+  },
+  {
+    icon: Disc3,
+    title: 'Editor de metadatos Pro',
+    desc: 'Corrige títulos, artistas, carátulas y tags con búsqueda online integrada.',
+    tone: 'fuchsia',
+  },
+  {
+    icon: Library,
+    title: 'Biblioteca inteligente',
+    desc: 'Organiza tu colección por álbumes, carpetas y vistas visuales únicas.',
+    tone: 'indigo',
+  },
+  {
+    icon: Search,
+    title: 'Catálogo online',
+    desc: 'Busca carátulas y metadatos en iTunes, Deezer y MusicBrainz.',
+    tone: 'cyan',
+  },
+  {
+    icon: DownloadCloud,
+    title: 'Descargas integradas',
+    desc: 'Trae música nueva a tu biblioteca con gestión de cola y progreso.',
+    tone: 'teal',
+  },
+  {
+    icon: Cpu,
+    title: 'Motor nativo Rust',
+    desc: 'Escaneo multihilo y caché local para una experiencia rápida y ligera.',
+    tone: 'emerald',
+  },
+];
+
+const NAV = [
+  { id: 'library' as AppTab, label: 'Biblioteca', desc: 'Tu colección', icon: Library },
+  { id: 'search' as AppTab, label: 'Buscar', desc: 'Catálogo online', icon: Search },
+  { id: 'queue' as AppTab, label: 'Cola', desc: 'Descargas', icon: DownloadCloud },
+  { id: 'settings' as AppTab, label: 'Ajustes', desc: 'Preferencias', icon: Settings },
+];
+
+export default function HomeTab({ trackCount, onNavigate }: HomeTabProps) {
+  const greeting = useMemo(() => {
+    const h = new Date().getHours();
+    if (h < 12) return 'Buenos días';
+    if (h < 20) return 'Buenas tardes';
+    return 'Buenas noches';
+  }, []);
+
   return (
-    <div className="space-y-6 mb-24">
-      {/* Hero Banner */}
-      <div className="relative rounded-3xl overflow-hidden glass-card p-8 border border-white/10 bg-gradient-to-r from-accent-900/20 via-purple-900/20 to-transparent">
-        <div className="max-w-xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent-500/20 border border-accent-500/30 text-accent-300 text-[11px] font-semibold mb-3">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Experiencia Hi-Res Hi-Fi</span>
-          </div>
-          <h2 className="text-2xl font-black text-white tracking-tight mb-2">
-            Sakura Music 2.0
-          </h2>
-          <p className="text-xs text-gray-300 mb-6 leading-relaxed">
-            Reproducción sin pérdida impulsada por el núcleo de Rust, procesamiento multihilo y aceleración por GPU.
+    <div className="wb-root mb-28">
+      {/* ═══ HERO DE BIENVENIDA ═══ */}
+      <div className="wb-hero">
+        <div className="wb-hero-glow" />
+        <span className="wb-orb wb-orb-1" />
+        <span className="wb-orb wb-orb-2" />
+        <span className="wb-orb wb-orb-3" />
+
+        <div className="wb-hero-content">
+          <div className="wb-logo"><span>桜</span></div>
+          <div className="wb-badge"><Sparkles className="w-3 h-3" /> BIENVENIDO</div>
+          <h1 className="wb-title">{greeting}</h1>
+          <p className="wb-subtitle">
+            Este es tu espacio musical. Una app de escritorio rápida, privada y hecha para tu colección.
           </p>
-
-          <div className="flex items-center gap-3">
-            <button
-              onClick={onPlayFirst}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-accent-500 to-accent-400 text-white text-xs font-bold shadow-lg shadow-accent-500/25 hover:brightness-110 active:scale-95 transition-all">
-              <Play className="w-4 h-4 fill-current" />
-              <span>{tracks.length > 0 ? 'Reproducir Aleatorio' : 'Escanear Biblioteca'}</span>
+          <div className="wb-hero-actions">
+            <button onClick={() => onNavigate('library')} className="wb-primary">
+              Entrar a la biblioteca <ArrowRight className="w-4 h-4" />
             </button>
-            <button
-              onClick={onGoLibrary}
-              className="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 text-xs font-semibold border border-white/10 transition-all">
-              Ver Biblioteca ({tracks.length})
+            <button onClick={() => onNavigate('search')} className="wb-secondary">
+              <Search className="w-4 h-4" /> Explorar catálogo
             </button>
           </div>
         </div>
+
+        <div className="wb-stats-float">
+          <span className="wb-stat-f"><strong>{trackCount}</strong> pistas en tu biblioteca</span>
+          <span className="wb-divider" />
+          <span className="wb-stat-f"><ShieldCheck className="w-3.5 h-3.5" /> 100% local y privado</span>
+        </div>
       </div>
 
-      {/* Estadísticas Rápidas */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="glass-card p-4 rounded-2xl border border-white/5">
-          <div className="text-[11px] text-gray-400 mb-1">Total Canciones</div>
-          <div className="text-xl font-bold text-white font-mono">{tracks.length}</div>
-        </div>
-        <div className="glass-card p-4 rounded-2xl border border-white/5">
-          <div className="text-[11px] text-gray-400 mb-1">Pistas FLAC Lossless</div>
-          <div className="text-xl font-bold text-accent-400 font-mono">
-            {tracks.filter(t => t.format.toUpperCase().includes('FLAC')).length}
+      {/* ═══ CARACTERÍSTICAS ═══ */}
+      <div className="wb-section">
+        <div className="wb-section-head">
+          <div>
+            <h2>Todo lo que Sakura Music hace por ti</h2>
+            <p>Una experiencia completa, impulsada por tecnología nativa.</p>
           </div>
         </div>
-        <div className="glass-card p-4 rounded-2xl border border-white/5">
-          <div className="text-[11px] text-gray-400 mb-1">Favoritas</div>
-          <div className="text-xl font-bold text-rose-400 font-mono">{favorites.length}</div>
-        </div>
-        <div className="glass-card p-4 rounded-2xl border border-white/5">
-          <div className="text-[11px] text-gray-400 mb-1">Descargas en Cola</div>
-          <div className="text-xl font-bold text-amber-400 font-mono">{downloads.length}</div>
-        </div>
-      </div>
-
-      {/* Pistas Destacadas */}
-      <div>
-        <h3 className="text-sm font-bold text-white mb-3">Canciones Recientes</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {tracks.slice(0, 6).map(track => (
-            <div
-              key={track.id}
-              onClick={() => onPlayTrack(track)}
-              className="flex items-center gap-3 p-2.5 rounded-xl glass-card hover:bg-white/5 cursor-pointer border border-white/5">
-              <div className="w-10 h-10 rounded-lg overflow-hidden bg-white/5 flex-shrink-0">
-                {track.cover_url ? (
-                  <img src={getCoverSrc(track.cover_url)} alt={track.title} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-purple-900/30">
-                    <Music2 className="w-4 h-4 text-accent-400" />
-                  </div>
-                )}
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="text-xs font-semibold text-white truncate">{track.title}</div>
-                <div className="text-[10px] text-gray-400 truncate">{track.artist}</div>
-              </div>
+        <div className="wb-features">
+          {FEATURES.map(({ icon: Icon, title, desc, tone }) => (
+            <div key={title} className={`wb-feature wb-feature-${tone}`}>
+              <span className="wb-feature-icon"><Icon className="w-5 h-5" /></span>
+              <h3>{title}</h3>
+              <p>{desc}</p>
             </div>
           ))}
         </div>
       </div>
 
+      {/* ═══ ACCESOS RÁPIDOS ═══ */}
+      <div className="wb-section">
+        <div className="wb-section-head">
+          <div>
+            <h2>¿A dónde quieres ir?</h2>
+            <p>Accede directo a cada sección.</p>
+          </div>
+        </div>
+        <div className="wb-nav">
+          {NAV.map(({ id, label, desc, icon: Icon }) => (
+            <button key={id} onClick={() => onNavigate(id)} className="wb-nav-card">
+              <span className="wb-nav-icon"><Icon className="w-5 h-5" /></span>
+              <span className="wb-nav-copy">
+                <strong>{label}</strong>
+                <small>{desc}</small>
+              </span>
+              <ArrowRight className="w-4 h-4 wb-nav-arrow" />
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* ═══ PIE ═══ */}
+      <div className="wb-footer">
+        <span className="wb-footer-logo">桜</span>
+        <div>
+          <strong>Sakura Music</strong>
+          <p>Hecho para los que aman su música. Rápido, privado y tuyo.</p>
+        </div>
+        <span className="wb-version">v2.0</span>
+      </div>
     </div>
   );
 }

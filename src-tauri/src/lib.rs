@@ -5,6 +5,7 @@ use tauri::{Manager, State};
 use rayon::prelude::*;
 
 mod scanner;
+mod catalog;
 mod downloader;
 mod library_db;
 mod library_watcher;
@@ -362,6 +363,9 @@ pub fn run() {
             .inner_size(1200.0, 760.0)
             .min_inner_size(940.0, 600.0)
             .center()
+            // Sin barra de título nativa: la UI dibuja una barra personalizada
+            // (TitleBar.tsx) acorde al tema M3 Zen.
+            .decorations(false)
             .data_directory(data_dir)
             .build()?;
 
@@ -388,7 +392,10 @@ pub fn run() {
             update_track_metadata,
             update_batch_metadata,
             save_temp_cover,
-            resolve_playlist
+            resolve_playlist,
+            catalog::search_catalog_songs,
+            catalog::search_catalog_albums,
+            catalog::open_catalog_album
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application");

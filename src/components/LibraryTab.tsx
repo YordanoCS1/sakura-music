@@ -4,6 +4,7 @@ import type { RefObject } from 'react';
 import type { AlbumGroup, FolderExplorerData, ScannedTrack, ViewMode } from '../types';
 import VirtualizedGrid from './VirtualizedGrid';
 import LibraryShowcase from './LibraryShowcase';
+import NovelLibraryViews from './NovelLibraryViews';
 
 type TableSortKey = 'track_number' | 'title' | 'artist' | 'album' | 'year' | 'format' | 'bitrate_kbps' | 'duration';
 
@@ -138,8 +139,25 @@ export default function LibraryTab({
 
   return (
             <div className={`library-tab-content ${viewMode === 'albums' ? 'library-albums-view' : ''}`}>
+              {/* Vistas novedosas (vinilos / 3D / luz / carrusel / flotante) */}
+              {(viewMode === 'cds' || viewMode === 'tilt' || viewMode === 'glow' || viewMode === 'portadas') && (
+                <NovelLibraryViews
+                  view={viewMode}
+                  tracks={filteredTracks}
+                  albumGroups={albumGroups}
+                  activeTrack={activeTrack}
+                  isPlaying={isPlaying}
+                  favorites={favorites}
+                  getCoverSrc={getCoverSrc}
+                  onPlayTrack={onPlayTrack}
+                  onToggleFavorite={onToggleFavorite}
+                  onPlayAlbum={onPlayAlbum}
+                  onOpenEdit={onOpenEdit}
+                />
+              )}
+
               {/* Estado vacío si no hay canciones */}
-              {tracks.length === 0 && !isScanning && !(viewMode === 'mosaic') && (
+              {tracks.length === 0 && !isScanning && !(viewMode === 'mosaic') && !(viewMode === 'cds' || viewMode === 'tilt' || viewMode === 'glow' || viewMode === 'portadas') && (
                 <div className="library-empty-state flex flex-col items-center justify-center p-12 text-center glass-card rounded-3xl border border-white/5 my-6">
                   <div className={`w-16 h-16 rounded-3xl ${isWWM ? 'bg-emerald-500/10 border border-emerald-500/20' : 'bg-accent-500/10 border border-accent-500/20'} flex items-center justify-center text-3xl mb-4`}>
                     {isWWM ? '🎋' : '🌸'}
@@ -192,6 +210,7 @@ export default function LibraryTab({
                   isPlaying={isPlaying}
                   getCoverSrc={getCoverSrc}
                   onPlayTrack={onPlayTrack}
+                  onOpenEdit={onOpenEdit}
                 />
               )}
 

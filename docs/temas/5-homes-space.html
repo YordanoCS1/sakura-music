@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sakura Music · 5 Ideas de Home (Spotify Espacial)</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#0a0a14; font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif; padding:26px 36px; color:#ece6ff; }
+  h1.page { font-size:26px; margin-bottom:6px; letter-spacing:-.02em; }
+  p.page { color:#a99bdc; font-size:14px; margin-bottom:30px; }
+  .grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:24px; }
+  .card { background:linear-gradient(165deg,#12122a,#0d0d1a); border:1px solid rgba(139,92,246,.25); border-radius:20px; padding:18px; transition:transform .25s ease, box-shadow .25s ease; }
+  .card:hover { transform:translateY(-4px); box-shadow:0 20px 50px rgba(0,0,0,.4); }
+  .num { display:inline-block; font-size:11px; font-weight:800; color:#a78bfa; background:rgba(139,92,246,.15); padding:4px 10px; border-radius:999px; margin-bottom:10px; }
+  .card h2 { font-size:16px; margin-bottom:12px; letter-spacing:-.01em; }
+  .card .desc { font-size:11px; color:#a99bdc; margin-bottom:16px; line-height:1.5; }
+
+  /* ---- Mini-app para cada idea (540px) ---- */
+  .home { width:100%; height:360px; border-radius:14px; overflow:hidden; background:linear-gradient(180deg,rgba(76,29,149,.3),#0a0a16 50%); border:1px solid rgba(139,92,246,.2); }
+
+  /* ---- Idea 1 · Greeting + grid (Spotify clásico) ---- */
+  .h1 { padding:14px 18px; display:flex; flex-direction:column; gap:12px; }
+  .h1 .greet { font-size:20px; font-weight:800; }
+  .h1 .quick { display:grid; grid-template-columns:repeat(2,1fr); gap:9px; }
+  .h1 .q { display:flex; align-items:center; gap:8px; background:rgba(255,255,255,.06); border-radius:8px; padding-right:8px; }
+  .h1 .q .art { width:40px;height:40px;flex:0 0 40px;border-radius:8px 0 0 8px; }
+  .h1 .q b { font-size:10px; }
+  .h1 .q .pl { margin-left:auto; width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:10px; }
+  .h1 .sect { font-size:12px; font-weight:800; margin-top:4px; }
+  .h1 .alb { display:flex; gap:12px; overflow:hidden; }
+  .h1 .a { width:80px;flex:0 0 80px; }
+  .h1 .a .art { width:80px;height:80px;border-radius:10px; }
+  .h1 .a b { display:block;font-size:8.5px;margin-top:5px; } .h1 .a small{ font-size:7.5px;color:#8f82c0; }
+
+  /* ---- Idea 2 · Reproduciendo en grande ---- */
+  .h2 { padding:16px 20px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; }
+  .h2 .art { width:170px;height:170px;border-radius:22px; display:flex;align-items:center;justify-content:center;font-size:64px; box-shadow:0 24px 54px rgba(0,0,0,.5); }
+  .h2 b { font-size:18px; }
+  .h2 small { color:#8f82c0; font-size:11px; }
+  .h2 .seek { width:240px;height:5px;border-radius:999px;background:rgba(139,92,246,.25); }
+  .h2 .seek i { display:block;height:100%;width:50%;background:linear-gradient(90deg,#7c3aed,#a78bfa); }
+  .h2 .ctr { display:flex; gap:16px; font-size:16px; }
+  .h2 .ctr .pl { width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:14px; }
+
+  /* ---- Idea 3 · Banner nebulosa + grid ---- */
+  .h3 { display:flex; flex-direction:column; }
+  .h3 .banner { height:110px; background:radial-gradient(ellipse at 30% 30%,#a78bfa,#4c1d95 55%,#1a0b3a); display:flex; align-items:center; padding:0 20px; }
+  .h3 .banner .icon { font-size:48px; margin-right:16px; }
+  .h3 .banner b { display:block;font-size:17px; } .h3 .banner span { font-size:10px;color:#d8c9ff; }
+  .h3 .list { padding:14px 18px; display:flex; flex-direction:column; gap:4px; }
+  .h3 .row { display:flex; align-items:center; gap:9px; padding:7px 8px; border-radius:8px; }
+  .h3 .row.on { background:rgba(139,92,246,.14); }
+  .h3 .row .th { width:24px;height:24px;border-radius:6px; }
+  .h3 .row .c { flex:1; } .h3 .row .c b{display:block;font-size:9.5px} .h3 .row .c small{font-size:8px;color:#8f82c0}
+  .h3 .row .d { font-size:8.5px; color:#8f82c0; font-family:monospace; }
+
+  /* ---- Idea 4 · Explorar: chips + grid temático ---- */
+  .h4 { padding:14px 18px; display:flex; flex-direction:column; gap:12px; }
+  .h4 .title { font-size:16px; font-weight:800; }
+  .h4 .chips { display:flex; flex-wrap:wrap; gap:6px; }
+  .h4 .chip { font-size:9px; font-weight:700; padding:6px 12px; border-radius:999px; background:rgba(139,92,246,.2); }
+  .h4 .chip.on { background:linear-gradient(135deg,#7c3aed,#a78bfa); }
+  .h4 .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+  .h4 .c { aspect-ratio:1; border-radius:12px; display:flex;align-items:flex-end;padding:9px; font-size:8.5px;font-weight:800; box-shadow:0 8px 20px rgba(0,0,0,.4); }
+  .h4 .c small{display:block;font-size:7.5px;font-weight:500;opacity:.85}
+
+  /* ---- Idea 5 · En reproducción + cola ---- */
+  .h5 { padding:14px 18px; display:flex; flex-direction:column; gap:12px; }
+  .h5 .now { display:flex; align-items:center; gap:14px; background:rgba(139,92,246,.12); border:1px solid rgba(139,92,246,.3); border-radius:14px; padding:14px; }
+  .h5 .now .art { width:60px;height:60px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:26px; }
+  .h5 .now .c b { display:block;font-size:13px; } .h5 .now .c small { font-size:9px;color:#8f82c0; }
+  .h5 .now .pl { margin-left:auto; width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:12px; }
+  .h5 .que { font-size:12px;font-weight:800; }
+  .h5 .rows { display:flex; flex-direction:column; gap:5px; }
+  .h5 .r { display:flex; align-items:center; gap:9px; padding:7px 8px; border-radius:8px; }
+  .h5 .r.on { background:rgba(139,92,246,.14); }
+  .h5 .r .n { width:14px; font-size:8.5px; text-align:center; color:#8f82c0; }
+  .h5 .r .th { width:22px;height:22px;border-radius:6px; }
+  .h5 .r .c { flex:1; } .h5 .r .c b{display:block;font-size:9px} .h5 .r .c small{font-size:7.5px;color:#8f82c0}
+  .h5 .r .d { font-size:8px; color:#8f82c0; font-family:monospace; }
+</style>
+</head>
+<body>
+<h1 class="page">Sakura Music · 5 Ideas para el Home del tema Space</h1>
+<p class="page">Conceptos de la pantalla de inicio (a la derecha del sidebar) con temática espacial. Elige el que prefieras y lo implemento.</p>
+
+<div class="grid">
+
+  <!-- IDEA 1 -->
+  <div class="card">
+    <span class="num">IDEA 1</span>
+    <h2>Saludo + playlists rápidas</h2>
+    <p class="desc">Saludo de bienvenida, cuadrícula de playlists rápidas (estilo Spotify) y fila de álbumes populares. Simple, familiar y funcional.</p>
+    <div class="home"><div class="h1">
+      <div class="greet">Buenas noches ✨</div>
+      <div class="quick">
+        <div class="q"><div class="art" style="background:linear-gradient(135deg,#a78bfa,#5b21b6)">🌌</div><b>Nebula</b><span class="pl">▶</span></div>
+        <div class="q"><div class="art" style="background:linear-gradient(135deg,#c4b5fd,#7c3aed)">🪐</div><b>Orbital</b><span class="pl">▶</span></div>
+        <div class="q"><div class="art" style="background:linear-gradient(135deg,#8b5cf6,#2e1065)">✨</div><b>Cosmos</b><span class="pl">▶</span></div>
+        <div class="q"><div class="art" style="background:linear-gradient(135deg,#6d28d9,#1e1b4b)">💫</div><b>Astro</b><span class="pl">▶</span></div>
+      </div>
+      <div class="sect">Álbumes populares</div>
+      <div class="alb">
+        <div class="a"><div class="art" style="background:linear-gradient(135deg,#a78bfa,#4c1d95)">🌌</div><b>Nebula Dreams</b><small>Astral</small></div>
+        <div class="a"><div class="art" style="background:linear-gradient(135deg,#c4b5fd,#6d28d9)">🪐</div><b>Orbital</b><small>Cosmos</small></div>
+        <div class="a"><div class="art" style="background:linear-gradient(135deg,#8b5cf6,#2e1065)">✨</div><b>Starlight</b><small>Space</small></div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- IDEA 2 -->
+  <div class="card">
+    <span class="num">IDEA 2</span>
+    <h2>Reproduciendo en grande</h2>
+    <p class="desc">Portada de la canción actual en gran tamaño, centrada, con título y controles grandes. El protagonista es el reproductor.</p>
+    <div class="home"><div class="h2">
+      <div class="art" style="background:radial-gradient(circle at 35% 30%,#e0c3ff,#5b21b6 60%)">🌌</div>
+      <b>Orion's Belt</b>
+      <small>Astral Ensemble · Nebula Dreams</small>
+      <div class="seek"><i></i></div>
+      <div class="ctr"><span>⏮</span><span class="pl">▶</span><span>⏭</span></div>
+    </div></div>
+  </div>
+
+  <!-- IDEA 3 -->
+  <div class="card">
+    <span class="num">IDEA 3</span>
+    <h2>Banner nebulosa + canciones</h2>
+    <p class="desc">Un banner grande con gradiente de nebulosa en la parte superior y la lista de canciones del álbum destacado debajo.</p>
+    <div class="home"><div class="h3">
+      <div class="banner"><div class="icon">🌌</div><div><b>Nebula Dreams</b><span>Astral Ensemble · 18 canciones</span></div></div>
+      <div class="list">
+        <div class="row on"><div class="th" style="background:linear-gradient(135deg,#a78bfa,#5b21b6)"></div><div class="c"><b>Orion's Belt</b><small>Astral</small></div><span class="d">4:12</span></div>
+        <div class="row"><div class="th" style="background:linear-gradient(135deg,#c4b5fd,#7c3aed)"></div><div class="c"><b>Cosmic Drift</b><small>Astral</small></div><span class="d">3:58</span></div>
+        <div class="row"><div class="th" style="background:linear-gradient(135deg,#8b5cf6,#2e1065)"></div><div class="c"><b>Supernova</b><small>Astral</small></div><span class="d">5:01</span></div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- IDEA 4 -->
+  <div class="card">
+    <span class="num">IDEA 4</span>
+    <h2>Explorar el espacio</h2>
+    <p class="desc">Chips de categorías espaciales (Planetas, Nebulosas, Estrellas) y una cuadrícula de álbumes temáticos para explorar.</p>
+    <div class="home"><div class="h4">
+      <div class="title">Explorar el espacio</div>
+      <div class="chips"><span class="chip on">🪐 Planetas</span><span class="chip">🌌 Nebulosas</span><span class="chip">✨ Estrellas</span><span class="chip">🚀 Viajes</span></div>
+      <div class="grid">
+        <div class="c" style="background:linear-gradient(135deg,#a78bfa,#5b21b6)">Marte<small>Rock</small></div>
+        <div class="c" style="background:linear-gradient(135deg,#c4b5fd,#7c3aed)">Neptuno<small>Chill</small></div>
+        <div class="c" style="background:linear-gradient(135deg,#8b5cf6,#2e1065)">Andrómeda<small>Ambient</small></div>
+        <div class="c" style="background:linear-gradient(135deg,#6d28d9,#1e1b4b)">Quásar<small>Synth</small></div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- IDEA 5 -->
+  <div class="card">
+    <span class="num">IDEA 5</span>
+    <h2>En reproducción + cola</h2>
+    <p class="desc">La canción actual en una tarjeta destacada y la cola de reproducción debajo, para ver qué suena y qué sigue.</p>
+    <div class="home"><div class="h5">
+      <div class="now"><div class="art" style="background:radial-gradient(circle at 35% 30%,#e0c3ff,#5b21b6 60%)">🌌</div><div class="c"><b>Orion's Belt</b><small>Astral Ensemble</small></div><span class="pl">▶</span></div>
+      <div class="que">Sigue sonando</div>
+      <div class="rows">
+        <div class="r on"><span class="n">♪</span><div class="th" style="background:linear-gradient(135deg,#c4b5fd,#7c3aed)"></div><div class="c"><b>Cosmic Drift</b><small>Astral</small></div><span class="d">3:58</span></div>
+        <div class="r"><span class="n">2</span><div class="th" style="background:linear-gradient(135deg,#8b5cf6,#2e1065)"></div><div class="c"><b>Supernova</b><small>Astral</small></div><span class="d">5:01</span></div>
+        <div class="r"><span class="n">3</span><div class="th" style="background:linear-gradient(135deg,#6d28d9,#1e1b4b)"></div><div class="c"><b>Moonlight</b><small>Astral</small></div><span class="d">4:33</span></div>
+      </div>
+    </div></div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sakura Music · 7 Temas con estructuras distintas</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#14141a; font-family:'Segoe UI',Arial,sans-serif; padding:30px 46px; }
+  h1.page { color:#f0eef2; font-size:26px; margin-bottom:6px; }
+  p.page { color:#9a97a3; font-size:14px; margin-bottom:6px; }
+  p.note { color:#7d7a88; font-size:12.5px; margin-bottom:30px; }
+  .wrap { display:flex; flex-direction:column; gap:46px; }
+  .item { display:flex; flex-direction:column; gap:10px; }
+  .item-head { display:flex; align-items:baseline; gap:14px; }
+  .item-head h2 { color:#fff; font-size:21px; }
+  .item-head span { color:#9a97a3; font-size:13px; }
+  .frame { width:1100px; height:660px; border:1px solid rgba(255,255,255,.1); border-radius:16px; overflow:hidden; position:relative; }
+
+  /* ======== TEMA 1 · CAFÉ: panel lateral + split portada ======== */
+  .q1 { display:flex; height:100%; }
+  .q1-rail { width:210px; flex:0 0 210px; display:flex; flex-direction:column; padding:18px 14px; border-right:1px solid rgba(217,160,91,.3); background:rgba(58,36,24,.9); }
+  .q1-rail .br { display:flex;align-items:center;gap:10px;margin-bottom:22px; }
+  .q1-rail .br .lo { width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#d9a05b,#8a5a2b);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px; }
+  .q1-rail .br b { color:#f7e8d6; font-size:15px; }
+  .q1-rail .it { padding:11px 12px;border-radius:10px;font-size:12.5px;color:#d9b98a;display:flex;align-items:center;gap:9px;font-weight:600; }
+  .q1-rail .it.on { background:linear-gradient(135deg,#8a5a2b,#d9a05b);color:#fff; }
+  .q1-body { flex:1; display:flex; flex-direction:column; padding:22px 26px; }
+  .q1-split { display:flex; gap:22px; flex:1; }
+  .q1-art { width:170px;flex:0 0 170px;border-radius:18px; background:radial-gradient(circle at 35% 30%,#f5d9a8,#a0682a 60%);box-shadow:0 18px 40px rgba(0,0,0,.35); display:flex;align-items:center;justify-content:center;font-size:52px; }
+  .q1-copy { flex:1; display:flex;flex-direction:column;justify-content:center;gap:6px; }
+  .q1-copy small { color:#d9a05b;font-size:11px;font-weight:800;letter-spacing:.1em; }
+  .q1-copy b { color:#f7e8d6; font-size:26px; }
+  .q1-copy span { color:#d9b98a; font-size:13px; }
+  .q1-copy .btn { margin-top:12px; display:flex; gap:10px; }
+  .q1-copy .btn .pl { background:linear-gradient(135deg,#8a5a2b,#d9a05b);color:#fff;padding:10px 20px;border-radius:999px;font-size:12px;font-weight:800; }
+  .q1-copy .btn .gh { border:1px solid rgba(217,160,91,.4);color:#d9b98a;padding:10px 20px;border-radius:999px;font-size:12px; }
+  .q1-bar { height:58px;flex:0 0 58px;display:flex;align-items:center;gap:12px;padding:0 20px;border-top:1px solid rgba(217,160,91,.3);background:rgba(58,36,24,.8); }
+  .q1-bar .th { width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,#d9a05b,#7a4a1e); }
+  .q1-bar .pc { flex:1; }
+  .q1-bar .pc b{display:block;color:#f7e8d6;font-size:13px}.q1-bar .pc small{color:#d9b98a;font-size:11px}
+  .q1-bar .seek { flex:1;height:6px;border-radius:999px;background:rgba(217,160,91,.2);overflow:hidden }
+  .q1-bar .seek i{display:block;height:100%;width:40%;background:linear-gradient(90deg,#8a5a2b,#d9a05b)}
+  .q1-bar .pl { width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#8a5a2b,#d9a05b);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px; }
+
+  /* ======== TEMA 2 · LUNA: nav superior + tabla densa ======== */
+  .q2 { display:flex; flex-direction:column; height:100%; }
+  .q2-top { height:56px;flex:0 0 56px;display:flex;align-items:center;gap:16px;padding:0 24px;border-bottom:1px solid rgba(203,213,225,.25);background:rgba(26,34,48,.92); }
+  .q2-top .lo { width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,#cbd5e1,#64748b);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px; }
+  .q2-top .tab { font-size:12px;font-weight:600;color:#9aa8ba;padding:7px 13px;border-radius:999px; }
+  .q2-top .tab.on { background:linear-gradient(135deg,#64748b,#cbd5e1);color:#fff; }
+  .q2-top .se { margin-left:auto;width:180px;height:30px;border-radius:999px;background:rgba(203,213,225,.1);border:1px solid rgba(203,213,225,.3);display:flex;align-items:center;padding:0 12px;color:#9aa8ba;font-size:11px; }
+  .q2-table { flex:1; padding:16px 24px; display:flex; flex-direction:column; gap:2px; }
+  .q2-table .hd { display:flex;gap:14px;padding:8px 12px;color:#7b88a0;font-size:10px;font-weight:800;letter-spacing:.08em;border-bottom:1px solid rgba(203,213,225,.15) }
+  .q2-table .hd span:nth-child(1){width:40px}.q2-table .hd span:nth-child(2){flex:2}.q2-table .hd span:nth-child(3){flex:1}.q2-table .hd span:nth-child(4){width:70px}
+  .q2-row { display:flex;gap:14px;align-items:center;padding:12px;border-radius:10px; }
+  .q2-row.on { background:rgba(203,213,225,.1) }
+  .q2-row span:nth-child(1){width:40px;text-align:center;color:#7b88a0;font-size:12px}
+  .q2-row .tt{flex:2;display:flex;align-items:center;gap:10px}
+  .q2-row .tt .th{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#cbd5e1,#475569)}
+  .q2-row .tt b{display:block;color:#e6edf5;font-size:12.5px}.q2-row .tt small{color:#9aa8ba;font-size:10px}
+  .q2-row .ar{flex:1;color:#a9b6c8;font-size:12px}
+  .q2-row .du{width:70px;color:#7b88a0;font-size:12px;font-family:monospace}
+  .q2-foot { height:58px;flex:0 0 58px;display:flex;align-items:center;gap:12px;padding:0 24px;border-top:1px solid rgba(203,213,225,.2);background:rgba(26,34,48,.9); }
+  .q2-foot .th{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,#cbd5e1,#475569)}
+  .q2-foot .seek{flex:1;height:6px;border-radius:999px;background:rgba(203,213,225,.18);overflow:hidden}
+  .q2-foot .seek i{display:block;height:100%;width:50%;background:linear-gradient(90deg,#64748b,#cbd5e1)}
+  .q2-foot .pl{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#64748b,#cbd5e1);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px}
+
+  /* ======== TEMA 3 · TÉ: rail de iconos + cuadrícula ======== */
+  .q3 { display:flex; height:100%; }
+  .q3-rail { width:56px;flex:0 0 56px;display:flex;flex-direction:column;align-items:center;gap:14px;padding-top:16px;border-right:1px solid rgba(134,239,172,.25);background:rgba(20,48,30,.9); }
+  .q3-rail .lo{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,#86efac,#166534);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px}
+  .q3-rail .ic{font-size:17px;color:#9fe0bb}
+  .q3-rail .ic.on{color:#fff;text-shadow:0 0 12px rgba(134,239,172,.6)}
+  .q3-main{flex:1;display:flex;flex-direction:column;padding:20px 26px}
+  .q3-head{display:flex;align-items:center;margin-bottom:16px}
+  .q3-head b{color:#eafff2;font-size:20px}
+  .q3-head .se{margin-left:auto;width:200px;height:30px;border-radius:999px;background:rgba(134,239,172,.1);border:1px solid rgba(134,239,172,.3);display:flex;align-items:center;padding:0 12px;color:#9fe0bb;font-size:11px}
+  .q3-grid{flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .q3-card{aspect-ratio:1;border-radius:16px;display:flex;align-items:flex-end;padding:14px;font-size:12px;font-weight:800;color:#fff;position:relative;box-shadow:0 10px 24px rgba(0,0,0,.3);overflow:hidden}
+  .q3-card small{display:block;font-size:9px;font-weight:500;opacity:.85}
+  .q3-card .play{position:absolute;right:10px;bottom:10px;width:26px;height:26px;border-radius:50%;background:#fff;color:#166534;display:flex;align-items:center;justify-content:center;font-size:11px}
+
+  /* ======== TEMA 4 · VINO: lista arriba + player flotante ======== */
+  .q4{display:flex;flex-direction:column;height:100%}
+  .q4-head{height:56px;flex:0 0 56px;display:flex;align-items:center;gap:14px;padding:0 26px;border-bottom:1px solid rgba(233,121,160,.25);background:rgba(59,13,32,.9)}
+  .q4-head .lo{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,#e879a0,#9d174d);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px}
+  .q4-head b{color:#ffe6ef;font-size:16px}
+  .q4-list{flex:1;padding:18px 26px;display:flex;flex-direction:column;gap:8px}
+  .q4-row{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:12px;background:rgba(233,121,160,.06);border:1px solid rgba(233,121,160,.15)}
+  .q4-row .th{width:34px;height:34px;border-radius:9px}
+  .q4-row .c{flex:1}
+  .q4-row .c b{display:block;color:#ffe6ef;font-size:12.5px}.q4-row .c small{color:#e8a0bd;font-size:10px}
+  .q4-row .d{color:#c77b99;font-size:11px;font-family:monospace}
+  .q4-player{margin:0 26px 20px;padding:14px 18px;border-radius:20px;background:rgba(92,19,48,.92);border:1px solid rgba(233,121,160,.3);display:flex;align-items:center;gap:14px;box-shadow:0 14px 34px rgba(0,0,0,.4)}
+  .q4-player .th{width:44px;height:44px;border-radius:11px;background:linear-gradient(135deg,#e879a0,#831843)}
+  .q4-player .pc{flex:1}
+  .q4-player .pc b{display:block;color:#ffe6ef;font-size:13px}.q4-player .pc small{color:#e8a0bd;font-size:11px}
+  .q4-player .seek{flex:1;height:6px;border-radius:999px;background:rgba(233,121,160,.2);overflow:hidden}
+  .q4-player .seek i{display:block;height:100%;width:44%;background:linear-gradient(90deg,#9d174d,#e879a0)}
+  .q4-player .pl{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#9d174d,#e879a0);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px}
+
+  /* ======== TEMA 5 · CIELO: nav abajo + mosaico ======== */
+  .q5{display:flex;flex-direction:column;height:100%}
+  .q5-main{flex:1;padding:20px 26px;display:flex;flex-direction:column}
+  .q5-head{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+  .q5-head .lo{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,#7dd3fc,#0369a1);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px}
+  .q5-head b{color:#e6f4ff;font-size:18px}
+  .q5-mosaic{flex:1;display:grid;grid-template-columns:repeat(5,1fr);grid-auto-rows:1fr;gap:10px}
+  .q5-tile{border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 8px 20px rgba(0,0,0,.3);min-height:80px}
+  .q5-tile:nth-child(1),.q5-tile:nth-child(4){grid-column:span 2;grid-row:span 2;font-size:40px}
+  .q5-nav{height:60px;flex:0 0 60px;display:flex;align-items:center;justify-content:center;gap:36px;border-top:1px solid rgba(125,211,252,.25);background:rgba(15,58,99,.9)}
+  .q5-nav .fi{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9px;color:#9ed4f2}
+  .q5-nav .fi .ic{font-size:17px}
+  .q5-nav .fi.on{color:#fff}
+  .q5-nav .fi.big{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#0369a1,#7dd3fc);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;margin-top:-22px}
+
+  /* ======== TEMA 6 · FUEGO: barra centrada + grid + lista ======== */
+  .q6{display:flex;flex-direction:column;height:100%}
+  .q6-search{height:64px;flex:0 0 64px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid rgba(251,146,60,.25);background:rgba(59,15,15,.9)}
+  .q6-search .se{width:60%;height:34px;border-radius:999px;background:rgba(251,146,60,.12);border:1px solid rgba(251,146,60,.35);display:flex;align-items:center;justify-content:center;color:#f2a170;font-size:12px}
+  .q6-main{flex:1;display:flex;flex-direction:column;padding:18px 26px;gap:14px}
+  .q6-title{color:#ffede1;font-size:16px;font-weight:800}
+  .q6-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .q6-card{aspect-ratio:1.3;border-radius:14px;display:flex;align-items:flex-end;padding:12px;font-size:11px;font-weight:800;color:#fff;box-shadow:0 8px 20px rgba(0,0,0,.35)}
+  .q6-card small{display:block;font-size:8px;font-weight:500;opacity:.85}
+  .q6-foot{height:58px;flex:0 0 58px;display:flex;align-items:center;gap:12px;padding:0 26px;border-top:1px solid rgba(251,146,60,.25);background:rgba(59,15,15,.9)}
+  .q6-foot .th{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,#fb923c,#9a3412)}
+  .q6-foot .seek{flex:1;height:6px;border-radius:999px;background:rgba(251,146,60,.2);overflow:hidden}
+  .q6-foot .seek i{display:block;height:100%;width:55%;background:linear-gradient(90deg,#c2410c,#fb923c)}
+  .q6-foot .pl{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#c2410c,#fb923c);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px}
+
+  /* ======== TEMA 7 · TROPICAL: split portada + lista ======== */
+  .q7{display:flex;height:100%}
+  .q7-side{width:260px;flex:0 0 260px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;border-right:1px solid rgba(94,234,212,.25);background:rgba(6,43,43,.9);padding:20px}
+  .q7-side .art{width:170px;height:170px;border-radius:20px;background:radial-gradient(circle at 35% 30%,#99f6e4,#0f766e 60%);box-shadow:0 18px 40px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;font-size:52px}
+  .q7-side b{color:#e2fffa;font-size:20px;text-align:center}
+  .q7-side small{color:#8adfd3;font-size:12px}
+  .q7-side .btn{background:linear-gradient(135deg,#0f766e,#5eead4);color:#fff;padding:10px 24px;border-radius:999px;font-size:12px;font-weight:800}
+  .q7-main{flex:1;display:flex;flex-direction:column;padding:20px 26px}
+  .q7-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+  .q7-head .lo{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,#5eead4,#0f766e);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px}
+  .q7-head b{color:#e2fffa;font-size:17px}
+  .q7-head .chip{margin-left:auto;padding:6px 12px;border-radius:999px;background:rgba(94,234,212,.12);border:1px solid rgba(94,234,212,.3);color:#8adfd3;font-size:10px}
+  .q7-list{flex:1;display:flex;flex-direction:column;gap:7px}
+  .q7-row{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:11px}
+  .q7-row.on{background:rgba(94,234,212,.12)}
+  .q7-row .n{width:18px;color:#6cbdb2;font-size:11px;text-align:center}
+  .q7-row .th{width:32px;height:32px;border-radius:8px}
+  .q7-row .c{flex:1}
+  .q7-row .c b{display:block;color:#e2fffa;font-size:12.5px}.q7-row .c small{color:#8adfd3;font-size:10px}
+  .q7-row .d{color:#6cbdb2;font-size:11px;font-family:monospace}
+</style>
+</head>
+<body>
+<h1 class="page">Sakura Music · 7 Temas con estructuras diferentes</h1>
+<p class="page">Cada tema NO solo cambia de color: cambia la navegación y la disposición de la app (panel lateral, nav superior, rail de iconos, nav abajo, split, etc.).</p>
+<p class="note">Estructura por tema: 1 panel lateral · 2 nav superior + tabla · 3 rail + cuadrícula · 4 lista + player flotante · 5 nav abajo + mosaico · 6 barra centrada · 7 split portada+lista.</p>
+
+<div class="wrap">
+
+<!-- 1 · CAFÉ: panel lateral + split -->
+<div class="item">
+  <div class="item-head"><h2>01 · Café Latte</h2><span>Panel lateral izquierdo + portada a la izquierda</span></div>
+  <div class="frame" style="background:linear-gradient(165deg,#3a2418,#5a3a22)">
+    <div class="q1">
+      <div class="q1-rail">
+        <div class="br"><div class="lo">桜</div><b>Café</b></div>
+        <div class="it on">🏠 Inicio</div>
+        <div class="it">📚 Colección</div>
+        <div class="it">🔍 Buscar</div>
+        <div class="it">⚙️ Ajustes</div>
+      </div>
+      <div class="q1-body">
+        <div class="q1-split">
+          <div class="q1-art">☕</div>
+          <div class="q1-copy"><small>ÁLBUM</small><b>Latte Tunes</b><span>Morning Brew · 2024 · Chill</span><div class="btn"><span class="pl">▶ Reproducir</span><span class="gh">Guardar</span></div></div>
+        </div>
+      </div>
+      <div class="q1-bar"><div class="th"></div><div class="pc"><b>Espresso</b><small>Morning Brew</small></div><span class="pl">▶</span><div class="seek"><i></i></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 2 · LUNA: nav superior + tabla -->
+<div class="item">
+  <div class="item-head"><h2>02 · Luna Plateada</h2><span>Nav superior centrada + tabla de canciones densa</span></div>
+  <div class="frame" style="background:linear-gradient(165deg,#1a2230,#2b3a4d)">
+    <div class="q2">
+      <div class="q2-top"><div class="lo">桜</div><span class="tab on">Inicio</span><span class="tab">Biblioteca</span><span class="tab">Buscar</span><span class="tab">Ajustes</span><div class="se">⌕ Buscar…</div></div>
+      <div class="q2-table">
+        <div class="hd"><span>#</span><span>TÍTULO</span><span>ARTISTA</span><span>DUR</span></div>
+        <div class="q2-row on"><span>♪</span><div class="tt"><div class="th"></div><div><b>Midnight</b><small>Lunar</small></div></div><span class="ar">Luna</span><span class="du">4:12</span></div>
+        <div class="q2-row"><span>2</span><div class="tt"><div class="th" style="background:linear-gradient(135deg,#94a3b8,#334155)"></div><div><b>Silver Lining</b><small>Lunar</small></div></div><span class="ar">Luna</span><span class="du">3:48</span></div>
+        <div class="q2-row"><span>3</span><div class="tt"><div class="th" style="background:linear-gradient(135deg,#e2e8f0,#52525b)"></div><div><b>Eclipse</b><small>Lunar</small></div></div><span class="ar">Luna</span><span class="du">5:02</span></div>
+      </div>
+      <div class="q2-foot"><div class="th"></div><div><b style="color:#e6edf5;font-size:13px">Midnight</b><div style="color:#9aa8ba;font-size:11px">Luna</div></div><span style="color:#9aa8ba">⏮</span><span class="pl">▶</span><span style="color:#9aa8ba">⏭</span><div class="seek"><i></i></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 3 · TÉ: rail + cuadrícula -->
+<div class="item">
+  <div class="item-head"><h2>03 · Té Verde</h2><span>Rail de iconos (delgado) + cuadrícula de portadas</span></div>
+  <div class="frame" style="background:linear-gradient(165deg,#14301e,#1f4a2c)">
+    <div class="q3">
+      <div class="q3-rail"><div class="lo">桜</div><span class="ic on">🏠</span><span class="ic">📚</span><span class="ic">🔍</span><span class="ic">⚙️</span></div>
+      <div class="q3-main">
+        <div class="q3-head"><b>Colección</b><div class="se">⌕ Buscar…</div></div>
+        <div class="q3-grid">
+          <div class="q3-card" style="background:linear-gradient(135deg,#86efac,#15803d)">Té<span class="play">▶</span><small>Sencha</small></div>
+          <div class="q3-card" style="background:linear-gradient(135deg,#4ade80,#166534)">Hoja<span class="play">▶</span><small>Matcha</small></div>
+          <div class="q3-card" style="background:linear-gradient(135deg,#bbf7d0,#0e4a22)">Gen<span class="play">▶</span><small>Jasmine</small></div>
+          <div class="q3-card" style="background:linear-gradient(135deg,#6ee7b7,#14532d)">Raíz<span class="play">▶</span><small>Genmaicha</small></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 4 · VINO: lista + player flotante -->
+<div class="item">
+  <div class="item-head"><h2>04 · Vino</h2><span>Lista arriba + reproductor flotante grande abajo</span></div>
+  <div class="frame" style="background:linear-gradient(165deg,#3b0d20,#5c1330)">
+    <div class="q4">
+      <div class="q4-head"><div class="lo">桜</div><b>Vinoteca</b><div style="margin-left:auto;color:#e8a0bd;font-size:12px">🍷 84 pistas</div></div>
+      <div class="q4-list">
+        <div class="q4-row"><div class="th" style="background:linear-gradient(135deg,#e879a0,#831843)"></div><div class="c"><b>Crimson</b><small>Vinoteca</small></div><span class="d">4:20</span></div>
+        <div class="q4-row"><div class="th" style="background:linear-gradient(135deg,#f9a8d4,#9d174d)"></div><div class="c"><b>Reserva</b><small>Vinoteca</small></div><span class="d">3:55</span></div>
+        <div class="q4-row"><div class="th" style="background:linear-gradient(135deg,#d6608d,#701a3d)"></div><div class="c"><b>Barrica</b><small>Vinoteca</small></div><span class="d">5:10</span></div>
+      </div>
+      <div class="q4-player"><div class="th"></div><div class="pc"><b>Crimson</b><small>Vinoteca · Reserva</small></div><span style="color:#e8a0bd">⏮</span><span class="pl">▶</span><span style="color:#e8a0bd">⏭</span><div class="seek"><i></i></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 5 · CIELO: nav abajo + mosaico -->
+<div class="item">
+  <div class="item-head"><h2>05 · Cielo</h2><span>Navegación ABAJO (móvil) + mosaico de portadas</span></div>
+  <div class="frame" style="background:linear-gradient(165deg,#0f3a63,#1a5a8a)">
+    <div class="q5">
+      <div class="q5-main">
+        <div class="q5-head"><div class="lo">桜</div><b>Mi Biblioteca</b></div>
+        <div class="q5-mosaic">
+          <div class="q5-tile" style="background:linear-gradient(135deg,#7dd3fc,#0c4a6e)">☁️</div>
+          <div class="q5-tile" style="background:linear-gradient(135deg,#38bdf8,#0369a1)">☀️</div>
+          <div class="q5-tile" style="background:linear-gradient(135deg,#bae6fd,#075985)">🌈</div>
+          <div class="q5-tile" style="background:linear-gradient(135deg,#93c5fd,#1e3a8a)">✈️</div>
+          <div class="q5-tile" style="background:linear-gradient(135deg,#0ea5e9,#0c4a6e)">🪁</div>
+        </div>
+      </div>
+      <div class="q5-nav"><div class="fi on"><span class="ic">🏠</span>Inicio</div><div class="fi"><span class="ic">📚</span>Colec</div><div class="fi big">▶</div><div class="fi"><span class="ic">🔍</span>Buscar</div><div class="fi"><span class="ic">⚙️</span>Ajustes</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 6 · FUEGO: barra centrada + grid + lista -->
+<div class="item">
+  <div class="item-head"><h2>06 · Fuego Volcán</h2><span>Buscador centrado arriba + tarjetas en grid</span></div>
+  <div class="frame" style="background:linear-gradient(165deg,#3b0f0f,#6b1a0a)">
+    <div class="q6">
+      <div class="q6-search"><div class="se">🔥 Buscar canciones en llamas…</div></div>
+      <div class="q6-main">
+        <div class="q6-title">Populares</div>
+        <div class="q6-grid">
+          <div class="q6-card" style="background:linear-gradient(135deg,#fb923c,#9a3412)">Magma<small>Volcano</small></div>
+          <div class="q6-card" style="background:linear-gradient(135deg,#fbbf24,#ea580c)">Lava<small>Volcano</small></div>
+          <div class="q6-card" style="background:linear-gradient(135deg,#f87171,#b91c1c)">Rojo<small>Volcano</small></div>
+          <div class="q6-card" style="background:linear-gradient(135deg,#fdba74,#7c2d12)">Ceniza<small>Volcano</small></div>
+          <div class="q6-card" style="background:linear-gradient(135deg,#fb923c,#7c2d12)">Vapor<small>Volcano</small></div>
+          <div class="q6-card" style="background:linear-gradient(135deg,#fca5a5,#991b1b)">Brasa<small>Volcano</small></div>
+        </div>
+      </div>
+      <div class="q6-foot"><div class="th"></div><div><b style="color:#ffede1;font-size:13px">Lava</b><div style="color:#f2a170;font-size:11px">Volcano</div></div><span style="color:#f2a170">⏮</span><span class="pl">▶</span><span style="color:#f2a170">⏭</span><div class="seek"><i></i></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 7 · TROPICAL: split -->
+<div class="item">
+  <div class="item-head"><h2>07 · Isla Tropical</h2><span>Portada grande a la izquierda + lista a la derecha</span></div>
+  <div class="frame" style="background:linear-gradient(165deg,#062b2b,#0a4a44)">
+    <div class="q7">
+      <div class="q7-side"><div class="art">🏝️</div><b>Tropic Isle</b><small>Coastal · 2025 · Summer</small><div class="btn">▶ Reproducir</div></div>
+      <div class="q7-main">
+        <div class="q7-head"><div class="lo">桜</div><b>Playlist</b><span class="chip">💚 12 pistas</span></div>
+        <div class="q7-list">
+          <div class="q7-row on"><span class="n">♪</span><div class="th" style="background:linear-gradient(135deg,#5eead4,#115e59)"></div><div class="c"><b>Lagoon</b><small>Coastal</small></div><span class="d">4:05</span></div>
+          <div class="q7-row"><span class="n">2</span><div class="th" style="background:linear-gradient(135deg,#99f6e4,#0f766e)"></div><div class="c"><b>Arena</b><small>Coastal</small></div><span class="d">3:22</span></div>
+          <div class="q7-row"><span class="n">3</span><div class="th" style="background:linear-gradient(135deg,#2dd4bf,#134e4a)"></div><div class="c"><b>Ola</b><small>Coastal</small></div><span class="d">4:44</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

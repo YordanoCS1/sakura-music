@@ -1,0 +1,712 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sakura Music · 8 Temas · pantallas reales</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#15151c; font-family:'Segoe UI',Arial,sans-serif; padding:30px 40px; }
+  h1.page { color:#f0eef2; font-size:25px; margin-bottom:6px; }
+  p.page { color:#9a97a3; font-size:14px; margin-bottom:6px; }
+  p.note { color:#7d7a88; font-size:12px; margin-bottom:28px; }
+  .wrap { display:flex; flex-direction:column; gap:44px; }
+  .topic { display:flex; flex-direction:column; gap:12px; }
+  .topic-head { display:flex; align-items:baseline; gap:14px; }
+  .topic-head h2 { color:#fff; font-size:20px; }
+  .topic-head span { color:#9a97a3; font-size:12.5px; }
+  .screens { display:flex; gap:14px; overflow-x:auto; padding-bottom:8px; }
+
+  /* Miniatura de app: 270x400 */
+  .th { width:270px; flex:0 0 270px; height:400px; border-radius:14px; overflow:hidden; display:flex; flex-direction:column; border:1px solid rgba(255,255,255,.1); }
+  .th-cap { height:24px; flex:0 0 24px; display:flex; align-items:center; padding:0 10px; font-size:9.5px; font-weight:800; letter-spacing:.05em; color:#c9c5d4; background:rgba(255,255,255,.04); border-top:1px solid rgba(255,255,255,.08); margin-top:auto; }
+  .app { flex:1; display:flex; flex-direction:column; min-height:0; }
+
+  /* ---- componentes de app (comunes) ---- */
+  .ttb { display:flex; align-items:center; gap:7px; height:30px; flex:0 0 30px; padding:0 10px; }
+  .ttb .logo { width:16px;height:16px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff; }
+  .ttb .nm { font-size:10px; font-weight:700; }
+  .ttb .sp { flex:1; }
+  .ttb .bx { font-size:9px; opacity:.55; }
+  .tnav { display:flex; align-items:center; gap:2px; height:36px; flex:0 0 36px; padding:0 12px; }
+  .tnav .pill { font-size:9.5px; font-weight:700; padding:4px 10px; border-radius:8px; opacity:.6; }
+  .tnav .pill.on { opacity:1; }
+  .thdr { display:flex; align-items:center; gap:6px; height:34px; flex:0 0 34px; padding:0 12px; }
+  .thdr .search { flex:1; height:20px; border-radius:999px; display:flex; align-items:center; padding:0 10px; font-size:8.5px; }
+  .thdr .chip { font-size:8.5px; padding:5px 9px; border-radius:999px; font-weight:700; }
+
+  /* HOME: álbum destacado + lista */
+  .sc-body { flex:1; display:flex; flex-direction:column; padding:10px 12px; gap:8px; min-height:0; }
+  .albumhead { display:flex; align-items:flex-end; gap:10px; }
+  .albumhead .art { width:56px;height:56px;border-radius:11px; display:flex;align-items:center;justify-content:center;font-size:26px; flex-shrink:0; }
+  .albumhead .copy small { font-size:8px; font-weight:800; letter-spacing:.08em; }
+  .albumhead .copy b { display:block; font-size:14px; }
+  .albumhead .copy span { font-size:8.5px; opacity:.6; }
+  .albumhead .copy .btns { display:flex; gap:6px; margin-top:6px; }
+  .albumhead .copy .btns .pl { font-size:8.5px; font-weight:800; padding:5px 10px; border-radius:999px; color:#fff; }
+  .albumhead .copy .btns .gh { font-size:8.5px; padding:5px 10px; border-radius:999px; border:1px solid rgba(128,128,128,.3); }
+  .trow { display:flex; align-items:center; gap:7px; padding:7px 8px; border-radius:8px; }
+  .trow .n { width:14px; font-size:8.5px; text-align:center; opacity:.5; }
+  .trow .thm { width:24px;height:24px;border-radius:6px; flex:0 0 24px; }
+  .trow .c { flex:1; min-width:0; }
+  .trow .c b { display:block; font-size:9.5px; }
+  .trow .c small { font-size:8px; opacity:.5; }
+  .trow .d { font-size:8px; opacity:.5; font-family:monospace; }
+
+  /* LIBRERÍA: cuadrícula de tarjetas */
+  .scgrid { flex:1; display:grid; grid-template-columns:repeat(2,1fr); gap:9px; padding:10px 12px; }
+  .card { border-radius:10px; overflow:hidden; }
+  .card .carm { aspect-ratio:1; display:flex; align-items:center; justify-content:center; font-size:22px; }
+  .card .ccap { padding:6px 7px; }
+  .card .ccap b { display:block; font-size:9px; }
+  .card .ccap small { font-size:7.5px; opacity:.55; }
+
+  /* BUSCAR: barra + resultados */
+  .sc-search { flex:1; padding:10px 12px; }
+  .sc-search .bar { height:22px; border-radius:999px; display:flex; align-items:center; padding:0 10px; font-size:8.5px; margin-bottom:9px; }
+  .sc-search .res { font-size:8.5px; font-weight:800; opacity:.6; margin-bottom:5px; letter-spacing:.05em; }
+
+  /* NOW PLAYING: portada grande centrada */
+  .sc-now { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:9px; padding:6px 10px; }
+  .sc-now .art { width:120px;height:120px;border-radius:20px; display:flex;align-items:center;justify-content:center;font-size:52px; box-shadow:0 12px 30px rgba(0,0,0,.3); }
+  .sc-now .t { text-align:center; }
+  .sc-now .t b { display:block; font-size:14px; }
+  .sc-now .t small { font-size:9px; opacity:.6; }
+  .sc-now .seek { width:180px; height:5px; border-radius:999px; overflow:hidden; }
+  .sc-now .seek i { display:block; height:100%; width:44%; }
+  .sc-now .ctr { display:flex; align-items:center; gap:14px; }
+  .sc-now .ctr .c { font-size:13px; opacity:.6; }
+  .sc-now .ctr .main { width:30px;height:30px;border-radius:50%; color:#fff; display:flex;align-items:center;justify-content:center;font-size:13px; }
+
+  /* COLA: lista numerada */
+  .sc-queue { flex:1; padding:10px 12px; display:flex; flex-direction:column; gap:5px; }
+
+  /* AJUSTES: opciones */
+  .sc-set { flex:1; padding:10px 12px; display:flex; flex-direction:column; gap:7px; }
+  .sc-set .opt { display:flex; align-items:center; justify-content:space-between; font-size:8.5px; padding:8px 9px; border-radius:8px; }
+  .sc-set .opt .dot { width:16px;height:10px;border-radius:999px; }
+  .sc-set .profile { display:flex; align-items:center; gap:9px; margin-top:8px; }
+  .sc-set .profile .av { width:26px;height:26px;border-radius:50%; display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff; }
+  .sc-set .profile b { font-size:9.5px; display:block; }
+  .sc-set .profile small { font-size:8px; opacity:.6; }
+</style>
+</head>
+<body>
+<h1 class="page">Sakura Music · 8 Temas</h1>
+<p class="page">Cada tema muestra las pantallas reales de la app en miniaturas: Home, Biblioteca, Buscar, Now Playing, Cola y Ajustes.</p>
+<p class="note">Todos los temas usan la MISMA estructura de app (barra, nav, header, biblioteca, reproductor) — solo cambia la PALETA y la personalidad, aplicada igual en todas las pantallas.</p>
+
+<div class="wrap">
+
+<!-- ===== 1 · BOSQUE MÍSTICO ===== -->
+<div class="topic">
+  <div class="topic-head"><h2>01 · Bosque Místico</h2><span>Verde esmeralda + oro · sereno</span></div>
+  <div class="screens">
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#0d2418,#1a3a24);color:#eafff5">
+        <div class="ttb" style="background:#0e2519;border-bottom:1px solid rgba(52,211,153,.25)"><div class="logo" style="background:linear-gradient(135deg,#34d399,#059669)">桜</div><span class="nm">Sakura</span><span class="sp"></span><span class="bx">─ ▢ ✕</span></div>
+        <div class="tnav"><span class="pill on" style="background:linear-gradient(135deg,#34d399,#10b981);color:#04281b">Inicio</span><span class="pill">Biblioteca</span><span class="pill">Buscar</span><span class="pill">Ajustes</span></div>
+        <div class="sc-body">
+          <div class="albumhead"><div class="art" style="background:radial-gradient(circle at 35% 30%,#bbf7d0,#15803d 60%)">🌲</div><div class="copy"><small style="color:#fbbf24">ÁLBUM</small><b>Forest Lofi</b><span>Chill Nature · 2023</span><div class="btns"><span class="pl" style="background:linear-gradient(135deg,#10b981,#34d399)">▶ Reproducir</span></div></div></div>
+          <div class="trow on" style="background:rgba(52,211,153,.12)"><span class="n">♪</span><div class="thm" style="background:linear-gradient(135deg,#34d399,#065f46)"></div><div class="c"><b>Morning Dew</b><small>Chill Nature</small></div><span class="d">3:32</span></div>
+          <div class="trow"><span class="n">2</span><div class="thm" style="background:linear-gradient(135deg,#6ee7b7,#059669)"></div><div class="c"><b>River Flow</b><small>Chill Nature</small></div><span class="d">4:10</span></div>
+          <div class="trow"><span class="n">3</span><div class="thm" style="background:linear-gradient(135deg,#bbf7d0,#15803d)"></div><div class="c"><b>Canopy</b><small>Chill Nature</small></div><span class="d">3:54</span></div>
+        </div>
+      </div>
+      <div class="th-cap">① HOME</div>
+    </div>
+
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#0d2418,#1a3a24);color:#eafff5">
+        <div class="ttb" style="background:#0e2519;border-bottom:1px solid rgba(52,211,153,.25)"><div class="logo" style="background:linear-gradient(135deg,#34d399,#059669)">桜</div><span class="nm">Sakura</span><span class="sp"></span></div>
+        <div class="tnav"><span class="pill on" style="background:linear-gradient(135deg,#34d399,#10b981);color:#04281b">Biblioteca</span><span class="pill">Buscar</span></div>
+        <div class="scgrid">
+          <div class="card" style="background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.2)"><div class="carm" style="background:linear-gradient(135deg,#34d399,#065f46)">🌲</div><div class="ccap"><b>Forest Lofi</b><small>Chill Nature</small></div></div>
+          <div class="card" style="background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.2)"><div class="carm" style="background:linear-gradient(135deg,#6ee7b7,#059669)">🌿</div><div class="ccap"><b>Green</b><small>Chill</small></div></div>
+          <div class="card" style="background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.2)"><div class="carm" style="background:linear-gradient(135deg,#bbf7d0,#15803d)">🌺</div><div class="ccap"><b>Bloom</b><small>Nature</small></div></div>
+          <div class="card" style="background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.2)"><div class="carm" style="background:linear-gradient(135deg,#86efac,#047857)">🍃</div><div class="ccap"><b>Leaf</b><small>Ambient</small></div></div>
+        </div>
+      </div>
+      <div class="th-cap">② BIBLIOTECA</div>
+    </div>
+
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#0d2418,#1a3a24);color:#eafff5">
+        <div class="ttb" style="background:#0e2519;border-bottom:1px solid rgba(52,211,153,.25)"><div class="logo" style="background:linear-gradient(135deg,#34d399,#059669)">桜</div><span class="nm">Sakura</span><span class="sp"></span></div>
+        <div class="sc-search">
+          <div class="bar" style="background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.3);color:#9fe0c4">⌕ Buscar en el bosque…</div>
+          <div class="res" style="color:#76b68f">RESULTADOS</div>
+          <div class="trow on" style="background:rgba(52,211,153,.12)"><span class="n">♪</span><div class="thm" style="background:linear-gradient(135deg,#34d399,#065f46)"></div><div class="c"><b>Morning Dew</b><small>Chill Nature</small></div><span class="d">3:32</span></div>
+          <div class="trow"><span class="n">2</span><div class="thm" style="background:linear-gradient(135deg,#6ee7b7,#059669)"></div><div class="c"><b>River Flow</b><small>Chill Nature</small></div><span class="d">4:10</span></div>
+        </div>
+      </div>
+      <div class="th-cap">③ BUSCAR</div>
+    </div>
+
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#0d2418,#1a3a24);color:#eafff5">
+        <div class="ttb" style="background:#0e2519;border-bottom:1px solid rgba(52,211,153,.25)"><div class="logo" style="background:linear-gradient(135deg,#34d399,#059669)">桜</div><span class="nm">Now Playing</span><span class="sp"></span></div>
+        <div class="sc-now">
+          <div class="art" style="background:radial-gradient(circle at 35% 30%,#bbf7d0,#065f46 60%);box-shadow:0 12px 30px rgba(52,211,153,.35)">🌲</div>
+          <div class="t"><b>Morning Dew</b><small>Chill Nature · Forest Lofi</small></div>
+          <div class="seek" style="background:rgba(52,211,153,.2)"><i style="background:linear-gradient(90deg,#059669,#6ee7b7);width:56%"></i></div>
+          <div class="ctr"><span class="c">⏮</span><span class="main" style="background:linear-gradient(135deg,#10b981,#34d399);box-shadow:0 0 14px rgba(52,211,153,.5)">⏸</span><span class="c">⏭</span></div>
+        </div>
+      </div>
+      <div class="th-cap">④ NOW PLAYING</div>
+    </div>
+
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#0d2418,#1a3a24);color:#eafff5">
+        <div class="ttb" style="background:#0e2519;border-bottom:1px solid rgba(52,211,153,.25)"><div class="logo" style="background:linear-gradient(135deg,#34d399,#059669)">桜</div><span class="nm">Sakura</span><span class="sp"></span></div>
+        <div class="tnav"><span class="pill on" style="background:linear-gradient(135deg,#34d399,#10b981);color:#04281b">Cola</span><span class="pill">Escuchando</span></div>
+        <div class="sc-queue">
+          <div class="trow on" style="background:rgba(52,211,153,.12)"><span class="n">1</span><div class="thm" style="background:linear-gradient(135deg,#34d399,#065f46)"></div><div class="c"><b>Morning Dew</b><small>Chill Nature</small></div><span class="mplay" style="color:#fff;font-size:10px">▶</span></div>
+          <div class="trow"><span class="n">2</span><div class="thm" style="background:linear-gradient(135deg,#6ee7b7,#059669)"></div><div class="c"><b>River Flow</b><small>Chill Nature</small></div><span class="d">4:10</span></div>
+          <div class="trow"><span class="n">3</span><div class="thm" style="background:linear-gradient(135deg,#bbf7d0,#15803d)"></div><div class="c"><b>Canopy</b><small>Chill Nature</small></div><span class="d">3:54</span></div>
+        </div>
+      </div>
+      <div class="th-cap">⑤ COLA</div>
+    </div>
+
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#0d2418,#1a3a24);color:#eafff5">
+        <div class="ttb" style="background:#0e2519;border-bottom:1px solid rgba(52,211,153,.25)"><div class="logo" style="background:linear-gradient(135deg,#34d399,#059669)">桜</div><span class="nm">Ajustes</span><span class="sp"></span></div>
+        <div class="sc-set">
+          <div class="opt" style="background:rgba(52,211,153,.08);color:#9fe0c4"><span>Tema</span><span class="dot" style="background:linear-gradient(90deg,#059669,#34d399)"></span></div>
+          <div class="opt" style="background:rgba(52,211,153,.08);color:#9fe0c4"><span>Ecualizador</span><span>Verde ↑</span></div>
+          <div class="profile"><div class="av" style="background:linear-gradient(135deg,#34d399,#059669)">桜</div><div><b>Cuenta</b><small>Bosque</small></div></div>
+        </div>
+      </div>
+      <div class="th-cap">⑥ AJUSTES</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 2 · OCÉANO PROFUNDO ===== -->
+<div class="topic">
+  <div class="topic-head"><h2>02 · Océano Profundo</h2><span>Azul + teal · calma acuática</span></div>
+  <div class="screens">
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#061a33,#0a3a4a);color:#dff4ff">
+        <div class="ttb" style="background:#071f3a;border-bottom:1px solid rgba(34,211,238,.25)"><div class="logo" style="background:linear-gradient(135deg,#22d3ee,#0284c7)">桜</div><span class="nm">Sakura</span><span class="sp"></span><span class="bx">─ ▢ ✕</span></div>
+        <div class="tnav"><span class="pill on" style="background:linear-gradient(135deg,#22d3ee,#0891b2);color:#031830">Inicio</span><span class="pill">Biblioteca</span><span class="pill">Buscar</span><span class="pill">Ajustes</span></div>
+        <div class="sc-body">
+          <div class="albumhead"><div class="art" style="background:radial-gradient(circle at 35% 30%,#7dd3fc,#0369a1 60%)">🌊</div><div class="copy"><small style="color:#7dd3fc">ÁLBUM</small><b>Deep Blue</b><span>Ocean Waves · 2024</span><div class="btns"><span class="pl" style="background:linear-gradient(135deg,#0891b2,#22d3ee)">▶ Reproducir</span></div></div></div>
+          <div class="trow on" style="background:rgba(34,211,238,.12)"><span class="n">♪</span><div class="thm" style="background:linear-gradient(135deg,#22d3ee,#0369a1)"></div><div class="c"><b>Tide</b><small>Ocean Waves</small></div><span class="d">3:44</span></div>
+          <div class="trow"><span class="n">2</span><div class="thm" style="background:linear-gradient(135deg,#7dd3fc,#0284c7)"></div><div class="c"><b>Abyss</b><small>Ocean Waves</small></div><span class="d">4:28</span></div>
+          <div class="trow"><span class="n">3</span><div class="thm" style="background:linear-gradient(135deg,#38bdf8,#075985)"></div><div class="c"><b>Coral</b><small>Ocean Waves</small></div><span class="d">3:12</span></div>
+        </div>
+      </div>
+      <div class="th-cap">① HOME</div>
+    </div>
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#061a33,#0a3a4a);color:#dff4ff">
+        <div class="ttb" style="background:#071f3a;border-bottom:1px solid rgba(34,211,238,.25)"><div class="logo" style="background:linear-gradient(135deg,#22d3ee,#0284c7)">桜</div><span class="nm">Sakura</span><span class="sp"></span></div>
+        <div class="scgrid">
+          <div class="card" style="background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.2)"><div class="carm" style="background:linear-gradient(135deg,#22d3ee,#0369a1)">🌊</div><div class="ccap"><b>Deep Blue</b><small>Ocean</small></div></div>
+          <div class="card" style="background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.2)"><div class="carm" style="background:linear-gradient(135deg,#7dd3fc,#0284c7)">🐋</div><div class="ccap"><b>Whale</b><small>Aqua</small></div></div>
+          <div class="card" style="background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.2)"><div class="carm" style="background:linear-gradient(135deg,#38bdf8,#075985)">🦑</div><div class="ccap"><b>Squid</b><small>Deep</small></div></div>
+          <div class="card" style="background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.2)"><div class="carm" style="background:linear-gradient(135deg,#0ea5e9,#0c4a6e)">🐠</div><div class="ccap"><b>Reef</b><small>Blue</small></div></div>
+        </div>
+      </div>
+      <div class="th-cap">② BIBLIOTECA</div>
+    </div>
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#061a33,#0a3a4a);color:#dff4ff">
+        <div class="ttb" style="background:#071f3a;border-bottom:1px solid rgba(34,211,238,.25)"><div class="logo" style="background:linear-gradient(135deg,#22d3ee,#0284c7)">桜</div><span class="nm">Sakura</span><span class="sp"></span></div>
+        <div class="sc-search">
+          <div class="bar" style="background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.3);color:#8fd8ff">⌕ Buscar en el océano…</div>
+          <div class="res" style="color:#6fc3e8">RESULTADOS</div>
+          <div class="trow on" style="background:rgba(34,211,238,.12)"><span class="n">♪</span><div class="thm" style="background:linear-gradient(135deg,#22d3ee,#0369a1)"></div><div class="c"><b>Tide</b><small>Ocean Waves</small></div><span class="d">3:44</span></div>
+        </div>
+      </div>
+      <div class="th-cap">③ BUSCAR</div>
+    </div>
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#061a33,#0a3a4a);color:#dff4ff">
+        <div class="ttb" style="background:#071f3a;border-bottom:1px solid rgba(34,211,238,.25)"><div class="logo" style="background:linear-gradient(135deg,#22d3ee,#0284c7)">桜</div><span class="nm">Now Playing</span><span class="sp"></span></div>
+        <div class="sc-now">
+          <div class="art" style="background:radial-gradient(circle at 35% 30%,#7dd3fc,#0369a1 60%);box-shadow:0 12px 30px rgba(34,211,238,.3)">🌊</div>
+          <div class="t"><b>Tide</b><small>Ocean Waves · Deep Blue</small></div>
+          <div class="seek" style="background:rgba(34,211,238,.2)"><i style="background:linear-gradient(90deg,#0284c7,#7dd3fc);width:48%"></i></div>
+          <div class="ctr"><span class="c">⏮</span><span class="main" style="background:linear-gradient(135deg,#0284c7,#22d3ee)">⏸</span><span class="c">⏭</span></div>
+        </div>
+      </div>
+      <div class="th-cap">④ NOW PLAYING</div>
+    </div>
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#061a33,#0a3a4a);color:#dff4ff">
+        <div class="ttb" style="background:#071f3a;border-bottom:1px solid rgba(34,211,238,.25)"><div class="logo" style="background:linear-gradient(135deg,#22d3ee,#0284c7)">桜</div><span class="nm">Sakura</span><span class="sp"></span></div>
+        <div class="sc-queue">
+          <div class="trow on" style="background:rgba(34,211,238,.12)"><span class="n">1</span><div class="thm" style="background:linear-gradient(135deg,#22d3ee,#0369a1)"></div><div class="c"><b>Tide</b><small>Ocean Waves</small></div><span style="color:#fff;font-size:10px">▶</span></div>
+          <div class="trow"><span class="n">2</span><div class="thm" style="background:linear-gradient(135deg,#7dd3fc,#0284c7)"></div><div class="c"><b>Abyss</b><small>Ocean Waves</small></div><span class="d">4:28</span></div>
+        </div>
+      </div>
+      <div class="th-cap">⑤ COLA</div>
+    </div>
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#061a33,#0a3a4a);color:#dff4ff">
+        <div class="ttb" style="background:#071f3a;border-bottom:1px solid rgba(34,211,238,.25)"><div class="logo" style="background:linear-gradient(135deg,#22d3ee,#0284c7)">桜</div><span class="nm">Ajustes</span><span class="sp"></span></div>
+        <div class="sc-set">
+          <div class="opt" style="background:rgba(34,211,238,.08);color:#8fd8ff"><span>Tema</span><span class="dot" style="background:linear-gradient(90deg,#0284c7,#22d3ee)"></span></div>
+          <div class="profile"><div class="av" style="background:linear-gradient(135deg,#22d3ee,#0284c7)">桜</div><div><b>Cuenta</b><small>Océano</small></div></div>
+        </div>
+      </div>
+      <div class="th-cap">⑥ AJUSTES</div>
+    </div>
+  </div>
+</div>
+<!-- ===== 3 · NEÓN ROSA ===== -->
+<div class="topic">
+  <div class="topic-head"><h2>03 · Neón Rosa</h2><span>Magenta + rosa brillante · vibrante</span></div>
+  <div class="screens">
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#1a0520,#3a0b30);color:#ffe6f2">
+        <div class="ttb" style="background:#21062b;border-bottom:1px solid rgba(244,114,182,.3)"><div class="logo" style="background:linear-gradient(135deg,#f472b6,#db2777)">桜</div><span class="nm">Sakura</span><span class="sp"></span><span class="bx">─ ▢ ✕</span></div>
+        <div class="tnav"><span class="pill on" style="background:linear-gradient(135deg,#db2777,#f472b6);color:#fff">Inicio</span><span class="pill">Biblioteca</span><span class="pill">Buscar</span><span class="pill">Ajustes</span></div>
+        <div class="sc-body">
+          <div class="albumhead"><div class="art" style="background:radial-gradient(circle at 35% 30%,#fbcfe8,#db2777 60%)">🌸</div><div class="copy"><small style="color:#f472b6">ÁLBUM</small><b>Neon Pop</b><span>Pink Blast · 2025</span><div class="btns"><span class="pl" style="background:linear-gradient(135deg,#db2777,#f472b6)">▶ Reproducir</span></div></div></div>
+          <div class="trow on" style="background:rgba(244,114,182,.14)"><span class="n">♪</span><div class="thm" style="background:linear-gradient(135deg,#f472b6,#be185d)"></div><div class="c"><b>Neon Heart</b><small>Pink Blast</small></div><span class="d">3:30</span></div>
+          <div class="trow"><span class="n">2</span><div class="thm" style="background:linear-gradient(135deg,#f9a8d4,#a21caf)"></div><div class="c"><b>Pink Pop</b><small>Pink Blast</small></div><span class="d">3:08</span></div>
+          <div class="trow"><span class="n">3</span><div class="thm" style="background:linear-gradient(135deg,#fbcfe8,#db2777)"></div><div class="c"><b>Rose Gold</b><small>Pink Blast</small></div><span class="d">4:01</span></div>
+        </div>
+      </div>
+      <div class="th-cap">① HOME</div>
+    </div>
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#1a0520,#3a0b30);color:#ffe6f2">
+        <div class="ttb" style="background:#21062b;border-bottom:1px solid rgba(244,114,182,.3)"><div class="logo" style="background:linear-gradient(135deg,#f472b6,#db2777)">桜</div><span class="nm">Sakura</span><span class="sp"></span></div>
+        <div class="scgrid">
+          <div class="card" style="background:rgba(244,114,182,.08);border:1px solid rgba(244,114,182,.2)"><div class="carm" style="background:linear-gradient(135deg,#f472b6,#be185d)">🌸</div><div class="ccap"><b>Neon Pop</b><small>Pink</small></div></div>
+          <div class="card" style="background:rgba(244,114,182,.08);border:1px solid rgba(244,114,182,.2)"><div class="carm" style="background:linear-gradient(135deg,#f9a8d4,#a21caf)">💖</div><div class="ccap"><b>Love</b><small>Blast</small></div></div>
+          <div class="card" style="background:rgba(244,114,182,.08);border:1px solid rgba(244,114,182,.2)"><div class="carm" style="background:linear-gradient(135deg,#fbcfe8,#db2777)">🎀</div><div class="ccap"><b>Ribbon</b><small>Pink</small></div></div>
+          <div class="card" style="background:rgba(244,114,182,.08);border:1px solid rgba(244,114,182,.2)"><div class="carm" style="background:linear-gradient(135deg,#f472b6,#881337)">💄</div><div class="ccap"><b>Gloss</b><small>Neon</small></div></div>
+        </div>
+      </div>
+      <div class="th-cap">② BIBLIOTECA</div>
+    </div>
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#1a0520,#3a0b30);color:#ffe6f2">
+        <div class="ttb" style="background:#21062b;border-bottom:1px solid rgba(244,114,182,.3)"><div class="logo" style="background:linear-gradient(135deg,#f472b6,#db2777)">桜</div><span class="nm">Sakura</span><span class="sp"></span></div>
+        <div class="sc-search">
+          <div class="bar" style="background:rgba(244,114,182,.1);border:1px solid rgba(244,114,182,.3);color:#f0a4cc">⌕ Buscar…</div>
+          <div class="res" style="color:#e88bb6">RESULTADOS</div>
+          <div class="trow on" style="background:rgba(244,114,182,.14)"><span class="n">♪</span><div class="thm" style="background:linear-gradient(135deg,#f472b6,#be185d)"></div><div class="c"><b>Neon Heart</b><small>Pink Blast</small></div><span class="d">3:30</span></div>
+        </div>
+      </div>
+      <div class="th-cap">③ BUSCAR</div>
+    </div>
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#1a0520,#3a0b30);color:#ffe6f2">
+        <div class="ttb" style="background:#21062b;border-bottom:1px solid rgba(244,114,182,.3)"><div class="logo" style="background:linear-gradient(135deg,#f472b6,#db2777)">桜</div><span class="nm">Now Playing</span><span class="sp"></span></div>
+        <div class="sc-now">
+          <div class="art" style="background:radial-gradient(circle at 35% 30%,#fbcfe8,#db2777 60%);box-shadow:0 12px 30px rgba(244,114,182,.5)">🌸</div>
+          <div class="t"><b>Neon Heart</b><small>Pink Blast · Neon Pop</small></div>
+          <div class="seek" style="background:rgba(244,114,182,.22)"><i style="background:linear-gradient(90deg,#db2777,#f9a8d4);width:58%"></i></div>
+          <div class="ctr"><span class="c">⏮</span><span class="main" style="background:linear-gradient(135deg,#db2777,#f472b6);box-shadow:0 0 14px rgba(244,114,182,.6)">⏸</span><span class="c">⏭</span></div>
+        </div>
+      </div>
+      <div class="th-cap">④ NOW PLAYING</div>
+    </div>
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#1a0520,#3a0b30);color:#ffe6f2">
+        <div class="ttb" style="background:#21062b;border-bottom:1px solid rgba(244,114,182,.3)"><div class="logo" style="background:linear-gradient(135deg,#f472b6,#db2777)">桜</div><span class="nm">Sakura</span><span class="sp"></span></div>
+        <div class="sc-queue">
+          <div class="trow on" style="background:rgba(244,114,182,.14)"><span class="n">1</span><div class="thm" style="background:linear-gradient(135deg,#f472b6,#be185d)"></div><div class="c"><b>Neon Heart</b><small>Pink Blast</small></div><span style="color:#fff;font-size:10px">▶</span></div>
+          <div class="trow"><span class="n">2</span><div class="thm" style="background:linear-gradient(135deg,#f9a8d4,#a21caf)"></div><div class="c"><b>Pink Pop</b><small>Pink Blast</small></div><span class="d">3:08</span></div>
+        </div>
+      </div>
+      <div class="th-cap">⑤ COLA</div>
+    </div>
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#1a0520,#3a0b30);color:#ffe6f2">
+        <div class="ttb" style="background:#21062b;border-bottom:1px solid rgba(244,114,182,.3)"><div class="logo" style="background:linear-gradient(135deg,#f472b6,#db2777)">桜</div><span class="nm">Ajustes</span><span class="sp"></span></div>
+        <div class="sc-set">
+          <div class="opt" style="background:rgba(244,114,182,.1);color:#f0a4cc"><span>Tema</span><span class="dot" style="background:linear-gradient(90deg,#db2777,#f472b6)"></span></div>
+          <div class="profile"><div class="av" style="background:linear-gradient(135deg,#f472b6,#db2777)">桜</div><div><b>Cuenta</b><small>Neón</small></div></div>
+        </div>
+      </div>
+      <div class="th-cap">⑥ AJUSTES</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 4 · LAVANDA MÁGICA ===== -->
+<div class="topic">
+  <div class="topic-head"><h2>04 · Lavanda Mágica</h2><span>Violeta + lavanda · fantasía suave</span></div>
+  <div class="screens">
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#2a1a4d,#4a2a5e);color:#f3ecff">
+        <div class="ttb" style="background:#2e1e52;border-bottom:1px solid rgba(196,181,253,.3)"><div class="logo" style="background:linear-gradient(135deg,#c4b5fd,#8b5cf6)">桜</div><span class="nm">Sakura</span><span class="sp"></span><span class="bx">─ ▢ ✕</span></div>
+        <div class="tnav"><span class="pill on" style="background:linear-gradient(135deg,#7c3aed,#c4b5fd);color:#fff">Inicio</span><span class="pill">Biblioteca</span><span class="pill">Buscar</span><span class="pill">Ajustes</span></div>
+        <div class="sc-body">
+          <div class="albumhead"><div class="art" style="background:radial-gradient(circle at 35% 30%,#ede9fe,#7c3aed 60%)">🦄</div><div class="copy"><small style="color:#c4b5fd">ÁLBUM</small><b>Dreamscape</b><span>Fairy Choir · 2025</span><div class="btns"><span class="pl" style="background:linear-gradient(135deg,#7c3aed,#c4b5fd)">▶ Reproducir</span></div></div></div>
+          <div class="trow on" style="background:rgba(196,181,253,.12)"><span class="n">♪</span><div class="thm" style="background:linear-gradient(135deg,#c4b5fd,#6d28d9)"></div><div class="c"><b>Moonlit</b><small>Fairy Choir</small></div><span class="d">4:33</span></div>
+          <div class="trow"><span class="n">2</span><div class="thm" style="background:linear-gradient(135deg,#ddd6fe,#8b5cf6)"></div><div class="c"><b>Starlight</b><small>Fairy Choir</small></div><span class="d">3:59</span></div>
+          <div class="trow"><span class="n">3</span><div class="thm" style="background:linear-gradient(135deg,#a78bfa,#4c1d95)"></div><div class="c"><b>Enchanted</b><small>Fairy Choir</small></div><span class="d">4:47</span></div>
+        </div>
+      </div>
+      <div class="th-cap">① HOME</div>
+    </div>
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#2a1a4d,#4a2a5e);color:#f3ecff">
+        <div class="ttb" style="background:#2e1e52;border-bottom:1px solid rgba(196,181,253,.3)"><div class="logo" style="background:linear-gradient(135deg,#c4b5fd,#8b5cf6)">桜</div><span class="nm">Sakura</span><span class="sp"></span></div>
+        <div class="scgrid">
+          <div class="card" style="background:rgba(196,181,253,.08);border:1px solid rgba(196,181,253,.2)"><div class="carm" style="background:linear-gradient(135deg,#c4b5fd,#6d28d9)">🦄</div><div class="ccap"><b>Dream</b><small>Fairy</small></div></div>
+          <div class="card" style="background:rgba(196,181,253,.08);border:1px solid rgba(196,181,253,.2)"><div class="carm" style="background:linear-gradient(135deg,#ddd6fe,#8b5cf6)">✨</div><div class="ccap"><b>Sparkle</b><small>Magic</small></div></div>
+          <div class="card" style="background:rgba(196,181,253,.08);border:1px solid rgba(196,181,253,.2)"><div class="carm" style="background:linear-gradient(135deg,#a78bfa,#4c1d95)">🌙</div><div class="ccap"><b>Moon</b><small>Choir</small></div></div>
+          <div class="card" style="background:rgba(196,181,253,.08);border:1px solid rgba(196,181,253,.2)"><div class="carm" style="background:linear-gradient(135deg,#f0abfc,#a21caf)">🧚</div><div class="ccap"><b>Fairy</b><small>Soft</small></div></div>
+        </div>
+      </div>
+      <div class="th-cap">② BIBLIOTECA</div>
+    </div>
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#2a1a4d,#4a2a5e);color:#f3ecff">
+        <div class="ttb" style="background:#2e1e52;border-bottom:1px solid rgba(196,181,253,.3)"><div class="logo" style="background:linear-gradient(135deg,#c4b5fd,#8b5cf6)">桜</div><span class="nm">Sakura</span><span class="sp"></span></div>
+        <div class="sc-search">
+          <div class="bar" style="background:rgba(196,181,253,.1);border:1px solid rgba(196,181,253,.3);color:#cfc2ef">⌕ Buscar magia…</div>
+          <div class="res" style="color:#b6a6df">RESULTADOS</div>
+          <div class="trow on" style="background:rgba(196,181,253,.12)"><span class="n">♪</span><div class="thm" style="background:linear-gradient(135deg,#c4b5fd,#6d28d9)"></div><div class="c"><b>Moonlit</b><small>Fairy Choir</small></div><span class="d">4:33</span></div>
+        </div>
+      </div>
+      <div class="th-cap">③ BUSCAR</div>
+    </div>
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#2a1a4d,#4a2a5e);color:#f3ecff">
+        <div class="ttb" style="background:#2e1e52;border-bottom:1px solid rgba(196,181,253,.3)"><div class="logo" style="background:linear-gradient(135deg,#c4b5fd,#8b5cf6)">桜</div><span class="nm">Now Playing</span><span class="sp"></span></div>
+        <div class="sc-now">
+          <div class="art" style="background:radial-gradient(circle at 35% 30%,#ede9fe,#7c3aed 60%);box-shadow:0 12px 30px rgba(139,92,246,.4)">🦄</div>
+          <div class="t"><b>Moonlit</b><small>Fairy Choir · Dreamscape</small></div>
+          <div class="seek" style="background:rgba(196,181,253,.2)"><i style="background:linear-gradient(90deg,#7c3aed,#ddd6fe);width:62%"></i></div>
+          <div class="ctr"><span class="c">⏮</span><span class="main" style="background:linear-gradient(135deg,#7c3aed,#c4b5fd);box-shadow:0 0 14px rgba(139,92,246,.5)">⏸</span><span class="c">⏭</span></div>
+        </div>
+      </div>
+      <div class="th-cap">④ NOW PLAYING</div>
+    </div>
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#2a1a4d,#4a2a5e);color:#f3ecff">
+        <div class="ttb" style="background:#2e1e52;border-bottom:1px solid rgba(196,181,253,.3)"><div class="logo" style="background:linear-gradient(135deg,#c4b5fd,#8b5cf6)">桜</div><span class="nm">Sakura</span><span class="sp"></span></div>
+        <div class="sc-queue">
+          <div class="trow on" style="background:rgba(196,181,253,.12)"><span class="n">1</span><div class="thm" style="background:linear-gradient(135deg,#c4b5fd,#6d28d9)"></div><div class="c"><b>Moonlit</b><small>Fairy Choir</small></div><span style="color:#fff;font-size:10px">▶</span></div>
+          <div class="trow"><span class="n">2</span><div class="thm" style="background:linear-gradient(135deg,#ddd6fe,#8b5cf6)"></div><div class="c"><b>Starlight</b><small>Fairy Choir</small></div><span class="d">3:59</span></div>
+        </div>
+      </div>
+      <div class="th-cap">⑤ COLA</div>
+    </div>
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#2a1a4d,#4a2a5e);color:#f3ecff">
+        <div class="ttb" style="background:#2e1e52;border-bottom:1px solid rgba(196,181,253,.3)"><div class="logo" style="background:linear-gradient(135deg,#c4b5fd,#8b5cf6)">桜</div><span class="nm">Ajustes</span><span class="sp"></span></div>
+        <div class="sc-set">
+          <div class="opt" style="background:rgba(196,181,253,.1);color:#cfc2ef"><span>Tema</span><span class="dot" style="background:linear-gradient(90deg,#7c3aed,#c4b5fd)"></span></div>
+          <div class="profile"><div class="av" style="background:linear-gradient(135deg,#c4b5fd,#8b5cf6)">桜</div><div><b>Cuenta</b><small>Lavanda</small></div></div>
+        </div>
+      </div>
+      <div class="th-cap">⑥ AJUSTES</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 5 · ATARDECER DORADO ===== -->
+<div class="topic">
+  <div class="topic-head"><h2>05 · Atardecer Dorado</h2><span>Naranja + ámbar · cálido</span></div>
+  <div class="screens">
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#3a1030,#7a2a1a);color:#ffece3">
+        <div class="ttb" style="background:#3d1326;border-bottom:1px solid rgba(251,146,60,.3)"><div class="logo" style="background:linear-gradient(135deg,#fb923c,#ea580c)">桜</div><span class="nm">Sakura</span><span class="sp"></span><span class="bx">─ ▢ ✕</span></div>
+        <div class="tnav"><span class="pill on" style="background:linear-gradient(135deg,#ea580c,#fb923c);color:#fff">Inicio</span><span class="pill">Biblioteca</span><span class="pill">Buscar</span><span class="pill">Ajustes</span></div>
+        <div class="sc-body">
+          <div class="albumhead"><div class="art" style="background:radial-gradient(circle at 35% 30%,#fed7aa,#ea580c 60%)">🌇</div><div class="copy"><small style="color:#fb923c">ÁLBUM</small><b>Golden Hour</b><span>Sunset Vibes · 2022</span><div class="btns"><span class="pl" style="background:linear-gradient(135deg,#ea580c,#fb923c)">▶ Reproducir</span></div></div></div>
+          <div class="trow on" style="background:rgba(251,146,60,.14)"><span class="n">♪</span><div class="thm" style="background:linear-gradient(135deg,#fb923c,#9a3412)"></div><div class="c"><b>Dusk</b><small>Sunset Vibes</small></div><span class="d">3:22</span></div>
+          <div class="trow"><span class="n">2</span><div class="thm" style="background:linear-gradient(135deg,#fde68a,#ea580c)"></div><div class="c"><b>Amber</b><small>Sunset Vibes</small></div><span class="d">4:05</span></div>
+          <div class="trow"><span class="n">3</span><div class="thm" style="background:linear-gradient(135deg,#f97316,#7c2d12)"></div><div class="c"><b>Ember</b><small>Sunset Vibes</small></div><span class="d">3:41</span></div>
+        </div>
+      </div>
+      <div class="th-cap">① HOME</div>
+    </div>
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#3a1030,#7a2a1a);color:#ffece3">
+        <div class="ttb" style="background:#3d1326;border-bottom:1px solid rgba(251,146,60,.3)"><div class="logo" style="background:linear-gradient(135deg,#fb923c,#ea580c)">桜</div><span class="nm">Sakura</span><span class="sp"></span></div>
+        <div class="scgrid">
+          <div class="card" style="background:rgba(251,146,60,.08);border:1px solid rgba(251,146,60,.2)"><div class="carm" style="background:linear-gradient(135deg,#fb923c,#9a3412)">🌇</div><div class="ccap"><b>Hour</b><small>Sunset</small></div></div>
+          <div class="card" style="background:rgba(251,146,60,.08);border:1px solid rgba(251,146,60,.2)"><div class="carm" style="background:linear-gradient(135deg,#fde68a,#ea580c)">🌅</div><div class="ccap"><b>Glow</b><small>Vibes</small></div></div>
+          <div class="card" style="background:rgba(251,146,60,.08);border:1px solid rgba(251,146,60,.2)"><div class="carm" style="background:linear-gradient(135deg,#f97316,#7c2d12)">🔥</div><div class="ccap"><b>Flame</b><small>Warm</small></div></div>
+          <div class="card" style="background:rgba(251,146,60,.08);border:1px solid rgba(251,146,60,.2)"><div class="carm" style="background:linear-gradient(135deg,#fbbf24,#b45309)">🌞</div><div class="ccap"><b>Sun</b><small>Gold</small></div></div>
+        </div>
+      </div>
+      <div class="th-cap">② BIBLIOTECA</div>
+    </div>
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#3a1030,#7a2a1a);color:#ffece3">
+        <div class="ttb" style="background:#3d1326;border-bottom:1px solid rgba(251,146,60,.3)"><div class="logo" style="background:linear-gradient(135deg,#fb923c,#ea580c)">桜</div><span class="nm">Sakura</span><span class="sp"></span></div>
+        <div class="sc-search">
+          <div class="bar" style="background:rgba(251,146,60,.1);border:1px solid rgba(251,146,60,.3);color:#f2a170">⌕ Buscar atardecer…</div>
+          <div class="res" style="color:#e0935f">RESULTADOS</div>
+          <div class="trow on" style="background:rgba(251,146,60,.14)"><span class="n">♪</span><div class="thm" style="background:linear-gradient(135deg,#fb923c,#9a3412)"></div><div class="c"><b>Dusk</b><small>Sunset Vibes</small></div><span class="d">3:22</span></div>
+        </div>
+      </div>
+      <div class="th-cap">③ BUSCAR</div>
+    </div>
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#3a1030,#7a2a1a);color:#ffece3">
+        <div class="ttb" style="background:#3d1326;border-bottom:1px solid rgba(251,146,60,.3)"><div class="logo" style="background:linear-gradient(135deg,#fb923c,#ea580c)">桜</div><span class="nm">Now Playing</span><span class="sp"></span></div>
+        <div class="sc-now">
+          <div class="art" style="background:radial-gradient(circle at 35% 30%,#fed7aa,#ea580c 60%);box-shadow:0 12px 30px rgba(251,146,60,.5)">🌇</div>
+          <div class="t"><b>Dusk</b><small>Sunset Vibes · Golden Hour</small></div>
+          <div class="seek" style="background:rgba(251,146,60,.25)"><i style="background:linear-gradient(90deg,#ea580c,#fde68a);width:54%"></i></div>
+          <div class="ctr"><span class="c">⏮</span><span class="main" style="background:linear-gradient(135deg,#ea580c,#fb923c);box-shadow:0 0 16px rgba(251,146,60,.6)">⏸</span><span class="c">⏭</span></div>
+        </div>
+      </div>
+      <div class="th-cap">④ NOW PLAYING</div>
+    </div>
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#3a1030,#7a2a1a);color:#ffece3">
+        <div class="ttb" style="background:#3d1326;border-bottom:1px solid rgba(251,146,60,.3)"><div class="logo" style="background:linear-gradient(135deg,#fb923c,#ea580c)">桜</div><span class="nm">Sakura</span><span class="sp"></span></div>
+        <div class="sc-queue">
+          <div class="trow on" style="background:rgba(251,146,60,.14)"><span class="n">1</span><div class="thm" style="background:linear-gradient(135deg,#fb923c,#9a3412)"></div><div class="c"><b>Dusk</b><small>Sunset Vibes</small></div><span style="color:#fff;font-size:10px">▶</span></div>
+          <div class="trow"><span class="n">2</span><div class="thm" style="background:linear-gradient(135deg,#fde68a,#ea580c)"></div><div class="c"><b>Amber</b><small>Sunset Vibes</small></div><span class="d">4:05</span></div>
+        </div>
+      </div>
+      <div class="th-cap">⑤ COLA</div>
+    </div>
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#3a1030,#7a2a1a);color:#ffece3">
+        <div class="ttb" style="background:#3d1326;border-bottom:1px solid rgba(251,146,60,.3)"><div class="logo" style="background:linear-gradient(135deg,#fb923c,#ea580c)">桜</div><span class="nm">Ajustes</span><span class="sp"></span></div>
+        <div class="sc-set">
+          <div class="opt" style="background:rgba(251,146,60,.12);color:#f2a170"><span>Tema</span><span class="dot" style="background:linear-gradient(90deg,#ea580c,#fb923c)"></span></div>
+          <div class="profile"><div class="av" style="background:linear-gradient(135deg,#fb923c,#ea580c)">桜</div><div><b>Cuenta</b><small>Atardecer</small></div></div>
+        </div>
+      </div>
+      <div class="th-cap">⑥ AJUSTES</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 6 · LUNA PLATEADA ===== -->
+<div class="topic">
+  <div class="topic-head"><h2>06 · Luna Plateada</h2><span>Gris azulado · minimal nocturno</span></div>
+  <div class="screens">
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#1a2230,#2b3a4d);color:#e6edf5">
+        <div class="ttb" style="background:#1c2536;border-bottom:1px solid rgba(203,213,225,.25)"><div class="logo" style="background:linear-gradient(135deg,#cbd5e1,#64748b)">桜</div><span class="nm">Sakura</span><span class="sp"></span><span class="bx">─ ▢ ✕</span></div>
+        <div class="tnav"><span class="pill on" style="background:linear-gradient(135deg,#64748b,#cbd5e1);color:#fff">Inicio</span><span class="pill">Biblioteca</span><span class="pill">Buscar</span><span class="pill">Ajustes</span></div>
+        <div class="sc-body">
+          <div class="albumhead"><div class="art" style="background:radial-gradient(circle at 35% 30%,#e2e8f0,#475569 60%)">🌙</div><div class="copy"><small style="color:#cbd5e1">ÁLBUM</small><b>Silver Moon</b><span>Lunar · 2023</span><div class="btns"><span class="pl" style="background:linear-gradient(135deg,#64748b,#cbd5e1)">▶ Reproducir</span></div></div></div>
+          <div class="trow on" style="background:rgba(203,213,225,.1)"><span class="n">♪</span><div class="thm" style="background:linear-gradient(135deg,#cbd5e1,#475569)"></div><div class="c"><b>Midnight</b><small>Lunar</small></div><span class="d">4:12</span></div>
+          <div class="trow"><span class="n">2</span><div class="thm" style="background:linear-gradient(135deg,#94a3b8,#334155)"></div><div class="c"><b>Silver Lining</b><small>Lunar</small></div><span class="d">3:48</span></div>
+          <div class="trow"><span class="n">3</span><div class="thm" style="background:linear-gradient(135deg,#e2e8f0,#52525b)"></div><div class="c"><b>Eclipse</b><small>Lunar</small></div><span class="d">5:02</span></div>
+        </div>
+      </div>
+      <div class="th-cap">① HOME</div>
+    </div>
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#1a2230,#2b3a4d);color:#e6edf5">
+        <div class="ttb" style="background:#1c2536;border-bottom:1px solid rgba(203,213,225,.25)"><div class="logo" style="background:linear-gradient(135deg,#cbd5e1,#64748b)">桜</div><span class="nm">Sakura</span><span class="sp"></span></div>
+        <div class="scgrid">
+          <div class="card" style="background:rgba(203,213,225,.06);border:1px solid rgba(203,213,225,.2)"><div class="carm" style="background:linear-gradient(135deg,#cbd5e1,#475569)">🌙</div><div class="ccap"><b>Moon</b><small>Lunar</small></div></div>
+          <div class="card" style="background:rgba(203,213,225,.06);border:1px solid rgba(203,213,225,.2)"><div class="carm" style="background:linear-gradient(135deg,#94a3b8,#334155)">⭐</div><div class="ccap"><b>Star</b><small>Night</small></div></div>
+          <div class="card" style="background:rgba(203,213,225,.06);border:1px solid rgba(203,213,225,.2)"><div class="carm" style="background:linear-gradient(135deg,#e2e8f0,#52525b)">☁️</div><div class="ccap"><b>Cloud</b><small>Silver</small></div></div>
+          <div class="card" style="background:rgba(203,213,225,.06);border:1px solid rgba(203,213,225,.2)"><div class="carm" style="background:linear-gradient(135deg,#cbd5e1,#374151)">🌌</div><div class="ccap"><b>Galaxy</b><small>Sky</small></div></div>
+        </div>
+      </div>
+      <div class="th-cap">② BIBLIOTECA</div>
+    </div>
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#1a2230,#2b3a4d);color:#e6edf5">
+        <div class="ttb" style="background:#1c2536;border-bottom:1px solid rgba(203,213,225,.25)"><div class="logo" style="background:linear-gradient(135deg,#cbd5e1,#64748b)">桜</div><span class="nm">Sakura</span><span class="sp"></span></div>
+        <div class="sc-search">
+          <div class="bar" style="background:rgba(203,213,225,.08);border:1px solid rgba(203,213,225,.25);color:#9aa8ba">⌕ Buscar en la noche…</div>
+          <div class="res" style="color:#7b88a0">RESULTADOS</div>
+          <div class="trow on" style="background:rgba(203,213,225,.1)"><span class="n">♪</span><div class="thm" style="background:linear-gradient(135deg,#cbd5e1,#475569)"></div><div class="c"><b>Midnight</b><small>Lunar</small></div><span class="d">4:12</span></div>
+        </div>
+      </div>
+      <div class="th-cap">③ BUSCAR</div>
+    </div>
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#1a2230,#2b3a4d);color:#e6edf5">
+        <div class="ttb" style="background:#1c2536;border-bottom:1px solid rgba(203,213,225,.25)"><div class="logo" style="background:linear-gradient(135deg,#cbd5e1,#64748b)">桜</div><span class="nm">Now Playing</span><span class="sp"></span></div>
+        <div class="sc-now">
+          <div class="art" style="background:radial-gradient(circle at 35% 30%,#e2e8f0,#475569 60%);box-shadow:0 12px 30px rgba(203,213,225,.2)">🌙</div>
+          <div class="t"><b>Midnight</b><small>Lunar · Silver Moon</small></div>
+          <div class="seek" style="background:rgba(203,213,225,.18)"><i style="background:linear-gradient(90deg,#64748b,#e2e8f0);width:44%"></i></div>
+          <div class="ctr"><span class="c">⏮</span><span class="main" style="background:linear-gradient(135deg,#64748b,#cbd5e1)">⏸</span><span class="c">⏭</span></div>
+        </div>
+      </div>
+      <div class="th-cap">④ NOW PLAYING</div>
+    </div>
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#1a2230,#2b3a4d);color:#e6edf5">
+        <div class="ttb" style="background:#1c2536;border-bottom:1px solid rgba(203,213,225,.25)"><div class="logo" style="background:linear-gradient(135deg,#cbd5e1,#64748b)">桜</div><span class="nm">Sakura</span><span class="sp"></span></div>
+        <div class="sc-queue">
+          <div class="trow on" style="background:rgba(203,213,225,.1)"><span class="n">1</span><div class="thm" style="background:linear-gradient(135deg,#cbd5e1,#475569)"></div><div class="c"><b>Midnight</b><small>Lunar</small></div><span style="color:#fff;font-size:10px">▶</span></div>
+          <div class="trow"><span class="n">2</span><div class="thm" style="background:linear-gradient(135deg,#94a3b8,#334155)"></div><div class="c"><b>Silver Lining</b><small>Lunar</small></div><span class="d">3:48</span></div>
+        </div>
+      </div>
+      <div class="th-cap">⑤ COLA</div>
+    </div>
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#1a2230,#2b3a4d);color:#e6edf5">
+        <div class="ttb" style="background:#1c2536;border-bottom:1px solid rgba(203,213,225,.25)"><div class="logo" style="background:linear-gradient(135deg,#cbd5e1,#64748b)">桜</div><span class="nm">Ajustes</span><span class="sp"></span></div>
+        <div class="sc-set">
+          <div class="opt" style="background:rgba(203,213,225,.08);color:#9aa8ba"><span>Tema</span><span class="dot" style="background:linear-gradient(90deg,#64748b,#cbd5e1)"></span></div>
+          <div class="profile"><div class="av" style="background:linear-gradient(135deg,#cbd5e1,#64748b)">桜</div><div><b>Cuenta</b><small>Luna</small></div></div>
+        </div>
+      </div>
+      <div class="th-cap">⑥ AJUSTES</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 7 · MATCHA FRESCO ===== -->
+<div class="topic">
+  <div class="topic-head"><h2>07 · Matcha Fresco</h2><span>Verde menta claro · refrescante</span></div>
+  <div class="screens">
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#0f3d2c,#1a5c3d);color:#e6fff2">
+        <div class="ttb" style="background:#11482f;border-bottom:1px solid rgba(134,239,172,.3)"><div class="logo" style="background:linear-gradient(135deg,#4ade80,#166534)">桜</div><span class="nm">Sakura</span><span class="sp"></span><span class="bx">─ ▢ ✕</span></div>
+        <div class="tnav"><span class="pill on" style="background:linear-gradient(135deg,#22c55e,#4ade80);color:#06381f">Inicio</span><span class="pill">Biblioteca</span><span class="pill">Buscar</span><span class="pill">Ajustes</span></div>
+        <div class="sc-body">
+          <div class="albumhead"><div class="art" style="background:radial-gradient(circle at 35% 30%,#bbf7d0,#16a34a 60%)">🍵</div><div class="copy"><small style="color:#4ade80">ÁLBUM</small><b>Matcha Mornings</b><span>Sencha · 2024</span><div class="btns"><span class="pl" style="background:linear-gradient(135deg,#16a34a,#4ade80)">▶ Reproducir</span></div></div></div>
+          <div class="trow on" style="background:rgba(134,239,172,.12)"><span class="n">♪</span><div class="thm" style="background:linear-gradient(135deg,#4ade80,#15803d)"></div><div class="c"><b>Matcha</b><small>Sencha</small></div><span class="d">3:22</span></div>
+          <div class="trow"><span class="n">2</span><div class="thm" style="background:linear-gradient(135deg,#86efac,#16a34a)"></div><div class="c"><b>Green Leaf</b><small>Sencha</small></div><span class="d">4:00</span></div>
+          <div class="trow"><span class="n">3</span><div class="thm" style="background:linear-gradient(135deg,#bbf7d0,#0e6b34)"></div><div class="c"><b>Menta</b><small>Sencha</small></div><span class="d">3:45</span></div>
+        </div>
+      </div>
+      <div class="th-cap">① HOME</div>
+    </div>
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#0f3d2c,#1a5c3d);color:#e6fff2">
+        <div class="ttb" style="background:#11482f;border-bottom:1px solid rgba(134,239,172,.3)"><div class="logo" style="background:linear-gradient(135deg,#4ade80,#166534)">桜</div><span class="nm">Sakura</span><span class="sp"></span></div>
+        <div class="scgrid">
+          <div class="card" style="background:rgba(134,239,172,.08);border:1px solid rgba(134,239,172,.2)"><div class="carm" style="background:linear-gradient(135deg,#4ade80,#15803d)">🍵</div><div class="ccap"><b>Matcha</b><small>Sencha</small></div></div>
+          <div class="card" style="background:rgba(134,239,172,.08);border:1px solid rgba(134,239,172,.2)"><div class="carm" style="background:linear-gradient(135deg,#86efac,#16a34a)">🍃</div><div class="ccap"><b>Leaf</b><small>Green</small></div></div>
+          <div class="card" style="background:rgba(134,239,172,.08);border:1px solid rgba(134,239,172,.2)"><div class="carm" style="background:linear-gradient(135deg,#bbf7d0,#0e6b34)">🌿</div><div class="ccap"><b>Fresh</b><small>Menta</small></div></div>
+          <div class="card" style="background:rgba(134,239,172,.08);border:1px solid rgba(134,239,172,.2)"><div class="carm" style="background:linear-gradient(135deg,#6ee7b7,#14532d)">🍀</div><div class="ccap"><b>Lucky</b><small>Tea</small></div></div>
+        </div>
+      </div>
+      <div class="th-cap">② BIBLIOTECA</div>
+    </div>
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#0f3d2c,#1a5c3d);color:#e6fff2">
+        <div class="ttb" style="background:#11482f;border-bottom:1px solid rgba(134,239,172,.3)"><div class="logo" style="background:linear-gradient(135deg,#4ade80,#166534)">桜</div><span class="nm">Sakura</span><span class="sp"></span></div>
+        <div class="sc-search">
+          <div class="bar" style="background:rgba(134,239,172,.1);border:1px solid rgba(134,239,172,.3);color:#9fe0bb">⌕ Buscar té…</div>
+          <div class="res" style="color:#7ec9a2">RESULTADOS</div>
+          <div class="trow on" style="background:rgba(134,239,172,.12)"><span class="n">♪</span><div class="thm" style="background:linear-gradient(135deg,#4ade80,#15803d)"></div><div class="c"><b>Matcha</b><small>Sencha</small></div><span class="d">3:22</span></div>
+        </div>
+      </div>
+      <div class="th-cap">③ BUSCAR</div>
+    </div>
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#0f3d2c,#1a5c3d);color:#e6fff2">
+        <div class="ttb" style="background:#11482f;border-bottom:1px solid rgba(134,239,172,.3)"><div class="logo" style="background:linear-gradient(135deg,#4ade80,#166534)">桜</div><span class="nm">Now Playing</span><span class="sp"></span></div>
+        <div class="sc-now">
+          <div class="art" style="background:radial-gradient(circle at 35% 30%,#bbf7d0,#16a34a 60%);box-shadow:0 12px 30px rgba(134,239,172,.3)">🍵</div>
+          <div class="t"><b>Matcha</b><small>Sencha · Matcha Mornings</small></div>
+          <div class="seek" style="background:rgba(134,239,172,.2)"><i style="background:linear-gradient(90deg,#16a34a,#bbf7d0);width:52%"></i></div>
+          <div class="ctr"><span class="c">⏮</span><span class="main" style="background:linear-gradient(135deg,#16a34a,#4ade80)">⏸</span><span class="c">⏭</span></div>
+        </div>
+      </div>
+      <div class="th-cap">④ NOW PLAYING</div>
+    </div>
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#0f3d2c,#1a5c3d);color:#e6fff2">
+        <div class="ttb" style="background:#11482f;border-bottom:1px solid rgba(134,239,172,.3)"><div class="logo" style="background:linear-gradient(135deg,#4ade80,#166534)">桜</div><span class="nm">Sakura</span><span class="sp"></span></div>
+        <div class="sc-queue">
+          <div class="trow on" style="background:rgba(134,239,172,.12)"><span class="n">1</span><div class="thm" style="background:linear-gradient(135deg,#4ade80,#15803d)"></div><div class="c"><b>Matcha</b><small>Sencha</small></div><span style="color:#fff;font-size:10px">▶</span></div>
+          <div class="trow"><span class="n">2</span><div class="thm" style="background:linear-gradient(135deg,#86efac,#16a34a)"></div><div class="c"><b>Green Leaf</b><small>Sencha</small></div><span class="d">4:00</span></div>
+        </div>
+      </div>
+      <div class="th-cap">⑤ COLA</div>
+    </div>
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#0f3d2c,#1a5c3d);color:#e6fff2">
+        <div class="ttb" style="background:#11482f;border-bottom:1px solid rgba(134,239,172,.3)"><div class="logo" style="background:linear-gradient(135deg,#4ade80,#166534)">桜</div><span class="nm">Ajustes</span><span class="sp"></span></div>
+        <div class="sc-set">
+          <div class="opt" style="background:rgba(134,239,172,.1);color:#9fe0bb"><span>Tema</span><span class="dot" style="background:linear-gradient(90deg,#16a34a,#4ade80)"></span></div>
+          <div class="profile"><div class="av" style="background:linear-gradient(135deg,#4ade80,#166534)">桜</div><div><b>Cuenta</b><small>Matcha</small></div></div>
+        </div>
+      </div>
+      <div class="th-cap">⑥ AJUSTES</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 8 · CYBERPUNK ===== -->
+<div class="topic">
+  <div class="topic-head"><h2>08 · Cyberpunk</h2><span>Cian + morado · futurista</span></div>
+  <div class="screens">
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#0b0b1f,#1b0e3a);color:#dff5ff">
+        <div class="ttb" style="background:#0d0d26;border-bottom:1px solid rgba(34,211,238,.3)"><div class="logo" style="background:linear-gradient(135deg,#22d3ee,#a855f7)">桜</div><span class="nm">Sakura</span><span class="sp"></span><span class="bx">─ ▢ ✕</span></div>
+        <div class="tnav"><span class="pill on" style="background:linear-gradient(135deg,#0891b2,#a855f7);color:#fff">Inicio</span><span class="pill">Biblioteca</span><span class="pill">Buscar</span><span class="pill">Ajustes</span></div>
+        <div class="sc-body">
+          <div class="albumhead"><div class="art" style="background:radial-gradient(circle at 35% 30%,#67e8f9,#4c1d95 60%)">🤖</div><div class="copy"><small style="color:#22d3ee">ÁLBUM</small><b>Cyber Future</b><span>Neon Unit · 2077</span><div class="btns"><span class="pl" style="background:linear-gradient(135deg,#0891b2,#a855f7)">▶ Reproducir</span></div></div></div>
+          <div class="trow on" style="background:rgba(34,211,238,.12)"><span class="n">♪</span><div class="thm" style="background:linear-gradient(135deg,#22d3ee,#0891b2)"></div><div class="c"><b>Glitch City</b><small>Neon Unit</small></div><span class="d">3:18</span></div>
+          <div class="trow"><span class="n">2</span><div class="thm" style="background:linear-gradient(135deg,#a855f7,#6d28d9)"></div><div class="c"><b>Overdrive</b><small>Neon Unit</small></div><span class="d">4:02</span></div>
+          <div class="trow"><span class="n">3</span><div class="thm" style="background:linear-gradient(135deg,#22d3ee,#a855f7)"></div><div class="c"><b>Mainframe</b><small>Neon Unit</small></div><span class="d">3:55</span></div>
+        </div>
+      </div>
+      <div class="th-cap">① HOME</div>
+    </div>
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#0b0b1f,#1b0e3a);color:#dff5ff">
+        <div class="ttb" style="background:#0d0d26;border-bottom:1px solid rgba(34,211,238,.3)"><div class="logo" style="background:linear-gradient(135deg,#22d3ee,#a855f7)">桜</div><span class="nm">Sakura</span><span class="sp"></span></div>
+        <div class="scgrid">
+          <div class="card" style="background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.2)"><div class="carm" style="background:linear-gradient(135deg,#22d3ee,#0891b2)">🤖</div><div class="ccap"><b>Future</b><small>Cyber</small></div></div>
+          <div class="card" style="background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.2)"><div class="carm" style="background:linear-gradient(135deg,#a855f7,#6d28d9)">👾</div><div class="ccap"><b>Bot</b><small>Neon</small></div></div>
+          <div class="card" style="background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.2)"><div class="carm" style="background:linear-gradient(135deg,#22d3ee,#a855f7)">🛸</div><div class="ccap"><b>Ship</b><small>Space</small></div></div>
+          <div class="card" style="background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.2)"><div class="carm" style="background:linear-gradient(135deg,#67e8f9,#4c1d95)">🔮</div><div class="ccap"><b>Glow</b><small>Unit</small></div></div>
+        </div>
+      </div>
+      <div class="th-cap">② BIBLIOTECA</div>
+    </div>
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#0b0b1f,#1b0e3a);color:#dff5ff">
+        <div class="ttb" style="background:#0d0d26;border-bottom:1px solid rgba(34,211,238,.3)"><div class="logo" style="background:linear-gradient(135deg,#22d3ee,#a855f7)">桜</div><span class="nm">Sakura</span><span class="sp"></span></div>
+        <div class="sc-search">
+          <div class="bar" style="background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.3);color:#7fe9e4">⌕ Buscar en la red…</div>
+          <div class="res" style="color:#4fb5b0">RESULTADOS</div>
+          <div class="trow on" style="background:rgba(34,211,238,.12)"><span class="n">♪</span><div class="thm" style="background:linear-gradient(135deg,#22d3ee,#0891b2)"></div><div class="c"><b>Glitch City</b><small>Neon Unit</small></div><span class="d">3:18</span></div>
+        </div>
+      </div>
+      <div class="th-cap">③ BUSCAR</div>
+    </div>
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#0b0b1f,#1b0e3a);color:#dff5ff">
+        <div class="ttb" style="background:#0d0d26;border-bottom:1px solid rgba(34,211,238,.3)"><div class="logo" style="background:linear-gradient(135deg,#22d3ee,#a855f7)">桜</div><span class="nm">Now Playing</span><span class="sp"></span></div>
+        <div class="sc-now">
+          <div class="art" style="background:radial-gradient(circle at 35% 30%,#67e8f9,#4c1d95 60%);box-shadow:0 12px 30px rgba(34,211,238,.4)">🤖</div>
+          <div class="t"><b>Glitch City</b><small>Neon Unit · Cyber Future</small></div>
+          <div class="seek" style="background:rgba(34,211,238,.2)"><i style="background:linear-gradient(90deg,#22d3ee,#a855f7);width:48%"></i></div>
+          <div class="ctr"><span class="c">⏮</span><span class="main" style="background:linear-gradient(135deg,#0891b2,#a855f7);box-shadow:0 0 14px rgba(34,211,238,.6)">⏸</span><span class="c">⏭</span></div>
+        </div>
+      </div>
+      <div class="th-cap">④ NOW PLAYING</div>
+    </div>
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#0b0b1f,#1b0e3a);color:#dff5ff">
+        <div class="ttb" style="background:#0d0d26;border-bottom:1px solid rgba(34,211,238,.3)"><div class="logo" style="background:linear-gradient(135deg,#22d3ee,#a855f7)">桜</div><span class="nm">Sakura</span><span class="sp"></span></div>
+        <div class="sc-queue">
+          <div class="trow on" style="background:rgba(34,211,238,.12)"><span class="n">1</span><div class="thm" style="background:linear-gradient(135deg,#22d3ee,#0891b2)"></div><div class="c"><b>Glitch City</b><small>Neon Unit</small></div><span style="color:#fff;font-size:10px">▶</span></div>
+          <div class="trow"><span class="n">2</span><div class="thm" style="background:linear-gradient(135deg,#a855f7,#6d28d9)"></div><div class="c"><b>Overdrive</b><small>Neon Unit</small></div><span class="d">4:02</span></div>
+        </div>
+      </div>
+      <div class="th-cap">⑤ COLA</div>
+    </div>
+    <div class="th">
+      <div class="app" style="background:linear-gradient(165deg,#0b0b1f,#1b0e3a);color:#dff5ff">
+        <div class="ttb" style="background:#0d0d26;border-bottom:1px solid rgba(34,211,238,.3)"><div class="logo" style="background:linear-gradient(135deg,#22d3ee,#a855f7)">桜</div><span class="nm">Ajustes</span><span class="sp"></span></div>
+        <div class="sc-set">
+          <div class="opt" style="background:rgba(34,211,238,.08);color:#7fe9e4"><span>Tema</span><span class="dot" style="background:linear-gradient(90deg,#22d3ee,#a855f7)"></span></div>
+          <div class="profile"><div class="av" style="background:linear-gradient(135deg,#22d3ee,#a855f7)">桜</div><div><b>Cuenta</b><small>Cyber</small></div></div>
+        </div>
+      </div>
+      <div class="th-cap">⑥ AJUSTES</div>
+    </div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

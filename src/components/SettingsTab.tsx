@@ -2,6 +2,7 @@ import { Palette, Sparkles, Layers, Sliders, Cpu, FolderOpen } from 'lucide-reac
 import type { AppInfo, PlayerStyle } from '../types';
 import LibraryDesignGallery from './LibraryDesignGallery';
 import LibraryConceptsGallery from './LibraryConceptsGallery';
+import SakuraDesignGallery from './SakuraDesignGallery';
 
 interface SettingsTabProps {
   accentGradient: string;
@@ -244,6 +245,8 @@ export default function SettingsTab({
         </div>
 
       </div>
+
+      <SakuraDesignGallery />
 
       <LibraryDesignGallery />
 

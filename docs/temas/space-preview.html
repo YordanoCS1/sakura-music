@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sakura Music · Tema Space (preview del shell real)</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#0a0a16; font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif; overflow:hidden; }
+  .app { width:1200px; height:760px; display:flex; flex-direction:column; margin:20px auto; border-radius:14px; overflow:hidden;
+    background: radial-gradient(1100px 520px at 12% -8%, rgba(109,40,217,.45), transparent 55%),
+      radial-gradient(900px 480px at 100% 0%, rgba(76,29,149,.35), transparent 55%),
+      linear-gradient(180deg,#0d0d1a,#0a0a16);
+    color:#ece6ff; box-shadow:0 20px 60px rgba(0,0,0,.6); }
+  /* titlebar */
+  .tb { display:flex; align-items:center; gap:8px; height:36px; flex:0 0 36px; padding:0 12px; background:linear-gradient(180deg,#0d0d1a,#0a0a16); border-bottom:1px solid rgba(139,92,246,.25); }
+  .tb .mark { width:20px;height:20px;border-radius:7px;background:linear-gradient(135deg,#7c3aed,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:12px;box-shadow:0 0 14px rgba(139,92,246,.5)}
+  .tb .nm { font-size:12px;font-weight:800;color:#ece6ff; }
+  .tb .sp { flex:1; }
+  .tb .b { font-size:10px; color:#a99bdc; padding:3px 7px; }
+  /* rail row: sidebar + main */
+  .rail { display:flex; flex:1; min-height:0; }
+  /* sidebar */
+  .side { width:200px; flex:0 0 200px; display:flex; flex-direction:column; padding:14px 12px; gap:4px; background:rgba(5,5,12,.85); border-right:1px solid rgba(139,92,246,.25); }
+  .side .brand { display:flex; flex-direction:column; gap:2px; padding:4px 8px 14px; margin-bottom:8px; border-bottom:1px solid rgba(139,92,246,.25); }
+  .side .brand .lo { width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#7c3aed,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 6px 18px rgba(139,92,246,.6);margin-bottom:8px}
+  .side .brand b { font-size:16px;color:#fff; }
+  .side .brand small { font-size:10px;color:#a78bfa;letter-spacing:.08em;font-weight:700; }
+  .side .item { display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:9px;font-size:12px;font-weight:700;color:#a99bdc; }
+  .side .item.on { color:#fff;background:linear-gradient(135deg,#4c1d95,#7c3aed);box-shadow:0 6px 18px rgba(139,92,246,.45); }
+  .side .item .ic { font-size:15px; }
+  .side .meta { margin-top:auto; padding-top:10px;border-top:1px solid rgba(139,92,246,.25); }
+  .side .meta .chip { font-size:10px;font-weight:700;color:#a99bdc;background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.25);padding:8px 12px;border-radius:9px;text-align:center; }
+  /* main */
+  .main { flex:1; display:flex; flex-direction:column; min-width:0; }
+  .main-top { display:flex; align-items:center; gap:10px; height:52px; flex:0 0 52px; padding:0 20px; border-bottom:1px solid rgba(139,92,246,.2); }
+  .main-top .av { margin-left:auto; font-size:10px;font-weight:700;color:#e6e0ff;background:linear-gradient(135deg,#4c1d95,#7c3aed);padding:7px 13px;border-radius:999px;box-shadow:0 4px 14px rgba(139,92,246,.4); }
+  .main-body { flex:1; padding:8px 22px 18px; overflow:hidden; background:linear-gradient(180deg,rgba(76,29,149,.3),#0a0a16 42%); }
+  /* banner nebulosa */
+  .banner { display:flex; align-items:center; gap:20px; padding:26px 30px; border-radius:20px; background: radial-gradient(ellipse at 20% 30%, rgba(139,92,246,.5), transparent 55%), radial-gradient(ellipse at 80% 90%, rgba(76,29,149,.4), transparent 55%), linear-gradient(135deg,#2a1158,#1a0b3a 60%,#0a0518); border:1px solid rgba(139,92,246,.3); }
+  .banner .art { width:100px;height:100px;border-radius:18px;background:radial-gradient(circle at 35% 30%,#e0c3ff,#5b21b6 60%);display:flex;align-items:center;justify-content:center;font-size:44px;box-shadow:0 16px 36px rgba(0,0,0,.5);flex-shrink:0}
+  .banner .c small { color:#a78bfa;font-size:10px;font-weight:800;letter-spacing:.1em; }
+  .banner .c b { display:block;font-size:26px;color:#fff;letter-spacing:-.02em; }
+  .banner .c span { font-size:12px;color:#c9b8ff; }
+  .banner .c .btn { margin-top:10px;display:inline-block;background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;padding:9px 20px;border-radius:999px;font-size:12px;font-weight:800;box-shadow:0 6px 18px rgba(139,92,246,.4); }
+  /* lista */
+  .list { margin-top:16px; display:flex; flex-direction:column; gap:6px; }
+  .row { display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px; }
+  .row.on { background:rgba(139,92,246,.14); }
+  .row .n { width:18px;text-align:center;font-size:10px;color:#8f82c0; }
+  .row .th { width:30px;height:30px;border-radius:8px; }
+  .row .c { flex:1; }
+  .row .c b{display:block;font-size:11px;color:#ece6ff}.row .c small{font-size:9px;color:#8f82c0}
+  .row .d { font-size:9.5px;color:#8f82c0;font-family:monospace; }
+  .sec-title { font-size:14px;font-weight:800;margin:16px 2px 8px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="tb"><div class="mark">桜</div><span class="nm">Sakura Music</span><span class="sp"></span><span class="b">─</span><span class="b">▢</span><span class="b">✕</span></div>
+  <div class="rail">
+    <div class="side">
+      <div class="brand"><div class="lo">桜</div><b>Sakura</b><small>SPACE</small></div>
+      <div class="item on"><span class="ic">🏠</span>Inicio</div>
+      <div class="item"><span class="ic">🔍</span>Buscar</div>
+      <div class="item"><span class="ic">📚</span>Tu Biblioteca</div>
+      <div class="item"><span class="ic">🎵</span>Cola</div>
+      <div class="item"><span class="ic">⚙️</span>Ajustes</div>
+      <div class="meta"><div class="chip">🌌 1248 pistas</div></div>
+    </div>
+    <div class="main">
+      <div class="main-top"><b style="color:#ece6ff;font-size:15px">Inicio</b><div class="av">桜 Astral</div></div>
+      <div class="main-body">
+        <div class="banner">
+          <div class="art">🌌</div>
+          <div class="c"><small>EN LA NEBULOSA</small><b>Nebula Dreams</b><span>Astral Ensemble · 2024 · 18 pistas</span><div class="btn">▶ Reproducir</div></div>
+        </div>
+        <div class="sec-title">Canciones de la nebulosa</div>
+        <div class="list">
+          <div class="row on"><span class="n">♪</span><div class="th" style="background:linear-gradient(135deg,#a78bfa,#5b21b6)"></div><div class="c"><b>Orion's Belt</b><small>Astral Ensemble</small></div><span class="d">4:12</span></div>
+          <div class="row"><span class="n">2</span><div class="th" style="background:linear-gradient(135deg,#c4b5fd,#7c3aed)"></div><div class="c"><b>Cosmic Drift</b><small>Astral Ensemble</small></div><span class="d">3:58</span></div>
+          <div class="row"><span class="n">3</span><div class="th" style="background:linear-gradient(135deg,#8b5cf6,#2e1065)"></div><div class="c"><b>Supernova</b><small>Astral Ensemble</small></div><span class="d">5:01</span></div>
+          <div class="row"><span class="n">4</span><div class="th" style="background:linear-gradient(135deg,#6d28d9,#1e1b4b)"></div><div class="c"><b>Moonlight</b><small>Astral Ensemble</small></div><span class="d">4:33</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

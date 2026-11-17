@@ -3,10 +3,13 @@ import { invoke } from '@tauri-apps/api/core';
 import { convertFileSrc } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { open } from '@tauri-apps/plugin-dialog';
-import { 
-  Search, 
+import {
+  Search,
   Heart,
   Sparkles,
+  X,
+  AudioLines,
+  Music2,
 } from 'lucide-react';
 
 import type {
@@ -31,6 +34,7 @@ import SearchTab from './components/SearchTab';
 import LibraryTab from './components/LibraryTab';
 import LibraryToolbar from './components/LibraryToolbar';
 import MetadataModal from './components/MetadataModal';
+import TitleBar from './components/TitleBar';
 import BatchModal from './components/BatchModal';
 import DeleteTracksDialog from './components/DeleteTracksDialog';
 import { useDownloadQueue } from './hooks/useDownloadQueue';
@@ -41,7 +45,7 @@ import { usePlayer } from './hooks/usePlayer';
 export default function App() {
   const [activeTab, setActiveTab] = useState<AppTab>('library');
   const libraryScrollRef = useRef<HTMLDivElement>(null);
-  const theme = 'm3zen' as ThemeMode;
+  const theme = 'space' as ThemeMode;
   const themeWorld = 'sakura_zen' as ThemeWorld;
   const [playerStyle, setPlayerStyle] = useState<PlayerStyle>(() => {
     return (localStorage.getItem('sakura_player_style') as PlayerStyle) || 'floating';
@@ -595,15 +599,24 @@ export default function App() {
     metadataFeedback,
     catalogQuery, setCatalogQuery,
     catalogSource, setCatalogSource,
+    catalogMode, setCatalogMode,
     catalogResults,
     isSearchingCatalog,
     catalogError,
+    catalogAlbums,
+    openedAlbum,
+    catalogAlbumTracks,
+    isOpeningAlbum,
+    albumLink, setAlbumLink,
     openEditModal,
     resetField,
     resetAllFields,
     pickNewCoverImage,
     searchCatalog,
+    openAlbum,
+    openAlbumByLink,
     applyCandidate,
+    applyAlbumTrack,
     handlePaste,
     handleSaveMetadata,
   } = meta;
@@ -651,6 +664,20 @@ export default function App() {
       badge: 'bg-rose-500/15 text-rose-200 border-rose-400/30',
       border: 'border-rose-400/40',
     },
+    forest: {
+      glow1: 'bg-emerald-400/25',
+      glow2: 'bg-green-700/20',
+      accent: 'from-emerald-500 to-green-600',
+      badge: 'bg-emerald-500/15 text-emerald-100 border-emerald-400/30',
+      border: 'border-emerald-400/40',
+    },
+    space: {
+      glow1: 'bg-purple-500/25',
+      glow2: 'bg-indigo-700/20',
+      accent: 'from-purple-500 to-indigo-500',
+      badge: 'bg-purple-500/15 text-purple-100 border-purple-400/30',
+      border: 'border-purple-400/40',
+    },
   };
 
   const currentTheme = themeGlows[theme];
@@ -680,7 +707,7 @@ export default function App() {
     <div 
       data-theme={theme}
       data-world={themeWorld}
-      className={`app-shell relative w-screen h-screen flex overflow-hidden ${worldStyle.bgClass} font-sans text-gray-100 select-none ${isWWM ? 'theme-where-winds-meet' : ''}`}
+      className={`app-shell relative w-screen h-screen flex flex-col overflow-hidden ${worldStyle.bgClass} font-sans text-gray-100 select-none ${isWWM ? 'theme-where-winds-meet' : ''}`}
       style={{
         '--glass-opacity': `${glassOpacity / 100}`,
         '--glass-blur': `${glassBlur}px`,
@@ -779,6 +806,11 @@ export default function App() {
         </div>
       )}
 
+      {/* Barra de título personalizada de la ventana (sin decoración nativa) */}
+      <TitleBar />
+
+      {/* Fila principal: nav + contenido */}
+      <div className="app-rail-row flex flex-1 min-h-0 overflow-hidden">
       {/* Navegación superior (M3 Zen) */}
       <ZenTopNav
         activeTab={activeTab}
@@ -792,48 +824,56 @@ export default function App() {
       {/* ========================================================= */}
       <main className="flex-1 flex flex-col overflow-hidden z-10">
         
-        {/* Barra superior de búsqueda y acciones */}
-        <header className="h-16 px-6 flex items-center justify-between border-b border-white/5 glass-card">
-          <div className="relative w-96">
-            <input 
-              type="text" 
+        {/* Barra superior moderna (búsqueda + filtros + contexto) */}
+        <header className="gh-header">
+          <div className="gh-context">
+            <span className="gh-context-dot" />
+            <span className="gh-context-label">
+              {activeTab === 'home' ? 'Inicio' :
+               activeTab === 'library' ? 'Biblioteca' :
+               activeTab === 'search' ? 'Buscar' :
+               activeTab === 'queue' ? 'Cola' : 'Ajustes'}
+            </span>
+          </div>
+
+          <div className="gh-search">
+            <Search className="gh-search-icon" />
+            <input
+              type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Buscar título, artista o álbum en milisegundos..."
-              className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-xs text-white placeholder-gray-400 focus:outline-none focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 transition-all"
+              placeholder="Buscar en tu música..."
+              className="gh-search-input"
             />
-            <Search className="w-4 h-4 absolute left-3.5 top-2.5 text-gray-400" />
-            {searchQuery && (
-              <button 
-                onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-2.5 text-[10px] bg-white/10 hover:bg-white/20 text-gray-300 px-1.5 py-0.5 rounded-full">
-                ✕
+            {searchQuery ? (
+              <button onClick={() => setSearchQuery('')} className="gh-search-clear" title="Limpiar búsqueda">
+                <X className="w-3.5 h-3.5" />
               </button>
+            ) : (
+              <span className="gh-search-kbd">⌘ K</span>
             )}
           </div>
 
-          <div className="flex items-center gap-2">
-            <button 
+          <div className="gh-filters">
+            <button
               onClick={() => setFilterChip('all')}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                filterChip === 'all' ? currentTheme.badge : 'text-gray-400 hover:text-white hover:bg-white/5'
-              }`}>
-              Todo ({tracks.length})
+              className={`gh-chip ${filterChip === 'all' ? 'is-active' : ''}`}>
+              <Music2 className="w-3.5 h-3.5" />
+              <span>Todo</span>
+              <span className="gh-chip-num">{tracks.length}</span>
             </button>
-            <button 
+            <button
               onClick={() => setFilterChip('flac')}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                filterChip === 'flac' ? currentTheme.badge : 'text-gray-400 hover:text-white hover:bg-white/5'
-              }`}>
-              FLAC
+              className={`gh-chip ${filterChip === 'flac' ? 'is-active' : ''}`}>
+              <AudioLines className="w-3.5 h-3.5" />
+              <span>FLAC</span>
             </button>
-            <button 
+            <button
               onClick={() => setFilterChip('favorites')}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1 ${
-                filterChip === 'favorites' ? currentTheme.badge : 'text-gray-400 hover:text-white hover:bg-white/5'
-              }`}>
-              <Heart className="w-3 h-3 fill-current text-accent-400" />
-              Favoritas ({favorites.length})
+              className={`gh-chip ${filterChip === 'favorites' ? 'is-active' : ''}`}>
+              <Heart className="w-3.5 h-3.5" fill={filterChip === 'favorites' ? 'currentColor' : 'none'} />
+              <span>Favoritas</span>
+              <span className="gh-chip-num">{favorites.length}</span>
             </button>
           </div>
         </header>
@@ -915,16 +955,8 @@ export default function App() {
           {/* TAB: INICIO (HOME) */}
           {activeTab === 'home' && (
             <HomeTab
-              tracks={tracks}
-              favorites={favorites}
-              downloads={downloads}
-              getCoverSrc={getCoverSrc}
-              onPlayFirst={() => {
-                if (tracks.length > 0) handlePlayTrack(tracks[0]);
-                else handleOpenFolderDialog();
-              }}
-              onPlayTrack={handlePlayTrack}
-              onGoLibrary={() => setActiveTab('library')}
+              trackCount={tracks.length}
+              onNavigate={(tab) => setActiveTab(tab)}
             />
           )}
 
@@ -1023,12 +1055,6 @@ export default function App() {
         {/* ========================================================= */}
         <PlayerBar
           playerStyle={playerStyle}
-          isWWM={isWWM}
-          accentText={worldStyle.accentText}
-          tagText={worldStyle.tagText}
-          playButtonGradient={worldStyle.playButtonGradient}
-          glowColor={worldStyle.glowColor}
-          seekAccent={worldStyle.seekAccent}
           activeTrack={activeTrack}
           favorites={favorites}
           isPlaying={isPlaying}
@@ -1048,7 +1074,6 @@ export default function App() {
           onCycleRepeat={cycleRepeatMode}
           onToggleMute={toggleMute}
           onVolumeChange={handleVolumeChange}
-          onOpenEdit={(track: ScannedTrack) => openEditModal(track)}
           onToggleFavorite={toggleFavorite}
         />
 
@@ -1074,12 +1099,23 @@ export default function App() {
           catalogResults={catalogResults}
           isSearchingCatalog={isSearchingCatalog}
           catalogError={catalogError}
+          catalogMode={catalogMode}
+          catalogAlbums={catalogAlbums}
+          openedAlbum={openedAlbum}
+          catalogAlbumTracks={catalogAlbumTracks}
+          isOpeningAlbum={isOpeningAlbum}
           getCoverSrc={getCoverSrc}
           onClose={() => setEditingTrack(null)}
           onPaste={handlePaste}
           onSetEditTab={setEditTab}
           onSearchCatalog={() => searchCatalog()}
           onApplyCandidate={applyCandidate}
+          onOpenAlbum={openAlbum}
+          onApplyAlbumTrack={applyAlbumTrack}
+          albumLink={albumLink}
+          onSetAlbumLink={setAlbumLink}
+          onOpenAlbumByLink={openAlbumByLink}
+          onSetCatalogMode={setCatalogMode}
           onPickCover={pickNewCoverImage}
           onResetField={resetField}
           onResetAll={resetAllFields}
@@ -1150,6 +1186,8 @@ export default function App() {
       />
 
       </main>
+
+      </div>
 
     </div>
   );

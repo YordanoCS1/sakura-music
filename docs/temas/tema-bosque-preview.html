@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sakura Music · Tema Bosque Místico</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Segoe UI',Arial,sans-serif; background:#0d2418; overflow:hidden; }
+  .app { position:relative; width:1200px; height:760px; display:flex; flex-direction:column; overflow:hidden;
+    background: radial-gradient(1200px 540px at 12% -8%, rgba(52,211,153,0.14), transparent 60%),
+      radial-gradient(1000px 480px at 100% 0%, rgba(251,191,36,0.08), transparent 55%),
+      linear-gradient(160deg,#0d2418 0%,#123020 50%,#1a3a24 100%);
+    color:#eafff5; }
+  /* titlebar */
+  .tb { display:flex; align-items:center; gap:8px; height:38px; flex:0 0 38px; padding:0 10px 0 12px; background:linear-gradient(180deg,#0e2519,#0b2015); border-bottom:1px solid rgba(52,211,153,.25); }
+  .tb .mark { width:22px;height:22px;border-radius:8px;background:linear-gradient(135deg,#34d399,#059669);display:flex;align-items:center;justify-content:center;font-size:13px;color:#04281b;box-shadow:0 3px 10px rgba(52,211,153,.4); }
+  .tb .nm { font-size:12px; font-weight:800; color:#eafff5; }
+  .tb .tag { font-size:9px; font-weight:700; color:#34d399; background:rgba(52,211,153,.12); border:1px solid rgba(52,211,153,.25); padding:2px 7px; border-radius:999px; }
+  .tb .sp { flex:1; }
+  .tb .b { font-size:11px; color:#9fe0c4; padding:4px 8px; border-radius:6px; }
+  /* topnav */
+  .nav { display:flex; align-items:center; gap:16px; height:64px; flex:0 0 64px; padding:0 22px; background:rgba(13,30,20,.75); border-bottom:1px solid rgba(52,211,153,.25); }
+  .nav .logo { display:flex;align-items:center;gap:10px; }
+  .nav .logo .lo { width:44px;height:44px;border-radius:50%; background:radial-gradient(circle at 50% 30%, rgba(255,255,255,.55), rgba(16,121,76,.14) 60%), linear-gradient(160deg,#064e3b,#022c22); display:flex;align-items:center;justify-content:center; color:#34d399; font-size:16px; box-shadow:0 4px 14px rgba(52,211,153,.4); }
+  .nav .logo .copy strong { display:block; color:#eafff5; font-size:15px; }
+  .nav .logo .copy small { color:#fbbf24; font-size:10px; font-weight:700; letter-spacing:.06em; }
+  .nav .tabs { display:flex; gap:4px; margin-left:8px; }
+  .nav .tabs .tab { padding:9px 18px; border-radius:13px; font-size:13px; font-weight:600; color:#76b68f; cursor:pointer; }
+  .nav .tabs .tab.on { background:linear-gradient(135deg,#34d399,#10b981); color:#04281b; box-shadow:0 4px 14px rgba(52,211,153,.4); }
+  .nav .meta { margin-left:auto; display:flex; align-items:center; gap:8px; }
+  .nav .meta .chip { padding:8px 14px; border-radius:999px; border:1px solid rgba(52,211,153,.3); background:rgba(52,211,153,.1); color:#9fe0c4; font-size:12px; font-weight:600; }
+  /* header buscar */
+  .hdr { height:68px; flex:0 0 68px; display:flex; align-items:center; gap:12px; padding:0 26px; background:rgba(13,28,19,.6); border-bottom:1px solid rgba(52,211,153,.25); }
+  .hdr .search { flex:1; max-width:360px; height:38px; border-radius:999px; background:#123020; border:1px solid rgba(52,211,153,.3); display:flex; align-items:center; padding:0 14px; color:#76b68f; font-size:12px; }
+  .hdr .btn { font-size:12px; font-weight:600; color:#76b68f; padding:9px 14px; border-radius:999px; }
+  .hdr .btn.on { background:linear-gradient(135deg,#34d399,#10b981); color:#04281b; }
+  /* cuerpo */
+  .main { flex:1; display:flex; flex-direction:column; padding:24px 28px; }
+  .alb { display:flex; align-items:flex-end; gap:18px; }
+  .alb .big { width:96px;height:96px;border-radius:18px; background:radial-gradient(circle at 35% 30%,#bbf7d0,#15803d 60%); box-shadow:0 14px 30px rgba(52,211,153,.35); display:flex;align-items:center;justify-content:center; font-size:38px; }
+  .alb .copy small { color:#fbbf24; font-size:11px; font-weight:800; letter-spacing:.1em; }
+  .alb .copy b { display:block; color:#eafff5; font-size:26px; }
+  .alb .copy span { color:#9fe0c4; font-size:13px; }
+  .alb .copy .acts { display:flex; gap:10px; margin-top:10px; }
+  .alb .copy .play { padding:10px 22px; border-radius:999px; background:linear-gradient(135deg,#10b981,#34d399); color:#04281b; font-size:13px; font-weight:800; box-shadow:0 0 16px rgba(52,211,153,.4); }
+  .alb .copy .ghost { padding:10px 22px; border-radius:999px; background:rgba(52,211,153,.12); border:1px solid rgba(52,211,153,.3); color:#9fe0c4; font-size:13px; }
+  .list { margin-top:18px; display:flex; flex-direction:column; gap:6px; }
+  .row { display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:12px; }
+  .row.on { background:rgba(52,211,153,.12); box-shadow:inset 0 0 0 1px rgba(52,211,153,.3); }
+  .row .n { width:22px; color:#76b68f; font-size:12px; text-align:center; }
+  .row .th { width:36px;height:36px;border-radius:9px; }
+  .row .c { flex:1; display:flex;flex-direction:column; }
+  .row .c b { color:#eafff5; font-size:13px; }
+  .row .c small { color:#8fc7ab; font-size:11px; }
+  .row .d { color:#76b68f; font-size:12px; font-family:monospace; }
+  /* player */
+  .player { margin:0 24px 18px; padding:12px 18px; border-radius:20px; background:#1f4029; border:1px solid rgba(52,211,153,.25); display:flex; align-items:center; gap:14px; box-shadow:0 12px 32px rgba(8,18,12,.5); }
+  .player .th { width:44px;height:44px;border-radius:11px; background:linear-gradient(135deg,#34d399,#065f46); }
+  .player .pc { flex:1; display:flex;flex-direction:column; }
+  .player .pc b { color:#eafff5; font-size:13px; }
+  .player .pc small { color:#8fc7ab; font-size:11px; }
+  .player .ctr { font-size:16px; color:#9fe0c4; }
+  .player .pl { width:38px;height:38px;border-radius:50%; background:linear-gradient(135deg,#10b981,#34d399); color:#04281b; display:flex;align-items:center;justify-content:center; font-size:14px; box-shadow:0 0 14px rgba(52,211,153,.5); }
+  .player .seek { flex:1; height:7px; border-radius:999px; background:rgba(52,211,153,.2); overflow:hidden; }
+  .player .seek i { display:block; height:100%; width:44%; background:linear-gradient(90deg,#059669,#6ee7b7); box-shadow:0 0 10px rgba(52,211,153,.5); }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="tb"><div class="mark">桜</div><span class="nm">Sakura Music</span><span class="tag">Bosque Místico</span><span class="sp"></span><span class="b">─</span><span class="b">▢</span><span class="b">✕</span></div>
+  <div class="nav">
+    <div class="logo"><div class="lo">桜</div><div class="copy"><strong>Sakura</strong><small>FOREST</small></div></div>
+    <div class="tabs"><div class="tab on">Inicio</div><div class="tab">Biblioteca</div><div class="tab">Buscar</div><div class="tab">Ajustes</div></div>
+    <div class="meta"><div class="chip">🌲 1248 pistas</div></div>
+  </div>
+  <div class="hdr"><div class="search">🔎 Buscar en el bosque…</div><div class="btn on">Todo</div><div class="btn">FLAC</div><div class="btn">Favoritas</div></div>
+  <div class="main">
+    <div class="alb">
+      <div class="big">🌲</div>
+      <div class="copy">
+        <small>ÁLBUM</small>
+        <b>Forest Lofi</b>
+        <span>Chill Nature · 2023 · Ambient</span>
+        <div class="acts"><span class="play">▶ Reproducir</span><span class="ghost">Guardar</span></div>
+      </div>
+    </div>
+    <div class="list">
+      <div class="row on"><span class="n">♪</span><div class="th" style="background:linear-gradient(135deg,#34d399,#065f46)"></div><div class="c"><b>Morning Dew</b><small>Chill Nature</small></div><span class="d">3:32</span></div>
+      <div class="row"><span class="n">2</span><div class="th" style="background:linear-gradient(135deg,#6ee7b7,#059669)"></div><div class="c"><b>River Flow</b><small>Chill Nature</small></div><span class="d">4:10</span></div>
+      <div class="row"><span class="n">3</span><div class="th" style="background:linear-gradient(135deg,#bbf7d0,#15803d)"></div><div class="c"><b>Canopy</b><small>Chill Nature</small></div><span class="d">3:54</span></div>
+    </div>
+  </div>
+  <div class="player">
+    <div class="th"></div>
+    <div class="pc"><b>Morning Dew</b><small>Chill Nature · Forest Lofi</small></div>
+    <span class="ctr">⏮</span><span class="pl">▶</span><span class="ctr">⏭</span>
+    <div class="seek"><i></i></div>
+  </div>
+</div>
+</body>
+</html>

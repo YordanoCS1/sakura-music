@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sakura Music · 3 Temas (Spotify / Apple / YouTube)</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#121212; font-family:'Segoe UI',Arial,sans-serif; padding:30px 40px; }
+  h1.page { color:#fff; font-size:25px; margin-bottom:6px; }
+  p.page { color:#b3b3b3; font-size:14px; margin-bottom:6px; }
+  p.note { color:#7a7a7a; font-size:12.5px; margin-bottom:30px; }
+  .wrap { display:flex; flex-direction:column; gap:50px; }
+  .item { display:flex; flex-direction:column; gap:12px; }
+  .item-head { display:flex; align-items:baseline; gap:14px; }
+  .item-head h2 { color:#fff; font-size:22px; }
+  .item-head span { color:#a7a7a7; font-size:13px; }
+  .shots { display:flex; gap:18px; }
+  .frame { width:548px; height:660px; border-radius:16px; overflow:hidden; position:relative; box-shadow:0 10px 30px rgba(0,0,0,.4); }
+  .fcap { height:30px; display:flex; align-items:center; padding:0 14px; font-size:10px; font-weight:800; color:#b8b8b8; background:rgba(0,0,0,.4); border-top:1px solid rgba(255,255,255,.06); }
+
+  /* ================== TEMA 1 · SPOTIFY ESPACIAL ================== */
+  .sp { display:flex; height:100%; background:#07070e; color:#fff; }
+  /* sidebar izquierda (como Spotify) */
+  .sp-side { width:170px; flex:0 0 170px; background:#05050c; display:flex; flex-direction:column; padding:14px 12px; gap:6px; }
+  .sp-side .logo { display:flex; align-items:center; gap:8px; margin-bottom:12px; }
+  .sp-side .logo .lo { width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#a78bfa,#5b21b6);display:flex;align-items:center;justify-content:center;font-size:13px;box-shadow:0 0 14px rgba(139,92,246,.6)}
+  .sp-side .logo b { font-size:14px; }
+  .sp-side .menu { font-size:11px; font-weight:700; padding:8px 9px; border-radius:8px; color:#b3a7e0; display:flex; gap:9px; align-items:center; }
+  .sp-side .menu.on { background:linear-gradient(135deg,#4c1d95,#7c3aed); color:#fff; box-shadow:0 4px 14px rgba(139,92,246,.4); }
+  .sp-side .menu .ic { font-size:14px; }
+  .sp-side .label { font-size:8.5px; font-weight:800; color:#6f6495; letter-spacing:.1em; margin:12px 4px 6px; }
+  .sp-side .playlist { font-size:10px; color:#8f82c0; padding:7px 9px; border-radius:7px; }
+  /* contenido principal */
+  .sp-main { flex:1; display:flex; flex-direction:column; min-width:0; overflow:hidden; }
+  .sp-top { display:flex; align-items:center; gap:8px; padding:12px 16px; }
+  .sp-top .nav { width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:11px;color:#b3a7e0}
+  .sp-top .user { margin-left:auto; font-size:9px; font-weight:700; color:#b3a7e0; padding:6px 10px; border-radius:999px; background:rgba(255,255,255,.06); }
+  .sp-top .user .av { display:inline-flex;width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#5b21b6);align-items:center;justify-content:center;font-size:9px;margin-right:5px}
+  .sp-body { flex:1; padding:6px 18px 16px; overflow:hidden; background:linear-gradient(180deg,rgba(76,29,149,.4),#07070e 40%); }
+  .sp-body .greet { font-size:20px; font-weight:800; margin-bottom:14px; }
+  .sp-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+  .sp-card { display:flex; align-items:center; gap:8px; background:rgba(255,255,255,.07); border-radius:8px; overflow:hidden; padding-right:8px; }
+  .sp-card .art { width:42px;height:42px; flex:0 0 42px; }
+  .sp-card b { font-size:10.5px; }
+  .sp-card .play { margin-left:auto; width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#5b21b6);display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff}
+  .sp-section { margin-top:18px; }
+  .sp-section .tt { font-size:14px; font-weight:800; margin-bottom:10px; }
+  .sp-row { display:flex; gap:14px; overflow:hidden; }
+  .sp-mini { width:96px; flex:0 0 96px; }
+  .sp-mini .art { width:96px;height:96px;border-radius:10px;box-shadow:0 6px 16px rgba(0,0,0,.5) }
+  .sp-mini b { display:block; font-size:9px; margin-top:6px; }
+  .sp-mini small { font-size:7.5px; color:#8f82c0; }
+  /* player inferior (como Spotify) */
+  .sp-player { height:60px; flex:0 0 60px; background:#05050c; border-top:1px solid rgba(139,92,246,.2); display:flex; align-items:center; gap:10px; padding:0 14px; }
+  .sp-player .th { width:40px;height:40px;border-radius:8px; }
+  .sp-player .pc { flex:0 0 120px; }
+  .sp-player .pc b{display:block;font-size:10px}.sp-player .pc small{color:#8f82c0;font-size:8.5px}
+  .sp-player .heart { color:#a78bfa; font-size:11px; }
+  .sp-player .ctr { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; }
+  .sp-player .btns { display:flex; gap:12px; color:#b3a7e0; font-size:12px; }
+  .sp-player .btns .pl { width:24px;height:24px;border-radius:50%;background:#fff;color:#05050c;display:flex;align-items:center;justify-content:center;font-size:11px; }
+  .sp-player .seek { width:100%; height:4px; border-radius:999px; background:rgba(139,92,246,.25); }
+  .sp-player .seek i { display:block;height:100%;width:40%;background:linear-gradient(90deg,#7c3aed,#a78bfa); }
+  .sp-player .vol { color:#8f82c0; font-size:11px; }
+
+  /* ================== TEMA 2 · APPLE ORIENTAL ================== */
+  .ap { display:flex; flex-direction:column; height:100%; background:linear-gradient(180deg,#e8ddd3,#f5ede6); color:#3a2a20; }
+  .ap-top { display:flex; align-items:center; gap:12px; height:52px; flex:0 0 52px; padding:0 22px; border-bottom:1px solid #d9c7b6; }
+  .ap-top b { font-size:15px; }
+  .ap-top .tabs { display:flex; gap:4px; margin-left:10px; }
+  .ap-top .tabs .t { font-size:10.5px; font-weight:700; color:#9a826b; padding:6px 10px; border-radius:999px; }
+  .ap-top .tabs .t.on { background:#b05a4a; color:#fff; }
+  .ap-top .av { margin-left:auto; width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#e8a58f,#b05a4a);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px}
+  /* carátulas grandes (como Apple) */
+  .ap-body { flex:1; padding:20px 24px; overflow:hidden; }
+  .ap-hero { display:flex; gap:20px; align-items:flex-end; margin-bottom:22px; }
+  .ap-hero .art { width:130px;height:130px;border-radius:20px;background:radial-gradient(circle at 35% 30%,#f9c9b8,#b05a4a 60%);box-shadow:0 18px 40px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;font-size:56px}
+  .ap-hero .c small{color:#b05a4a;font-size:9px;font-weight:800;letter-spacing:.1em}
+  .ap-hero .c b{display:block;font-size:24px;color:#3a2a20}.ap-hero .c span{color:#9a826b;font-size:11px}
+  .ap-hero .c .btn{margin-top:8px;display:inline-block;background:#b05a4a;color:#fff;padding:8px 18px;border-radius:999px;font-size:11px;font-weight:800}
+  .ap-section .tt{font-size:14px;font-weight:800;margin-bottom:10px;color:#3a2a20}
+  .ap-cards{display:flex;gap:16px;overflow:hidden}
+  .ap-card{flex:0 0 120px;width:120px}
+  .ap-card .art{width:120px;height:120px;border-radius:14px;box-shadow:0 8px 20px rgba(0,0,0,.15)}
+  .ap-card b{display:block;font-size:10px;margin-top:7px;color:#3a2a20}.ap-card small{font-size:8px;color:#9a826b}
+  .ap-player { height:64px; flex:0 0 64px; border-top:1px solid #d9c7b6; background:rgba(255,255,255,.7); backdrop-filter:blur(10px); display:flex; align-items:center; gap:14px; padding:0 20px; }
+  .ap-player .th { width:42px;height:42px;border-radius:10px; }
+  .ap-player .pc b{display:block;color:#3a2a20;font-size:12px}.ap-player .pc small{color:#9a826b;font-size:9px}
+  .ap-player .ctr{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px}
+  .ap-player .btns{display:flex;gap:16px;color:#9a826b;font-size:14px}
+  .ap-player .btns .pl{width:26px;height:26px;border-radius:50%;background:#b05a4a;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px}
+  .ap-player .seek{width:100%;height:4px;border-radius:999px;background:#e0d2c3}
+  .ap-player .seek i{display:block;height:100%;width:46%;background:#b05a4a}
+
+  /* ================== TEMA 3 · YOUTUBE NATURALEZA ================== */
+  .yt { display:flex; flex-direction:column; height:100%; background:#0f2418; color:#eafff0; }
+  .yt-top { display:flex; align-items:center; gap:10px; height:52px; flex:0 0 52px; padding:0 20px; border-bottom:1px solid rgba(52,211,153,.25); }
+  .yt-top .logo { display:flex;align-items:center;gap:8px }
+  .yt-top .logo .lo{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#34d399,#059669);display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff}
+  .yt-top .logo b{font-size:14px}
+  .yt-top .tab{font-size:10px;font-weight:700;color:#9fe0c4;padding:6px 12px;border-radius:999px}
+  .yt-top .tab.on{background:linear-gradient(135deg,#059669,#34d399);color:#04281b}
+  .yt-top .se{margin-left:auto;width:150px;height:28px;border-radius:999px;background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.3);display:flex;align-items:center;padding:0 10px;color:#9fe0c4;font-size:9.5px}
+  /* miniaturas grandes (como YouTube) */
+  .yt-body { flex:1; padding:16px 22px; overflow:hidden; }
+  .yt-feat { display:flex; gap:16px; margin-bottom:20px; }
+  .yt-feat .thumb { width:200px;height:120px;flex:0 0 200px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:44px;box-shadow:0 10px 24px rgba(0,0,0,.4)}
+  .yt-feat .c b{display:block;font-size:15px;color:#eafff0}.yt-feat .c span{color:#9fe0c4;font-size:10px}
+  .yt-feat .c .pl{margin-top:8px;display:inline-block;background:linear-gradient(135deg,#059669,#34d399);color:#04281b;padding:7px 14px;border-radius:999px;font-size:10px;font-weight:800}
+  .yt-section .tt{font-size:13px;font-weight:800;margin-bottom:10px}
+  .yt-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  .yt-card .thumb{width:100%;aspect-ratio:16/9;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 8px 20px rgba(0,0,0,.35)}
+  .yt-card b{display:block;font-size:9.5px;margin-top:5px}.yt-card small{font-size:8px;color:#8fc7ab}
+  .yt-player { height:58px; flex:0 0 58px; background:#0c1f14; border-top:1px solid rgba(52,211,153,.25); display:flex; align-items:center; gap:10px; padding:0 18px; }
+  .yt-player .th{width:38px;height:38px;border-radius:8px}
+  .yt-player .pc b{display:block;font-size:11px}.yt-player .pc small{color:#8fc7ab;font-size:8.5px}
+  .yt-player .ctr{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+  .yt-player .btns{display:flex;gap:12px;color:#9fe0c4;font-size:12px}
+  .yt-player .btns .pl{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#059669,#34d399);color:#04281b;display:flex;align-items:center;justify-content:center;font-size:11px}
+  .yt-player .seek{width:100%;height:4px;border-radius:999px;background:rgba(52,211,153,.2)}
+  .yt-player .seek i{display:block;height:100%;width:52%;background:linear-gradient(90deg,#059669,#6ee7b7)}
+</style>
+</head>
+<body>
+<h1 class="page">Sakura Music · 3 Temas (layouts de apps reales)</h1>
+<p class="page">Tres diseños basados en apps reales probadas, cada uno con su temática.</p>
+<p class="note">1 · Spotify (nav lateral) + espacio · 2 · Apple Music (carátulas) + oriental · 3 · YouTube Music (miniaturas) + naturaleza.</p>
+
+<div class="wrap">
+
+<!-- ===== 1 · SPOTIFY ESPACIAL ===== -->
+<div class="item">
+  <div class="item-head"><h2>01 · Spotify Espacial</h2><span>Layout Spotify (nav lateral) · temática galaxia/espacio</span></div>
+  <div class="shots">
+    <div class="frame">
+      <div class="sp">
+        <div class="sp-side">
+          <div class="logo"><div class="lo">桜</div><b style="color:#fff">Sakura</b></div>
+          <div class="menu on"><span class="ic">🏠</span>Inicio</div>
+          <div class="menu"><span class="ic">🔍</span>Buscar</div>
+          <div class="menu"><span class="ic">📚</span>Tu Biblioteca</div>
+          <div class="label">TUS PLAYLISTS</div>
+          <div class="playlist">🌌 Nebula Dreams</div>
+          <div class="playlist">🪐 Orbital</div>
+          <div class="playlist">✨ Cosmos</div>
+        </div>
+        <div class="sp-main">
+          <div class="sp-top"><span class="nav">◀</span><span class="nav">▶</span><div class="user"><span class="av">桜</span>Astral</div></div>
+          <div class="sp-body">
+            <div class="greet">Buenas noches</div>
+            <div class="sp-grid">
+              <div class="sp-card"><div class="art" style="background:linear-gradient(135deg,#a78bfa,#5b21b6)">🌌</div><b>Nebula</b><span class="play">▶</span></div>
+              <div class="sp-card"><div class="art" style="background:linear-gradient(135deg,#c4b5fd,#7c3aed)">🪐</div><b>Orbital</b><span class="play">▶</span></div>
+              <div class="sp-card"><div class="art" style="background:linear-gradient(135deg,#8b5cf6,#2e1065)">✨</div><b>Cosmos</b><span class="play">▶</span></div>
+              <div class="sp-card"><div class="art" style="background:linear-gradient(135deg,#6d28d9,#1e1b4b)">💫</div><b>Astro</b><span class="play">▶</span></div>
+            </div>
+            <div class="sp-section">
+              <div class="tt">Álbumes populares</div>
+              <div class="sp-row">
+                <div class="sp-mini"><div class="art" style="background:linear-gradient(135deg,#a78bfa,#4c1d95)">🌌</div><b>Nebula Dreams</b><small>Astral</small></div>
+                <div class="sp-mini"><div class="art" style="background:linear-gradient(135deg,#c4b5fd,#6d28d9)">🪐</div><b>Orbital</b><small>Cosmos</small></div>
+                <div class="sp-mini"><div class="art" style="background:linear-gradient(135deg,#8b5cf6,#2e1065)">✨</div><b>Starlight</b><small>Space</small></div>
+              </div>
+            </div>
+          </div>
+          <div class="sp-player">
+            <div class="th" style="background:linear-gradient(135deg,#a78bfa,#5b21b6)"></div>
+            <div class="pc"><b>Orion's Belt</b><small>Astral Ensemble</small></div>
+            <span class="heart">♡</span>
+            <div class="ctr">
+              <div class="btns"><span>⏮</span><span class="pl">▶</span><span>⏭</span></div>
+              <div class="seek"><i></i></div>
+            </div>
+            <span class="vol">🔊</span>
+          </div>
+        </div>
+      </div>
+      <div class="fcap">SPOTIFY · nav lateral + player abajo</div>
+    </div>
+    <div class="frame">
+      <div class="sp">
+        <div class="sp-side">
+          <div class="logo"><div class="lo">桜</div><b style="color:#fff">Sakura</b></div>
+          <div class="menu"><span class="ic">🏠</span>Inicio</div>
+          <div class="menu on"><span class="ic">🔍</span>Buscar</div>
+          <div class="menu"><span class="ic">📚</span>Tu Biblioteca</div>
+        </div>
+        <div class="sp-main">
+          <div class="sp-top"><span class="nav">◀</span><span class="nav">▶</span><div class="user"><span class="av">桜</span>Astral</div></div>
+          <div class="sp-body" style="background:linear-gradient(180deg,rgba(76,29,149,.4),#07070e 50%)">
+            <div class="greet" style="font-size:16px">Buscar en el espacio</div>
+            <div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border-radius:8px;padding:7px 10px;color:#b3a7e0;font-size:10px;margin-bottom:16px">🔍 ¿Qué quieres escuchar?</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px">
+              <span style="font-size:9px;font-weight:700;color:#b3a7e0;background:rgba(139,92,246,.2);padding:7px 12px;border-radius:999px">🪐 Planetas</span>
+              <span style="font-size:9px;font-weight:700;color:#b3a7e0;background:rgba(139,92,246,.2);padding:7px 12px;border-radius:999px">🌌 Nebulosas</span>
+              <span style="font-size:9px;font-weight:700;color:#b3a7e0;background:rgba(139,92,246,.2);padding:7px 12px;border-radius:999px">✨ Estrellas</span>
+            </div>
+          </div>
+          <div class="sp-player">
+            <div class="th" style="background:linear-gradient(135deg,#a78bfa,#5b21b6)"></div>
+            <div class="pc"><b>Orion's Belt</b><small>Astral Ensemble</small></div>
+            <span class="heart">♡</span>
+            <div class="ctr"><div class="btns"><span>⏮</span><span class="pl">▶</span><span>⏭</span></div><div class="seek"><i style="width:40%"></i></div></div>
+            <span class="vol">🔊</span>
+          </div>
+        </div>
+      </div>
+      <div class="fcap">SPOTIFY · Buscar</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 2 · APPLE ORIENTAL ===== -->
+<div class="item">
+  <div class="item-head"><h2>02 · Apple Oriental</h2><span>Layout Apple Music (carátulas) · temática japonesa/zen</span></div>
+  <div class="shots">
+    <div class="frame">
+      <div class="ap">
+        <div class="ap-top"><b>桜  Escuchar</b><div class="tabs"><span class="t on">Inicio</span><span class="t">Novedades</span><span class="t">Radio</span></div><div class="av">桜</div></div>
+        <div class="ap-body">
+          <div class="ap-hero">
+            <div class="art">🌸</div>
+            <div class="c"><small>ÁLBUM</small><b>Jardín de Sakura</b><span>Zen Ensemble · 2024 · Koto</span><div class="btn">▶ Reproducir</div></div>
+          </div>
+          <div class="ap-section">
+            <div class="tt">Recomendado para ti</div>
+            <div class="ap-cards">
+              <div class="ap-card"><div class="art" style="background:linear-gradient(135deg,#f9c9b8,#b05a4a)">🌸</div><b>Sakura</b><small>Zen</small></div>
+              <div class="ap-card"><div class="art" style="background:linear-gradient(135deg,#e8d8c3,#8a5a2b)">🍵</div><b>Tea House</b><small>Koto</small></div>
+              <div class="ap-card"><div class="art" style="background:linear-gradient(135deg,#d8cfc2,#5a5a4a)">🏮</div><b>Lantern</b><small>Zen</small></div>
+            </div>
+          </div>
+        </div>
+        <div class="ap-player">
+          <div class="th" style="background:linear-gradient(135deg,#f9c9b8,#b05a4a)"></div>
+          <div class="pc"><b>Sakura Rain</b><small>Zen Ensemble</small></div>
+          <div class="ctr"><div class="btns"><span>⏮</span><span class="pl">▶</span><span>⏭</span></div><div class="seek"><i></i></div></div>
+        </div>
+      </div>
+      <div class="fcap">APPLE · carátulas + player abajo</div>
+    </div>
+    <div class="frame">
+      <div class="ap">
+        <div class="ap-top"><b>桜  Biblioteca</b><div class="tabs"><span class="t">Inicio</span><span class="t on">Biblioteca</span><span class="t">Radio</span></div><div class="av">桜</div></div>
+        <div class="ap-body">
+          <div class="ap-section">
+            <div class="tt">Tu colección</div>
+            <div class="ap-cards">
+              <div class="ap-card"><div class="art" style="background:linear-gradient(135deg,#e8d8c3,#8a5a2b)">🍵</div><b>Tea House</b><small>12 pistas</small></div>
+              <div class="ap-card"><div class="art" style="background:linear-gradient(135deg,#d8cfc2,#5a5a4a)">🏮</div><b>Lantern</b><small>18 pistas</small></div>
+              <div class="ap-card"><div class="art" style="background:linear-gradient(135deg,#f9c9b8,#b05a4a)">🎋</div><b>Bamboo</b><small>9 pistas</small></div>
+            </div>
+          </div>
+        </div>
+        <div class="ap-player">
+          <div class="th" style="background:linear-gradient(135deg,#f9c9b8,#b05a4a)"></div>
+          <div class="pc"><b>Sakura Rain</b><small>Zen Ensemble</small></div>
+          <div class="ctr"><div class="btns"><span>⏮</span><span class="pl">⏸</span><span>⏭</span></div><div class="seek"><i style="width:62%"></i></div></div>
+        </div>
+      </div>
+      <div class="fcap">APPLE · Biblioteca</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 3 · YOUTUBE NATURALEZA ===== -->
+<div class="item">
+  <div class="item-head"><h2>03 · YouTube Naturaleza</h2><span>Layout YouTube Music (miniaturas) · temática naturaleza</span></div>
+  <div class="shots">
+    <div class="frame">
+      <div class="yt">
+        <div class="yt-top"><div class="logo"><div class="lo">桜</div><b style="color:#eafff0">Sakura Music</b></div><span class="tab on">Inicio</span><span class="tab">Explorar</span><span class="tab">Biblioteca</span><div class="se">⌕ Buscar…</div></div>
+        <div class="yt-body">
+          <div class="yt-feat">
+            <div class="thumb" style="background:linear-gradient(135deg,#4ade80,#065f46)">🌲</div>
+            <div class="c"><b>Forest Lofi · En vivo</b><span>Chill Nature · 1248 oyentes</span><span class="pl">▶ Reproducir</span></div>
+          </div>
+          <div class="yt-section">
+            <div class="tt">Rápido inicio</div>
+            <div class="yt-grid">
+              <div class="yt-card"><div class="thumb" style="background:linear-gradient(135deg,#34d399,#15803d)">🍃</div><b>Morning Dew</b><small>Chill Nature</small></div>
+              <div class="yt-card"><div class="thumb" style="background:linear-gradient(135deg,#6ee7b7,#059669)">🌿</div><b>River Flow</b><small>Chill Nature</small></div>
+              <div class="yt-card"><div class="thumb" style="background:linear-gradient(135deg,#bbf7d0,#0e4a22)">🌺</div><b>Canopy</b><small>Chill Nature</small></div>
+              <div class="yt-card"><div class="thumb" style="background:linear-gradient(135deg,#a7f3d0,#047857)">🌾</div><b>Summit</b><small>Chill Nature</small></div>
+            </div>
+          </div>
+        </div>
+        <div class="yt-player">
+          <div class="th" style="background:linear-gradient(135deg,#34d399,#065f46)"></div>
+          <div class="pc"><b>Morning Dew</b><small>Chill Nature</small></div>
+          <div class="ctr"><div class="btns"><span>⏮</span><span class="pl">▶</span><span>⏭</span></div><div class="seek"><i></i></div></div>
+        </div>
+      </div>
+      <div class="fcap">YOUTUBE · miniaturas + player abajo</div>
+    </div>
+    <div class="frame">
+      <div class="yt">
+        <div class="yt-top"><div class="logo"><div class="lo">桜</div><b style="color:#eafff0">Sakura Music</b></div><span class="tab">Inicio</span><span class="tab">Explorar</span><span class="tab on">Biblioteca</span><div class="se">⌕ Buscar…</div></div>
+        <div class="yt-body">
+          <div class="yt-section">
+            <div class="tt">Tu biblioteca</div>
+            <div class="yt-grid">
+              <div class="yt-card"><div class="thumb" style="background:linear-gradient(135deg,#6ee7b7,#059669)">🌿</div><b>River Flow</b><small>18 canciones</small></div>
+              <div class="yt-card"><div class="thumb" style="background:linear-gradient(135deg,#4ade80,#065f46)">🌲</div><b>Bosque</b><small>24 canciones</small></div>
+              <div class="yt-card"><div class="thumb" style="background:linear-gradient(135deg,#bbf7d0,#0e4a22)">🌺</div><b>Flora</b><small>12 canciones</small></div>
+              <div class="yt-card"><div class="thumb" style="background:linear-gradient(135deg,#a7f3d0,#047857)">🌾</div><b>Pradera</b><small>9 canciones</small></div>
+            </div>
+          </div>
+        </div>
+        <div class="yt-player">
+          <div class="th" style="background:linear-gradient(135deg,#34d399,#065f46)"></div>
+          <div class="pc"><b>Morning Dew</b><small>Chill Nature</small></div>
+          <div class="ctr"><div class="btns"><span>⏮</span><span class="pl">▶</span><span>⏭</span></div><div class="seek"><i style="width:52%"></i></div></div>
+        </div>
+      </div>
+      <div class="fcap">YOUTUBE · Biblioteca</div>
+    </div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

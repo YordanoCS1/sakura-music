@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sakura Music · 8 Temas · Todas las pantallas</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#15151c; font-family:'Segoe UI',Arial,sans-serif; padding:34px 44px; }
+  h1.page { color:#f0eef2; font-size:26px; margin-bottom:6px; }
+  p.page { color:#9a97a3; font-size:14px; margin-bottom:6px; }
+  p.note { color:#7d7a88; font-size:12.5px; margin-bottom:30px; }
+  .wrap { display:flex; flex-direction:column; gap:40px; }
+  .topic { display:flex; flex-direction:column; gap:10px; }
+  .topic-head { display:flex; align-items:baseline; gap:14px; }
+  .topic-head h2 { color:#fff; font-size:21px; }
+  .topic-head span { color:#9a97a3; font-size:13px; }
+  .screens { display:flex; gap:14px; }
+
+  /* Cada pantalla es una mini-app 180x320 */
+  .screen { width:180px; flex:0 0 180px; height:320px; border-radius:12px; overflow:hidden; position:relative; display:flex; flex-direction:column; border:1px solid rgba(255,255,255,.1); }
+  .cap { height:26px; flex:0 0 26px; display:flex; align-items:center; padding:0 10px; font-size:10px; font-weight:700; letter-spacing:.06em; color:#c9c5d4; background:rgba(255,255,255,.05); border-radius:0 0 12px 12px; border-top:1px solid rgba(255,255,255,.08); margin-top:auto; }
+  .sc-body { flex:1; display:flex; flex-direction:column; min-height:0; position:relative; }
+
+  /* ---- Mini elementos comunes ---- */
+  .mtb { height:24px; flex:0 0 24px; display:flex; align-items:center; gap:5px; padding:0 8px; }
+  .mtb .mk { width:14px;height:14px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:9px;color:#fff; }
+  .mtb .nm { font-size:9px; font-weight:700; }
+  .mtb .sp { flex:1; }
+  .mtb .b { font-size:8px; opacity:.6; }
+  .mside { width:30px; flex:0 0 30px; display:flex; flex-direction:column; align-items:center; gap:10px; padding-top:12px; }
+  .mside .i { font-size:14px; opacity:.5; }
+  .mside .i.on { opacity:1; filter:drop-shadow(0 0 8px currentColor); }
+  .mrow { display:flex; align-items:center; gap:6px; padding:6px 7px; border-radius:7px; }
+  .mrow .n { width:14px; font-size:8px; opacity:.5; text-align:center; }
+  .mrow .th { width:20px;height:20px;border-radius:6px; flex:0 0 20px; }
+  .mrow .c { flex:1; display:flex; flex-direction:column; min-width:0; }
+  .mrow .c b { font-size:8.5px; }
+  .mrow .c small { font-size:7px; opacity:.55; }
+  .mrow .d { font-size:7px; opacity:.5; }
+  .mplay { width:16px;height:16px;border-radius:50%; display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff; }
+  .mnp-art { flex:1; display:flex; align-items:center; justify-content:center; font-size:44px; }
+  .mnp-title { text-align:center; padding:4px 8px; }
+  .mnp-title b { display:block; font-size:11px; }
+  .mnp-title small { font-size:8px; opacity:.6; }
+  .mnp-seek { margin:6px 12px; height:4px; border-radius:999px; overflow:hidden; }
+  .mnp-seek i { display:block; height:100%; width:40%; border-radius:999px; }
+  .mnp-ctr { display:flex; align-items:center; justify-content:center; gap:12px; padding:6px 0 8px; }
+  .mnp-ctr .c { font-size:12px; opacity:.6; }
+  .mnp-ctr .main { width:22px;height:22px;border-radius:50%; display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff; }
+  .mcard { aspect-ratio:1; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:18px; }
+  .mcard-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:7px; padding:8px 9px; }
+  .mgrid-card { aspect-ratio:1; border-radius:8px; display:flex;align-items:flex-end; padding:6px; font-size:7px; font-weight:800; color:#fff; }
+  .mtab { padding:0 7px; font-size:8px; border-radius:6px; opacity:.6; }
+  .mtab.on { font-weight:800; opacity:1; }
+  .mtabrow { display:flex; align-items:center; gap:4px; padding:8px 9px 0; }
+  .mmozaic { display:grid; grid-template-columns:repeat(3,1fr); gap:4px; padding:8px; }
+  .mmozaic > div { aspect-ratio:1; border-radius:7px; display:flex;align-items:center;justify-content:center;font-size:15px; }
+  .mswitch { display:flex; gap:4px; padding:9px; }
+  .mswitch i { flex:1; text-align:center; font-style:normal; font-size:8px; padding:7px 0; border-radius:7px; opacity:.5; }
+  .mswitch i.on { opacity:1; font-weight:800; }
+</style>
+</head>
+<body>
+<h1 class="page">Sakura Music · 8 Temas · Todas las pantallas</h1>
+<p class="page">Cada tema muestra su look en las pantallas de la app (Home, Biblioteca, Buscar, Reproductor y Cola), no solo la portada.</p>
+<p class="note">Pantallas por tema: ① Home (portada) · ② Biblioteca (cuadrícula) · ③ Biblioteca (lista) · ④ Reproductor Now Playing · ⑤ Buscar/Cola</p>
+
+<div class="wrap">
+
+<!-- ============ TEMA 1 · CYBERPUNK ============ -->
+<div class="topic">
+  <div class="topic-head"><h2>01 · Cyberpunk</h2><span>Violeta + cian neón · futurista</span></div>
+  <div class="screens">
+    <div class="screen" style="background:linear-gradient(160deg,#0b0b1f,#1b0e3a)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#22d3ee,#a855f7)">桜</div><span class="nm" style="color:#e9f2ff">Sakura</span><span class="sp"></span><span class="b" style="color:#7fe9e4">─ ▢ ✕</span></div>
+        <div style="display:flex;flex:1;min-height:0">
+          <div class="mside" style="color:#22d3ee"><div class="i on">⌂</div><div class="i">▤</div><div class="i">⌕</div><div class="i">⚙</div></div>
+          <div style="flex:1;display:flex;flex-direction:column;padding:10px">
+            <b style="color:#e9f2ff;font-size:10px;margin-bottom:8px">Cyber Future</b>
+            <div class="mnp-art" style="background:radial-gradient(circle at 35% 30%,#22d3ee,#4c1d95 60%);box-shadow:0 0 18px rgba(34,211,238,.4)">🤖</div>
+            <div class="mnp-title"><b style="color:#fff">Glitch City</b><small style="color:#7fe9e4">Neon Unit</small></div>
+            <div class="mnp-seek" style="background:rgba(34,211,238,.2)"><i style="background:linear-gradient(90deg,#22d3ee,#a855f7)"></i></div>
+            <div class="mnp-ctr"><span class="c" style="color:#7fe9e4">⏮</span><span class="main" style="background:linear-gradient(135deg,#0891b2,#a855f7);box-shadow:0 0 10px rgba(34,211,238,.5)">▶</span><span class="c" style="color:#7fe9e4">⏭</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="cap">① HOME</div>
+    </div>
+
+    <div class="screen" style="background:linear-gradient(160deg,#0b0b1f,#1b0e3a)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#22d3ee,#a855f7)">桜</div><span class="nm" style="color:#e9f2ff">Sakura</span><span class="sp"></span></div>
+        <div class="mtabrow"><span class="mtab on" style="background:linear-gradient(135deg,#0891b2,#a855f7);color:#fff">Biblioteca</span><span class="mtab" style="color:#7fe9e4">Buscar</span></div>
+        <div class="mcard-grid">
+          <div class="mgrid-card" style="background:linear-gradient(135deg,#22d3ee,#0e7490)">Glitch</div>
+          <div class="mgrid-card" style="background:linear-gradient(135deg,#a855f7,#6d28d9)">Main</div>
+          <div class="mgrid-card" style="background:linear-gradient(135deg,#67e8f9,#0891b2)">Over</div>
+          <div class="mgrid-card" style="background:linear-gradient(135deg,#7c3aed,#4c1d95)">Neon</div>
+        </div>
+      </div>
+      <div class="cap">② BIBLIOTECA</div>
+    </div>
+
+    <div class="screen" style="background:linear-gradient(160deg,#0b0b1f,#1b0e3a)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#22d3ee,#a855f7)">桜</div><span class="nm" style="color:#e9f2ff">Sakura</span><span class="sp"></span></div>
+        <div style="padding:8px 9px">
+          <div style="height:16px;border-radius:999px;background:rgba(34,211,238,.14);border:1px solid rgba(34,211,238,.3);display:flex;align-items:center;padding:0 8px;color:#7fe9e4;font-size:8px">⌕ Buscar…</div>
+        </div>
+        <div class="mrow on" style="background:rgba(34,211,238,.12)"><span class="n" style="color:#4fb5b0">♪</span><div class="th" style="background:linear-gradient(135deg,#22d3ee,#0891b2)"></div><div class="c"><b style="color:#eafffd">Glitch City</b><small style="color:#5cc6c1">Neon Unit</small></div><span class="d" style="color:#4fb5b0">3:18</span></div>
+        <div class="mrow"><span class="n" style="color:#4fb5b0">2</span><div class="th" style="background:linear-gradient(135deg,#a855f7,#6d28d9)"></div><div class="c"><b style="color:#eafffd">Overdrive</b><small style="color:#5cc6c1">Neon Unit</small></div><span class="d" style="color:#4fb5b0">4:02</span></div>
+        <div class="mrow"><span class="n" style="color:#4fb5b0">3</span><div class="th" style="background:linear-gradient(135deg,#67e8f9,#0891b2)"></div><div class="c"><b style="color:#eafffd">Mainframe</b><small style="color:#5cc6c1">Neon Unit</small></div><span class="d" style="color:#4fb5b0">3:55</span></div>
+      </div>
+      <div class="cap">③ LISTA</div>
+    </div>
+
+    <div class="screen" style="background:linear-gradient(160deg,#0b0b1f,#1b0e3a)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#22d3ee,#a855f7)">桜</div><span class="nm" style="color:#e9f2ff">Now Playing</span><span class="sp"></span></div>
+        <div class="mnp-art" style="background:radial-gradient(circle at 35% 30%,#67e8f9,#7c3aed 60%);box-shadow:0 8px 26px rgba(34,211,238,.45)">🤖</div>
+        <div class="mnp-title"><b style="color:#fff">Glitch City</b><small style="color:#7fe9e4">Neon Unit · Cyber Future</small></div>
+        <div class="mnp-seek" style="background:rgba(34,211,238,.2)"><i style="background:linear-gradient(90deg,#22d3ee,#a855f7);width:62%"></i></div>
+        <div class="mnp-ctr"><span class="c" style="color:#7fe9e4">⏮</span><span class="main" style="background:linear-gradient(135deg,#0891b2,#a855f7);box-shadow:0 0 14px rgba(34,211,238,.6)">⏸</span><span class="c" style="color:#7fe9e4">⏭</span></div>
+      </div>
+      <div class="cap">④ NOW PLAYING</div>
+    </div>
+
+    <div class="screen" style="background:linear-gradient(160deg,#0b0b1f,#1b0e3a)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#22d3ee,#a855f7)">桜</div><span class="nm" style="color:#e9f2ff">Sakura</span><span class="sp"></span></div>
+        <div class="mtabrow"><span class="mtab on" style="background:linear-gradient(135deg,#0891b2,#a855f7);color:#fff">Cola</span><span class="mtab" style="color:#7fe9e4">Escuchando</span></div>
+        <div class="mrow on"><span class="n" style="color:#4fb5b0">1</span><div class="th" style="background:linear-gradient(135deg,#22d3ee,#0891b2)"></div><div class="c"><b style="color:#eafffd">Glitch City</b><small style="color:#5cc6c1">Neon Unit</small></div><span class="mplay" style="background:linear-gradient(135deg,#0891b2,#a855f7)">▶</span></div>
+        <div class="mrow"><span class="n" style="color:#4fb5b0">2</span><div class="th" style="background:linear-gradient(135deg,#a855f7,#6d28d9)"></div><div class="c"><b style="color:#eafffd">Overdrive</b><small style="color:#5cc6c1">Neon Unit</small></div><span class="d" style="color:#4fb5b0">4:02</span></div>
+      </div>
+      <div class="cap">⑤ COLA</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TEMA 2 · BOSQUE MÍSTICO ============ -->
+<div class="topic">
+  <div class="topic-head"><h2>02 · Bosque Místico</h2><span>Verde esmeralda + oro · naturaleza serena</span></div>
+  <div class="screens">
+    <div class="screen" style="background:linear-gradient(160deg,#0d2418,#1a3a24)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#34d399,#059669)">桜</div><span class="nm" style="color:#eafff5">Sakura</span><span class="sp"></span><span class="b" style="color:#9fe0c4">─ ▢ ✕</span></div>
+        <div style="padding:10px">
+          <b style="color:#eafff5;font-size:10px;margin-bottom:8px;display:block">Forest Lofi</b>
+          <div class="mnp-art" style="background:radial-gradient(circle at 35% 30%,#bbf7d0,#15803d 60%);box-shadow:0 0 16px rgba(52,211,153,.35)">🌲</div>
+          <div class="mnp-title"><b style="color:#fff">Morning Dew</b><small style="color:#9fe0c4">Chill Nature</small></div>
+          <div class="mnp-seek" style="background:rgba(52,211,153,.2)"><i style="background:linear-gradient(90deg,#059669,#34d399)"></i></div>
+          <div class="mnp-ctr"><span class="c" style="color:#9fe0c4">⏮</span><span class="main" style="background:linear-gradient(135deg,#059669,#34d399);box-shadow:0 0 10px rgba(52,211,153,.4)">▶</span><span class="c" style="color:#9fe0c4">⏭</span></div>
+        </div>
+      </div>
+      <div class="cap">① HOME</div>
+    </div>
+    <div class="screen" style="background:linear-gradient(160deg,#0d2418,#1a3a24)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#34d399,#059669)">桜</div><span class="nm" style="color:#eafff5">Sakura</span><span class="sp"></span></div>
+        <div class="mcard-grid">
+          <div class="mgrid-card" style="background:linear-gradient(135deg,#34d399,#065f46)">Dew</div>
+          <div class="mgrid-card" style="background:linear-gradient(135deg,#6ee7b7,#059669)">River</div>
+          <div class="mgrid-card" style="background:linear-gradient(135deg,#bbf7d0,#15803d)">Canopy</div>
+          <div class="mgrid-card" style="background:linear-gradient(135deg,#86efac,#047857)">Summit</div>
+        </div>
+      </div>
+      <div class="cap">② BIBLIOTECA</div>
+    </div>
+    <div class="screen" style="background:linear-gradient(160deg,#0d2418,#1a3a24)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#34d399,#059669)">桜</div><span class="nm" style="color:#eafff5">Sakura</span><span class="sp"></span></div>
+        <div style="padding:8px 9px"><div style="height:16px;border-radius:999px;background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.3);display:flex;align-items:center;padding:0 8px;color:#9fe0c4;font-size:8px">⌕ Buscar…</div></div>
+        <div class="mrow on" style="background:rgba(52,211,153,.12)"><span class="n" style="color:#76b68f">♪</span><div class="th" style="background:linear-gradient(135deg,#34d399,#065f46)"></div><div class="c"><b style="color:#eafff5">Morning Dew</b><small style="color:#8fc7ab">Chill Nature</small></div><span class="d" style="color:#76b68f">3:32</span></div>
+        <div class="mrow"><span class="n" style="color:#76b68f">2</span><div class="th" style="background:linear-gradient(135deg,#6ee7b7,#059669)"></div><div class="c"><b style="color:#eafff5">River Flow</b><small style="color:#8fc7ab">Chill Nature</small></div><span class="d" style="color:#76b68f">4:10</span></div>
+      </div>
+      <div class="cap">③ LISTA</div>
+    </div>
+    <div class="screen" style="background:linear-gradient(160deg,#0d2418,#1a3a24)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#34d399,#059669)">桜</div><span class="nm" style="color:#eafff5">Now Playing</span><span class="sp"></span></div>
+        <div class="mnp-art" style="background:radial-gradient(circle at 35% 30%,#bbf7d0,#065f46 60%);box-shadow:0 8px 26px rgba(52,211,153,.4)">🌲</div>
+        <div class="mnp-title"><b style="color:#fff">Morning Dew</b><small style="color:#9fe0c4">Chill Nature · Forest Lofi</small></div>
+        <div class="mnp-seek" style="background:rgba(52,211,153,.2)"><i style="background:linear-gradient(90deg,#059669,#6ee7b7);width:55%"></i></div>
+        <div class="mnp-ctr"><span class="c" style="color:#9fe0c4">⏮</span><span class="main" style="background:linear-gradient(135deg,#059669,#34d399);box-shadow:0 0 12px rgba(52,211,153,.4)">⏸</span><span class="c" style="color:#9fe0c4">⏭</span></div>
+      </div>
+      <div class="cap">④ NOW PLAYING</div>
+    </div>
+    <div class="screen" style="background:linear-gradient(160deg,#0d2418,#1a3a24)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#34d399,#059669)">桜</div><span class="nm" style="color:#eafff5">Sakura</span><span class="sp"></span></div>
+        <div class="mtabrow"><span class="mtab on" style="background:linear-gradient(135deg,#059669,#34d399);color:#fff">Cola</span><span class="mtab" style="color:#9fe0c4">Escuchando</span></div>
+        <div class="mrow on"><span class="n" style="color:#76b68f">1</span><div class="th" style="background:linear-gradient(135deg,#34d399,#065f46)"></div><div class="c"><b style="color:#eafff5">Morning Dew</b><small style="color:#8fc7ab">Chill Nature</small></div><span class="mplay" style="background:linear-gradient(135deg,#059669,#34d399)">▶</span></div>
+        <div class="mrow"><span class="n" style="color:#76b68f">2</span><div class="th" style="background:linear-gradient(135deg,#6ee7b7,#059669)"></div><div class="c"><b style="color:#eafff5">River Flow</b><small style="color:#8fc7ab">Chill Nature</small></div><span class="d" style="color:#76b68f">4:10</span></div>
+      </div>
+      <div class="cap">⑤ COLA</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TEMA 3 · OCÉANO PROFUNDO ============ -->
+<div class="topic">
+  <div class="topic-head"><h2>03 · Océano Profundo</h2><span>Azul + teal · calma acuática</span></div>
+  <div class="screens">
+    <div class="screen" style="background:linear-gradient(160deg,#061a33,#0a3a4a)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#22d3ee,#0284c7)">桜</div><span class="nm" style="color:#dff4ff">Sakura</span><span class="sp"></span><span class="b" style="color:#8fd8ff">─ ▢ ✕</span></div>
+        <div style="padding:10px">
+          <b style="color:#dff4ff;font-size:10px;margin-bottom:8px;display:block">Deep Blue</b>
+          <div class="mnp-art" style="background:radial-gradient(circle at 35% 30%,#7dd3fc,#0369a1 60%);box-shadow:0 0 16px rgba(34,211,238,.3)">🌊</div>
+          <div class="mnp-title"><b style="color:#fff">Tide</b><small style="color:#8fd8ff">Ocean Waves</small></div>
+          <div class="mnp-seek" style="background:rgba(34,211,238,.2)"><i style="background:linear-gradient(90deg,#0369a1,#22d3ee)"></i></div>
+          <div class="mnp-ctr"><span class="c" style="color:#8fd8ff">⏮</span><span class="main" style="background:linear-gradient(135deg,#0284c7,#22d3ee);box-shadow:0 0 10px rgba(34,211,238,.4)">▶</span><span class="c" style="color:#8fd8ff">⏭</span></div>
+        </div>
+      </div>
+      <div class="cap">① HOME</div>
+    </div>
+    <div class="screen" style="background:linear-gradient(160deg,#061a33,#0a3a4a)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#22d3ee,#0284c7)">桜</div><span class="nm" style="color:#dff4ff">Sakura</span><span class="sp"></span></div>
+        <div class="mcard-grid">
+          <div class="mgrid-card" style="background:linear-gradient(135deg,#22d3ee,#0284c7)">Tide</div>
+          <div class="mgrid-card" style="background:linear-gradient(135deg,#7dd3fc,#0369a1)">Abyss</div>
+          <div class="mgrid-card" style="background:linear-gradient(135deg,#38bdf8,#075985)">Coral</div>
+          <div class="mgrid-card" style="background:linear-gradient(135deg,#22d3ee,#164e63)">Depth</div>
+        </div>
+      </div>
+      <div class="cap">② BIBLIOTECA</div>
+    </div>
+    <div class="screen" style="background:linear-gradient(160deg,#061a33,#0a3a4a)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#22d3ee,#0284c7)">桜</div><span class="nm" style="color:#dff4ff">Sakura</span><span class="sp"></span></div>
+        <div style="padding:8px 9px"><div style="height:16px;border-radius:999px;background:rgba(34,211,238,.12);border:1px solid rgba(34,211,238,.3);display:flex;align-items:center;padding:0 8px;color:#8fd8ff;font-size:8px">⌕ Buscar…</div></div>
+        <div class="mrow on" style="background:rgba(34,211,238,.12)"><span class="n" style="color:#6fc3e8">♪</span><div class="th" style="background:linear-gradient(135deg,#22d3ee,#0284c7)"></div><div class="c"><b style="color:#dff4ff">Tide</b><small style="color:#8fd8ff">Ocean Waves</small></div><span class="d" style="color:#6fc3e8">3:44</span></div>
+        <div class="mrow"><span class="n" style="color:#6fc3e8">2</span><div class="th" style="background:linear-gradient(135deg,#7dd3fc,#0369a1)"></div><div class="c"><b style="color:#dff4ff">Abyss</b><small style="color:#8fd8ff">Ocean Waves</small></div><span class="d" style="color:#6fc3e8">4:28</span></div>
+      </div>
+      <div class="cap">③ LISTA</div>
+    </div>
+    <div class="screen" style="background:linear-gradient(160deg,#061a33,#0a3a4a)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#22d3ee,#0284c7)">桜</div><span class="nm" style="color:#dff4ff">Now Playing</span><span class="sp"></span></div>
+        <div class="mnp-art" style="background:radial-gradient(circle at 35% 30%,#7dd3fc,#075985 60%);box-shadow:0 8px 26px rgba(34,211,238,.35)">🌊</div>
+        <div class="mnp-title"><b style="color:#fff">Tide</b><small style="color:#8fd8ff">Ocean Waves · Deep Blue</small></div>
+        <div class="mnp-seek" style="background:rgba(34,211,238,.2)"><i style="background:linear-gradient(90deg,#0284c7,#7dd3fc);width:48%"></i></div>
+        <div class="mnp-ctr"><span class="c" style="color:#8fd8ff">⏮</span><span class="main" style="background:linear-gradient(135deg,#0284c7,#22d3ee);box-shadow:0 0 12px rgba(34,211,238,.4)">⏸</span><span class="c" style="color:#8fd8ff">⏭</span></div>
+      </div>
+      <div class="cap">④ NOW PLAYING</div>
+    </div>
+    <div class="screen" style="background:linear-gradient(160deg,#061a33,#0a3a4a)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#22d3ee,#0284c7)">桜</div><span class="nm" style="color:#dff4ff">Sakura</span><span class="sp"></span></div>
+        <div class="mtabrow"><span class="mtab on" style="background:linear-gradient(135deg,#0284c7,#22d3ee);color:#fff">Cola</span><span class="mtab" style="color:#8fd8ff">Escuchando</span></div>
+        <div class="mrow on"><span class="n" style="color:#6fc3e8">1</span><div class="th" style="background:linear-gradient(135deg,#22d3ee,#0284c7)"></div><div class="c"><b style="color:#dff4ff">Tide</b><small style="color:#8fd8ff">Ocean Waves</small></div><span class="mplay" style="background:linear-gradient(135deg,#0284c7,#22d3ee)">▶</span></div>
+        <div class="mrow"><span class="n" style="color:#6fc3e8">2</span><div class="th" style="background:linear-gradient(135deg,#7dd3fc,#0369a1)"></div><div class="c"><b style="color:#dff4ff">Abyss</b><small style="color:#8fd8ff">Ocean Waves</small></div><span class="d" style="color:#6fc3e8">4:28</span></div>
+      </div>
+      <div class="cap">⑤ COLA</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TEMA 4 · LAVANDA / VERANO ============ -->
+<div class="topic">
+  <div class="topic-head"><h2>04 · Lavanda Verano</h2><span>Lila + durazno · fresca y suave</span></div>
+  <div class="screens">
+    <div class="screen" style="background:linear-gradient(160deg,#2a1a4d,#4a2a5e)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#c4b5fd,#a78bfa)">桜</div><span class="nm" style="color:#f3ecff">Sakura</span><span class="sp"></span><span class="b" style="color:#cfc2ef">─ ▢ ✕</span></div>
+        <div style="padding:10px">
+          <b style="color:#f3ecff;font-size:10px;margin-bottom:8px;display:block">Summer Breeze</b>
+          <div class="mnp-art" style="background:radial-gradient(circle at 35% 30%,#ddd6fe,#8b5cf6 60%);box-shadow:0 0 16px rgba(167,139,250,.3)">🍇</div>
+          <div class="mnp-title"><b style="color:#fff">Lavender</b><small style="color:#cfc2ef">Soft Pop</small></div>
+          <div class="mnp-seek" style="background:rgba(196,181,253,.2)"><i style="background:linear-gradient(90deg,#8b5cf6,#c4b5fd)"></i></div>
+          <div class="mnp-ctr"><span class="c" style="color:#cfc2ef">⏮</span><span class="main" style="background:linear-gradient(135deg,#7c3aed,#c4b5fd);box-shadow:0 0 10px rgba(139,92,246,.4)">▶</span><span class="c" style="color:#cfc2ef">⏭</span></div>
+        </div>
+      </div>
+      <div class="cap">① HOME</div>
+    </div>
+    <div class="screen" style="background:linear-gradient(160deg,#2a1a4d,#4a2a5e)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#c4b5fd,#a78bfa)">桜</div><span class="nm" style="color:#f3ecff">Sakura</span><span class="sp"></span></div>
+        <div class="mcard-grid">
+          <div class="mgrid-card" style="background:linear-gradient(135deg,#c4b5fd,#7c3aed)">Lav</div>
+          <div class="mgrid-card" style="background:linear-gradient(135deg,#f0abfc,#a21caf)">Pop</div>
+          <div class="mgrid-card" style="background:linear-gradient(135deg,#ddd6fe,#6d28d9)">Bree</div>
+          <div class="mgrid-card" style="background:linear-gradient(135deg,#a78bfa,#4c1d95)">Sun</div>
+        </div>
+      </div>
+      <div class="cap">② BIBLIOTECA</div>
+    </div>
+    <div class="screen" style="background:linear-gradient(160deg,#2a1a4d,#4a2a5e)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#c4b5fd,#a78bfa)">桜</div><span class="nm" style="color:#f3ecff">Sakura</span><span class="sp"></span></div>
+        <div style="padding:8px 9px"><div style="height:16px;border-radius:999px;background:rgba(196,181,253,.12);border:1px solid rgba(196,181,253,.3);display:flex;align-items:center;padding:0 8px;color:#cfc2ef;font-size:8px">⌕ Buscar…</div></div>
+        <div class="mrow on" style="background:rgba(196,181,253,.12)"><span class="n" style="color:#b6a6df">♪</span><div class="th" style="background:linear-gradient(135deg,#c4b5fd,#7c3aed)"></div><div class="c"><b style="color:#f3ecff">Lavender</b><small style="color:#b6a6df">Soft Pop</small></div><span class="d" style="color:#b6a6df">3:12</span></div>
+        <div class="mrow"><span class="n" style="color:#b6a6df">2</span><div class="th" style="background:linear-gradient(135deg,#f0abfc,#a21caf)"></div><div class="c"><b style="color:#f3ecff">Peach</b><small style="color:#b6a6df">Soft Pop</small></div><span class="d" style="color:#b6a6df">2:58</span></div>
+      </div>
+      <div class="cap">③ LISTA</div>
+    </div>
+    <div class="screen" style="background:linear-gradient(160deg,#2a1a4d,#4a2a5e)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#c4b5fd,#a78bfa)">桜</div><span class="nm" style="color:#f3ecff">Now Playing</span><span class="sp"></span></div>
+        <div class="mnp-art" style="background:radial-gradient(circle at 35% 30%,#ddd6fe,#7c3aed 60%);box-shadow:0 8px 26px rgba(139,92,246,.35)">🍇</div>
+        <div class="mnp-title"><b style="color:#fff">Lavender</b><small style="color:#cfc2ef">Soft Pop · Summer Breeze</small></div>
+        <div class="mnp-seek" style="background:rgba(196,181,253,.2)"><i style="background:linear-gradient(90deg,#7c3aed,#ddd6fe);width:58%"></i></div>
+        <div class="mnp-ctr"><span class="c" style="color:#cfc2ef">⏮</span><span class="main" style="background:linear-gradient(135deg,#7c3aed,#c4b5fd);box-shadow:0 0 12px rgba(139,92,246,.4)">⏸</span><span class="c" style="color:#cfc2ef">⏭</span></div>
+      </div>
+      <div class="cap">④ NOW PLAYING</div>
+    </div>
+    <div class="screen" style="background:linear-gradient(160deg,#2a1a4d,#4a2a5e)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#c4b5fd,#a78bfa)">桜</div><span class="nm" style="color:#f3ecff">Sakura</span><span class="sp"></span></div>
+        <div class="mtabrow"><span class="mtab on" style="background:linear-gradient(135deg,#7c3aed,#c4b5fd);color:#fff">Cola</span><span class="mtab" style="color:#cfc2ef">Escuchando</span></div>
+        <div class="mrow on"><span class="n" style="color:#b6a6df">1</span><div class="th" style="background:linear-gradient(135deg,#c4b5fd,#7c3aed)"></div><div class="c"><b style="color:#f3ecff">Lavender</b><small style="color:#b6a6df">Soft Pop</small></div><span class="mplay" style="background:linear-gradient(135deg,#7c3aed,#c4b5fd)">▶</span></div>
+        <div class="mrow"><span class="n" style="color:#b6a6df">2</span><div class="th" style="background:linear-gradient(135deg,#f0abfc,#a21caf)"></div><div class="c"><b style="color:#f3ecff">Peach</b><small style="color:#b6a6df">Soft Pop</small></div><span class="d" style="color:#b6a6df">2:58</span></div>
+      </div>
+      <div class="cap">⑤ COLA</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TEMA 5 · BAMBÚ / MINIMAL ============ -->
+<div class="topic">
+  <div class="topic-head"><h2>05 · Bambú Minimal</h2><span>Verde suave + marfil · estética japonesa zen</span></div>
+  <div class="screens">
+    <div class="screen" style="background:linear-gradient(160deg,#eef5e8,#dce8d3)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#84a95f,#4d7c3a)">桜</div><span class="nm" style="color:#2f3a26">Sakura</span><span class="sp"></span><span class="b" style="color:#7a8a66">─ ▢ ✕</span></div>
+        <div style="padding:10px">
+          <b style="color:#2f3a26;font-size:10px;margin-bottom:8px;display:block">Bamboo Zen</b>
+          <div class="mnp-art" style="background:radial-gradient(circle at 35% 30%,#d9e6c4,#5d8a45 60%);box-shadow:0 0 12px rgba(77,124,58,.2)">🎋</div>
+          <div class="mnp-title"><b style="color:#2f3a26">Sakura Tree</b><small style="color:#7a8a66">Zen Garden</small></div>
+          <div class="mnp-seek" style="background:rgba(77,124,58,.18)"><i style="background:linear-gradient(90deg,#4d7c3a,#a3c586)"></i></div>
+          <div class="mnp-ctr"><span class="c" style="color:#7a8a66">⏮</span><span class="main" style="background:linear-gradient(135deg,#4d7c3a,#84a95f);color:#fff">▶</span><span class="c" style="color:#7a8a66">⏭</span></div>
+        </div>
+      </div>
+      <div class="cap">① HOME</div>
+    </div>
+    <div class="screen" style="background:linear-gradient(160deg,#eef5e8,#dce8d3)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#84a95f,#4d7c3a)">桜</div><span class="nm" style="color:#2f3a26">Sakura</span><span class="sp"></span></div>
+        <div class="mcard-grid">
+          <div class="mgrid-card" style="background:linear-gradient(135deg,#a3c586,#4d7c3a)">Zen</div>
+          <div class="mgrid-card" style="background:linear-gradient(135deg,#d9e6c4,#5d8a45)">Tree</div>
+          <div class="mgrid-card" style="background:linear-gradient(135deg,#84a95f,#3b6b2e)">Garden</div>
+          <div class="mgrid-card" style="background:linear-gradient(135deg,#c2d8a1,#4d7c3a)">Peace</div>
+        </div>
+      </div>
+      <div class="cap">② BIBLIOTECA</div>
+    </div>
+    <div class="screen" style="background:linear-gradient(160deg,#eef5e8,#dce8d3)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#84a95f,#4d7c3a)">桜</div><span class="nm" style="color:#2f3a26">Sakura</span><span class="sp"></span></div>
+        <div style="padding:8px 9px"><div style="height:16px;border-radius:999px;background:rgba(77,124,58,.1);border:1px solid rgba(77,124,58,.25);display:flex;align-items:center;padding:0 8px;color:#7a8a66;font-size:8px">⌕ Buscar…</div></div>
+        <div class="mrow on" style="background:rgba(77,124,58,.12)"><span class="n" style="color:#7a8a66">♪</span><div class="th" style="background:linear-gradient(135deg,#84a95f,#4d7c3a)"></div><div class="c"><b style="color:#2f3a26">Sakura Tree</b><small style="color:#7a8a66">Zen Garden</small></div><span class="d" style="color:#7a8a66">3:40</span></div>
+        <div class="mrow"><span class="n" style="color:#7a8a66">2</span><div class="th" style="background:linear-gradient(135deg,#d9e6c4,#5d8a45)"></div><div class="c"><b style="color:#2f3a26">Tea House</b><small style="color:#7a8a66">Zen Garden</small></div><span class="d" style="color:#7a8a66">2:44</span></div>
+      </div>
+      <div class="cap">③ LISTA</div>
+    </div>
+    <div class="screen" style="background:linear-gradient(160deg,#eef5e8,#dce8d3)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#84a95f,#4d7c3a)">桜</div><span class="nm" style="color:#2f3a26">Now Playing</span><span class="sp"></span></div>
+        <div class="mnp-art" style="background:radial-gradient(circle at 35% 30%,#d9e6c4,#3b6b2e 60%);box-shadow:0 8px 20px rgba(77,124,58,.25)">🎋</div>
+        <div class="mnp-title"><b style="color:#2f3a26">Sakura Tree</b><small style="color:#7a8a66">Zen Garden · Bamboo Zen</small></div>
+        <div class="mnp-seek" style="background:rgba(77,124,58,.18)"><i style="background:linear-gradient(90deg,#4d7c3a,#c2d8a1);width:52%"></i></div>
+        <div class="mnp-ctr"><span class="c" style="color:#7a8a66">⏮</span><span class="main" style="background:linear-gradient(135deg,#4d7c3a,#84a95f);color:#fff">⏸</span><span class="c" style="color:#7a8a66">⏭</span></div>
+      </div>
+      <div class="cap">④ NOW PLAYING</div>
+    </div>
+    <div class="screen" style="background:linear-gradient(160deg,#eef5e8,#dce8d3)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#84a95f,#4d7c3a)">桜</div><span class="nm" style="color:#2f3a26">Sakura</span><span class="sp"></span></div>
+        <div class="mtabrow"><span class="mtab on" style="background:linear-gradient(135deg,#4d7c3a,#84a95f);color:#fff">Cola</span><span class="mtab" style="color:#7a8a66">Escuchando</span></div>
+        <div class="mrow on"><span class="n" style="color:#7a8a66">1</span><div class="th" style="background:linear-gradient(135deg,#84a95f,#4d7c3a)"></div><div class="c"><b style="color:#2f3a26">Sakura Tree</b><small style="color:#7a8a66">Zen Garden</small></div><span class="mplay" style="background:linear-gradient(135deg,#4d7c3a,#84a95f)">▶</span></div>
+        <div class="mrow"><span class="n" style="color:#7a8a66">2</span><div class="th" style="background:linear-gradient(135deg,#d9e6c4,#5d8a45)"></div><div class="c"><b style="color:#2f3a26">Tea House</b><small style="color:#7a8a66">Zen Garden</small></div><span class="d" style="color:#7a8a66">2:44</span></div>
+      </div>
+      <div class="cap">⑤ COLA</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TEMA 6 · PUESTA DE SOL ============ -->
+<div class="topic">
+  <div class="topic-head"><h2>06 · Puesta de Sol</h2><span>Coral + rosa · cálido y romántico</span></div>
+  <div class="screens">
+    <div class="screen" style="background:linear-gradient(160deg,#3a1030,#7a2a2a)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#fb7185,#f43f5e)">桜</div><span class="nm" style="color:#ffecec">Sakura</span><span class="sp"></span><span class="b" style="color:#f5b8c lone;">─ ▢ ✕</span></div>
+        <div style="padding:10px">
+          <b style="color:#ffecec;font-size:10px;margin-bottom:8px;display:block">Golden Evening</b>
+          <div class="mnp-art" style="background:radial-gradient(circle at 35% 30%,#fecdd3,#e11d48 60%);box-shadow:0 0 18px rgba(244,63,94,.4)">🌅</div>
+          <div class="mnp-title"><b style="color:#fff">Sunset</b><small style="color:#f5b8c9">Evening Melody</small></div>
+          <div class="mnp-seek" style="background:rgba(244,63,94,.22)"><i style="background:linear-gradient(90deg,#e11d48,#fb7185)"></i></div>
+          <div class="mnp-ctr"><span class="c" style="color:#f5b8c9">⏮</span><span class="main" style="background:linear-gradient(135deg,#e11d48,#fb7185);box-shadow:0 0 12px rgba(244,63,94,.5)">▶</span><span class="c" style="color:#f5b8c9">⏭</span></div>
+        </div>
+      </div>
+      <div class="cap">① HOME</div>
+    </div>
+    <div class="screen" style="background:linear-gradient(160deg,#3a1030,#7a2a2a)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#fb7185,#f43f5e)">桜</div><span class="nm" style="color:#ffecec">Sakura</span><span class="sp"></span></div>
+        <div class="mcard-grid">
+          <div class="mgrid-card" style="background:linear-gradient(135deg,#fb7185,#be123c)">Sun</div>
+          <div class="mgrid-card" style="background:linear-gradient(135deg,#fda4af,#e11d48)">Glow</div>
+          <div class="mgrid-card" style="background:linear-gradient(135deg,#fecdd3,#9f1239)">Dusk</div>
+          <div class="mgrid-card" style="background:linear-gradient(135deg,#fb7185,#881337)">Eve</div>
+        </div>
+      </div>
+      <div class="cap">② BIBLIOTECA</div>
+    </div>
+    <div class="screen" style="background:linear-gradient(160deg,#3a1030,#7a2a2a)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#fb7185,#f43f5e)">桜</div><span class="nm" style="color:#ffecec">Sakura</span><span class="sp"></span></div>
+        <div style="padding:8px 9px"><div style="height:16px;border-radius:999px;background:rgba(244,63,94,.12);border:1px solid rgba(244,63,94,.3);display:flex;align-items:center;padding:0 8px;color:#f5b8c9;font-size:8px">⌕ Buscar…</div></div>
+        <div class="mrow on" style="background:rgba(244,63,94,.14)"><span class="n" style="color:#ef9fae">♪</span><div class="th" style="background:linear-gradient(135deg,#fb7185,#be123c)"></div><div class="c"><b style="color:#ffecec">Sunset</b><small style="color:#f5b8c9">Evening Melody</small></div><span class="d" style="color:#ef9fae">3:55</span></div>
+        <div class="mrow"><span class="n" style="color:#ef9fae">2</span><div class="th" style="background:linear-gradient(135deg,#fda4af,#e11d48)"></div><div class="c"><b style="color:#ffecec">Glow</b><small style="color:#f5b8c9">Evening Melody</small></div><span class="d" style="color:#ef9fae">4:11</span></div>
+      </div>
+      <div class="cap">③ LISTA</div>
+    </div>
+    <div class="screen" style="background:linear-gradient(160deg,#3a1030,#7a2a2a)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#fb7185,#f43f5e)">桜</div><span class="nm" style="color:#ffecec">Now Playing</span><span class="sp"></span></div>
+        <div class="mnp-art" style="background:radial-gradient(circle at 35% 30%,#fecdd3,#e11d48 60%);box-shadow:0 8px 26px rgba(244,63,94,.45)">🌅</div>
+        <div class="mnp-title"><b style="color:#fff">Sunset</b><small style="color:#f5b8c9">Evening Melody · Golden Evening</small></div>
+        <div class="mnp-seek" style="background:rgba(244,63,94,.22)"><i style="background:linear-gradient(90deg,#e11d48,#fecdd3);width:66%"></i></div>
+        <div class="mnp-ctr"><span class="c" style="color:#f5b8c9">⏮</span><span class="main" style="background:linear-gradient(135deg,#e11d48,#fb7185);box-shadow:0 0 14px rgba(244,63,94,.55)">⏸</span><span class="c" style="color:#f5b8c9">⏭</span></div>
+      </div>
+      <div class="cap">④ NOW PLAYING</div>
+    </div>
+    <div class="screen" style="background:linear-gradient(160deg,#3a1030,#7a2a2a)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#fb7185,#f43f5e)">桜</div><span class="nm" style="color:#ffecec">Sakura</span><span class="sp"></span></div>
+        <div class="mtabrow"><span class="mtab on" style="background:linear-gradient(135deg,#e11d48,#fb7185);color:#fff">Cola</span><span class="mtab" style="color:#f5b8c9">Escuchando</span></div>
+        <div class="mrow on"><span class="n" style="color:#ef9fae">1</span><div class="th" style="background:linear-gradient(135deg,#fb7185,#be123c)"></div><div class="c"><b style="color:#ffecec">Sunset</b><small style="color:#f5b8c9">Evening Melody</small></div><span class="mplay" style="background:linear-gradient(135deg,#e11d48,#fb7185)">▶</span></div>
+        <div class="mrow"><span class="n" style="color:#ef9fae">2</span><div class="th" style="background:linear-gradient(135deg,#fda4af,#e11d48)"></div><div class="c"><b style="color:#ffecec">Glow</b><small style="color:#f5b8c9">Evening Melody</small></div><span class="d" style="color:#ef9fae">4:11</span></div>
+      </div>
+      <div class="cap">⑤ COLA</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TEMA 7 · NOCHE ESTRELLADA ============ -->
+<div class="topic">
+  <div class="topic-head"><h2>07 · Noche Estrellada</h2><span>Azul noche + ámbar · nostálgica</span></div>
+  <div class="screens">
+    <div class="screen" style="background:linear-gradient(160deg,#0b1533,#18255a)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#fbbf24,#f59e0b)">桜</div><span class="nm" style="color:#e6ecff">Sakura</span><span class="sp"></span><span class="b" style="color:#aeb9e8">─ ▢ ✕</span></div>
+        <div style="padding:10px">
+          <b style="color:#e6ecff;font-size:10px;margin-bottom:8px;display:block">Starlit Night</b>
+          <div class="mnp-art" style="background:radial-gradient(circle at 35% 30%,#fde68a,#d97706 55%,#1e3a8a);box-shadow:0 0 16px rgba(251,191,36,.3)">🌃</div>
+          <div class="mnp-title"><b style="color:#fff">Moonlight</b><small style="color:#aeb9e8">Night Tales</small></div>
+          <div class="mnp-seek" style="background:rgba(251,191,36,.2)"><i style="background:linear-gradient(90deg,#d97706,#fde68a)"></i></div>
+          <div class="mnp-ctr"><span class="c" style="color:#aeb9e8">⏮</span><span class="main" style="background:linear-gradient(135deg,#d97706,#fbbf24);box-shadow:0 0 12px rgba(251,191,36,.45)">▶</span><span class="c" style="color:#aeb9e8">⏭</span></div>
+        </div>
+      </div>
+      <div class="cap">① HOME</div>
+    </div>
+    <div class="screen" style="background:linear-gradient(160deg,#0b1533,#18255a)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#fbbf24,#f59e0b)">桜</div><span class="nm" style="color:#e6ecff">Sakura</span><span class="sp"></span></div>
+        <div class="mcard-grid">
+          <div class="mgrid-card" style="background:linear-gradient(135deg,#fbbf24,#d97706)">Moon</div>
+          <div class="mgrid-card" style="background:linear-gradient(135deg,#93c5fd,#1e40af)">Stars</div>
+          <div class="mgrid-card" style="background:linear-gradient(135deg,#fde68a,#b45309)">Night</div>
+          <div class="mgrid-card" style="background:linear-gradient(135deg,#c4b5fd,#4338ca)">Sky</div>
+        </div>
+      </div>
+      <div class="cap">② BIBLIOTECA</div>
+    </div>
+    <div class="screen" style="background:linear-gradient(160deg,#0b1533,#18255a)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#fbbf24,#f59e0b)">桜</div><span class="nm" style="color:#e6ecff">Sakura</span><span class="sp"></span></div>
+        <div style="padding:8px 9px"><div style="height:16px;border-radius:999px;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.3);display:flex;align-items:center;padding:0 8px;color:#aeb9e8;font-size:8px">⌕ Buscar…</div></div>
+        <div class="mrow on" style="background:rgba(251,191,36,.12)"><span class="n" style="color:#aeb9e8">♪</span><div class="th" style="background:linear-gradient(135deg,#fbbf24,#d97706)"></div><div class="c"><b style="color:#e6ecff">Moonlight</b><small style="color:#aeb9e8">Night Tales</small></div><span class="d" style="color:#aeb9e8">3:48</span></div>
+        <div class="mrow"><span class="n" style="color:#aeb9e8">2</span><div class="th" style="background:linear-gradient(135deg,#93c5fd,#1e40af)"></div><div class="c"><b style="color:#e6ecff">Comet</b><small style="color:#aeb9e8">Night Tales</small></div><span class="d" style="color:#aeb9e8">4:03</span></div>
+      </div>
+      <div class="cap">③ LISTA</div>
+    </div>
+    <div class="screen" style="background:linear-gradient(160deg,#0b1533,#18255a)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#fbbf24,#f59e0b)">桜</div><span class="nm" style="color:#e6ecff">Now Playing</span><span class="sp"></span></div>
+        <div class="mnp-art" style="background:radial-gradient(circle at 35% 30%,#fde68a,#d97706 55%,#1e3a8a);box-shadow:0 8px 26px rgba(251,191,36,.35)">🌃</div>
+        <div class="mnp-title"><b style="color:#fff">Moonlight</b><small style="color:#aeb9e8">Night Tales · Starlit Night</small></div>
+        <div class="mnp-seek" style="background:rgba(251,191,36,.2)"><i style="background:linear-gradient(90deg,#d97706,#fde68a);width:58%"></i></div>
+        <div class="mnp-ctr"><span class="c" style="color:#aeb9e8">⏮</span><span class="main" style="background:linear-gradient(135deg,#d97706,#fbbf24);box-shadow:0 0 14px rgba(251,191,36,.5)">⏸</span><span class="c" style="color:#aeb9e8">⏭</span></div>
+      </div>
+      <div class="cap">④ NOW PLAYING</div>
+    </div>
+    <div class="screen" style="background:linear-gradient(160deg,#0b1533,#18255a)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#fbbf24,#f59e0b)">桜</div><span class="nm" style="color:#e6ecff">Sakura</span><span class="sp"></span></div>
+        <div class="mtabrow"><span class="mtab on" style="background:linear-gradient(135deg,#d97706,#fbbf24);color:#fff">Cola</span><span class="mtab" style="color:#aeb9e8">Escuchando</span></div>
+        <div class="mrow on"><span class="n" style="color:#aeb9e8">1</span><div class="th" style="background:linear-gradient(135deg,#fbbf24,#d97706)"></div><div class="c"><b style="color:#e6ecff">Moonlight</b><small style="color:#aeb9e8">Night Tales</small></div><span class="mplay" style="background:linear-gradient(135deg,#d97706,#fbbf24)">▶</span></div>
+        <div class="mrow"><span class="n" style="color:#aeb9e8">2</span><div class="th" style="background:linear-gradient(135deg,#93c5fd,#1e40af)"></div><div class="c"><b style="color:#e6ecff">Comet</b><small style="color:#aeb9e8">Night Tales</small></div><span class="d" style="color:#aeb9e8">4:03</span></div>
+      </div>
+      <div class="cap">⑤ COLA</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TEMA 8 · NEÓN ROSA ============ -->
+<div class="topic">
+  <div class="topic-head"><h2>08 · Neón Rosa</h2><span>Magenta + rosa brillante · vibrante</span></div>
+  <div class="screens">
+    <div class="screen" style="background:linear-gradient(160deg,#1a0520,#3a0b30)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#f472b6,#db2777)">桜</div><span class="nm" style="color:#ffe6f2">Sakura</span><span class="sp"></span><span class="b" style="color:#f0a4cc">─ ▢ ✕</span></div>
+        <div style="padding:10px">
+          <b style="color:#ffe6f2;font-size:10px;margin-bottom:8px;display:block">Neon Pop</b>
+          <div class="mnp-art" style="background:radial-gradient(circle at 35% 30%,#fbcfe8,#db2777 60%);box-shadow:0 0 18px rgba(244,114,182,.45)">💗</div>
+          <div class="mnp-title"><b style="color:#fff">Neon Heart</b><small style="color:#f0a4cc">Pink Blast</small></div>
+          <div class="mnp-seek" style="background:rgba(244,114,182,.22)"><i style="background:linear-gradient(90deg,#db2777,#f9a8d4)"></i></div>
+          <div class="mnp-ctr"><span class="c" style="color:#f0a4cc">⏮</span><span class="main" style="background:linear-gradient(135deg,#db2777,#f472b6);box-shadow:0 0 14px rgba(244,114,182,.55)">▶</span><span class="c" style="color:#f0a4cc">⏭</span></div>
+        </div>
+      </div>
+      <div class="cap">① HOME</div>
+    </div>
+    <div class="screen" style="background:linear-gradient(160deg,#1a0520,#3a0b30)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#f472b6,#db2777)">桜</div><span class="nm" style="color:#ffe6f2">Sakura</span><span class="sp"></span></div>
+        <div class="mcard-grid">
+          <div class="mgrid-card" style="background:linear-gradient(135deg,#f472b6,#be185d)">Neon</div>
+          <div class="mgrid-card" style="background:linear-gradient(135deg,#f9a8d4,#a21caf)">Pop</div>
+          <div class="mgrid-card" style="background:linear-gradient(135deg,#fbcfe8,#db2777)">Heart</div>
+          <div class="mgrid-card" style="background:linear-gradient(135deg,#f472b6,#881337)">Blast</div>
+        </div>
+      </div>
+      <div class="cap">② BIBLIOTECA</div>
+    </div>
+    <div class="screen" style="background:linear-gradient(160deg,#1a0520,#3a0b30)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#f472b6,#db2777)">桜</div><span class="nm" style="color:#ffe6f2">Sakura</span><span class="sp"></span></div>
+        <div style="padding:8px 9px"><div style="height:16px;border-radius:999px;background:rgba(244,114,182,.12);border:1px solid rgba(244,114,182,.3);display:flex;align-items:center;padding:0 8px;color:#f0a4cc;font-size:8px">⌕ Buscar…</div></div>
+        <div class="mrow on" style="background:rgba(244,114,182,.14)"><span class="n" style="color:#f0a4cc">♪</span><div class="th" style="background:linear-gradient(135deg,#f472b6,#be185d)"></div><div class="c"><b style="color:#ffe6f2">Neon Heart</b><small style="color:#f0a4cc">Pink Blast</small></div><span class="d" style="color:#f0a4cc">3:30</span></div>
+        <div class="mrow"><span class="n" style="color:#f0a4cc">2</span><div class="th" style="background:linear-gradient(135deg,#f9a8d4,#a21caf)"></div><div class="c"><b style="color:#ffe6f2">Pink Pop</b><small style="color:#f0a4cc">Pink Blast</small></div><span class="d" style="color:#f0a4cc">3:08</span></div>
+      </div>
+      <div class="cap">③ LISTA</div>
+    </div>
+    <div class="screen" style="background:linear-gradient(160deg,#1a0520,#3a0b30)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#f472b6,#db2777)">桜</div><span class="nm" style="color:#ffe6f2">Now Playing</span><span class="sp"></span></div>
+        <div class="mnp-art" style="background:radial-gradient(circle at 35% 30%,#fbcfe8,#db2777 60%);box-shadow:0 8px 26px rgba(244,114,182,.5)">💗</div>
+        <div class="mnp-title"><b style="color:#fff">Neon Heart</b><small style="color:#f0a4cc">Pink Blast · Neon Pop</small></div>
+        <div class="mnp-seek" style="background:rgba(244,114,182,.22)"><i style="background:linear-gradient(90deg,#db2777,#f9a8d4);width:60%"></i></div>
+        <div class="mnp-ctr"><span class="c" style="color:#f0a4cc">⏮</span><span class="main" style="background:linear-gradient(135deg,#db2777,#f472b6);box-shadow:0 0 14px rgba(244,114,182,.6)">⏸</span><span class="c" style="color:#f0a4cc">⏭</span></div>
+      </div>
+      <div class="cap">④ NOW PLAYING</div>
+    </div>
+    <div class="screen" style="background:linear-gradient(160deg,#1a0520,#3a0b30)">
+      <div class="sc-body">
+        <div class="mtb"><div class="mk" style="background:linear-gradient(135deg,#f472b6,#db2777)">桜</div><span class="nm" style="color:#ffe6f2">Sakura</span><span class="sp"></span></div>
+        <div class="mtabrow"><span class="mtab on" style="background:linear-gradient(135deg,#db2777,#f472b6);color:#fff">Cola</span><span class="mtab" style="color:#f0a4cc">Escuchando</span></div>
+        <div class="mrow on"><span class="n" style="color:#f0a4cc">1</span><div class="th" style="background:linear-gradient(135deg,#f472b6,#be185d)"></div><div class="c"><b style="color:#ffe6f2">Neon Heart</b><small style="color:#f0a4cc">Pink Blast</small></div><span class="mplay" style="background:linear-gradient(135deg,#db2777,#f472b6)">▶</span></div>
+        <div class="mrow"><span class="n" style="color:#f0a4cc">2</span><div class="th" style="background:linear-gradient(135deg,#f9a8d4,#a21caf)"></div><div class="c"><b style="color:#ffe6f2">Pink Pop</b><small style="color:#f0a4cc">Pink Blast</small></div><span class="d" style="color:#f0a4cc">3:08</span></div>
+      </div>
+      <div class="cap">⑤ COLA</div>
+    </div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

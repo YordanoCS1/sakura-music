@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sakura Music · 6 Vistas Novedosas de Biblioteca</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#0a0a14; font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif; padding:26px 36px; color:#ece6ff; }
+  h1.page { font-size:26px; margin-bottom:6px; letter-spacing:-.02em; }
+  p.page { color:#a99bdc; font-size:14px; margin-bottom:30px; }
+  .grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:26px; }
+  .card { background:linear-gradient(165deg,#12122a,#0d0d1a); border:1px solid rgba(139,92,246,.25); border-radius:20px; padding:18px; transition:transform .25s ease, box-shadow .25s ease; }
+  .card:hover { transform:translateY(-4px); box-shadow:0 20px 50px rgba(0,0,0,.4); }
+  .num { display:inline-block; font-size:11px; font-weight:800; color:#a78bfa; background:rgba(139,92,246,.15); padding:4px 10px; border-radius:999px; margin-bottom:10px; }
+  .card h2 { font-size:16px; margin-bottom:12px; letter-spacing:-.01em; }
+  .card .desc { font-size:11px; color:#a99bdc; margin-bottom:16px; line-height:1.5; }
+  .lib { width:100%; height:360px; border-radius:14px; overflow:hidden; background:linear-gradient(180deg,rgba(76,29,149,.3),#0a0a16 50%); border:1px solid rgba(139,92,246,.2); }
+
+  /* ============ 1 · DISCOS DE VINILO ANIMADOS ============ */
+  .v1 { display:flex; flex-direction:column; gap:14px; padding:16px 18px; }
+  .v1 .row { display:flex; align-items:center; gap:14px; padding:8px 10px; border-radius:12px; background:rgba(24,24,50,.7); border:1px solid rgba(139,92,246,.15); transition:all .25s ease; }
+  .v1 .row:hover { border-color:rgba(167,139,250,.5); transform:translateX(4px); }
+  .v1 .disc { width:48px;height:48px;border-radius:50%; position:relative; flex:0 0 48px;
+    background:repeating-radial-gradient(circle,#0c0710 0 4px,#2a1530 4px 5px);
+    box-shadow:inset 0 0 0 2px rgba(255,255,255,.08), 0 3px 10px rgba(0,0,0,.5); }
+  .v1 .disc::after{content:"";position:absolute;inset:9px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff}
+  .v1 .disc.spin { animation:rot 4s linear infinite; }
+  @keyframes rot{to{transform:rotate(360deg)}}
+  .v1 .c { flex:1; } .v1 .c b{display:block;font-size:11px;color:#fff} .v1 .c small{font-size:8.5px;color:#a99bdc}
+  .v1 .d { font-size:9px; color:#8f82c0; font-family:monospace; }
+  .v1 .eq { display:flex;align-items:flex-end;gap:2px;height:14px }
+  .v1 .eq i{width:3px;border-radius:2px;background:linear-gradient(180deg,#a78bfa,#7c3aed);animation:eq 1s infinite}
+  .v1 .eq i:nth-child(1){height:6px;animation-delay:0s}.v1 .eq i:nth-child(2){height:13px;animation-delay:.15s}.v1 .eq i:nth-child(3){height:9px;animation-delay:.3s}.v1 .eq i:nth-child(4){height:11px;animation-delay:.1s}
+  @keyframes eq{0%,100%{height:5px}50%{height:14px}}
+
+  /* ============ 2 · TARJETAS 3D TILT ============ */
+  .v2 { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; padding:18px; }
+  .v2 .t { perspective:600px; }
+  .v2 .t .inner { transition:transform .35s ease; transform-style:preserve-3d; }
+  .v2 .t:hover .inner { transform:rotateY(8deg) rotateX(-6deg) scale(1.04); }
+  .v2 .art { aspect-ratio:1; border-radius:14px; display:flex;align-items:center;justify-content:center;font-size:30px; box-shadow:0 14px 30px rgba(0,0,0,.5); border:1px solid rgba(139,92,246,.3); }
+  .v2 .t b { display:block;font-size:8.5px;color:#fff;margin-top:6px;text-align:center} .v2 .t small{display:block;font-size:7.5px;color:#a99bdc;text-align:center}
+
+  /* ============ 3 · PORTADAS CON LUZ ============ */
+  .v3 { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; padding:18px; }
+  .v3 .p { position:relative; border-radius:14px; overflow:hidden; aspect-ratio:1; box-shadow:0 10px 24px rgba(0,0,0,.4); }
+  .v3 .p .art { width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:30px; }
+  .v3 .p .glow { position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(167,139,250,.6),transparent 60%);opacity:0;transition:opacity .3s ease;pointer-events:none }
+  .v3 .p:hover .glow { opacity:1; }
+  .v3 .p .sheen { position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.25) 45%,transparent 60%);transform:translateX(-100%);transition:transform .5s ease;pointer-events:none }
+  .v3 .p:hover .sheen { transform:translateX(100%); }
+  .v3 .p b { position:absolute;bottom:8px;left:10px;font-size:9px;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.6) }
+
+  /* ============ 4 · CARRUSEL DE DISCOS ============ */
+  .v4 { display:flex; align-items:center; gap:18px; overflow-x:auto; padding:18px; }
+  .v4 .disk { flex:0 0 auto; display:flex; flex-direction:column; align-items:center; gap:8px; }
+  .v4 .disk .d { width:74px;height:74px;border-radius:50%; position:relative; 
+    background:repeating-radial-gradient(circle,#0c0710 0 6px,#2a1530 6px 8px);
+    box-shadow:inset 0 0 0 2px rgba(255,255,255,.08), 0 8px 20px rgba(0,0,0,.5); }
+  .v4 .disk .d::after{content:"";position:absolute;inset:12px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a78bfa)}
+  .v4 .disk.on .d { animation:rot 3s linear infinite; }
+  .v4 .disk b{font-size:9px;color:#fff}.v4 .disk small{font-size:7.5px;color:#a99bdc}
+  .v4 .arrow { flex:0 0 30px; width:30px;height:30px;border-radius:50%;background:rgba(139,92,246,.2);display:flex;align-items:center;justify-content:center;font-size:14px;color:#a78bfa }
+
+  /* ============ 5 · MOSAICO ANIMADO ============ */
+  .v5 { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; padding:14px; }
+  .v5 .m { aspect-ratio:1; border-radius:12px; display:flex;align-items:center;justify-content:center;font-size:22px; box-shadow:0 6px 16px rgba(0,0,0,.4); transition:transform .3s ease, box-shadow .3s ease; }
+  .v5 .m:hover { transform:translateY(-8px) scale(1.05); box-shadow:0 16px 32px rgba(139,92,246,.4); }
+  .v5 .m:nth-child(even){ animation:float 3s ease-in-out infinite; }
+  .v5 .m:nth-child(odd){ animation:float2 3.6s ease-in-out infinite; }
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+  @keyframes float2{0%,100%{transform:translateY(-3px)}50%{transform:translateY(2px)}}
+
+  /* ============ 6 · LISTA CON ECUALIZADOR ============ */
+  .v6 { display:flex; flex-direction:column; padding:14px 18px; gap:6px; }
+  .v6 .row { display:flex; align-items:center; gap:10px; padding:9px 11px; border-radius:10px; background:rgba(24,24,50,.7); border:1px solid rgba(139,92,246,.12); transition:all .25s ease; }
+  .v6 .row:hover { background:rgba(139,92,246,.14); border-color:rgba(167,139,250,.4); }
+  .v6 .row .n { width:16px;font-size:9px;color:#8f82c0;text-align:center }
+  .v6 .row .th { width:26px;height:26px;border-radius:6px;flex:0 0 26px }
+  .v6 .row .c { flex:1; } .v6 .row .c b{display:block;font-size:10px;color:#fff} .v6 .row .c small{font-size:8px;color:#a99bdc}
+  .v6 .row .eq { display:flex;align-items:flex-end;gap:2px;height:14px;opacity:0;transition:opacity .2s ease }
+  .v6 .row:hover .eq, .v6 .row.on .eq { opacity:1; }
+  .v6 .row .eq i{width:3px;border-radius:2px;background:linear-gradient(180deg,#a78bfa,#7c3aed);animation:eq .9s infinite}
+  .v6 .row .eq i:nth-child(1){animation-delay:0s}.v6 .row .eq i:nth-child(2){animation-delay:.2s}.v6 .row .eq i:nth-child(3){animation-delay:.1s}.v6 .row .eq i:nth-child(4){animation-delay:.3s}
+  .v6 .row .d { font-size:9px; color:#8f82c0; font-family:monospace; }
+</style>
+</head>
+<body>
+<h1 class="page">Sakura Music · 6 Vistas Novedosas de Biblioteca</h1>
+<p class="page">Diseños modernos e interactivos (discos que giran, tarjetas 3D, portadas con luz, carrusel, mosaico animado, ecualizador). Pasa el ratón.</p>
+
+<div class="grid">
+
+  <!-- 1 · Discos de vinilo animados -->
+  <div class="card">
+    <span class="num">VISTA 1</span>
+    <h2>Discos de vinilo animados</h2>
+    <p class="desc">Cada canción es un disco de vinilo que gira al reproducirse, con ecualizador animado.</p>
+    <div class="lib"><div class="v1">
+      <div class="row"><div class="disc spin"></div><div class="c"><b>Orion's Belt</b><small>Astral · Nebula</small></div><span class="eq"><i></i><i></i><i></i><i></i></span><span class="d">4:12</span></div>
+      <div class="row"><div class="disc"></div><div class="c"><b>Cosmic Drift</b><small>Astral · Nebula</small></div><span class="d">3:58</span></div>
+      <div class="row"><div class="disc"></div><div class="c"><b>Supernova</b><small>Astral · Nebula</small></div><span class="d">5:01</span></div>
+      <div class="row"><div class="disc"></div><div class="c"><b>Moonlight</b><small>Astral · Nebula</small></div><span class="d">4:33</span></div>
+    </div></div>
+  </div>
+
+  <!-- 2 · Tarjetas 3D -->
+  <div class="card">
+    <span class="num">VISTA 2</span>
+    <h2>Tarjetas 3D con tilt</h2>
+    <p class="desc">Tarjetas que se inclinan en 3D al pasar el ratón (efecto tilt moderno).</p>
+    <div class="lib"><div class="v2">
+      <div class="t"><div class="inner"><div class="art" style="background:linear-gradient(135deg,#a78bfa,#5b21b6)">🌌</div></div><b>Nebula</b><small>Astral</small></div>
+      <div class="t"><div class="inner"><div class="art" style="background:linear-gradient(135deg,#c4b5fd,#7c3aed)">🪐</div></div><b>Orbital</b><small>Cosmos</small></div>
+      <div class="t"><div class="inner"><div class="art" style="background:linear-gradient(135deg,#8b5cf6,#2e1065)">✨</div></div><b>Starlight</b><small>Space</small></div>
+      <div class="t"><div class="inner"><div class="art" style="background:linear-gradient(135deg,#6d28d9,#1e1b4b)">💫</div></div><b>Cosmos</b><small>Astro</small></div>
+    </div></div>
+  </div>
+
+  <!-- 3 · Portadas con luz -->
+  <div class="card">
+    <span class="num">VISTA 3</span>
+    <h2>Portadas con luz</h2>
+    <p class="desc">Cada portada tiene un brillo y un reflejo de luz que barre al pasar el ratón.</p>
+    <div class="lib"><div class="v3">
+      <div class="p"><div class="art" style="background:linear-gradient(135deg,#a78bfa,#5b21b6)">🌌</div><div class="glow"></div><div class="sheen"></div><b>Nebula</b></div>
+      <div class="p"><div class="art" style="background:linear-gradient(135deg,#c4b5fd,#7c3aed)">🪐</div><div class="glow"></div><div class="sheen"></div><b>Orbital</b></div>
+      <div class="p"><div class="art" style="background:linear-gradient(135deg,#8b5cf6,#2e1065)">✨</div><div class="glow"></div><div class="sheen"></div><b>Star</b></div>
+      <div class="p"><div class="art" style="background:linear-gradient(135deg,#6d28d9,#1e1b4b)">💫</div><div class="glow"></div><div class="sheen"></div><b>Moon</b></div>
+    </div></div>
+  </div>
+
+  <!-- 4 · Carrusel de discos -->
+  <div class="card">
+    <span class="num">VISTA 4</span>
+    <h2>Carrusel de discos</h2>
+    <p class="desc">Fila horizontal de discos de vinilo que se desliza, con el que suena girando.</p>
+    <div class="lib"><div class="v4">
+      <div class="arrow">‹</div>
+      <div class="disk on"><div class="d"></div><b>Nebula</b><small>Astral</small></div>
+      <div class="disk"><div class="d"></div><b>Orbital</b><small>Cosmos</small></div>
+      <div class="disk"><div class="d"></div><b>Starlight</b><small>Space</small></div>
+      <div class="disk"><div class="d"></div><b>Cosmos</b><small>Astro</small></div>
+      <div class="arrow">›</div>
+    </div></div>
+  </div>
+
+  <!-- 5 · Mosaico animado -->
+  <div class="card">
+    <span class="num">VISTA 5</span>
+    <h2>Mosaico flotante</h2>
+    <p class="desc">Portadas en mosaico que flotan suavemente y suben al pasar el ratón.</p>
+    <div class="lib"><div class="v5">
+      <div class="m" style="background:linear-gradient(135deg,#a78bfa,#5b21b6)">🌌</div>
+      <div class="m" style="background:linear-gradient(135deg,#c4b5fd,#7c3aed)">🪐</div>
+      <div class="m" style="background:linear-gradient(135deg,#8b5cf6,#2e1065)">✨</div>
+      <div class="m" style="background:linear-gradient(135deg,#6d28d9,#1e1b4b)">💫</div>
+      <div class="m" style="background:linear-gradient(135deg,#a78bfa,#4c1d95)">🌠</div>
+      <div class="m" style="background:linear-gradient(135deg,#c4b5fd,#6d28d9)">🚀</div>
+      <div class="m" style="background:linear-gradient(135deg,#8b5cf6,#4c1d95)">🔭</div>
+      <div class="m" style="background:linear-gradient(135deg,#7c3aed,#1e1b4b)">🛸</div>
+      <div class="m" style="background:linear-gradient(135deg,#a78bfa,#2e1065)">☄️</div>
+      <div class="m" style="background:linear-gradient(135deg,#c4b5fd,#1e1b4b)">🛰️</div>
+    </div></div>
+  </div>
+
+  <!-- 6 · Lista con ecualizador -->
+  <div class="card">
+    <span class="num">VISTA 6</span>
+    <h2>Lista con ecualizador</h2>
+    <p class="desc">Lista de canciones con ecualizador animado que aparece al pasar el ratón o al reproducir.</p>
+    <div class="lib"><div class="v6">
+      <div class="row on"><span class="n">♪</span><div class="th" style="background:linear-gradient(135deg,#a78bfa,#5b21b6)"></div><div class="c"><b>Orion's Belt</b><small>Astral</small></div><span class="eq"><i></i><i></i><i></i><i></i></span><span class="d">4:12</span></div>
+      <div class="row"><span class="n">2</span><div class="th" style="background:linear-gradient(135deg,#c4b5fd,#7c3aed)"></div><div class="c"><b>Cosmic Drift</b><small>Astral</small></div><span class="eq"><i></i><i></i><i></i><i></i></span><span class="d">3:58</span></div>
+      <div class="row"><span class="n">3</span><div class="th" style="background:linear-gradient(135deg,#8b5cf6,#2e1065)"></div><div class="c"><b>Supernova</b><small>Astral</small></div><span class="eq"><i></i><i></i><i></i><i></i></span><span class="d">5:01</span></div>
+      <div class="row"><span class="n">4</span><div class="th" style="background:linear-gradient(135deg,#6d28d9,#1e1b4b)"></div><div class="c"><b>Moonlight</b><small>Astral</small></div><span class="eq"><i></i><i></i><i></i><i></i></span><span class="d">4:33</span></div>
+    </div></div>
+  </div>
+
+</div>
+</body>
+</html>

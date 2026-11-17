@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sakura Music · 8 Temas con estructuras distintas</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#121218; font-family:'Segoe UI',Arial,sans-serif; padding:30px 44px; }
+  h1.page { color:#f2f0f5; font-size:26px; margin-bottom:6px; }
+  p.page { color:#9c98a5; font-size:14px; margin-bottom:6px; }
+  p.note { color:#7e7a88; font-size:12.5px; margin-bottom:30px; }
+  .wrap { display:flex; flex-direction:column; gap:48px; }
+  .item { display:flex; flex-direction:column; gap:10px; }
+  .item-head { display:flex; align-items:baseline; gap:14px; }
+  .item-head h2 { color:#fff; font-size:21px; }
+  .item-head span { color:#9c98a5; font-size:13px; }
+  .frame { width:1100px; height:650px; border-radius:18px; overflow:hidden; position:relative; }
+
+  /* ============ 1 · NEÓN ROSA · DJ / giradiscos ============ */
+  .dj { display:flex; height:100%; background:linear-gradient(150deg,#1a0520,#2d0a2a); color:#fbe9f3; }
+  .dj-left { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; }
+  .dj-disc { width:250px;height:250px;border-radius:50%; position:relative; display:flex;align-items:center;justify-content:center;
+    background: repeating-radial-gradient(circle, #0c0710 0 6px, #2a1530 6px 8px);
+    box-shadow: 0 20px 50px rgba(236,72,153,.35), inset 0 0 0 2px rgba(255,255,255,.06); }
+  .dj-disc::before{content:"";position:absolute;inset:14px;border-radius:50%;border:2px solid rgba(255,255,255,.08)}
+  .dj-center{width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,#f472b6,#db2777);display:flex;align-items:center;justify-content:center;font-size:26px;color:#fff;box-shadow:0 0 26px rgba(244,114,182,.7);position:relative;z-index:2}
+  .dj-song{text-align:center}
+  .dj-song b{display:block;font-size:20px}.dj-song small{color:#f0a4cc;font-size:12px}
+  .dj-eq{display:flex;align-items:flex-end;gap:5px;height:30px}
+  .dj-eq i{width:5px;border-radius:3px;background:linear-gradient(180deg,#f472b6,#db2777)}
+  .dj-eq i:nth-child(1){height:12px}.dj-eq i:nth-child(2){height:24px}.dj-eq i:nth-child(3){height:16px}.dj-eq i:nth-child(4){height:28px}.dj-eq i:nth-child(5){height:10px}
+  .dj-right { width:300px; flex:0 0 300px; border-left:1px solid rgba(244,114,182,.2); background:rgba(0,0,0,.25); padding:20px; display:flex;flex-direction:column;gap:8px }
+  .dj-right .tt{color:#f0a4cc;font-size:11px;font-weight:800;letter-spacing:.1em;margin-bottom:6px}
+  .dj-row{display:flex;align-items:center;gap:9px;padding:8px;border-radius:9px;font-size:11px}
+  .dj-row.on{background:rgba(244,114,182,.16)}
+  .dj-row .num{width:16px;color:#c96b96;text-align:center;font-size:10px}
+  .dj-row .c{flex:1}
+  .dj-row .c b{display:block;color:#fbe9f3;font-size:11px}.dj-row .c small{color:#d994b8;font-size:9px}
+  .dj-row .d{color:#c96b96;font-size:10px;font-family:monospace}
+
+  /* ============ 2 · GALAXIA · pestañas flotantes estilo Apple ============ */
+  .ga{display:flex;flex-direction:column;height:100%;background:radial-gradient(1100px 600px at 20% -10%, #4c1d95, transparent 55%), linear-gradient(160deg,#0b0620,#150b36);color:#ece6ff}
+  .ga-top{display:flex;justify-content:center;padding:16px;gap:6px}
+  .ga-top .pill{padding:9px 20px;border-radius:999px;font-size:12.5px;font-weight:600;color:#a99bdc;background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.25)}
+  .ga-top .pill.on{background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;border-color:transparent;box-shadow:0 6px 18px rgba(139,92,246,.4)}
+  .ga-body{flex:1;display:flex;flex-direction:column;padding:10px 34px}
+  .ga-feat{display:flex;align-items:center;gap:22px;background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.2);border-radius:22px;padding:22px;margin-bottom:18px}
+  .ga-feat .art{width:120px;height:120px;border-radius:18px;background:radial-gradient(circle at 35% 30%,#e0c3ff,#5b21b6 60%);display:flex;align-items:center;justify-content:center;font-size:44px;box-shadow:0 12px 30px rgba(0,0,0,.4)}
+  .ga-feat .c small{color:#fbbf24;font-size:10px;font-weight:800;letter-spacing:.1em}
+  .ga-feat .c b{display:block;color:#fff;font-size:24px}.ga-feat .c span{color:#b3a7e0;font-size:13px}
+  .ga-feat .c .btn{margin-top:10px;display:inline-block;background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;padding:9px 18px;border-radius:999px;font-size:12px;font-weight:800}
+  .ga-grid{flex:1;display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+  .ga-card{aspect-ratio:1;border-radius:16px;display:flex;align-items:flex-end;padding:10px;font-size:10px;font-weight:800;color:#fff;box-shadow:0 10px 26px rgba(0,0,0,.4);overflow:hidden}
+  .ga-card small{display:block;font-size:8px;font-weight:500;opacity:.85}
+
+  /* ============ 3 · NATURALEZA · masonry claro Pinterest ============ */
+  .na{display:flex;flex-direction:column;height:100%;background:linear-gradient(170deg,#f4f7ef,#e2ebd8);color:#2f3a26}
+  .na-top{display:flex;align-items:center;gap:12px;padding:16px 28px;border-bottom:1px solid #d5e0c5;background:#fafcf6}
+  .na-top .lo{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,#84a95f,#4d7c3a);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px}
+  .na-top b{font-size:16px}
+  .na-top .se{margin-left:auto;width:200px;height:30px;border-radius:999px;background:#eef3e6;border:1px solid #d5e0c5;display:flex;align-items:center;padding:0 12px;color:#7a8a66;font-size:11px}
+  .na-body{flex:1;padding:20px 28px;display:flex;gap:18px;overflow:hidden}
+  .na-col{flex:1;display:flex;flex-direction:column;gap:16px}
+  .na-card{border-radius:16px;background:#fff;box-shadow:0 6px 18px rgba(60,80,45,.12);overflow:hidden;border:1px solid #e4ead8}
+  .na-card .art{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:34px}
+  .na-card .cap{padding:9px 11px}
+  .na-card .cap b{display:block;font-size:11px;color:#2f3a26}.na-card .cap small{color:#7a8a66;font-size:9px}
+  .na-foot{display:flex;align-items:center;gap:12px;padding:14px 28px;border-top:1px solid #d5e0c5;background:#fafcf6}
+  .na-foot .th{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,#84a95f,#4d7c3a)}
+  .na-foot .pc b{display:block;color:#2f3a26;font-size:13px}.na-foot .pc small{color:#7a8a66;font-size:11px}
+  .na-foot .seek{flex:1;height:6px;border-radius:999px;background:#dde6cf;overflow:hidden}
+  .na-foot .seek i{display:block;height:100%;width:40%;background:linear-gradient(90deg,#4d7c3a,#a3c586)}
+  .na-foot .pl{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#4d7c3a,#84a95f);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px}
+
+  /* ============ 4 · ATARDECER · reproductor inmersivo ============ */
+  .su{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:18px;background:linear-gradient(170deg,#3a1030,#8a2f1a 70%);color:#ffece3;position:relative}
+  .su .sun{position:absolute;top:30px;right:60px;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,#fde68a,#fb923c 60%,transparent 75%);opacity:.6}
+  .su-back{position:absolute;top:18px;left:22px;font-size:13px;color:#f5c9a8;display:flex;align-items:center;gap:6px}
+  .su-art{width:230px;height:230px;border-radius:26px;background:radial-gradient(circle at 35% 30%,#fed7aa,#ea580c 60%);display:flex;align-items:center;justify-content:center;font-size:76px;box-shadow:0 30px 60px rgba(0,0,0,.4), 0 0 60px rgba(251,146,60,.3)}
+  .su-title{text-align:center}
+  .su-title b{display:block;font-size:28px}.su-title small{color:#f5c9a8;font-size:14px}
+  .su-seek{width:340px;height:6px;border-radius:999px;background:rgba(251,146,60,.25);overflow:hidden}
+  .su-seek i{display:block;height:100%;width:46%;background:linear-gradient(90deg,#ea580c,#fde68a)}
+  .su-ctr{display:flex;align-items:center;gap:22px}
+  .su-ctr .c{width:44px;height:44px;border-radius:50%;background:rgba(251,146,60,.15);border:1px solid rgba(251,146,60,.3);color:#f5c9a8;display:flex;align-items:center;justify-content:center;font-size:16px}
+  .su-ctr .main{width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,#ea580c,#fb923c);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 0 24px rgba(251,146,60,.6)}
+
+  /* ============ 5 · CYBERPUNK · terminal ============ */
+  .cb{display:flex;flex-direction:column;height:100%;background:#05010d;color:#b6ffe9;font-family:'Cascadia Code','Consolas',monospace}
+  .cb-top{display:flex;align-items:center;gap:10px;padding:12px 20px;background:rgba(13,4,31,.9);border-bottom:1px solid rgba(34,211,238,.25);font-size:12px}
+  .cb-top .dots{display:flex;gap:6px}
+  .cb-top .dots i{width:12px;height:12px;border-radius:50%}
+  .cb-top b{color:#7fe9e4;font-weight:700}
+  .cb-top .path{color:#4fb5b0;font-size:11px}
+  .cb-body{flex:1;padding:18px 22px;display:flex;flex-direction:column;gap:4px;font-size:12px}
+  .cb-line{color:#4fb5b0;font-size:11px;margin-bottom:8px}
+  .cb-line .prompt{color:#22d3ee}
+  .cb-row{display:flex;gap:12px;padding:9px 10px;border-radius:7px;font-size:12px}
+  .cb-row.on{background:rgba(34,211,238,.12);box-shadow:inset 0 0 0 1px rgba(34,211,238,.35)}
+  .cb-row .c{flex:1}.cb-row .c b{color:#eafffd}.cb-row .c small{color:#5cc6c1;font-size:10px}
+  .cb-row .st{color:#4fb5b0;font-size:10px}
+  .cb-cursor{display:inline-block;width:8px;height:14px;background:#22d3ee;animation:blink 1s infinite}
+  @keyframes blink{50%{opacity:0}}
+  .cb-foot{display:flex;align-items:center;gap:12px;padding:12px 22px;border-top:1px solid rgba(34,211,238,.25);background:rgba(8,3,24,.95);font-size:12px}
+  .cb-foot .pc b{display:block;color:#eafffd}.cb-foot .pc small{color:#5cc6c1;font-size:10px}
+  .cb-foot .pl{color:#22d3ee}
+
+  /* ============ 6 · FANTASY · carrusel horizontal ============ */
+  .fa{display:flex;flex-direction:column;height:100%;background:linear-gradient(165deg,#1b1a4d,#3b1f5e);color:#efe8ff}
+  .fa-head{display:flex;align-items:center;gap:12px;padding:16px 26px}
+  .fa-head .lo{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,#c4b5fd,#7c3aed);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;box-shadow:0 0 14px rgba(139,92,246,.5)}
+  .fa-head b{font-size:17px}
+  .fa-carousel{flex:1;display:flex;align-items:center;gap:18px;padding:10px 26px;overflow:hidden}
+  .fa-disk{flex:0 0 auto;width:200px;display:flex;flex-direction:column;align-items:center;gap:10px}
+  .fa-disk .art{width:150px;height:150px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:46px;box-shadow:inset 0 0 0 4px rgba(255,255,255,.16), inset 0 0 0 8px rgba(0,0,0,.2), 0 12px 30px rgba(0,0,0,.4)}
+  .fa-disk.on .art{animation:spin 6s linear infinite}
+  .fa-disk b{font-size:11px;color:#fff}.fa-disk small{color:#b6a6df;font-size:9px}
+  .fa-disk .pl{width:26px;height:26px;border-radius:50%;background:#fff;color:#7c3aed;display:flex;align-items:center;justify-content:center;font-size:11px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .fa-foot{display:flex;align-items:center;gap:12px;padding:14px 26px;border-top:1px solid rgba(196,181,253,.25);background:rgba(43,23,74,.85)}
+  .fa-foot .pc b{display:block;color:#fff}.fa-foot .pc small{color:#b6a6df;font-size:11px}
+  .fa-foot .seek{flex:1;height:6px;border-radius:999px;background:rgba(196,181,253,.2);overflow:hidden}
+  .fa-foot .seek i{display:block;height:100%;width:55%;background:linear-gradient(90deg,#7c3aed,#ddd2f8)}
+  .fa-foot .pl{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#c4b5fd);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px}
+
+  /* ============ 7 · TROPICAL · grid de playlists ============ */
+  .tr{display:flex;flex-direction:column;height:100%;background:linear-gradient(165deg,#062b2b,#0a4a44);color:#e2fffa}
+  .tr-top{display:flex;align-items:center;gap:10px;padding:14px 24px;border-bottom:1px solid rgba(94,234,212,.2)}
+  .tr-top b{font-size:16px}
+  .tr-top .lo{margin-left:auto;width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#5eead4,#0f766e);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px}
+  .tr-body{flex:1;padding:16px 24px}
+  .tr-body .tt{font-size:11px;font-weight:800;color:#8adfd3;letter-spacing:.1em;margin-bottom:12px}
+  .tr-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .tr-card{background:rgba(94,234,212,.06);border:1px solid rgba(94,234,212,.18);border-radius:16px;padding:12px;display:flex;align-items:center;gap:12px}
+  .tr-card .art{width:54px;height:54px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px}
+  .tr-card .c b{display:block;color:#e2fffa;font-size:12px}.tr-card .c small{color:#8adfd3;font-size:9.5px}
+  .tr-card .pl{margin-left:auto;width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#0f766e,#5eead4);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px}
+
+  /* ============ 8 · LAVANDA MINIMAL · rail delgado ============ */
+  .lv{display:flex;height:100%;background:linear-gradient(170deg,#f7f2fb,#ece3f5);color:#3a2b4d}
+  .lv-rail{width:58px;flex:0 0 58px;display:flex;flex-direction:column;align-items:center;gap:16px;padding-top:16px;border-right:1px solid #ddd0ec;background:#faf7fd}
+  .lv-rail .lo{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,#c4b5fd,#8b5cf6);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px}
+  .lv-rail .ic{font-size:16px;color:#a898c0}
+  .lv-rail .ic.on{color:#8b5cf6;background:#f0e9fb;padding:5px;border-radius:9px}
+  .lv-main{flex:1;display:flex;flex-direction:column;padding:20px 26px}
+  .lv-head{display:flex;align-items:center;margin-bottom:16px}
+  .lv-head b{font-size:18px;color:#3a2b4d}
+  .lv-head .se{margin-left:auto;width:190px;height:30px;border-radius:999px;background:#fff;border:1px solid #ddd0ec;display:flex;align-items:center;padding:0 12px;color:#a898c0;font-size:11px}
+  .lv-grid{flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .lv-card{background:#fff;border-radius:16px;padding:10px;box-shadow:0 4px 14px rgba(90,70,110,.1);border:1px solid #e8e0f0}
+  .lv-card .art{aspect-ratio:1;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:8px}
+  .lv-card b{display:block;font-size:11px;color:#3a2b4d}.lv-card small{color:#a898c0;font-size:9px}
+  .lv-foot{display:flex;align-items:center;gap:12px;padding:14px 26px;border-top:1px solid #ddd0ec;background:#faf7fd}
+  .lv-foot .th{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,#c4b5fd,#8b5cf6)}
+  .lv-foot .pc b{display:block;color:#3a2b4d;font-size:13px}.lv-foot .pc small{color:#a898c0;font-size:11px}
+  .lv-foot .seek{flex:1;height:6px;border-radius:999px;background:#e6ddf0;overflow:hidden}
+  .lv-foot .seek i{display:block;height:100%;width:44%;background:linear-gradient(90deg,#8b5cf6,#c4b5fd)}
+  .lv-foot .pl{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#8b5cf6,#c4b5fd);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px}
+</style>
+</head>
+<body>
+<h1 class="page">Sakura Music · 8 Temas con estructuras totalmente distintas</h1>
+<p class="page">Ninguno usa el layout del tema principal de Sakura. Cada uno tiene una estructura de diseño propia.</p>
+<p class="note">1 DJ/giradiscos · 2 pestañas flotantes · 3 masonry claro · 4 reproductor full · 5 terminal · 6 carrusel · 7 grid playlists · 8 rail delgado.</p>
+
+<div class="wrap">
+
+<!-- 1 · NEÓN ROSA · DJ giradiscos -->
+<div class="item">
+  <div class="item-head"><h2>01 · Neón Rosa — DJ</h2><span>Reproductor tipo giradiscos con ecualizador</span></div>
+  <div class="frame">
+    <div class="dj">
+      <div class="dj-left">
+        <div class="dj-disc"><div class="dj-center">桜</div></div>
+        <div class="dj-song"><b>Neon Heart</b><small>Pink Blast · Neon Pop</small></div>
+        <div class="dj-eq"><i></i><i></i><i></i><i></i><i></i></div>
+      </div>
+      <div class="dj-right">
+        <div class="tt">COLA · PLAYER</div>
+        <div class="dj-row on"><span class="num">▶</span><div class="c"><b>Neon Heart</b><small>Pink Blast</small></div><span class="d">3:30</span></div>
+        <div class="dj-row"><span class="num">2</span><div class="c"><b>Pink Pop</b><small>Pink Blast</small></div><span class="d">3:08</span></div>
+        <div class="dj-row"><span class="num">3</span><div class="c"><b>Rose Gold</b><small>Pink Blast</small></div><span class="d">4:01</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 2 · GALAXIA · pestañas flotantes -->
+<div class="item">
+  <div class="item-head"><h2>02 · Galaxia</h2><span>Pestañas flotantes centradas + grid de portadas</span></div>
+  <div class="frame">
+    <div class="ga">
+      <div class="ga-top"><span class="pill on">Inicio</span><span class="pill">Explorar</span><span class="pill">Radio</span><span class="pill">Favoritos</span></div>
+      <div class="ga-body">
+        <div class="ga-feat"><div class="art">🌌</div><div class="c"><small>DESTACADO</small><b>Nebula Dreams</b><span>Astral Ensemble · 2024</span><div class="btn">▶ Reproducir</div></div></div>
+        <div class="ga-grid">
+          <div class="ga-card" style="background:linear-gradient(135deg,#a78bfa,#5b21b6)">Orion<small>Álbum</small></div>
+          <div class="ga-card" style="background:linear-gradient(135deg,#c4b5fd,#7c3aed)">Comet<small>Álbum</small></div>
+          <div class="ga-card" style="background:linear-gradient(135deg,#8b5cf6,#2e1065)">Pulsar<small>Álbum</small></div>
+          <div class="ga-card" style="background:linear-gradient(135deg,#a78bfa,#4c1d95)">Supernova<small>Álbum</small></div>
+          <div class="ga-card" style="background:linear-gradient(135deg,#6d28d9,#1e1b4b)">Vía<small>Álbum</small></div>
+          <div class="ga-card" style="background:linear-gradient(135deg,#c4b5fd,#6d28d9)">Aurora<small>Álbum</small></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 3 · NATURALEZA · masonry claro -->
+<div class="item">
+  <div class="item-head"><h2>03 · Naturaleza</h2><span>Fondo claro estilo Pinterest (columnas masonry)</span></div>
+  <div class="frame">
+    <div class="na">
+      <div class="na-top"><div class="lo">桜</div><b>Jardín</b><div class="se">⌕ Buscar plantas…</div></div>
+      <div class="na-body">
+        <div class="na-col">
+          <div class="na-card"><div class="art" style="background:linear-gradient(135deg,#bbf7d0,#15803d)">🌲</div><div class="cap"><b>Bosque</b><small>Chill Nature</small></div></div>
+          <div class="na-card"><div class="art" style="background:linear-gradient(135deg,#86efac,#065f46)">🌿</div><div class="cap"><b>Follaje</b><small>Chill Nature</small></div></div>
+        </div>
+        <div class="na-col">
+          <div class="na-card"><div class="art" style="background:linear-gradient(135deg,#6ee7b7,#059669)">🍃</div><div class="cap"><b>Brisa</b><small>Chill Nature</small></div></div>
+          <div class="na-card"><div class="art" style="background:linear-gradient(135deg,#a7f3d0,#047857)">🌺</div><div class="cap"><b>Flor</b><small>Chill Nature</small></div></div>
+        </div>
+        <div class="na-col">
+          <div class="na-card"><div class="art" style="background:linear-gradient(135deg,#4ade80,#166534)">🌱</div><div class="cap"><b>Brote</b><small>Chill Nature</small></div></div>
+          <div class="na-card"><div class="art" style="background:linear-gradient(135deg,#d9f99d,#15803d)">🌾</div><div class="cap"><b>Pradera</b><small>Chill Nature</small></div></div>
+        </div>
+      </div>
+      <div class="na-foot"><div class="th"></div><div class="pc"><b>Morning Dew</b><small>Chill Nature</small></div><span style="color:#7a8a66">⏮</span><span class="pl">▶</span><span style="color:#7a8a66">⏭</span><div class="seek"><i></i></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 4 · ATARDECER · reproductor full -->
+<div class="item">
+  <div class="item-head"><h2>04 · Atardecer</h2><span>Reproductor inmersivo a pantalla completa</span></div>
+  <div class="frame">
+    <div class="su">
+      <div class="sun"></div>
+      <div class="su-back">← Biblioteca</div>
+      <div class="su-art">🌇</div>
+      <div class="su-title"><b>Golden Hour</b><small>Sunset Vibes · Dusk</small></div>
+      <div class="su-seek"><i></i></div>
+      <div class="su-ctr"><div class="c">⏮</div><div class="main">▶</div><div class="c">⏭</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 5 · CYBERPUNK · terminal -->
+<div class="item">
+  <div class="item-head"><h2>05 · Cyberpunk</h2><span>Estilo terminal de programador (monoespaciado)</span></div>
+  <div class="frame">
+    <div class="cb">
+      <div class="cb-top"><div class="dots"><i style="background:#ff5f56"></i><i style="background:#ffbd2e"></i><i style="background:#27c93f"></i></div><b>sakura://biblioteca</b><span class="path">~ music</span></div>
+      <div class="cb-body">
+        <div class="cb-line"><span class="prompt">➜</span> cat canciones.txt</div>
+        <div class="cb-row on"><div class="c"><b>glitch_city.mp3</b><small>Neon Unit</small></div><span class="st">3:18</span></div>
+        <div class="cb-row"><div class="c"><b>overdrive.flac</b><small>Neon Unit</small></div><span class="st">4:02</span></div>
+        <div class="cb-row"><div class="c"><b>mainframe.flac</b><small>Neon Unit</small></div><span class="st">3:55</span></div>
+        <div class="cb-line" style="margin-top:8px"><span class="prompt">➜</span> <span class="cb-cursor"></span></div>
+      </div>
+      <div class="cb-foot"><div><span style="color:#22d3ee">▶</span></div><div class="pc"><b>glitch_city.mp3</b><small>Neon Unit</small></div><span style="color:#4fb5b0">--seek 01:24</span><div style="flex:1"></div><span style="color:#22d3ee">00:00 ── 03:18</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- 6 · FANTASY · carrusel -->
+<div class="item">
+  <div class="item-head"><h2>06 · Fantasía</h2><span>Carrusel de discos giratorios</span></div>
+  <div class="frame">
+    <div class="fa">
+      <div class="fa-head"><div class="lo">桜</div><b>Dreamscape</b></div>
+      <div class="fa-carousel">
+        <div class="fa-disk on"><div class="art" style="background:radial-gradient(circle at 35% 30%,#ede9fe,#7c3aed 60%)">🦄</div><b>Moonlit</b><small>Fairy Choir</small><div class="pl">⏸</div></div>
+        <div class="fa-disk"><div class="art" style="background:radial-gradient(circle at 35% 30%,#ddd6fe,#8b5cf6 60%)">✨</div><b>Starlight</b><small>Fairy Choir</small><div class="pl">▶</div></div>
+        <div class="fa-disk"><div class="art" style="background:radial-gradient(circle at 35% 30%,#c4b5fd,#6d28d9 60%)">🌙</div><b>Enchanted</b><small>Fairy Choir</small><div class="pl">▶</div></div>
+        <div class="fa-disk"><div class="art" style="background:radial-gradient(circle at 35% 30%,#a78bfa,#4c1d95 60%)">🧚</div><b>Moonbeam</b><small>Fairy Choir</small><div class="pl">▶</div></div>
+      </div>
+      <div class="fa-foot"><div><b style="color:#fff">Moonlit</b><div style="color:#b6a6df;font-size:11px">Fairy Choir</div></div><span style="color:#cfc2ef">⏮</span><span class="pl">▶</span><span style="color:#cfc2ef">⏭</span><div class="seek"><i></i></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 7 · TROPICAL · grid playlists -->
+<div class="item">
+  <div class="item-head"><h2>07 · Isla Tropical</h2><span>Cuadrícula de playlists (estilo YouTube Music)</span></div>
+  <div class="frame">
+    <div class="tr">
+      <div class="tr-top"><b>TropiMix</b><div class="lo">🏝️</div></div>
+      <div class="tr-body">
+        <div class="tt">PLAYLISTS</div>
+        <div class="tr-grid">
+          <div class="tr-card"><div class="art" style="background:linear-gradient(135deg,#5eead4,#115e59)">🌊</div><div class="c"><b>Lagunas</b><small>18 pistas</small></div><span class="pl">▶</span></div>
+          <div class="tr-card"><div class="art" style="background:linear-gradient(135deg,#99f6e4,#0f766e)">🏖️</div><div class="c"><b>Playas</b><small>24 pistas</small></div><span class="pl">▶</span></div>
+          <div class="tr-card"><div class="art" style="background:linear-gradient(135deg,#2dd4bf,#134e4a)">🌴</div><div class="c"><b>Palmeras</b><small>12 pistas</small></div><span class="pl">▶</span></div>
+          <div class="tr-card"><div class="art" style="background:linear-gradient(135deg,#a7f3d0,#065f46)">🐚</div><div class="c"><b>Conchas</b><small>9 pistas</small></div><span class="pl">▶</span></div>
+          <div class="tr-card"><div class="art" style="background:linear-gradient(135deg,#5eead4,#0e7490)">🐠</div><div class="c"><b>Arrecifes</b><small>15 pistas</small></div><span class="pl">▶</span></div>
+          <div class="tr-card"><div class="art" style="background:linear-gradient(135deg,#67e8f9,#115e59)">🦩</div><div class="c"><b>Aves</b><small>11 pistas</small></div><span class="pl">▶</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 8 · LAVANDA MINIMAL · rail delgado -->
+<div class="item">
+  <div class="item-head"><h2>08 · Lavanda Minimal</h2><span>Rail delgado tipo VS Code + grid de tarjetas claras</span></div>
+  <div class="frame">
+    <div class="lv">
+      <div class="lv-rail"><div class="lo">桜</div><span class="ic on">🏠</span><span class="ic">📚</span><span class="ic">🔍</span><span class="ic">⚙️</span></div>
+      <div class="lv-main">
+        <div class="lv-head"><b>Mi Música</b><div class="se">⌕ Buscar…</div></div>
+        <div class="lv-grid">
+          <div class="lv-card"><div class="art" style="background:linear-gradient(135deg,#ddd6fe,#7c3aed)">🦄</div><b>Moonlit</b><small>Fairy Choir</small></div>
+          <div class="lv-card"><div class="art" style="background:linear-gradient(135deg,#f0abfc,#a21caf)">🌸</div><b>Lavender</b><small>Soft Pop</small></div>
+          <div class="lv-card"><div class="art" style="background:linear-gradient(135deg,#c4b5fd,#8b5cf6)">✨</div><b>Starlight</b><small>Fairy Choir</small></div>
+          <div class="lv-card"><div class="art" style="background:linear-gradient(135deg,#ddd6fe,#6d28d9)">🌙</div><b>Enchanted</b><small>Fairy Choir</small></div>
+        </div>
+      </div>
+      <div class="lv-foot"><div class="th"></div><div class="pc"><b>Moonlit</b><small>Fairy Choir</small></div><span style="color:#a898c0">⏮</span><span class="pl">▶</span><span style="color:#a898c0">⏭</span><div class="seek"><i></i></div></div>
+    </div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sakura Music · 6 Vistas de Biblioteca (Space)</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#0a0a14; font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif; padding:26px 36px; color:#ece6ff; }
+  h1.page { font-size:26px; margin-bottom:6px; letter-spacing:-.02em; }
+  p.page { color:#a99bdc; font-size:14px; margin-bottom:30px; }
+  .grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:26px; }
+  .card { background:linear-gradient(165deg,#12122a,#0d0d1a); border:1px solid rgba(139,92,246,.25); border-radius:20px; padding:18px; transition:transform .25s ease, box-shadow .25s ease; }
+  .card:hover { transform:translateY(-4px); box-shadow:0 20px 50px rgba(0,0,0,.4); }
+  .num { display:inline-block; font-size:11px; font-weight:800; color:#a78bfa; background:rgba(139,92,246,.15); padding:4px 10px; border-radius:999px; margin-bottom:10px; }
+  .card h2 { font-size:16px; margin-bottom:12px; letter-spacing:-.01em; }
+  .card .desc { font-size:11px; color:#a99bdc; margin-bottom:16px; line-height:1.5; }
+  .lib { width:100%; height:360px; border-radius:14px; overflow:hidden; background:linear-gradient(180deg,rgba(76,29,149,.3),#0a0a16 50%); border:1px solid rgba(139,92,246,.2); }
+
+  /* ---- mini barra de biblioteca ---- */
+  .ltop { display:flex; align-items:center; gap:8px; padding:10px 14px; border-bottom:1px solid rgba(139,92,246,.2); }
+  .ltop b { font-size:12px; }
+  .ltop .views { margin-left:auto; display:flex; gap:4px; background:rgba(139,92,246,.12); padding:3px; border-radius:8px; }
+  .ltop .views i { font-style:normal; font-size:8.5px; padding:5px 9px; border-radius:6px; color:#a99bdc; }
+  .ltop .views i.on { background:linear-gradient(135deg,#7c3aed,#a78bfa); color:#fff; }
+
+  /* ---- Vista 1 · Cuadrícula de álbumes ---- */
+  .g1 { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; padding:14px; }
+  .g1 .a { background:rgba(24,24,50,.95); border:1px solid rgba(139,92,246,.3); border-radius:12px; padding:8px; transition:transform .2s ease; }
+  .g1 .a:hover { transform:translateY(-3px); border-color:rgba(167,139,250,.6); }
+  .g1 .a .art { aspect-ratio:1; border-radius:8px; display:flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:6px }
+  .g1 .a b { display:block; font-size:9px; color:#fff; }
+  .g1 .a small { font-size:7.5px; color:#c9c2e8; }
+
+  /* ---- Vista 2 · Tabla ---- */
+  .g2 { padding:10px 14px; display:flex; flex-direction:column; }
+  .g2 .hd { display:flex; gap:10px; padding:7px 8px; font-size:8px; font-weight:800; color:#a78bfa; letter-spacing:.08em; border-bottom:1px solid rgba(139,92,246,.2); }
+  .g2 .hd span:nth-child(1){width:24px}.g2 .hd span:nth-child(2){flex:2}.g2 .hd span:nth-child(3){flex:1}.g2 .hd span:nth-child(4){flex:1}.g2 .hd span:nth-child(5){width:40px}
+  .g2 .r { display:flex; gap:10px; padding:8px; border-radius:7px; align-items:center; }
+  .g2 .r.on { background:rgba(139,92,246,.14); }
+  .g2 .r span:nth-child(1){width:24px;text-align:center;font-size:9px;color:#8f82c0}
+  .g2 .r .tt { flex:2; display:flex; align-items:center; gap:7px; }
+  .g2 .r .tt .th { width:22px;height:22px;border-radius:6px; }
+  .g2 .r .tt b { display:block;font-size:9px;color:#fff } .g2 .r .tt small{font-size:7px;color:#a99bdc}
+  .g2 .r .ar { flex:1; font-size:8px; color:#c9c2e8; }
+  .g2 .r .al { flex:1; font-size:8px; color:#c9c2e8; }
+  .g2 .r .du { width:40px; font-size:8px; color:#8f82c0; font-family:monospace; }
+
+  /* ---- Vista 3 · Lista compacta ---- */
+  .g3 { padding:10px 14px; display:flex; flex-direction:column; gap:4px; }
+  .g3 .r { display:flex; align-items:center; gap:9px; padding:8px 9px; border-radius:8px; background:rgba(24,24,50,.8); border:1px solid rgba(139,92,246,.15); }
+  .g3 .r .n { width:16px; font-size:8px; color:#8f82c0; text-align:center; }
+  .g3 .r .th { width:24px;height:24px;border-radius:6px; }
+  .g3 .r .c { flex:1; } .g3 .r .c b{display:block;font-size:9.5px;color:#fff} .g3 .r .c small{font-size:7.5px;color:#a99bdc}
+  .g3 .r .d { font-size:8px; color:#8f82c0; font-family:monospace; }
+  .g3 .r .pl { width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;opacity:0; }
+
+  /* ---- Vista 4 · Mosaico / Pared ---- */
+  .g4 { display:grid; grid-template-columns:repeat(5,1fr); grid-auto-rows:1fr; gap:8px; padding:12px; }
+  .g4 .t { border-radius:10px; display:flex;align-items:center;justify-content:center;font-size:22px; box-shadow:0 6px 16px rgba(0,0,0,.4); min-height:70px; }
+  .g4 .t.big { grid-column:span 2; grid-row:span 2; font-size:36px; }
+
+  /* ---- Vista 5 · Split álbum + lista ---- */
+  .g5 { display:flex; height:100%; }
+  .g5 .side { width:110px; flex:0 0 110px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; border-right:1px solid rgba(139,92,246,.2); padding:10px; background:rgba(20,20,42,.8); }
+  .g5 .side .art { width:76px;height:76px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:32px;box-shadow:0 10px 22px rgba(0,0,0,.5) }
+  .g5 .side b { font-size:11px;color:#fff;text-align:center; } .g5 .side small{font-size:8px;color:#a99bdc;text-align:center}
+  .g5 .main { flex:1; padding:12px; display:flex; flex-direction:column; gap:5px; }
+  .g5 .r { display:flex; align-items:center; gap:8px; padding:7px 8px; border-radius:7px; }
+  .g5 .r.on { background:rgba(139,92,246,.14); }
+  .g5 .r .n { width:14px;font-size:8px;color:#8f82c0;text-align:center }
+  .g5 .r .th { width:20px;height:20px;border-radius:5px; }
+  .g5 .r .c { flex:1; } .g5 .r .c b{display:block;font-size:8.5px;color:#fff} .g5 .r .c small{font-size:7px;color:#a99bdc}
+  .g5 .r .d { font-size:7.5px; color:#8f82c0; font-family:monospace; }
+
+  /* ---- Vista 6 · Tarjetas horizontales grandes ---- */
+  .g6 { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; padding:14px; }
+  .g6 .h { background:rgba(24,24,50,.95); border:1px solid rgba(139,92,246,.3); border-radius:12px; padding:10px; display:flex; gap:10px; align-items:center; transition:transform .2s ease; }
+  .g6 .h:hover { transform:translateY(-3px); border-color:rgba(167,139,250,.6); }
+  .g6 .h .art { width:50px;height:50px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0 }
+  .g6 .h .c b { display:block;font-size:10px;color:#fff } .g6 .h .c small{font-size:8px;color:#a99bdc}
+  .g6 .h .d { margin-left:auto; font-size:8px; color:#8f82c0; font-family:monospace; }
+</style>
+</head>
+<body>
+<h1 class="page">Sakura Music · 6 Vistas de Biblioteca (Tema Space)</h1>
+<p class="page">Seis formas de mostrar tus canciones en la biblioteca, con la temática espacial. Elige la que prefieras y la implemento.</p>
+
+<div class="grid">
+
+  <!-- VISTA 1 · Cuadrícula -->
+  <div class="card">
+    <span class="num">VISTA 1</span>
+    <h2>Cuadrícula de álbumes</h2>
+    <p class="desc">Tarjetas cuadradas con portada, título y artista. Visual y simple, ideal para explorar por portadas.</p>
+    <div class="lib"><div class="ltop"><b>Biblioteca</b><div class="views"><i class="on">▦</i><i>≡</i><i>▤</i></div></div>
+      <div class="g1">
+        <div class="a"><div class="art" style="background:linear-gradient(135deg,#a78bfa,#5b21b6)">🌌</div><b>Nebula</b><small>Astral</small></div>
+        <div class="a"><div class="art" style="background:linear-gradient(135deg,#c4b5fd,#7c3aed)">🪐</div><b>Orbital</b><small>Cosmos</small></div>
+        <div class="a"><div class="art" style="background:linear-gradient(135deg,#8b5cf6,#2e1065)">✨</div><b>Starlight</b><small>Space</small></div>
+        <div class="a"><div class="art" style="background:linear-gradient(135deg,#6d28d9,#1e1b4b)">💫</div><b>Cosmos</b><small>Astro</small></div>
+        <div class="a"><div class="art" style="background:linear-gradient(135deg,#a78bfa,#4c1d95)">🌠</div><b>Meteor</b><small>Stars</small></div>
+        <div class="a"><div class="art" style="background:linear-gradient(135deg,#c4b5fd,#6d28d9)">🚀</div><b>Rocket</b><small>Quest</small></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VISTA 2 · Tabla -->
+  <div class="card">
+    <span class="num">VISTA 2</span>
+    <h2>Tabla de canciones</h2>
+    <p class="desc">Columnas ordenables: #, Título, Artista, Álbum y Duración. Máxima información para colecciones grandes.</p>
+    <div class="lib"><div class="ltop"><b>Biblioteca</b><div class="views"><i>▦</i><i class="on">≡</i><i>▤</i></div></div>
+      <div class="g2">
+        <div class="hd"><span>#</span><span>TÍTULO</span><span>ARTISTA</span><span>ÁLBUM</span><span>DUR</span></div>
+        <div class="r on"><span>♪</span><div class="tt"><div class="th" style="background:linear-gradient(135deg,#a78bfa,#5b21b6)"></div><div><b>Orion's Belt</b><small>Synth</small></div></div><span class="ar">Astral</span><span class="al">Nebula</span><span class="du">4:12</span></div>
+        <div class="r"><span>2</span><div class="tt"><div class="th" style="background:linear-gradient(135deg,#c4b5fd,#7c3aed)"></div><div><b>Cosmic Drift</b><small>Chill</small></div></div><span class="ar">Astral</span><span class="al">Nebula</span><span class="du">3:58</span></div>
+        <div class="r"><span>3</span><div class="tt"><div class="th" style="background:linear-gradient(135deg,#8b5cf6,#2e1065)"></div><div><b>Supernova</b><small>Rock</small></div></div><span class="ar">Astral</span><span class="al">Nebula</span><span class="du">5:01</span></div>
+        <div class="r"><span>4</span><div class="tt"><div class="th" style="background:linear-gradient(135deg,#6d28d9,#1e1b4b)"></div><div><b>Moonlight</b><small>Ambient</small></div></div><span class="ar">Astral</span><span class="al">Nebula</span><span class="du">4:33</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VISTA 3 · Lista compacta -->
+  <div class="card">
+    <span class="num">VISTA 3</span>
+    <h2>Lista compacta</h2>
+    <p class="desc">Filas densas con mini-portada, número, título, artista y duración. Muy compacta para ver muchas pistas.</p>
+    <div class="lib"><div class="ltop"><b>Biblioteca</b><div class="views"><i>▦</i><i>≡</i><i class="on">▤</i></div></div>
+      <div class="g3">
+        <div class="r"><span class="n">♪</span><div class="th" style="background:linear-gradient(135deg,#a78bfa,#5b21b6)"></div><div class="c"><b>Orion's Belt</b><small>Astral · Nebula</small></div><span class="d">4:12</span><span class="pl">▶</span></div>
+        <div class="r"><span class="n">2</span><div class="th" style="background:linear-gradient(135deg,#c4b5fd,#7c3aed)"></div><div class="c"><b>Cosmic Drift</b><small>Astral · Nebula</small></div><span class="d">3:58</span></div>
+        <div class="r"><span class="n">3</span><div class="th" style="background:linear-gradient(135deg,#8b5cf6,#2e1065)"></div><div class="c"><b>Supernova</b><small>Astral · Nebula</small></div><span class="d">5:01</span></div>
+        <div class="r"><span class="n">4</span><div class="th" style="background:linear-gradient(135deg,#6d28d9,#1e1b4b)"></div><div class="c"><b>Moonlight</b><small>Astral · Nebula</small></div><span class="d">4:33</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VISTA 4 · Mosaico -->
+  <div class="card">
+    <span class="num">VISTA 4</span>
+    <h2>Mosaico / Pared de portadas</h2>
+    <p class="desc">Portadas de todos los tamaños formando un mosaico. La vista más visual e inmersiva (la "Pared").</p>
+    <div class="lib"><div class="ltop"><b>Biblioteca</b><div class="views"><i class="on">▦</i><i>≡</i><i>▤</i></div></div>
+      <div class="g4">
+        <div class="t big" style="background:linear-gradient(135deg,#a78bfa,#5b21b6)">🌌</div>
+        <div class="t" style="background:linear-gradient(135deg,#c4b5fd,#7c3aed)">🪐</div>
+        <div class="t" style="background:linear-gradient(135deg,#8b5cf6,#2e1065)">✨</div>
+        <div class="t" style="background:linear-gradient(135deg,#6d28d9,#1e1b4b)">💫</div>
+        <div class="t big" style="background:linear-gradient(135deg,#a78bfa,#4c1d95)">🌠</div>
+        <div class="t" style="background:linear-gradient(135deg,#c4b5fd,#6d28d9)">🚀</div>
+        <div class="t" style="background:linear-gradient(135deg,#8b5cf6,#4c1d95)">🔭</div>
+        <div class="t" style="background:linear-gradient(135deg,#7c3aed,#1e1b4b)">🛸</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VISTA 5 · Split -->
+  <div class="card">
+    <span class="num">VISTA 5</span>
+    <h2>Split álbum + canciones</h2>
+    <p class="desc">Portada del álbum a la izquierda y su lista de canciones a la derecha. Contexto + contenido.</p>
+    <div class="lib"><div class="g5">
+      <div class="side"><div class="art" style="background:radial-gradient(circle at 35% 30%,#e0c3ff,#5b21b6 60%)">🌌</div><b>Nebula</b><small>Astral</small></div>
+      <div class="main">
+        <div class="r on"><span class="n">♪</span><div class="th" style="background:linear-gradient(135deg,#a78bfa,#5b21b6)"></div><div class="c"><b>Orion's Belt</b><small>Astral</small></div><span class="d">4:12</span></div>
+        <div class="r"><span class="n">2</span><div class="th" style="background:linear-gradient(135deg,#c4b5fd,#7c3aed)"></div><div class="c"><b>Cosmic Drift</b><small>Astral</small></div><span class="d">3:58</span></div>
+        <div class="r"><span class="n">3</span><div class="th" style="background:linear-gradient(135deg,#8b5cf6,#2e1065)"></div><div class="c"><b>Supernova</b><small>Astral</small></div><span class="d">5:01</span></div>
+        <div class="r"><span class="n">4</span><div class="th" style="background:linear-gradient(135deg,#6d28d9,#1e1b4b)"></div><div class="c"><b>Moonlight</b><small>Astral</small></div><span class="d">4:33</span></div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- VISTA 6 · Tarjetas horizontales -->
+  <div class="card">
+    <span class="num">VISTA 6</span>
+    <h2>Tarjetas horizontales grandes</h2>
+    <p class="desc">Tarjetas anchas con portada grande a la izquierda y título/artista/duración. Moderno y espacioso.</p>
+    <div class="lib"><div class="ltop"><b>Biblioteca</b><div class="views"><i>▦</i><i class="on">≡</i><i>▤</i></div></div>
+      <div class="g6">
+        <div class="h"><div class="art" style="background:linear-gradient(135deg,#a78bfa,#5b21b6)">🌌</div><div class="c"><b>Orion's Belt</b><small>Astral · Synth</small></div><span class="d">4:12</span></div>
+        <div class="h"><div class="art" style="background:linear-gradient(135deg,#c4b5fd,#7c3aed)">🪐</div><div class="c"><b>Cosmic Drift</b><small>Astral · Chill</small></div><span class="d">3:58</span></div>
+        <div class="h"><div class="art" style="background:linear-gradient(135deg,#8b5cf6,#2e1065)">✨</div><div class="c"><b>Supernova</b><small>Astral · Rock</small></div><span class="d">5:01</span></div>
+        <div class="h"><div class="art" style="background:linear-gradient(135deg,#6d28d9,#1e1b4b)">💫</div><div class="c"><b>Moonlight</b><small>Astral · Ambient</small></div><span class="d">4:33</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

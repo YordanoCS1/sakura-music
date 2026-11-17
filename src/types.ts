@@ -26,8 +26,34 @@ export interface PlaylistInfo {
   items: OnlineSearchResult[];
 }
 
+export type CatalogSource = 'itunes' | 'deezer' | 'musicbrainz';
+
 export interface CatalogCandidate {
-  source: 'itunes' | 'deezer';
+  source: CatalogSource;
+  title: string;
+  artist: string;
+  album: string;
+  album_artist?: string;
+  year?: string;
+  genre?: string;
+  track_number?: string;
+  cover_url?: string;
+}
+
+// Álbum encontrado en el buscador del catálogo (pestaña "Álbumes").
+export interface CatalogAlbum {
+  source: CatalogSource;
+  id: string;                     // id propio de la plataforma (collectionId, album id, release id)
+  title: string;
+  artist: string;
+  year?: string;
+  track_count: number;
+  cover_url?: string;
+}
+
+// Pista dentro de un álbum abierto, lista para aplicarse a la canción en edición.
+export interface CatalogAlbumTrack {
+  source: CatalogSource;
   title: string;
   artist: string;
   album: string;
@@ -92,11 +118,11 @@ export interface DownloadItem {
   createdAt: number;
 }
 
-export type ThemeMode = 'm3zen';
+export type ThemeMode = 'm3zen' | 'forest' | 'space';
 export type ThemeWorld = 'sakura_zen';
 export type AppTab = 'home' | 'search' | 'library' | 'queue' | 'settings';
 export type PlayerStyle = 'floating' | 'fixed';
-export type ViewMode = 'folders' | 'grid' | 'table' | 'albums' | 'mosaic';
+export type ViewMode = 'folders' | 'grid' | 'table' | 'albums' | 'mosaic' | 'cds' | 'tilt' | 'glow' | 'portadas';
 
 export interface AlbumGroup {
   key: string;

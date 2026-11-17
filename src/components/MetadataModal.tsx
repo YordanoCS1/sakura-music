@@ -1,6 +1,6 @@
-import { AlertCircle, Check, Globe, ImagePlus, Loader2, Music2, Pencil, Save, Search, Sparkles, Tags, Trash2, Undo2, X } from 'lucide-react';
+import { AlertCircle, Check, ChevronLeft, Disc3, Globe, ImagePlus, Layers, Link2, Loader2, ListMusic, Music2, Pencil, Save, Search, Sparkles, Tags, Trash2, Undo2, X } from 'lucide-react';
 import { convertFileSrc } from '@tauri-apps/api/core';
-import type { CatalogCandidate, ScannedTrack } from '../types';
+import type { CatalogAlbum, CatalogAlbumTrack, CatalogCandidate, CatalogSource, ScannedTrack } from '../types';
 
 export type EditField = 'title' | 'artist' | 'album' | 'album_artist' | 'track_number' | 'year' | 'genre';
 
@@ -20,16 +20,27 @@ interface MetadataModalProps {
   isSavingMetadata: boolean;
   metadataFeedback: string | null;
   catalogQuery: string;
-  catalogSource: 'itunes' | 'deezer';
+  catalogSource: CatalogSource;
+  catalogMode: 'songs' | 'albums';
   catalogResults: CatalogCandidate[];
   isSearchingCatalog: boolean;
   catalogError: string | null;
+  catalogAlbums: CatalogAlbum[];
+  openedAlbum: CatalogAlbum | null;
+  catalogAlbumTracks: CatalogAlbumTrack[];
+  isOpeningAlbum: boolean;
+  albumLink: string;
   getCoverSrc: (coverUrl: string | null) => string;
   onClose: () => void;
   onPaste: (e: React.ClipboardEvent) => void;
   onSetEditTab: (tab: 'tags' | 'catalog') => void;
+  onSetCatalogMode: (mode: 'songs' | 'albums') => void;
+  onSetAlbumLink: (v: string) => void;
   onSearchCatalog: () => void;
   onApplyCandidate: (candidate: CatalogCandidate, applyCoverOnly: boolean) => void;
+  onOpenAlbum: (album: CatalogAlbum) => void;
+  onOpenAlbumByLink: (link: string) => void;
+  onApplyAlbumTrack: (track: CatalogAlbumTrack, applyCoverOnly: boolean) => void;
   onPickCover: () => void;
   onResetField: (field: EditField) => void;
   onResetAll: () => void;
@@ -45,7 +56,7 @@ interface MetadataModalProps {
   onSetCoverPreview: (v: string | null) => void;
   onSetRemoveCover: (v: boolean) => void;
   onCatalogQueryChange: (v: string) => void;
-  onCatalogSourceChange: (v: 'itunes' | 'deezer') => void;
+  onCatalogSourceChange: (v: CatalogSource) => void;
 }
 
 export default function MetadataModal({
@@ -65,15 +76,26 @@ export default function MetadataModal({
   metadataFeedback,
   catalogQuery,
   catalogSource,
+  catalogMode,
   catalogResults,
   isSearchingCatalog,
   catalogError,
+  catalogAlbums,
+  openedAlbum,
+  catalogAlbumTracks,
+  isOpeningAlbum,
+  albumLink,
   getCoverSrc,
   onClose,
   onPaste,
   onSetEditTab,
+  onSetCatalogMode,
+  onSetAlbumLink,
   onSearchCatalog,
   onApplyCandidate,
+  onOpenAlbum,
+  onOpenAlbumByLink,
+  onApplyAlbumTrack,
   onPickCover,
   onResetField,
   onResetAll,
@@ -506,57 +528,134 @@ export default function MetadataModal({
               </form>
             )}
 
-            {/* PESTAÑA 2: BUSCADOR EN CATÁLOGO ONLINE (APPLE MUSIC / ITUNES) */}
+            {/* PESTAÑA 2: BUSCADOR EN CATÁLOGO ONLINE (ITUNES / DEEZER / MUSICBRAINZ) */}
             {editTab === 'catalog' && (
               <div className="p-6 overflow-y-auto space-y-4 flex-1">
-                
-                {/* Barra de Búsqueda de Catálogo */}
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <div className="relative flex-1">
-                    <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
-                    <input 
-                      type="text"
-                      value={catalogQuery}
-                      onChange={(e) => onCatalogQueryChange(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && onSearchCatalog()}
-                      placeholder="Buscar por artista y título (ej. LiSA Gurenge)..."
-                      className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-white/5 border border-white/10 text-white text-xs focus:border-accent-500/50 focus:ring-1 focus:ring-accent-500/30 outline-none transition-colors"
-                    />
+
+                {/* Selector de plataforma + modo de búsqueda */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                  {/* Plataforma */}
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {([
+                      { value: 'itunes', label: 'iTunes' },
+                      { value: 'deezer', label: 'Deezer' },
+                      { value: 'musicbrainz', label: 'MusicBrainz' },
+                    ] as const).map((s) => (
+                      <button
+                        key={s.value}
+                        type="button"
+                        onClick={() => onCatalogSourceChange(s.value)}
+                        className={`px-3 py-1.5 rounded-xl text-[11px] font-semibold transition-all flex items-center gap-1.5 ${
+                          catalogSource === s.value
+                            ? 'bg-gradient-to-r from-accent-500 to-purple-600 text-white shadow-md'
+                            : 'bg-white/5 text-gray-400 hover:text-white border border-white/10'
+                        }`}>
+                        {s.value === 'musicbrainz' ? <Disc3 className="w-3.5 h-3.5" /> : <Globe className="w-3.5 h-3.5" />}
+                        {s.label}
+                      </button>
+                    ))}
                   </div>
 
-                  <div className="flex gap-2">
-                    <select
-                      value={catalogSource}
-                      onChange={(e) => onCatalogSourceChange(e.target.value as any)}
-                      className="px-3 py-2.5 rounded-2xl bg-white/5 border border-white/10 text-gray-200 text-xs outline-none cursor-pointer">
-                      <option value="itunes" className="bg-gray-900 text-white">Apple Music (iTunes)</option>
-                      <option value="deezer" className="bg-gray-900 text-white">Deezer</option>
-                    </select>
-
+                  {/* Modo Canciones / Álbumes */}
+                  <div className="flex bg-white/5 p-1 rounded-2xl border border-white/10 w-fit">
                     <button
                       type="button"
-                      onClick={() => onSearchCatalog()}
-                      disabled={isSearchingCatalog || !catalogQuery.trim()}
-                      className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-accent-500 to-purple-600 text-white text-xs font-bold shadow-lg hover:opacity-90 transition-all disabled:opacity-50 flex items-center justify-center gap-2 flex-shrink-0">
-                      {isSearchingCatalog ? (
-                        <>
-                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                          <span>Buscando...</span>
-                        </>
-                      ) : (
-                        <>
-                          <Globe className="w-3.5 h-3.5" />
-                          <span>Buscar</span>
-                        </>
-                      )}
+                      onClick={() => onSetCatalogMode('songs')}
+                      className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                        catalogMode === 'songs'
+                          ? 'bg-gradient-to-r from-accent-500 to-purple-600 text-white shadow-md'
+                          : 'text-gray-400 hover:text-white'
+                      }`}>
+                      <Music2 className="w-3.5 h-3.5" />
+                      Canciones
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onSetCatalogMode('albums')}
+                      className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                        catalogMode === 'albums'
+                          ? 'bg-gradient-to-r from-accent-500 to-purple-600 text-white shadow-md'
+                          : 'text-gray-400 hover:text-white'
+                      }`}>
+                      <Layers className="w-3.5 h-3.5" />
+                      Álbumes
                     </button>
                   </div>
                 </div>
 
-                {/* Explicación y atajo */}
+                {/* Barra de Búsqueda de Catálogo */}
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <div className="relative flex-1">
+                    <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <input
+                      type="text"
+                      value={catalogQuery}
+                      onChange={(e) => onCatalogQueryChange(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && onSearchCatalog()}
+                      placeholder={catalogMode === 'albums'
+                        ? 'Buscar álbum (ej. Idle)...'
+                        : 'Buscar por artista y título (ej. LiSA Gurenge)...'}
+                      className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-white/5 border border-white/10 text-white text-xs focus:border-accent-500/50 focus:ring-1 focus:ring-accent-500/30 outline-none transition-colors"
+                    />
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => onSearchCatalog()}
+                    disabled={isSearchingCatalog || !catalogQuery.trim()}
+                    className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-accent-500 to-purple-600 text-white text-xs font-bold shadow-lg hover:opacity-90 transition-all disabled:opacity-50 flex items-center justify-center gap-2 flex-shrink-0">
+                    {isSearchingCatalog ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <span>Buscando...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Globe className="w-3.5 h-3.5" />
+                        <span>Buscar</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {/* Explicación */}
                 <p className="text-[11px] text-gray-400">
-                  Busca canciones en el catálogo oficial de Apple Music para autocompletar automáticamente el título, artista, álbum, año, género, número de pista y carátula en alta definición.
+                  {catalogMode === 'albums'
+                    ? `Busca álbumes en ${catalogSource === 'musicbrainz' ? 'MusicBrainz' : catalogSource === 'deezer' ? 'Deezer' : 'Apple Music / iTunes'}, ábrelos y aplica la pista que corresponda a la canción en edición.`
+                    : `Busca canciones en ${catalogSource === 'musicbrainz' ? 'MusicBrainz' : catalogSource === 'deezer' ? 'Deezer' : 'Apple Music / iTunes'} para autocompletar título, artista, álbum, año, género, número de pista y carátula en alta definición.`}
                 </p>
+
+                {/* Pegar enlace del álbum (solo iTunes en modo Álbumes) */}
+                {catalogMode === 'albums' && catalogSource === 'itunes' && !openedAlbum && (
+                  <div className="p-3 rounded-2xl bg-cyan-500/[0.04] border border-cyan-500/20">
+                    <div className="flex items-center gap-2 mb-1.5 text-cyan-300 text-[11px] font-semibold">
+                      <Link2 className="w-3.5 h-3.5" />
+                      ¿No encuentras el álbum? Pega el enlace de Apple Music / iTunes
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <input
+                        type="text"
+                        value={albumLink}
+                        onChange={(e) => onSetAlbumLink(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && onOpenAlbumByLink(albumLink)}
+                        placeholder="https://music.apple.com/us/album/1440833068"
+                        className="flex-1 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-[11px] font-mono focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 outline-none transition-colors"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => onOpenAlbumByLink(albumLink)}
+                        disabled={isOpeningAlbum || !albumLink.trim()}
+                        className="px-4 py-2 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-200 text-xs font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-1.5">
+                        {isOpeningAlbum ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                          <Link2 className="w-3.5 h-3.5" />
+                        )}
+                        Cargar álbum
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 {/* Mensaje de error de catálogo */}
                 {catalogError && (
@@ -566,8 +665,132 @@ export default function MetadataModal({
                   </div>
                 )}
 
-                {/* Lista de Resultados de Catálogo */}
-                {catalogResults.length > 0 && (
+                {/* ── Vista ÁLBUMES ABIERTO: sus pistas ── */}
+                {openedAlbum && (
+                  <div className="space-y-2 pt-1">
+                    <div className="flex items-center justify-between gap-3">
+                      <button
+                        type="button"
+                        onClick={() => onSetCatalogMode('albums')}
+                        className="text-[11px] text-accent-400 hover:underline flex items-center gap-1">
+                        <ChevronLeft className="w-3.5 h-3.5" />
+                        Volver a álbumes
+                      </button>
+                    </div>
+
+                    <div className="p-3 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center gap-3">
+                      {openedAlbum.cover_url ? (
+                        <img src={openedAlbum.cover_url} className="w-14 h-14 rounded-xl object-cover border border-white/10 shadow-md" alt={openedAlbum.title} />
+                      ) : (
+                        <div className="w-14 h-14 rounded-xl bg-white/5 flex items-center justify-center flex-shrink-0">
+                          <Layers className="w-6 h-6 text-gray-500" />
+                        </div>
+                      )}
+                      <div className="min-w-0">
+                        <h4 className="text-sm font-bold text-white truncate flex items-center gap-2">
+                          {openedAlbum.title}
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-accent-500/20 text-accent-300 border border-accent-500/30">
+                            {openedAlbum.track_count} pistas
+                          </span>
+                        </h4>
+                        <p className="text-[11px] text-gray-300 truncate">
+                          {openedAlbum.artist}
+                          {openedAlbum.year && <span className="text-gray-500"> • {openedAlbum.year}</span>}
+                        </p>
+                      </div>
+                    </div>
+
+                    {isOpeningAlbum ? (
+                      <div className="flex items-center justify-center gap-2 py-8 text-gray-400 text-xs">
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Cargando pistas del álbum...
+                      </div>
+                    ) : catalogAlbumTracks.length > 0 ? (
+                      <div className="grid grid-cols-1 gap-2.5 max-h-[45vh] overflow-y-auto pr-1">
+                        {catalogAlbumTracks.map((track, idx) => (
+                          <div
+                            key={idx}
+                            className="p-3 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 hover:border-accent-500/30 transition-all flex items-center justify-between gap-3 group">
+                            <div className="flex items-center gap-3 min-w-0">
+                              <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-gray-400 font-mono text-[10px] flex-shrink-0">
+                                {track.track_number || idx + 1}
+                              </div>
+                              <div className="min-w-0">
+                                <h4 className="text-xs font-bold text-white truncate group-hover:text-accent-300 transition-colors">
+                                  {track.title}
+                                </h4>
+                                <p className="text-[11px] text-gray-300 truncate">
+                                  {track.artist}
+                                  {track.year && <span className="text-gray-500"> • {track.year}</span>}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-2 flex-shrink-0">
+                              <button
+                                type="button"
+                                onClick={() => onApplyAlbumTrack(track, true)}
+                                className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-cyan-300 text-xs font-medium border border-white/10 transition-colors flex items-center gap-1.5"
+                                title="Importar solamente la carátula en alta resolución">
+                                <ImagePlus className="w-3.5 h-3.5" />
+                                <span className="hidden sm:inline">Solo portada</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => onApplyAlbumTrack(track, false)}
+                                className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-accent-500 to-purple-600 hover:opacity-90 text-white text-xs font-bold shadow-md transition-all flex items-center gap-1.5">
+                                <Sparkles className="w-3.5 h-3.5" />
+                                Aplicar pista
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
+                )}
+
+                {/* ── Resultados: ÁLBUMES ── */}
+                {!openedAlbum && catalogMode === 'albums' && catalogAlbums.length > 0 && (
+                  <div className="space-y-2 pt-2">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                      Álbumes encontrados ({catalogAlbums.length})
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[50vh] overflow-y-auto pr-1">
+                      {catalogAlbums.map((album, idx) => (
+                        <div
+                          key={idx}
+                          onClick={() => onOpenAlbum(album)}
+                          className="p-3 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 hover:border-accent-500/30 transition-all flex items-center gap-3 group cursor-pointer">
+                          {album.cover_url ? (
+                            <img src={album.cover_url} className="w-14 h-14 rounded-xl object-cover flex-shrink-0 border border-white/10 shadow-md group-hover:scale-105 transition-transform" alt={album.title} />
+                          ) : (
+                            <div className="w-14 h-14 rounded-xl bg-white/5 flex items-center justify-center flex-shrink-0">
+                              <Layers className="w-6 h-6 text-gray-500" />
+                            </div>
+                          )}
+                          <div className="min-w-0 flex-1">
+                            <h4 className="text-xs font-bold text-white truncate group-hover:text-accent-300 transition-colors flex items-center gap-2">
+                              <ListMusic className="w-3.5 h-3.5 text-accent-400 flex-shrink-0" />
+                              {album.title}
+                            </h4>
+                            <p className="text-[11px] text-gray-300 truncate">
+                              {album.artist}
+                              {album.year && <span className="text-gray-500"> • {album.year}</span>}
+                            </p>
+                            <div className="flex items-center gap-2 text-[10px] text-gray-400 font-mono mt-0.5">
+                              <span>{album.track_count} pistas</span>
+                            </div>
+                          </div>
+                          <ChevronLeft className="w-4 h-4 text-gray-500 -rotate-180 flex-shrink-0 group-hover:text-accent-300 transition-colors" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* ── Resultados: CANCIONES ── */}
+                {catalogMode === 'songs' && catalogResults.length > 0 && (
                   <div className="space-y-2 pt-2">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
                       Resultados encontrados ({catalogResults.length})
@@ -575,16 +798,16 @@ export default function MetadataModal({
 
                     <div className="grid grid-cols-1 gap-2.5 max-h-[50vh] overflow-y-auto pr-1">
                       {catalogResults.map((item, idx) => (
-                        <div 
+                        <div
                           key={idx}
                           className="p-3 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 hover:border-accent-500/30 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 group">
-                          
+
                           <div className="flex items-center gap-3 min-w-0">
                             {item.cover_url ? (
-                              <img 
-                                src={item.cover_url} 
-                                className="w-12 h-12 rounded-xl object-cover flex-shrink-0 border border-white/10 shadow-md group-hover:scale-105 transition-transform" 
-                                alt={item.title} 
+                              <img
+                                src={item.cover_url}
+                                className="w-12 h-12 rounded-xl object-cover flex-shrink-0 border border-white/10 shadow-md group-hover:scale-105 transition-transform"
+                                alt={item.title}
                               />
                             ) : (
                               <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center flex-shrink-0">

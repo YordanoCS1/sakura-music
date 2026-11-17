@@ -5,7 +5,7 @@
 import { useState } from 'react';
 import { convertFileSrc, invoke } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-dialog';
-import type { CatalogCandidate, ScannedTrack } from '../types';
+import type { CatalogAlbum, CatalogAlbumTrack, CatalogCandidate, CatalogSource, ScannedTrack } from '../types';
 
 export type EditField = 'title' | 'artist' | 'album' | 'album_artist' | 'track_number' | 'year' | 'genre';
 
@@ -39,12 +39,21 @@ export function useMetadataEditor({
   const [isSavingMetadata, setIsSavingMetadata] = useState(false);
   const [metadataFeedback, setMetadataFeedback] = useState<string | null>(null);
 
-  // Catálogo Online (Apple Music / iTunes / Deezer)
+  // Catálogo Online (Apple Music / iTunes / Deezer / MusicBrainz)
   const [catalogQuery, setCatalogQuery] = useState('');
-  const [catalogSource, setCatalogSource] = useState<'itunes' | 'deezer'>('itunes');
+  const [catalogSource, setCatalogSource] = useState<CatalogSource>('itunes');
+  const [catalogMode, setCatalogMode] = useState<'songs' | 'albums'>('songs');
   const [catalogResults, setCatalogResults] = useState<CatalogCandidate[]>([]);
   const [isSearchingCatalog, setIsSearchingCatalog] = useState(false);
   const [catalogError, setCatalogError] = useState<string | null>(null);
+
+  // Resultados de búsqueda por álbumes + álbum abierto
+  const [catalogAlbums, setCatalogAlbums] = useState<CatalogAlbum[]>([]);
+  const [openedAlbum, setOpenedAlbum] = useState<CatalogAlbum | null>(null);
+  const [catalogAlbumTracks, setCatalogAlbumTracks] = useState<CatalogAlbumTrack[]>([]);
+  const [isOpeningAlbum, setIsOpeningAlbum] = useState(false);
+  // Enlace directo de álbum de iTunes/Apple Music (cuando no aparece en el buscador)
+  const [albumLink, setAlbumLink] = useState('');
 
   const openEditModal = (track: ScannedTrack, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
@@ -69,6 +78,10 @@ export function useMetadataEditor({
     setCatalogQuery(suggestedQuery);
     setCatalogResults([]);
     setCatalogError(null);
+    setCatalogAlbums([]);
+    setOpenedAlbum(null);
+    setCatalogAlbumTracks([]);
+    setAlbumLink('');
   };
 
   const resetField = (field: EditField) => {
@@ -117,65 +130,73 @@ export function useMetadataEditor({
     }
   };
 
-  // Buscar en el catálogo público (Apple Music / iTunes API)
+  // Descargar la portada remota y guardarla en archivo temporal en Rust.
+  const downloadCover = async (coverUrl: string) => {
+    try {
+      setEditCoverPreviewUrl(coverUrl);
+      const res = await fetch(coverUrl);
+      const buffer = await res.arrayBuffer();
+      const bytes = Array.from(new Uint8Array(buffer));
+      const tempPath = await invoke<string>('save_temp_cover', { bytes });
+      setEditCoverPath(tempPath);
+      setRemoveCover(false);
+    } catch (err) {
+      console.warn("No se pudo descargar la portada HD del catálogo:", err);
+    }
+  };
+
+  // ── Búsqueda por CANCIONES ─────────────────────────────────────────────
+  const searchCatalogSongs = async (q: string) => {
+    // Se delega en Rust: Deezer no expone CORS y MusicBrainz exige User-Agent.
+    const candidates: CatalogCandidate[] = await invoke('search_catalog_songs', {
+      source: catalogSource,
+      query: q,
+    });
+    setCatalogResults(candidates);
+    if (candidates.length === 0) {
+      const names: Record<string, string> = {
+        itunes: 'Apple Music / iTunes',
+        deezer: 'Deezer',
+        musicbrainz: 'MusicBrainz',
+      };
+      setCatalogError(`No se encontraron coincidencias en ${names[catalogSource] || catalogSource}.`);
+    }
+  };
+
+  // ── Búsqueda por ÁLBUMES ───────────────────────────────────────────────
+  const searchCatalogAlbums = async (q: string) => {
+    // Se delega en Rust: Deezer no expone CORS y MusicBrainz exige User-Agent.
+    const albums: CatalogAlbum[] = await invoke('search_catalog_albums', {
+      source: catalogSource,
+      query: q,
+    });
+    setCatalogAlbums(albums);
+    if (albums.length === 0) {
+      const names: Record<string, string> = {
+        itunes: 'Apple Music / iTunes',
+        deezer: 'Deezer',
+        musicbrainz: 'MusicBrainz',
+      };
+      setCatalogError(`No se encontraron álbumes en ${names[catalogSource] || catalogSource}.`);
+    }
+  };
+
+  // Buscar en el catálogo público según la pestaña activa (Canciones / Álbumes)
   const searchCatalog = async (customQuery?: string) => {
     const q = (customQuery !== undefined ? customQuery : catalogQuery).trim();
     if (!q) return;
     setIsSearchingCatalog(true);
     setCatalogError(null);
+    setOpenedAlbum(null);
+    setAlbumLink('');
+    setCatalogAlbumTracks([]);
     try {
-      if (catalogSource === 'itunes') {
-        const url = `https://itunes.apple.com/search?term=${encodeURIComponent(q)}&entity=song&limit=16`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`HTTP error ${res.status}`);
-        const data = await res.json();
-        const items = data.results || [];
-        const candidates: CatalogCandidate[] = items.map((it: any) => {
-          const rawCover = it.artworkUrl100 || '';
-          // Pedir versión de alta resolución (600x600 o 1000x1000)
-          const hdCover = rawCover.replace('/100x100bb', '/600x600bb');
-          const relYear = it.releaseDate ? it.releaseDate.substring(0, 4) : '';
-          return {
-            source: 'itunes',
-            title: it.trackName || '',
-            artist: it.artistName || '',
-            album: it.collectionName || '',
-            album_artist: it.artistName || '',
-            year: relYear,
-            genre: it.primaryGenreName || '',
-            track_number: it.trackNumber ? it.trackNumber.toString() : '',
-            cover_url: hdCover,
-          };
-        });
-        setCatalogResults(candidates);
-        if (candidates.length === 0) {
-          setCatalogError("No se encontraron coincidencias en Apple Music / iTunes.");
-        }
+      if (catalogMode === 'albums') {
+        await searchCatalogAlbums(q);
+        setCatalogResults([]);
       } else {
-        // Deezer: la API pública devuelve pistas con carátula en varios tamaños.
-        const url = `https://api.deezer.com/search?q=${encodeURIComponent(q)}&limit=16`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`HTTP error ${res.status}`);
-        const data = await res.json();
-        if (data.error) {
-          throw new Error(data.error.message || 'La API de Deezer devolvió un error');
-        }
-        const items = data.data || [];
-        const candidates: CatalogCandidate[] = items.map((it: any) => ({
-          source: 'deezer',
-          title: it.title || '',
-          artist: it.artist?.name || '',
-          album: it.album?.title || '',
-          album_artist: it.artist?.name || '',
-          year: '',
-          genre: '',
-          track_number: '',
-          cover_url: it.album?.cover_xl || it.album?.cover_big || it.album?.cover_medium || '',
-        }));
-        setCatalogResults(candidates);
-        if (candidates.length === 0) {
-          setCatalogError("No se encontraron coincidencias en Deezer.");
-        }
+        await searchCatalogSongs(q);
+        setCatalogAlbums([]);
       }
     } catch (err) {
       console.error("Error al buscar en catálogo:", err);
@@ -185,37 +206,124 @@ export function useMetadataEditor({
     }
   };
 
-  // Aplicar datos de un candidato del catálogo
+  // Abrir un álbum y cargar sus pistas según la plataforma (en Rust).
+  const openAlbum = async (album: CatalogAlbum) => {
+    setOpenedAlbum(album);
+    setIsOpeningAlbum(true);
+    setCatalogAlbumTracks([]);
+    setCatalogError(null);
+    try {
+      // Cuando se abre desde el buscador no hay enlace: country vacío.
+      const tracks: CatalogAlbumTrack[] = await invoke('open_catalog_album', {
+        source: album.source,
+        id: album.id,
+        country: '',
+      });
+      setCatalogAlbumTracks(tracks);
+      if (tracks.length === 0) {
+        setCatalogError(`El álbum «${album.title}» no tiene pistas disponibles.`);
+      }
+    } catch (err) {
+      console.error("Error al abrir álbum:", err);
+      setCatalogError(`Error al cargar las pistas del álbum: ${String(err)}`);
+      setOpenedAlbum(null);
+    } finally {
+      setIsOpeningAlbum(false);
+    }
+  };
+
+  // Cargar un álbum de iTunes/Apple Music a partir de su enlace cuando
+  // no aparece en el buscador. Extrae el collectionId y el storefront (país)
+  // de la URL; el storefront es clave para EPs/singles que no existen en USA.
+  const openAlbumByLink = async (link: string) => {
+    const trimmed = link.trim();
+    if (!trimmed) {
+      setCatalogError("Pega primero el enlace del álbum de iTunes/Apple Music.");
+      return;
+    }
+    // storefront: /music.apple.com/<cc>/album/...  o  /itunes.apple.com/<cc>/album/...
+    const ccMatch = trimmed.match(/\/music\.apple\.com\/([a-z]{2})\//i) || trimmed.match(/\/itunes\.apple\.com\/([a-z]{2})\//i);
+    const country = ccMatch ? ccMatch[1].toLowerCase() : 'us';
+    const idMatch = trimmed.match(/\/(\d{8,15})\/?$/);
+    const collectionId = idMatch ? idMatch[1] : null;
+    if (!collectionId) {
+      setCatalogError("No se pudo extraer el ID del álbum. Pega un enlace tipo https://music.apple.com/us/album/<id> o https://itunes.apple.com/us/album/<id>.");
+      return;
+    }
+
+    setIsOpeningAlbum(true);
+    setCatalogError(null);
+    setOpenedAlbum(null);
+    setCatalogAlbumTracks([]);
+    try {
+      const tracks: CatalogAlbumTrack[] = await invoke('open_catalog_album', {
+        source: 'itunes',
+        id: collectionId,
+        country,
+      });
+      const first = tracks[0];
+      const opened: CatalogAlbum = {
+        source: 'itunes',
+        id: collectionId,
+        title: first?.album || 'Álbum',
+        artist: first?.artist || first?.album_artist || '',
+        year: first?.year || '',
+        track_count: tracks.length,
+        cover_url: first?.cover_url || '',
+      };
+      setOpenedAlbum(opened);
+      setCatalogAlbumTracks(tracks);
+      setCatalogAlbums([]);
+      if (tracks.length === 0) {
+        setCatalogError('No se encontraron pistas para ese álbum. Verifica el enlace (debe apuntar al álbum, no a una canción).');
+      }
+    } catch (err) {
+      console.error("Error al cargar álbum por enlace:", err);
+      setCatalogError(`Error al cargar el álbum desde el enlace: ${String(err)}`);
+      setOpenedAlbum(null);
+    } finally {
+      setIsOpeningAlbum(false);
+    }
+  };
+
+  // Aplicar campos de un candidato (canción) al formulario.
+  const applyFields = (fields: { title?: string; artist?: string; album?: string; album_artist?: string; year?: string; genre?: string; track_number?: string }) => {
+    if (fields.title) setEditTitle(fields.title);
+    if (fields.artist) setEditArtist(fields.artist);
+    if (fields.album) setEditAlbum(fields.album);
+    if (fields.album_artist) setEditAlbumArtist(fields.album_artist);
+    if (fields.year) setEditYear(fields.year);
+    if (fields.genre) setEditGenre(fields.genre);
+    if (fields.track_number) setEditTrackNumber(fields.track_number);
+  };
+
+  // Aplicar datos de una canción del catálogo.
   const applyCandidate = async (candidate: CatalogCandidate, applyCoverOnly: boolean = false) => {
     if (!applyCoverOnly) {
-      if (candidate.title) setEditTitle(candidate.title);
-      if (candidate.artist) setEditArtist(candidate.artist);
-      if (candidate.album) setEditAlbum(candidate.album);
-      if (candidate.album_artist) setEditAlbumArtist(candidate.album_artist);
-      if (candidate.year) setEditYear(candidate.year);
-      if (candidate.genre) setEditGenre(candidate.genre);
-      if (candidate.track_number) setEditTrackNumber(candidate.track_number);
+      applyFields(candidate);
     }
-
-    // Si tiene portada, descargar y guardar en archivo temporal en Rust
     if (candidate.cover_url) {
-      try {
-        setEditCoverPreviewUrl(candidate.cover_url);
-        const res = await fetch(candidate.cover_url);
-        const buffer = await res.arrayBuffer();
-        const bytes = Array.from(new Uint8Array(buffer));
-        const tempPath = await invoke<string>('save_temp_cover', { bytes });
-        setEditCoverPath(tempPath);
-        setRemoveCover(false);
-      } catch (err) {
-        console.warn("No se pudo descargar la portada HD del catálogo:", err);
-      }
+      await downloadCover(candidate.cover_url);
     }
-
     setEditTab('tags');
     setMetadataFeedback(applyCoverOnly
       ? "✓ Portada de alta resolución importada con éxito."
       : "✓ ¡Metadatos importados desde el catálogo oficial!");
+    setTimeout(() => setMetadataFeedback(null), 3000);
+  };
+
+  // Aplicar una pista concreta del álbum abierto.
+  const applyAlbumTrack = async (track: CatalogAlbumTrack, applyCoverOnly: boolean = false) => {
+    if (!applyCoverOnly) {
+      applyFields(track);
+    }
+    if (track.cover_url) {
+      await downloadCover(track.cover_url);
+    }
+    setEditTab('tags');
+    setMetadataFeedback(applyCoverOnly
+      ? "✓ Portada de alta resolución importada con éxito."
+      : "✓ ¡Metadatos del álbum aplicados a la canción!");
     setTimeout(() => setMetadataFeedback(null), 3000);
   };
 
@@ -304,15 +412,24 @@ export function useMetadataEditor({
     metadataFeedback, setMetadataFeedback,
     catalogQuery, setCatalogQuery,
     catalogSource, setCatalogSource,
+    catalogMode, setCatalogMode,
     catalogResults, setCatalogResults,
     isSearchingCatalog, setIsSearchingCatalog,
     catalogError, setCatalogError,
+    catalogAlbums, setCatalogAlbums,
+    openedAlbum, setOpenedAlbum,
+    catalogAlbumTracks, setCatalogAlbumTracks,
+    isOpeningAlbum, setIsOpeningAlbum,
+    albumLink, setAlbumLink,
     openEditModal,
     resetField,
     resetAllFields,
     pickNewCoverImage,
     searchCatalog,
+    openAlbum,
+    openAlbumByLink,
     applyCandidate,
+    applyAlbumTrack,
     handlePaste,
     handleSaveMetadata,
   };

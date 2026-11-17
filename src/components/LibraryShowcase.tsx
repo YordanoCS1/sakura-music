@@ -1,4 +1,4 @@
-import { Music2, Pause, Play } from 'lucide-react';
+import { Music2, Pause, Pencil, Play } from 'lucide-react';
 import type { ScannedTrack } from '../types';
 
 interface LibraryShowcaseProps {
@@ -8,9 +8,10 @@ interface LibraryShowcaseProps {
   isPlaying: boolean;
   getCoverSrc: (coverUrl: string | null) => string;
   onPlayTrack: (track: ScannedTrack) => void;
+  onOpenEdit: (track: ScannedTrack, e: React.MouseEvent) => void;
 }
 
-function MosaicView({ tracks, activeTrack, isPlaying, getCoverSrc, onPlayTrack }: LibraryShowcaseProps) {
+function MosaicView({ tracks, activeTrack, isPlaying, getCoverSrc, onPlayTrack, onOpenEdit }: LibraryShowcaseProps) {
   return (
     <div className="show-mosaic">
       {tracks.map((t, i) => {
@@ -33,6 +34,12 @@ function MosaicView({ tracks, activeTrack, isPlaying, getCoverSrc, onPlayTrack }
               <span className="show-mos-caption-artist">{t.artist}</span>
             </span>
             <span className="show-mos-play">{isActive ? <Pause /> : <Play />}</span>
+            <span
+              className="show-mos-edit"
+              onClick={(e) => { e.stopPropagation(); onOpenEdit(t, e); }}
+              title="Editar metadatos">
+              <Pencil />
+            </span>
           </button>
         );
       })}

@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sakura Music · 8 Temas con layouts distintos</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#14141a; font-family:'Segoe UI',Arial,sans-serif; padding:26px 40px; }
+  h1.page { color:#f0eef2; font-size:25px; margin-bottom:6px; }
+  p.page { color:#9a97a3; font-size:14px; margin-bottom:6px; }
+  p.note { color:#7d7a88; font-size:12px; margin-bottom:28px; }
+  .wrap { display:flex; flex-direction:column; gap:46px; }
+  .item { display:flex; flex-direction:column; gap:10px; }
+  .item-head { display:flex; align-items:baseline; gap:14px; }
+  .item-head h2 { color:#fff; font-size:20px; }
+  .item-head span { color:#9a97a3; font-size:12.5px; }
+  .shots { display:flex; gap:16px; }
+  .frame { width:540px; height:640px; border-radius:16px; overflow:hidden; position:relative; }
+  .frame-cap { height:26px; display:flex; align-items:center; padding:0 12px; font-size:10px; font-weight:800; color:#c9c5d4; background:rgba(255,255,255,.05); border-top:1px solid rgba(255,255,255,.08); }
+
+  /* mini componentes compartidos */
+  .tbar { display:flex; align-items:center; gap:7px; height:32px; flex:0 0 32px; padding:0 10px; }
+  .tbar .lo { width:16px;height:16px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff; }
+  .tbar .nm { font-size:10px; font-weight:800; }
+  .tbar .sp { flex:1; }
+  .tbar .b { font-size:9px; opacity:.5; }
+  .frow { display:flex; align-items:center; gap:7px; padding:7px 9px; border-radius:8px; }
+  .frow .n { width:14px; font-size:9px; text-align:center; opacity:.5; }
+  .frow .th { width:22px;height:22px;border-radius:6px; flex:0 0 22px; }
+  .frow .c { flex:1; min-width:0; }
+  .frow .c b { display:block; font-size:10px; }
+  .frow .c small { font-size:8px; opacity:.55; }
+  .frow .d { font-size:8.5px; opacity:.5; font-family:monospace; }
+
+  /* ======== 1 · BOSQUE: nav LATERAL izquierda ======== */
+  .f1 { display:flex; flex-direction:column; height:100%; }
+  .f1-body { flex:1; display:flex; min-height:0; }
+  .f1-rail { width:150px; flex:0 0 150px; display:flex; flex-direction:column; padding:14px 10px; gap:6px; border-right:1px solid rgba(52,211,153,.25); }
+  .f1-rail .it { padding:9px 10px; border-radius:9px; font-size:11px; font-weight:700; color:#9fe0c4; display:flex; gap:8px; align-items:center; }
+  .f1-rail .it.on { background:linear-gradient(135deg,#10b981,#34d399); color:#04281b; }
+  .f1-main { flex:1; padding:14px 16px; overflow:hidden; }
+  .f1-hero { display:flex; align-items:center; gap:14px; background:rgba(52,211,153,.08); border:1px solid rgba(52,211,153,.2); border-radius:16px; padding:14px; }
+  .f1-hero .art { width:70px;height:70px;border-radius:14px;background:radial-gradient(circle at 35% 30%,#bbf7d0,#15803d 60%);display:flex;align-items:center;justify-content:center;font-size:32px; }
+  .f1-hero .c small{color:#fbbf24;font-size:9px;font-weight:800;letter-spacing:.08em}
+  .f1-hero .c b{display:block;color:#eafff5;font-size:18px}.f1-hero .c span{color:#9fe0c4;font-size:10px}
+
+  /* ======== 2 · OCÉANO: nav SUPERIOR centrada ======== */
+  .f2 { display:flex; flex-direction:column; height:100%; }
+  .f2-top { display:flex; justify-content:center; gap:5px; padding:12px; border-bottom:1px solid rgba(34,211,238,.2); }
+  .f2-top .pill { padding:7px 16px; border-radius:999px; font-size:11px; font-weight:700; color:#8fd8ff; }
+  .f2-top .pill.on { background:linear-gradient(135deg,#0891b2,#22d3ee); color:#031830; }
+  .f2-body { flex:1; padding:14px 16px; overflow:hidden; }
+  .f2-list { display:flex; flex-direction:column; gap:6px; }
+
+  /* ======== 3 · NEÓN: rail de iconos delgado ======== */
+  .f3 { display:flex; flex-direction:column; height:100%; }
+  .f3-body { flex:1; display:flex; min-height:0; }
+  .f3-rail { width:48px; flex:0 0 48px; display:flex; flex-direction:column; align-items:center; gap:12px; padding-top:14px; border-right:1px solid rgba(244,114,182,.25); }
+  .f3-rail .ic { font-size:15px; color:#e88bb6; }
+  .f3-rail .ic.on { color:#fff; text-shadow:0 0 12px rgba(244,114,182,.7); }
+  .f3-main { flex:1; padding:14px 16px; overflow:hidden; }
+  .f3-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+  .f3-card { aspect-ratio:1; border-radius:14px; display:flex; align-items:flex-end; padding:10px; font-size:10px; font-weight:800; color:#fff; box-shadow:0 8px 20px rgba(0,0,0,.4); }
+  .f3-card small{display:block;font-size:8px;font-weight:500;opacity:.85}
+
+  /* ======== 4 · ATARDECER: reproductor full ======== */
+  .f4 { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; gap:14px; }
+  .f4-art { width:160px;height:160px;border-radius:22px;background:radial-gradient(circle at 35% 30%,#fed7aa,#ea580c 60%);display:flex;align-items:center;justify-content:center;font-size:60px;box-shadow:0 22px 50px rgba(0,0,0,.4) }
+  .f4-t b{display:block;color:#ffece3;font-size:20px;text-align:center}.f4-t small{color:#f5c9a8;font-size:11px}
+  .f4-seek{width:300px;height:5px;border-radius:999px;background:rgba(251,146,60,.25);overflow:hidden}
+  .f4-seek i{display:block;height:100%;width:48%;background:linear-gradient(90deg,#ea580c,#fde68a)}
+  .f4-ctr{display:flex;gap:16px}.f4-ctr .c{color:#f5c9a8;font-size:16px}.f4-ctr .main{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#ea580c,#fb923c);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 0 18px rgba(251,146,60,.5)}
+
+  /* ======== 5 · LUNA: split portada + lista ======== */
+  .f5 { display:flex; flex-direction:column; height:100%; }
+  .f5-body { flex:1; display:flex; min-height:0; }
+  .f5-side { width:170px; flex:0 0 170px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; border-right:1px solid rgba(203,213,225,.2); padding:14px; }
+  .f5-side .art{width:110px;height:110px;border-radius:18px;background:radial-gradient(circle at 35% 30%,#e2e8f0,#475569 60%);display:flex;align-items:center;justify-content:center;font-size:40px}
+  .f5-side b{color:#e6edf5;font-size:15px}.f5-side small{color:#9aa8ba;font-size:10px}
+  .f5-main{flex:1;padding:14px 16px;overflow:hidden}
+
+  /* ======== 6 · MATCHA: nav abajo ======== */
+  .f6 { display:flex; flex-direction:column; height:100%; }
+  .f6-main { flex:1; padding:14px 16px; overflow:hidden; }
+  .f6-nav { display:flex; align-items:center; justify-content:center; gap:26px; height:56px; flex:0 0 56px; border-top:1px solid rgba(134,239,172,.25); }
+  .f6-nav .fi{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:8.5px;color:#9fe0bb}
+  .f6-nav .fi .ic{font-size:16px}.f6-nav .fi.on{color:#fff}
+  .f6-nav .fi.big{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#16a34a,#4ade80);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;margin-top:-24px}
+
+  /* ======== 7 · CYBER: terminal densa ======== */
+  .f7 { display:flex; flex-direction:column; height:100%; }
+  .f7-body { flex:1; padding:14px 16px; overflow:hidden; font-family:'Cascadia Code','Consolas',monospace; }
+  .f7-row { display:flex; gap:10px; padding:8px 10px; border-radius:7px; font-size:11px; }
+  .f7-row.on { background:rgba(34,211,238,.12); box-shadow:inset 0 0 0 1px rgba(34,211,238,.35); }
+  .f7-row .c{flex:1}.f7-row .c b{color:#eafffd}.f7-row .c small{color:#5cc6c1;font-size:9px}
+  .f7-row .st{color:#4fb5b0;font-size:9px}
+
+  /* ======== 8 · LAVANDA: grid playlists ======== */
+  .f8 { display:flex; flex-direction:column; height:100%; }
+  .f8-body { flex:1; padding:14px 16px; overflow:hidden; }
+  .f8-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+  .f8-card { background:rgba(196,181,253,.08); border:1px solid rgba(196,181,253,.2); border-radius:14px; padding:12px; display:flex; align-items:center; gap:10px; }
+  .f8-card .art{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px}
+  .f8-card .c b{display:block;color:#f3ecff;font-size:11px}.f8-card .c small{color:#cfc2ef;font-size:9px}
+</style>
+</head>
+<body>
+<h1 class="page">Sakura Music · 8 Temas con layouts distintos</h1>
+<p class="page">Cada tema tiene una estructura de app DIFERENTE (nav lateral, nav superior, rail, full-screen, split, nav abajo, terminal, grid).</p>
+<p class="note">Se muestran 2 pantallas por tema para que veas la estructura y cómo cambia entre pantallas.</p>
+
+<div class="wrap">
+
+<!-- 1 · BOSQUE: nav LATERAL -->
+<div class="item">
+  <div class="item-head"><h2>01 · Bosque Místico</h2><span>Nav LATERAL izquierda · verde esmeralda</span></div>
+  <div class="shots">
+    <div class="frame" style="background:linear-gradient(165deg,#0d2418,#1a3a24);color:#eafff5">
+      <div class="tbar" style="background:#0e2519;border-bottom:1px solid rgba(52,211,153,.25)"><div class="lo" style="background:linear-gradient(135deg,#34d399,#059669)">桜</div><span class="nm">Sakura</span><span class="sp"></span><span class="b">─ ▢ ✕</span></div>
+      <div class="f1">
+        <div class="f1-body">
+          <div class="f1-rail">
+            <div class="it on">🏠 Inicio</div><div class="it">📚 Colección</div><div class="it">🔍 Buscar</div><div class="it">⚙️ Ajustes</div>
+          </div>
+          <div class="f1-main">
+            <div class="f1-hero"><div class="art">🌲</div><div class="c"><small>ÁLBUM</small><b>Forest Lofi</b><span>Chill Nature · 2023</span></div></div>
+            <div style="height:12px"></div>
+            <div class="frow on" style="background:rgba(52,211,153,.12)"><span class="n">♪</span><div class="th" style="background:linear-gradient(135deg,#34d399,#065f46)"></div><div class="c"><b>Morning Dew</b><small>Chill Nature</small></div><span class="d">3:32</span></div>
+            <div class="frow"><span class="n">2</span><div class="th" style="background:linear-gradient(135deg,#6ee7b7,#059669)"></div><div class="c"><b>River Flow</b><small>Chill Nature</small></div><span class="d">4:10</span></div>
+            <div class="frow"><span class="n">3</span><div class="th" style="background:linear-gradient(135deg,#bbf7d0,#15803d)"></div><div class="c"><b>Canopy</b><small>Chill Nature</small></div><span class="d">3:54</span></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;border-top:1px solid rgba(52,211,153,.25)"><div class="th" style="width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#34d399,#065f46)"></div><div style="flex:1"><b style="color:#eafff5;font-size:11px">Morning Dew</b><div style="color:#9fe0c4;font-size:9px">Chill Nature</div></div><span style="color:#34d399;font-size:14px">▶</span></div>
+      </div>
+      <div class="frame-cap">HOME (nav lateral)</div>
+    </div>
+    <div class="frame" style="background:linear-gradient(165deg,#0d2418,#1a3a24);color:#eafff5">
+      <div class="tbar" style="background:#0e2519;border-bottom:1px solid rgba(52,211,153,.25)"><div class="lo" style="background:linear-gradient(135deg,#34d399,#059669)">桜</div><span class="nm">Sakura</span><span class="sp"></span></div>
+      <div class="f1">
+        <div class="f1-body">
+          <div class="f1-rail"><div class="it">🏠</div><div class="it on">📚 Colección</div><div class="it">🔍</div><div class="it">⚙️</div></div>
+          <div class="f1-main">
+            <b style="color:#eafff5;font-size:13px;display:block;margin-bottom:10px">Colección</b>
+            <div class="frow on" style="background:rgba(52,211,153,.12)"><span class="n">♪</span><div class="th" style="background:linear-gradient(135deg,#34d399,#065f46)"></div><div class="c"><b>Morning Dew</b><small>Chill Nature</small></div><span class="d">3:32</span></div>
+            <div class="frow"><span class="n">2</span><div class="th" style="background:linear-gradient(135deg,#6ee7b7,#059669)"></div><div class="c"><b>River Flow</b><small>Chill Nature</small></div><span class="d">4:10</span></div>
+            <div class="frow"><span class="n">3</span><div class="th" style="background:linear-gradient(135deg,#bbf7d0,#15803d)"></div><div class="c"><b>Canopy</b><small>Chill Nature</small></div><span class="d">3:54</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="frame-cap">BIBLIOTECA</div>
+    </div>
+  </div>
+</div>
+
+<!-- 2 · OCÉANO: nav SUPERIOR -->
+<div class="item">
+  <div class="item-head"><h2>02 · Océano Profundo</h2><span>Nav SUPERIOR centrada · azul teal</span></div>
+  <div class="shots">
+    <div class="frame" style="background:linear-gradient(165deg,#061a33,#0a3a4a);color:#dff4ff">
+      <div class="tbar" style="background:#071f3a;border-bottom:1px solid rgba(34,211,238,.25)"><div class="lo" style="background:linear-gradient(135deg,#22d3ee,#0284c7)">桜</div><span class="nm">Sakura</span><span class="sp"></span><span class="b">─ ▢ ✕</span></div>
+      <div class="f2-top"><span class="pill on">Inicio</span><span class="pill">Biblioteca</span><span class="pill">Buscar</span><span class="pill">Ajustes</span></div>
+      <div class="f2-body">
+        <div class="f2-list">
+          <div class="frow on" style="background:rgba(34,211,238,.12)"><span class="n">♪</span><div class="th" style="background:linear-gradient(135deg,#22d3ee,#0369a1)"></div><div class="c"><b>Tide</b><small>Ocean Waves</small></div><span class="d">3:44</span></div>
+          <div class="frow"><span class="n">2</span><div class="th" style="background:linear-gradient(135deg,#7dd3fc,#0284c7)"></div><div class="c"><b>Abyss</b><small>Ocean Waves</small></div><span class="d">4:28</span></div>
+          <div class="frow"><span class="n">3</span><div class="th" style="background:linear-gradient(135deg,#38bdf8,#075985)"></div><div class="c"><b>Coral</b><small>Ocean Waves</small></div><span class="d">3:12</span></div>
+          <div class="frow"><span class="n">4</span><div class="th" style="background:linear-gradient(135deg,#0ea5e9,#0c4a6e)"></div><div class="c"><b>Depth</b><small>Ocean Waves</small></div><span class="d">5:01</span></div>
+        </div>
+      </div>
+      <div class="frame-cap">LISTA (nav superior)</div>
+    </div>
+    <div class="frame" style="background:linear-gradient(165deg,#061a33,#0a3a4a);color:#dff4ff">
+      <div class="tbar" style="background:#071f3a;border-bottom:1px solid rgba(34,211,238,.25)"><div class="lo" style="background:linear-gradient(135deg,#22d3ee,#0284c7)">桜</div><span class="nm">Now Playing</span><span class="sp"></span></div>
+      <div class="f4">
+        <div class="f4-art" style="background:radial-gradient(circle at 35% 30%,#7dd3fc,#0369a1 60%)">🌊</div>
+        <div class="f4-t"><b>Tide</b><small>Ocean Waves · Deep Blue</small></div>
+        <div class="f4-seek" style="background:rgba(34,211,238,.2)"><i style="background:linear-gradient(90deg,#0284c7,#7dd3fc);width:50%"></i></div>
+        <div class="f4-ctr"><span class="c">⏮</span><span class="main" style="background:linear-gradient(135deg,#0284c7,#22d3ee)">⏸</span><span class="c">⏭</span></div>
+      </div>
+      <div class="frame-cap">NOW PLAYING</div>
+    </div>
+  </div>
+</div>
+
+<!-- 3 · NEÓN: rail de iconos -->
+<div class="item">
+  <div class="item-head"><h2>03 · Neón Rosa</h2><span>Rail de ICONOS delgado · magenta</span></div>
+  <div class="shots">
+    <div class="frame" style="background:linear-gradient(165deg,#1a0520,#3a0b30);color:#ffe6f2">
+      <div class="tbar" style="background:#21062b;border-bottom:1px solid rgba(244,114,182,.3)"><div class="lo" style="background:linear-gradient(135deg,#f472b6,#db2777)">桜</div><span class="nm">Sakura</span><span class="sp"></span><span class="b">─ ▢ ✕</span></div>
+      <div class="f3">
+        <div class="f3-body">
+          <div class="f3-rail"><span class="ic on">🏠</span><span class="ic">📚</span><span class="ic">🔍</span><span class="ic">⚙️</span></div>
+          <div class="f3-main">
+            <b style="color:#ffe6f2;font-size:13px;display:block;margin-bottom:10px">Álbumes</b>
+            <div class="f3-grid">
+              <div class="f3-card" style="background:linear-gradient(135deg,#f472b6,#be185d)">Neon<small>Pop</small></div>
+              <div class="f3-card" style="background:linear-gradient(135deg,#f9a8d4,#a21caf)">Love<small>Blast</small></div>
+              <div class="f3-card" style="background:linear-gradient(135deg,#fbcfe8,#db2777)">Ribbon<small>Pink</small></div>
+              <div class="f3-card" style="background:linear-gradient(135deg,#f472b6,#881337)">Gloss<small>Neon</small></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="frame-cap">GRID (rail iconos)</div>
+    </div>
+    <div class="frame" style="background:linear-gradient(165deg,#1a0520,#3a0b30);color:#ffe6f2">
+      <div class="tbar" style="background:#21062b;border-bottom:1px solid rgba(244,114,182,.3)"><div class="lo" style="background:linear-gradient(135deg,#f472b6,#db2777)">桜</div><span class="nm">Sakura</span><span class="sp"></span></div>
+      <div class="f3">
+        <div class="f3-body">
+          <div class="f3-rail"><span class="ic on">🏠</span><span class="ic">📚</span><span class="ic">🔍</span><span class="ic">⚙️</span></div>
+          <div class="f3-main">
+            <b style="color:#ffe6f2;font-size:13px;display:block;margin-bottom:10px">Canciones</b>
+            <div class="frow on" style="background:rgba(244,114,182,.14)"><span class="n">♪</span><div class="th" style="background:linear-gradient(135deg,#f472b6,#be185d)"></div><div class="c"><b>Neon Heart</b><small>Pink Blast</small></div><span class="d">3:30</span></div>
+            <div class="frow"><span class="n">2</span><div class="th" style="background:linear-gradient(135deg,#f9a8d4,#a21caf)"></div><div class="c"><b>Pink Pop</b><small>Pink Blast</small></div><span class="d">3:08</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="frame-cap">LISTA</div>
+    </div>
+  </div>
+</div>
+
+<!-- 4 · ATARDECER: reproductor full -->
+<div class="item">
+  <div class="item-head"><h2>04 · Atardecer</h2><span>REPRODUCTOR full-screen · naranja</span></div>
+  <div class="shots">
+    <div class="frame" style="background:linear-gradient(165deg,#3a1030,#7a2a1a);color:#ffece3">
+      <div class="tbar" style="background:#3d1326;border-bottom:1px solid rgba(251,146,60,.3)"><div class="lo" style="background:linear-gradient(135deg,#fb923c,#ea580c)">桜</div><span class="nm">Sakura</span><span class="sp"></span><span class="b">─ ▢ ✕</span></div>
+      <div class="f4">
+        <div class="f4-art" style="background:radial-gradient(circle at 35% 30%,#fed7aa,#ea580c 60%)">🌇</div>
+        <div class="f4-t"><b>Golden Hour</b><small>Sunset Vibes · Dusk</small></div>
+        <div class="f4-seek"><i style="width:46%"></i></div>
+        <div class="f4-ctr"><span class="c">⏮</span><span class="main">▶</span><span class="c">⏭</span></div>
+      </div>
+      <div class="frame-cap">REPRODUCTOR FULL</div>
+    </div>
+    <div class="frame" style="background:linear-gradient(165deg,#3a1030,#7a2a1a);color:#ffece3">
+      <div class="tbar" style="background:#3d1326;border-bottom:1px solid rgba(251,146,60,.3)"><div class="lo" style="background:linear-gradient(135deg,#fb923c,#ea580c)">桜</div><span class="nm">Sakura</span><span class="sp"></span></div>
+      <div class="f1">
+        <div class="f1-body">
+          <div class="f1-rail"><div class="it on">🏠</div><div class="it">📚</div><div class="it">🔍</div><div class="it">⚙️</div></div>
+          <div class="f1-main">
+            <div class="frow on" style="background:rgba(251,146,60,.14)"><span class="n">♪</span><div class="th" style="background:linear-gradient(135deg,#fb923c,#9a3412)"></div><div class="c"><b>Dusk</b><small>Sunset Vibes</small></div><span class="d">3:22</span></div>
+            <div class="frow"><span class="n">2</span><div class="th" style="background:linear-gradient(135deg,#fde68a,#ea580c)"></div><div class="c"><b>Amber</b><small>Sunset Vibes</small></div><span class="d">4:05</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="frame-cap">BIBLIOTECA</div>
+    </div>
+  </div>
+</div>
+
+<!-- 5 · LUNA: split -->
+<div class="item">
+  <div class="item-head"><h2>05 · Luna Plateada</h2><span>SPLIT portada + lista · gris azulado</span></div>
+  <div class="shots">
+    <div class="frame" style="background:linear-gradient(165deg,#1a2230,#2b3a4d);color:#e6edf5">
+      <div class="tbar" style="background:#1c2536;border-bottom:1px solid rgba(203,213,225,.25)"><div class="lo" style="background:linear-gradient(135deg,#cbd5e1,#64748b)">桜</div><span class="nm">Sakura</span><span class="sp"></span><span class="b">─ ▢ ✕</span></div>
+      <div class="f5">
+        <div class="f5-body">
+          <div class="f5-side"><div class="art">🌙</div><b>Silver Moon</b><small>Lunar · 2023</small></div>
+          <div class="f5-main">
+            <div class="frow on" style="background:rgba(203,213,225,.1)"><span class="n">♪</span><div class="th" style="background:linear-gradient(135deg,#cbd5e1,#475569)"></div><div class="c"><b>Midnight</b><small>Lunar</small></div><span class="d">4:12</span></div>
+            <div class="frow"><span class="n">2</span><div class="th" style="background:linear-gradient(135deg,#94a3b8,#334155)"></div><div class="c"><b>Silver Lining</b><small>Lunar</small></div><span class="d">3:48</span></div>
+            <div class="frow"><span class="n">3</span><div class="th" style="background:linear-gradient(135deg,#e2e8f0,#52525b)"></div><div class="c"><b>Eclipse</b><small>Lunar</small></div><span class="d">5:02</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="frame-cap">SPLIT (portada+lista)</div>
+    </div>
+    <div class="frame" style="background:linear-gradient(165deg,#1a2230,#2b3a4d);color:#e6edf5">
+      <div class="tbar" style="background:#1c2536;border-bottom:1px solid rgba(203,213,225,.25)"><div class="lo" style="background:linear-gradient(135deg,#cbd5e1,#64748b)">桜</div><span class="nm">Now Playing</span><span class="sp"></span></div>
+      <div class="f4">
+        <div class="f4-art" style="background:radial-gradient(circle at 35% 30%,#e2e8f0,#475569 60%);box-shadow:0 22px 50px rgba(0,0,0,.4)">🌙</div>
+        <div class="f4-t"><b>Midnight</b><small>Lunar · Silver Moon</small></div>
+        <div class="f4-seek" style="background:rgba(203,213,225,.18)"><i style="background:linear-gradient(90deg,#64748b,#e2e8f0);width:44%"></i></div>
+        <div class="f4-ctr"><span class="c">⏮</span><span class="main" style="background:linear-gradient(135deg,#64748b,#cbd5e1)">⏸</span><span class="c">⏭</span></div>
+      </div>
+      <div class="frame-cap">NOW PLAYING</div>
+    </div>
+  </div>
+</div>
+
+<!-- 6 · MATCHA: nav abajo -->
+<div class="item">
+  <div class="item-head"><h2>06 · Matcha Fresco</h2><span>Nav ABAJO (móvil) · verde menta</span></div>
+  <div class="shots">
+    <div class="frame" style="background:linear-gradient(165deg,#0f3d2c,#1a5c3d);color:#e6fff2">
+      <div class="tbar" style="background:#11482f;border-bottom:1px solid rgba(134,239,172,.3)"><div class="lo" style="background:linear-gradient(135deg,#4ade80,#166534)">桜</div><span class="nm">Sakura</span><span class="sp"></span><span class="b">─ ▢ ✕</span></div>
+      <div class="f6">
+        <div class="f6-main">
+          <div class="frow on" style="background:rgba(134,239,172,.12)"><span class="n">♪</span><div class="th" style="background:linear-gradient(135deg,#4ade80,#15803d)"></div><div class="c"><b>Matcha</b><small>Sencha</small></div><span class="d">3:22</span></div>
+          <div class="frow"><span class="n">2</span><div class="th" style="background:linear-gradient(135deg,#86efac,#16a34a)"></div><div class="c"><b>Green Leaf</b><small>Sencha</small></div><span class="d">4:00</span></div>
+          <div class="frow"><span class="n">3</span><div class="th" style="background:linear-gradient(135deg,#bbf7d0,#0e6b34)"></div><div class="c"><b>Menta</b><small>Sencha</small></div><span class="d">3:45</span></div>
+        </div>
+        <div class="f6-nav"><div class="fi on"><span class="ic">🏠</span>Inicio</div><div class="fi"><span class="ic">📚</span>Colec</div><div class="fi big">▶</div><div class="fi"><span class="ic">🔍</span>Buscar</div><div class="fi"><span class="ic">⚙️</span>Ajustes</div></div>
+      </div>
+      <div class="frame-cap">LISTA (nav abajo)</div>
+    </div>
+    <div class="frame" style="background:linear-gradient(165deg,#0f3d2c,#1a5c3d);color:#e6fff2">
+      <div class="tbar" style="background:#11482f;border-bottom:1px solid rgba(134,239,172,.3)"><div class="lo" style="background:linear-gradient(135deg,#4ade80,#166534)">桜</div><span class="nm">Sakura</span><span class="sp"></span></div>
+      <div class="f6">
+        <div class="f6-main">
+          <div class="frow on" style="background:rgba(134,239,172,.12)"><span class="n">1</span><div class="th" style="background:linear-gradient(135deg,#4ade80,#15803d)"></div><div class="c"><b>Matcha</b><small>Sencha</small></div><span style="color:#fff;font-size:10px">▶</span></div>
+          <div class="frow"><span class="n">2</span><div class="th" style="background:linear-gradient(135deg,#86efac,#16a34a)"></div><div class="c"><b>Green Leaf</b><small>Sencha</small></div><span class="d">4:00</span></div>
+        </div>
+        <div class="f6-nav"><div class="fi"><span class="ic">🏠</span>Inicio</div><div class="fi on"><span class="ic">📚</span>Colec</div><div class="fi big">▶</div><div class="fi"><span class="ic">🔍</span>Buscar</div><div class="fi"><span class="ic">⚙️</span>Ajustes</div></div>
+      </div>
+      <div class="frame-cap">BIBLIOTECA</div>
+    </div>
+  </div>
+</div>
+
+<!-- 7 · CYBER: terminal -->
+<div class="item">
+  <div class="item-head"><h2>07 · Cyberpunk</h2><span>Terminal densa · cian morado</span></div>
+  <div class="shots">
+    <div class="frame" style="background:#05010d;color:#b6ffe9">
+      <div class="tbar" style="background:rgba(13,4,31,.95);border-bottom:1px solid rgba(34,211,238,.25);font-family:'Cascadia Code','Consolas',monospace"><div class="lo" style="background:linear-gradient(135deg,#22d3ee,#a855f7);font-family:'Segoe UI'">桜</div><span class="nm">sakura</span><span class="sp"></span><span class="b">~/music</span></div>
+      <div class="f7">
+        <div class="f7-body">
+          <div style="color:#4fb5b0;font-size:10px;margin-bottom:8px">➜ cat canciones.txt</div>
+          <div class="f7-row on"><div class="c"><b>glitch_city.mp3</b><small>Neon Unit</small></div><span class="st">3:18</span></div>
+          <div class="f7-row"><div class="c"><b>overdrive.flac</b><small>Neon Unit</small></div><span class="st">4:02</span></div>
+          <div class="f7-row"><div class="c"><b>mainframe.flac</b><small>Neon Unit</small></div><span class="st">3:55</span></div>
+          <div style="color:#4fb5b0;font-size:10px;margin-top:8px">➜ <span style="background:#22d3ee;display:inline-block;width:8px;height:13px"></span></div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;border-top:1px solid rgba(34,211,238,.25);font-family:'Cascadia Code','Consolas',monospace"><span style="color:#22d3ee">▶</span><div style="flex:1"><b style="color:#eafffd;font-size:11px">glitch_city.mp3</b></div><span style="color:#22d3ee;font-size:10px">--seek 01:24</span></div>
+      <div class="frame-cap">TERMINAL</div>
+    </div>
+    <div class="frame" style="background:linear-gradient(165deg,#0b0b1f,#1b0e3a);color:#dff5ff">
+      <div class="tbar" style="background:#0d0d26;border-bottom:1px solid rgba(34,211,238,.3)"><div class="lo" style="background:linear-gradient(135deg,#22d3ee,#a855f7)">桜</div><span class="nm">Sakura</span><span class="sp"></span><span class="b">─ ▢ ✕</span></div>
+      <div class="f2">
+        <div class="f2-body">
+          <div class="frow on" style="background:rgba(34,211,238,.12)"><span class="n">♪</span><div class="th" style="background:linear-gradient(135deg,#22d3ee,#0891b2)"></div><div class="c"><b>Glitch City</b><small>Neon Unit</small></div><span class="d">3:18</span></div>
+          <div class="frow"><span class="n">2</span><div class="th" style="background:linear-gradient(135deg,#a855f7,#6d28d9)"></div><div class="c"><b>Overdrive</b><small>Neon Unit</small></div><span class="d">4:02</span></div>
+        </div>
+      </div>
+      <div class="frame-cap">LISTA</div>
+    </div>
+  </div>
+</div>
+
+<!-- 8 · LAVANDA: grid playlists -->
+<div class="item">
+  <div class="item-head"><h2>08 · Lavanda Mágica</h2><span>Grid de playlists · violeta</span></div>
+  <div class="shots">
+    <div class="frame" style="background:linear-gradient(165deg,#2a1a4d,#4a2a5e);color:#f3ecff">
+      <div class="tbar" style="background:#2e1e52;border-bottom:1px solid rgba(196,181,253,.3)"><div class="lo" style="background:linear-gradient(135deg,#c4b5fd,#8b5cf6)">桜</div><span class="nm">Sakura</span><span class="sp"></span><span class="b">─ ▢ ✕</span></div>
+      <div class="f8">
+        <div class="f8-body">
+          <b style="color:#f3ecff;font-size:13px;display:block;margin-bottom:12px">Playlists</b>
+          <div class="f8-grid">
+            <div class="f8-card"><div class="art" style="background:linear-gradient(135deg,#c4b5fd,#6d28d9)">🦄</div><div class="c"><b>Dreamscape</b><small>18 pistas</small></div></div>
+            <div class="f8-card"><div class="art" style="background:linear-gradient(135deg,#ddd6fe,#8b5cf6)">✨</div><div class="c"><b>Starlight</b><small>24 pistas</small></div></div>
+            <div class="f8-card"><div class="art" style="background:linear-gradient(135deg,#a78bfa,#4c1d95)">🌙</div><div class="c"><b>Moonlit</b><small>12 pistas</small></div></div>
+            <div class="f8-card"><div class="art" style="background:linear-gradient(135deg,#f0abfc,#a21caf)">🧚</div><div class="c"><b>Fairy</b><small>9 pistas</small></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="frame-cap">PLAYLISTS (grid)</div>
+    </div>
+    <div class="frame" style="background:linear-gradient(165deg,#2a1a4d,#4a2a5e);color:#f3ecff">
+      <div class="tbar" style="background:#2e1e52;border-bottom:1px solid rgba(196,181,253,.3)"><div class="lo" style="background:linear-gradient(135deg,#c4b5fd,#8b5cf6)">桜</div><span class="nm">Now Playing</span><span class="sp"></span></div>
+      <div class="f4">
+        <div class="f4-art" style="background:radial-gradient(circle at 35% 30%,#ede9fe,#7c3aed 60%);box-shadow:0 22px 50px rgba(0,0,0,.4)">🦄</div>
+        <div class="f4-t"><b>Moonlit</b><small>Fairy Choir · Dreamscape</small></div>
+        <div class="f4-seek" style="background:rgba(196,181,253,.2)"><i style="background:linear-gradient(90deg,#7c3aed,#ddd6fe);width:60%"></i></div>
+        <div class="f4-ctr"><span class="c">⏮</span><span class="main" style="background:linear-gradient(135deg,#7c3aed,#c4b5fd)">⏸</span><span class="c">⏭</span></div>
+      </div>
+      <div class="frame-cap">NOW PLAYING</div>
+    </div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>
