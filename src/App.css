@@ -17,6 +17,13 @@
   font-display: swap;
   src: url('/fonts/jetbrains-mono-latin.woff2') format('woff2');
 }
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/cormorant-garamond-latin.woff2') format('woff2');
+}
 
 @layer base {
   :root {
@@ -4148,3 +4155,99 @@ input[type="range"]:hover::-webkit-slider-thumb {
 }
 .app-shell[data-skin='sumie'] .zen-topnav-tab { color: #6b6459 !important; }
 .app-shell[data-skin='sumie'] .zen-topnav-tab.is-active { color: #b23a2b !important; }
+
+
+/* ========================================================= */
+/* SUMI-E · EDICIÓN EDITORIAL                                 */
+/* Cormorant Garamond para display, mono para datos,           */
+/* sans sólo para texto de lectura. Jerarquía de museo.        */
+/* ========================================================= */
+.app-shell[data-skin='sumie'] { --theme-font-display: 'Cormorant Garamond', 'Yu Mincho', Georgia, serif; }
+
+.app-shell[data-skin='sumie'] .zen-topnav { min-height: 72px !important; flex-basis: 72px !important; }
+.app-shell[data-skin='sumie'] .zen-topnav-brand-copy strong {
+  font-family: var(--theme-font-display) !important;
+  font-size: 23px !important; font-weight: 600 !important;
+  letter-spacing: -0.015em !important; line-height: 1 !important;
+}
+.app-shell[data-skin='sumie'] .zen-topnav-brand-copy small {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 9px !important; letter-spacing: 0.2em !important;
+  text-transform: uppercase !important;
+}
+.app-shell[data-skin='sumie'] .zen-topnav-tab {
+  font-family: var(--theme-font-display) !important;
+  font-size: 17px !important; font-weight: 600 !important;
+  letter-spacing: 0.01em !important;
+}
+.app-shell[data-skin='sumie'] .zen-topnav-tab-count {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 9px !important; letter-spacing: 0 !important;
+}
+.app-shell[data-skin='sumie'] .zen-topnav-chip {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important; letter-spacing: 0.06em !important;
+  background: transparent !important;
+  border: 1px solid rgba(28, 26, 23, 0.16) !important;
+  box-shadow: none !important;
+}
+.app-shell[data-skin='sumie'] .gh-context-label {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important; letter-spacing: 0.18em !important;
+  text-transform: uppercase !important;
+}
+.app-shell[data-skin='sumie'] .gh-search-input {
+  font-family: var(--theme-font-display) !important;
+  font-size: 17px !important;
+}
+.app-shell[data-skin='sumie'] .lt-bar {
+  border-radius: 2px !important;
+  border: 1px solid rgba(28, 26, 23, 0.12) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+.app-shell[data-skin='sumie'] .lt-heading { position: relative; padding-bottom: 8px; }
+.app-shell[data-skin='sumie'] .lt-heading::after {
+  content: ''; position: absolute; left: 0; bottom: 0;
+  width: 46px; height: 2px; background: #b23a2b;
+}
+.app-shell[data-skin='sumie'] .lt-heading h2 {
+  font-family: var(--theme-font-display) !important;
+  font-size: 32px !important; font-weight: 500 !important;
+  letter-spacing: -0.015em !important;
+}
+.app-shell[data-skin='sumie'] .lt-heading p {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important; letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+}
+.app-shell[data-skin='sumie'] .empty-state { border-radius: 2px !important; }
+.app-shell[data-skin='sumie'] .empty-state h3 {
+  font-family: var(--theme-font-display) !important;
+  font-size: 36px !important; font-weight: 500 !important;
+  letter-spacing: -0.015em !important;
+}
+.app-shell[data-skin='sumie'] .empty-state p {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  font-size: 13px !important; line-height: 1.75 !important;
+  max-width: 420px !important;
+}
+.app-shell[data-skin='sumie'] .empty-state button {
+  background: transparent !important;
+  color: #b23a2b !important;
+  border: 1px solid #b23a2b !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 11px !important; letter-spacing: 0.12em !important;
+  text-transform: uppercase !important;
+}
+.app-shell[data-skin='sumie'] .empty-state button:hover {
+  background: #b23a2b !important; color: #fff8f0 !important;
+}
+.app-shell[data-skin='sumie'] .npr-title {
+  font-family: var(--theme-font-display) !important;
+  font-size: 16px !important;
+}
+.app-shell[data-skin='sumie'] .npr-time {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important;
+}

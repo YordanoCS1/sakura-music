@@ -6,6 +6,7 @@ Este directorio contiene los archivos WOFF2 (subconjunto latino) que usa la app.
 |---|---|---|
 | `plus-jakarta-sans-latin.woff2` | [Plus Jakarta Sans](https://fonts.google.com/specimen/Plus+Jakarta+Sans) | SIL Open Font License 1.1 |
 | `jetbrains-mono-latin.woff2` | [JetBrains Mono](https://www.jetbrains.com/lp/mono/) | SIL Open Font License 1.1 |
+| `cormorant-garamond-latin.woff2` | [Cormorant Garamond](https://fonts.google.com/specimen/Cormorant+Garamond) | SIL Open Font License 1.1 |
 
 Ambas fuentes se distribuyen bajo la SIL OFL 1.1, que permite embeberlas y redistribuirlas con la aplicación. Los textos completos de la licencia están en:
 

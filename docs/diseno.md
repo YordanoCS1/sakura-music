@@ -21,7 +21,7 @@ bloques de identidad están al final de `App.css`, bajo el encabezado
 
 ## Tipografía
 
-Plus Jakarta Sans para la interfaz, JetBrains Mono para datos técnicos. Ambas se sirven desde `public/fonts/`.
+Plus Jakarta Sans para la interfaz, JetBrains Mono para datos técnicos y Cormorant Garamond para tipografía display. Las tres se sirven desde `public/fonts/`. En Sumi-e, Cormorant Garamond encabeza y Plus Jakarta Sans queda sólo para texto de lectura.
 
 | Token | Tamaño | Uso |
 |---|---|---|
