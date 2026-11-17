@@ -4251,3 +4251,100 @@ input[type="range"]:hover::-webkit-slider-thumb {
   font-family: 'JetBrains Mono', monospace !important;
   font-size: 10px !important;
 }
+
+
+/* ========================================================= */
+/* SUMI-E · RAIL VERTICAL DE TINTA                            */
+/* Sustituye la barra genérica por un rail de kanji,           */
+/* sello hanko arriba y cabecera editorial de gran formato.    */
+/* ========================================================= */
+.app-shell[data-skin='sumie'] .app-rail-row { flex-direction: row !important; }
+.app-shell[data-skin='sumie'] .zen-topnav {
+  flex: 0 0 104px !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  width: auto !important;
+  min-height: 0 !important;
+  padding: 18px 8px !important;
+  gap: 10px !important;
+  background: #ebe3d5 !important;
+  border-right: 1px solid rgba(28, 26, 23, 0.14) !important;
+  border-bottom: none !important;
+  overflow: visible !important;
+}
+.app-shell[data-skin='sumie'] .zen-topnav::after { display: none !important; }
+.app-shell[data-skin='sumie'] .zen-topnav-brand {
+  flex-direction: column !important;
+  gap: 8px !important;
+  margin-bottom: 12px !important;
+  padding: 0 0 14px !important;
+  border-bottom: 1px solid rgba(28, 26, 23, 0.12) !important;
+}
+.app-shell[data-skin='sumie'] .zen-topnav-brand-copy { display: none !important; }
+.app-shell[data-skin='sumie'] .zen-topnav-brand-mark {
+  width: 52px !important; height: 52px !important;
+  border-radius: 8px !important;
+}
+.app-shell[data-skin='sumie'] .zen-topnav-tabs {
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 6px !important;
+  flex: 0 0 auto !important;
+  width: 100% !important;
+}
+.app-shell[data-skin='sumie'] .zen-topnav-tab {
+  flex-direction: column !important;
+  gap: 8px !important;
+  width: 64px !important;
+  height: 64px !important;
+  padding: 8px 4px !important;
+  border-radius: 4px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.app-shell[data-skin='sumie'] .zen-topnav-tab-icon,
+.app-shell[data-skin='sumie'] .zen-topnav-tab-label { display: none !important; }
+.app-shell[data-skin='sumie'] .zen-topnav-tab::before {
+  font-family: 'Yu Mincho', 'Hiragino Mincho ProN', 'Cormorant Garamond', serif !important;
+  font-size: 26px !important;
+  line-height: 1 !important;
+  color: #6b6459 !important;
+}
+.app-shell[data-skin='sumie'] #tab-home::before { content: '始'; }
+.app-shell[data-skin='sumie'] #tab-library::before { content: '蔵'; }
+.app-shell[data-skin='sumie'] #tab-search::before { content: '探'; }
+.app-shell[data-skin='sumie'] #tab-queue::before { content: '列'; }
+.app-shell[data-skin='sumie'] #tab-settings::before { content: '整'; }
+.app-shell[data-skin='sumie'] .zen-topnav-tab.is-active {
+  background: rgba(178, 58, 43, 0.08) !important;
+  box-shadow: inset 0 0 0 1px rgba(178, 58, 43, 0.35) !important;
+}
+.app-shell[data-skin='sumie'] .zen-topnav-tab.is-active::before { color: #b23a2b !important; }
+.app-shell[data-skin='sumie'] .zen-topnav-tab.is-active::after { display: none !important; }
+.app-shell[data-skin='sumie'] .zen-topnav-tab-count {
+  position: absolute; top: 4px; right: 4px;
+  font-size: 8px !important;
+}
+.app-shell[data-skin='sumie'] .zen-topnav-meta { display: none !important; }
+.app-shell[data-skin='sumie'] .zen-topnav-slider { display: none !important; }
+
+/* Cabecera editorial: título enorme, kicker mono y pincelada corta. */
+.app-shell[data-skin='sumie'] .lt-bar {
+  padding: 22px 26px 18px !important;
+  border-radius: 0 !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(28, 26, 23, 0.12) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.app-shell[data-skin='sumie'] .lt-heading h2 {
+  font-size: 46px !important;
+  font-weight: 400 !important;
+  letter-spacing: -0.02em !important;
+}
+.app-shell[data-skin='sumie'] .lt-heading p {
+  margin-top: 4px !important;
+  font-size: 10px !important;
+  letter-spacing: 0.16em !important;
+}
+.app-shell[data-skin='sumie'] .lt-heading::after { width: 72px; height: 3px; }
