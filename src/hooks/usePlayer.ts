@@ -25,6 +25,9 @@ export function usePlayer({
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const currentBlobUrlRef = useRef<string | null>(null);
 
+  // El audio se reproduce desde un Blob URL en vez de desde el archivo:
+  // así el protocolo asset: de Tauri libera el handle y Windows permite
+  // renombrar o reescribir la pista mientras suena.
   const releaseCurrentBlobUrl = useCallback(() => {
     if (currentBlobUrlRef.current) {
       URL.revokeObjectURL(currentBlobUrlRef.current);
@@ -51,6 +54,8 @@ export function usePlayer({
         throw new Error(`No se pudo cargar el audio (${response.status})`);
       }
 
+      // Copiar el audio en memoria y liberar la URL anterior evita
+      // acumular blobs al cambiar de pista.
       const blobUrl = URL.createObjectURL(await response.blob());
       currentBlobUrlRef.current = blobUrl;
       audioRef.current.src = blobUrl;

@@ -11,8 +11,8 @@ root.render(
   </React.StrictMode>,
 );
 
-// Oculta el splash de index.html. La entrada de la UI la anima CSS
-// (ver "ARRANQUE" en App.css), así que no hace falta tocar clases del body.
+// Oculta el splash de index.html. La animación de entrada la hace CSS, así
+// que no hace falta añadir clases al body desde JavaScript.
 const splash = document.getElementById("sakura-splash");
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const minSplashMs = reduceMotion ? 250 : 1100;

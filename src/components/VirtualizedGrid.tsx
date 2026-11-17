@@ -22,6 +22,9 @@ export default function VirtualizedGrid<T>({
   const gridRef = useRef<HTMLDivElement>(null);
   const [layout, setLayout] = useState({ columns: 1, columnGap: 0, rowGap: 0, paddingTop: 0, paddingBottom: 0 });
 
+  // El número de columnas se deduce del CSS, no se fija a mano: así el
+  // mismo componente respeta los media queries de cada vista. Se mide
+  // antes del paint (useLayoutEffect) para evitar un salto visible.
   useLayoutEffect(() => {
     const grid = gridRef.current;
     if (!grid) return;

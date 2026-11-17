@@ -1,9 +1,10 @@
-//! Resolución de la carpeta de datos de la aplicación.
+//! Resolución centralizada de la carpeta de datos de la aplicación.
 //!
-//! Tauri entrega una ruta estable por usuario (`app_local_data_dir`). Antes se
-//! usaba `current_dir()`, que en producción puede ser `System32` o la carpeta
-//! del instalador. Este módulo centraliza la decisión y deja un fallback para
-//! tests o llamadas tempranas.
+//! El arranque fija la carpeta con `init()` apuntando a `.tauri_data` dentro
+//! del directorio de trabajo (`lib.rs`), para que la base de datos, la cola,
+//! las carátulas y los binarios vivan juntos y no dependan de cada usuario.
+//! `data_dir()` conserva `.tauri_data` como último recurso en tests o en
+//! llamadas que lleguen antes de que termine el arranque.
 
 use std::path::PathBuf;
 use std::sync::OnceLock;

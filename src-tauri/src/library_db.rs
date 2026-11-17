@@ -24,6 +24,8 @@ fn open_connection() -> Result<Connection, String> {
 
     let connection = Connection::open(path)
         .map_err(|error| format!("No se pudo abrir la base de datos de biblioteca: {}", error))?;
+    // El vigilante de carpetas y la UI pueden escribir a la vez; sin este
+    // tiempo de espera SQLite devolvería "database is locked" al primer cruce.
     connection
         .busy_timeout(Duration::from_secs(5))
         .map_err(|error| format!("No se pudo configurar SQLite: {}", error))?;
@@ -33,6 +35,8 @@ fn open_connection() -> Result<Connection, String> {
 fn create_schema(connection: &Connection) -> Result<(), String> {
     connection
         .execute_batch(
+            // WAL permite leer la biblioteca mientras el escáner escribe, sin
+            // bloquear la interfaz durante el reescaneo.
             "PRAGMA journal_mode = WAL;
              CREATE TABLE IF NOT EXISTS library_tracks (
                  id TEXT NOT NULL,
@@ -324,6 +328,9 @@ fn delete_track_on(connection: &Connection, path: &str) -> Result<(), String> {
         root_path.ok_or_else(|| "No hay una carpeta de biblioteca activa".to_string())?;
 
     let file_path = Path::new(&indexed_path);
+    // `symlink_metadata` detecta también los enlaces simbólicos. Después se
+    // comparan las rutas canónicas para que un symlink dentro de la biblioteca
+    // no permita borrar un archivo de fuera de ella.
     match std::fs::symlink_metadata(file_path) {
         Ok(_) => {
             let canonical_root = Path::new(&root_path).canonicalize().map_err(|error| {

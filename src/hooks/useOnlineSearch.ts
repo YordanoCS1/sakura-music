@@ -1,5 +1,5 @@
-// Búsqueda en línea (YouTube), playlists y descargas de enlace directo.
-// Copia exacta de lo que vivía en App.tsx.
+// Búsqueda en YouTube, resolución de playlists y descarga de enlaces directos.
+// Mantiene fuera de App.tsx el diálogo con yt-dlp y sus eventos de progreso.
 
 import { useState } from 'react';
 import { invoke } from '@tauri-apps/api/core';

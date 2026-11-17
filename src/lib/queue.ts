@@ -1,9 +1,9 @@
 // Conversión entre el ítem de UI y la foto persistida en download_queue.json.
-// Mismo contrato que el backend (src-tauri/src/queue.rs).
+// Mismo contrato que la parte Rust (src-tauri/src/queue.rs).
 
 import type { DownloadItem } from '../types';
 
-/// Foto persistida en download_queue.json (mismo contrato que el backend).
+/// Conversión al formato que la parte Rust guarda en download_queue.json.
 export interface PersistedDownload {
   id: string;
   title: string;

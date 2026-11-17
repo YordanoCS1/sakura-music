@@ -216,7 +216,7 @@ export default function LibraryTab({
               {viewMode === 'folders' && tracks.length > 0 && (
                 <div className="space-y-6 mb-24 animate-in fade-in duration-200">
                   
-                  {/* Barra de Navegación y Rutas (Breadcrumbs) */}
+                  {/* Barra de navegación y ruta actual */}
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-2xl glass-card border border-white/10">
                     <div className="flex items-center gap-2 flex-wrap text-xs">
                       <button 
@@ -513,7 +513,7 @@ export default function LibraryTab({
                           </div>
                         </div>
 
-                        {/* Metadata */}
+                        {/* Metadatos */}
                         <div className="flex-1 min-w-0">
                           <h3 className={`text-xs font-semibold truncate transition-colors ${
                             isCurrent 
@@ -1265,7 +1265,7 @@ export default function LibraryTab({
                                     : 'border-white/5 hover:border-white/20'
                               }`}>
                               
-                              {/* Funda del Disco con Vinilo peeking */}
+                              {/* Carátula con el disco asomando */}
                               <div className="relative aspect-square w-full rounded-xl overflow-hidden bg-black/40 shadow-inner mb-3 flex items-center justify-center">
                                 
                                 {/* Disco de vinilo asomándose en hover */}
@@ -1301,7 +1301,7 @@ export default function LibraryTab({
                                   </button>
                                 </div>
 
-                                {/* Formato badge */}
+                                {/* Etiqueta de formato */}
                                 {group.formats.length > 0 && (
                                   <div className="absolute top-2 left-2 z-20 px-1.5 py-0.5 rounded-md bg-black/60 backdrop-blur-md text-[9px] font-mono text-gray-300 font-semibold border border-white/10">
                                     {group.formats[0]}
@@ -1317,7 +1317,7 @@ export default function LibraryTab({
                                 {group.artist}
                               </p>
 
-                              {/* Footer con pistas y año */}
+                              {/* Pie con pistas y año */}
                               <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/5 text-[10px] text-gray-500 font-mono">
                                 <span>{group.tracks.length} {group.tracks.length === 1 ? 'pista' : 'pistas'}</span>
                                 {group.year && <span>{group.year}</span>}

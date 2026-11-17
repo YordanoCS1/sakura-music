@@ -86,7 +86,7 @@ export default function App() {
     localStorage.setItem('sakura_ambient_particles', String(val));
   };
 
-  // Persistir el tema elegido (los mundos ya se guardan en su handler).
+  // Guardamos el tema activo para conservar la preferencia entre sesiones.
   useEffect(() => {
     localStorage.setItem('sakura_theme', theme);
   }, [theme]);
@@ -171,7 +171,7 @@ export default function App() {
   // Estado del motor de descargas
   const [toolsStatus, setToolsStatus] = useState<DownloaderStatus | null>(null);
   // Cola de descargas (estado + restauración + eventos). Vive en useDownloadQueue.ts;
-  // La búsqueda online vive en useOnlineSearch.ts.
+  // La búsqueda por Internet vive en useOnlineSearch.ts.
   const rescanAfterDownload = useCallback(() => {
     const folder = localStorage.getItem('sakura_current_folder');
     if (folder) {
@@ -242,7 +242,8 @@ export default function App() {
   });
 
 
-  // Helper para resolver portadas (locales o base64) de forma óptima
+  // Las portadas en línea (data: o http) se usan tal cual; las locales pasan
+  // por convertFileSrc para que el protocolo asset: de Tauri pueda leerlas.
   const getCoverSrc = (coverUrl: string | null) => {
     if (!coverUrl) return '';
     if (coverUrl.startsWith('data:') || coverUrl.startsWith('http://') || coverUrl.startsWith('https://')) {
@@ -251,7 +252,7 @@ export default function App() {
     return convertFileSrc(coverUrl);
   };
 
-  // Extractor de color dominante para Resplandor Ambiental Dinámico (Dynamic Cover Glow)
+  // Extrae el color dominante de la portada para teñir el resplandor del reproductor.
   const [coverGlowColors, setCoverGlowColors] = useState<{ color1: string; color2: string } | null>(null);
 
   useEffect(() => {
@@ -448,10 +449,6 @@ export default function App() {
     });
   };
 
-  // Playlist / Álbum de YouTube
-
-
-
   // Selección múltiple y Batch Editor
   const [selectedTrackIds, setSelectedTrackIds] = useState<Set<string>>(new Set());
   const [pendingDeleteTracks, setPendingDeleteTracks] = useState<ScannedTrack[]>([]);
@@ -624,7 +621,7 @@ export default function App() {
 
   // Base común de carpetas para el Explorador
   // Explorador, filtrado y álbumes. Vive en useFolderExplorer.ts;
-  // acá se destructura con los nombres originales para no tocar call sites.
+  // Se destructura con los nombres de siempre para no modificar quienes lo consumen.
   const {
     currentFolderNav, setCurrentFolderNav,
     setExpandedAlbumKey,
@@ -652,7 +649,7 @@ export default function App() {
   });
   playbackQueueRef.current = filteredTracks;
 
-  // Configuración de temas dinámicos
+  // Colores del tema activo (hoy único: 'space').
   const themeGlows: Record<ThemeMode, { glow1: string; glow2: string; accent: string; badge: string }> = {
     space: {
       glow1: 'bg-purple-500/25',

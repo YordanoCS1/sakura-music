@@ -131,7 +131,7 @@ export default function QueueTab({
                   </div>
                 </div>
 
-                {/* Badge de estado */}
+                {/* Etiqueta de estado */}
                 <div className="flex items-center gap-2">
                   <span className={`text-[10px] font-mono px-2.5 py-1 rounded-full uppercase tracking-wider font-semibold ${
                     isDone

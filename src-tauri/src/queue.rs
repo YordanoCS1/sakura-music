@@ -46,7 +46,7 @@ pub fn reconcile_status(status: &str) -> String {
 }
 
 /// Carga la foto. Archivo ausente o corrupto → lista vacía (la app arranca sin
-/// cola en vez de romper).
+/// cola en vez de fallar el arranque).
 pub fn load_queue() -> Vec<PersistedDownload> {
     let file = paths::queue_file();
     if !file.exists() {

@@ -146,7 +146,8 @@ impl DownloadManager {
     pub fn register_pid(&self, job_id: &str, pid: u32) {
         let mut inner = self.inner.lock().unwrap();
         if inner.cancelled.contains(job_id) {
-            // Lo cancelaron entre el spawn y el registro: matarlo ya.
+            // La cancelación llegó después de lanzar el proceso pero antes de
+            // registrar su PID: hay que matarlo enseguida para que no siga bajando.
             drop(inner);
             kill_pid(pid);
             return;
@@ -283,18 +284,18 @@ pub fn find_ytdlp_binary() -> Option<PathBuf> {
         }
     }
 
-    // 2. Carpeta de datos de la app
+    // 2. Carpeta de datos de la app: los binarios se actualizan sin tocar el PATH.
     let local = paths::bin_dir().join(binary_name("yt-dlp"));
     if local.exists() {
         return Some(local);
     }
 
-    // 3. PATH
+    // 3. PATH del sistema, por si yt-dlp ya está instalado globalmente.
     which_binary("yt-dlp")
 }
 
 pub fn find_ffmpeg_binary() -> Option<PathBuf> {
-    // 1. Carpeta de datos de la app
+    // 1. Carpeta de datos de la app: es la ubicación preferida y la más estable.
     let local = paths::bin_dir().join(binary_name("ffmpeg"));
     if local.exists() {
         return Some(local);
@@ -310,7 +311,7 @@ pub fn find_ffmpeg_binary() -> Option<PathBuf> {
             return Some(legacy);
         }
 
-        // 3. Enlaces de winget
+        // 3. Enlaces de winget: rutas forever del paquete instalado por el usuario.
         let winget = PathBuf::from(local_appdata)
             .join("Microsoft")
             .join("WinGet")
@@ -321,7 +322,7 @@ pub fn find_ffmpeg_binary() -> Option<PathBuf> {
         }
     }
 
-    // 4. PATH
+    // 4. PATH como último recurso, antes de informar que falta la herramienta.
     which_binary("ffmpeg")
 }
 

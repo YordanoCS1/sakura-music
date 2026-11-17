@@ -1,6 +1,6 @@
-// Estado y lógica del Editor de Metadatos Pro & Catálogo.
-// Copia exacta de lo que vivía en App.tsx: pre-llenado, reversión por campo,
-// picker/pegado de portada, búsqueda en iTunes/Deezer y guardado atómico.
+// Estado y lógica del editor de metadatos y su pestaña de catálogo:
+// pre-llenado, reversión por campo, portada desde archivo o portapapeles,
+// búsqueda en iTunes, Deezer y MusicBrainz, y guardado atómico.
 
 import { useState } from 'react';
 import { convertFileSrc, invoke } from '@tauri-apps/api/core';
@@ -35,7 +35,7 @@ export function useMetadataEditor({
   const [isSavingMetadata, setIsSavingMetadata] = useState(false);
   const [metadataFeedback, setMetadataFeedback] = useState<string | null>(null);
 
-  // Catálogo Online (Apple Music / iTunes / Deezer / MusicBrainz)
+  // Catálogo en línea (Apple Music / iTunes / Deezer / MusicBrainz)
   const [catalogQuery, setCatalogQuery] = useState('');
   const [catalogSource, setCatalogSource] = useState<CatalogSource>('itunes');
   const [catalogMode, setCatalogMode] = useState<'songs' | 'albums'>('songs');

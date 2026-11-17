@@ -94,6 +94,9 @@ pub fn write_atomic(path: &Path, bytes: &[u8]) -> std::io::Result<()> {
     result
 }
 
+/// Reintenta la escritura atómica con espera creciente (50, 100, 150 ms…).
+/// En Windows el reproductor o un antivirus pueden mantener el archivo abierto
+/// unos instantes; esperar evita perder la edición por un bloqueo temporal.
 fn write_atomic_with_retries(path: &Path, bytes: &[u8], attempts: u32) -> std::io::Result<()> {
     let mut last_err = None;
     for attempt in 1..=attempts {
@@ -129,7 +132,8 @@ fn extract_cover_art(tag: Option<&lofty::tag::Tag>, parent_dir: &Path) -> Option
         }
     }
 
-    // 2. Buscar carátula suelta en la carpeta del álbum
+    // 2. Sin portada incrustada, buscar una imagen suelta junto al álbum:
+    // varios ripper la dejan como cover.jpg en vez de embeberla.
     for candidate in [
         "cover.jpg",
         "folder.jpg",
@@ -289,7 +293,8 @@ pub fn update_track_tags(
 
     let mut cursor = std::io::Cursor::new(file_bytes);
 
-    // 2. Detectar formato del contenedor de audio y parsear tags con Lofty
+    // 2. Detectar el contenedor antes de leer: Lofty elige el esquema de tags
+    // (ID3, Vorbis Comments, MP4…) según el formato del archivo.
     let probe = Probe::new(&mut cursor)
         .guess_file_type()
         .map_err(|e| format!("Error al detectar formato: {}", e))?;
@@ -301,7 +306,7 @@ pub fn update_track_tags(
     let mut tagged_file = probe.read()
         .map_err(|e| format!("Error al leer tags: {}", e))?;
 
-    // Obtener tag existente o insertar uno nuevo del tipo correspondiente
+    // Un archivo sin tags no tiene bloque que editar: crear el del tipo detectado.
     let tag = match tagged_file.primary_tag_mut() {
         Some(primary) => primary,
         None => {
@@ -314,7 +319,8 @@ pub fn update_track_tags(
         }
     };
 
-    // 3. Aplicar campos de texto (misma lógica que en Python, mejorada para tipos nativos)
+    // 3. Aplicar campos de texto: se conserva el criterio de la v1 en Python,
+    // pero escribiendo los tipos nativos de Lofty en vez de cadenas.
     tag.set_title(title);
     tag.set_artist(artist);
     tag.set_album(album);
@@ -351,7 +357,7 @@ pub fn update_track_tags(
         tag.remove_key(&lofty::tag::ItemKey::AlbumArtist);
     }
 
-    // 4. Carátula incrustada
+    // 4. Carátula: borrar, reemplazar o conservar la actual según lo marcado.
     if remove_cover {
         while !tag.pictures().is_empty() {
             tag.remove_picture(0);
@@ -372,7 +378,8 @@ pub fn update_track_tags(
         }
     }
 
-    // 5. Inyectar tags directamente en el cursor de memoria (100% nativo Rust)
+    // 5. Ensamblar los tags en un búfer en memoria: el archivo original queda
+    // intacto hasta que la escritura atómica lo reemplaza de una vez.
     tagged_file.save_to(&mut cursor, lofty::config::WriteOptions::default())
         .map_err(|e| format!("Error al ensamblar tags con Lofty: {}", e))?;
 
@@ -387,12 +394,12 @@ pub fn update_track_tags(
         }
     }
 
-    // 7. Escribir archivo actualizado al disco (temporal + rename)
+    // 7. Escribir en temporal y renombrar: un corte de luz no deja tags a medias.
     if let Err(err) = write_atomic_with_retries(path, &updated_bytes, 4) {
         return Err(format!("Error al guardar en disco: {}", err));
     }
 
-    // 8. Re-escanear para devolver la metadata actualizada
+    // 8. Re-leer el archivo para devolver los tags tal como quedaron en disco.
     scan_audio_file(path).ok_or_else(|| "No se pudo re-leer la pista".to_string())
 }
 
@@ -450,7 +457,7 @@ pub fn update_batch_tags(
             continue;
         }
 
-        // 1. Leer bytes a memoria
+        // 1. Leer a memoria para soltar el handle de archivo cuanto antes.
         let file_bytes = match std::fs::read(path) {
             Ok(b) => b,
             Err(e) => {
@@ -461,7 +468,7 @@ pub fn update_batch_tags(
 
         let mut cursor = std::io::Cursor::new(file_bytes);
 
-        // 2. Detectar formato y tags con Lofty
+        // 2. Detectar el contenedor para elegir el esquema de tags correcto.
         let probe = match Probe::new(&mut cursor).guess_file_type() {
             Ok(p) => p,
             Err(e) => {
@@ -519,7 +526,7 @@ pub fn update_batch_tags(
             }
         }
 
-        // 4. Carátula
+        // 4. Carátula: borrar o reemplazar solo si el usuario lo marcó.
         if remove_cover {
             while !tag.pictures().is_empty() {
                 tag.remove_picture(0);
@@ -532,7 +539,7 @@ pub fn update_batch_tags(
             }
         }
 
-        // 5. Ensamblar en memoria
+        // 5. Ensamblar en memoria antes de escribir para no dejar el archivo a medias.
         if let Err(e) = tagged_file.save_to(&mut cursor, lofty::config::WriteOptions::default()) {
             errors.push(format!("{}: error al ensamblar tags: {}", path_str, e));
             continue;
@@ -540,7 +547,7 @@ pub fn update_batch_tags(
 
         let updated_bytes = cursor.into_inner();
 
-        // 6. Quitar solo lectura
+        // 6. Quitar solo lectura: Windows no permite renombrar sobre un archivo protegido.
         if let Ok(metadata) = std::fs::metadata(path) {
             let mut perms = metadata.permissions();
             if perms.readonly() {
@@ -549,13 +556,13 @@ pub fn update_batch_tags(
             }
         }
 
-        // 7. Guardar a disco con reintentos (temporal + rename)
+        // 7. Reintentar la escritura: otro proceso puede tener el archivo abierto unos ms.
         if let Err(err) = write_atomic_with_retries(path, &updated_bytes, 4) {
             errors.push(format!("{}: no se pudo escribir en disco: {}", path_str, err));
             continue;
         }
 
-        // 8. Re-escanear
+        // 8. Re-leer para devolver lo que realmente quedó grabado.
         if let Some(scanned) = scan_audio_file(path) {
             updated_tracks.push(scanned);
         }

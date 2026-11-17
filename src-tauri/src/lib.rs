@@ -94,6 +94,9 @@ fn current_memory_usage() -> String {
     };
     use windows_sys::Win32::System::Threading::GetCurrentProcess;
 
+    // SAFETY: la estructura se inicializa a cero y se rellena `cb` con su tamaño
+    // antes de pasarla a la API de Windows; el handle de GetCurrentProcess es
+    // válido mientras el proceso siga vivo.
     unsafe {
         let mut counters: PROCESS_MEMORY_COUNTERS = std::mem::zeroed();
         counters.cb = std::mem::size_of::<PROCESS_MEMORY_COUNTERS>() as u32;
@@ -331,7 +334,8 @@ pub fn run() {
         .setup(|app| {
             let handle = app.handle().clone();
 
-            // Directorio local seguro en la carpeta del proyecto
+            // Fijamos .tauri_data antes de abrir la base de datos: así todos los
+            // módulos resuelven la misma carpeta a través de `paths::*`.
             let mut data_dir = std::env::current_dir().unwrap_or_else(|_| PathBuf::from("."));
             data_dir.push(".tauri_data");
             let _ = std::fs::create_dir_all(&data_dir);

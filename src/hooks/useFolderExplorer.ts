@@ -1,5 +1,5 @@
-// Explorador por carpetas, filtrado, álbumes y selección de carpeta/álbum.
-// Copia exacta de lo que vivía en App.tsx.
+// Explorador por carpetas: filtrado, agrupación por álbumes y navegación.
+// Centraliza la lógica de rutas para que App.tsx solo consuma el resultado.
 
 import { useMemo, useState } from 'react';
 import type { AlbumGroup, FolderExplorerData, ScannedTrack, ViewMode } from '../types';

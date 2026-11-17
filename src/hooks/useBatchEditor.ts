@@ -1,6 +1,5 @@
-// Estado y lógica del Batch Editor (edición de metadatos en lote).
-// Copia exacta de lo que vivía en App.tsx: pre-llenado por valores comunes,
-// picker de portada, y guardado con errores parciales visibles.
+// Estado y lógica de la edición en lote: pre-llenado con valores comunes,
+// portada opcional y guardado que informa qué archivos fallaron.
 
 import { useState } from 'react';
 import { convertFileSrc, invoke } from '@tauri-apps/api/core';

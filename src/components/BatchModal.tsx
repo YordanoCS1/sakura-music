@@ -84,7 +84,7 @@ export default function BatchModal({
             className="glass-card rounded-3xl border border-white/10 w-full max-w-2xl shadow-2xl flex flex-col overflow-hidden max-h-[92vh] animate-in fade-in zoom-in-95 duration-200"
             onClick={(e) => e.stopPropagation()}>
             
-            {/* Header */}
+            {/* Cabecera */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-white/[0.03]">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-accent-500/20 to-purple-500/20 border border-accent-500/30 flex items-center justify-center text-accent-400 flex-shrink-0">
@@ -113,7 +113,7 @@ export default function BatchModal({
             {/* Contenido / Campos editables */}
             <div className="p-6 overflow-y-auto custom-scroll space-y-4 text-xs">
               
-              {/* Notificación de feedback */}
+              {/* Notificación de estado */}
               {feedback && (
                 <div className={`p-3.5 rounded-2xl border text-xs flex items-center gap-2.5 ${
                   feedback.startsWith('✓') 
@@ -319,7 +319,7 @@ export default function BatchModal({
 
             </div>
 
-            {/* Footer */}
+            {/* Pie */}
             <div className="px-6 py-4 border-t border-white/10 bg-white/[0.02] flex items-center justify-between gap-3">
               <span className="text-[11px] text-gray-400">
                 Se modificarán sólo los campos con casilla marcada

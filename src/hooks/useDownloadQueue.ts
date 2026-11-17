@@ -1,5 +1,5 @@
 // Cola de descargas: estado, restauración entre sesiones, progreso en vivo,
-// cancelación y reintento. Copia exacta de lo que vivía en App.tsx.
+// cancelación y reintento. Persiste en download_queue.json vía comandos Tauri.
 
 import { useEffect, useRef, useState } from 'react';
 import { invoke } from '@tauri-apps/api/core';
@@ -28,7 +28,7 @@ export function useDownloadQueue({
 
   // Restaurar la cola de descargas de la sesión anterior.
   // Las que estaban en curso al cerrar volvieron como `interrumpida` desde
-  // el backend: se relanzan con el mismo id, destino y formato.
+  // la parte Rust: se relanzan con el mismo id, destino y formato.
   useEffect(() => {
     invoke<PersistedDownload[]>('get_download_queue')
       .then(saved => {

@@ -1,4 +1,5 @@
-// Búsqueda en catálogo online (iTunes / Deezer / MusicBrainz) desde el backend.
+// Búsqueda en catálogos de Internet (iTunes / Deezer / MusicBrainz) desde el
+// núcleo de la aplicación.
 //
 // El frontend no puede llamar directamente a Deezer (sin cabeceras CORS) ni a
 // MusicBrainz (exige un User-Agent identificado): por eso estas peticiones se

@@ -93,7 +93,7 @@ export default function SettingsTab({
         </div>
       </div>
 
-      {/* SECCIÓN: UNIVERSO VISUAL & ESTILO GLOBAL */}
+      {/* SECCIÓN: APARIENCIA Y ESTILO GLOBAL */}
       <div className="glass-card p-6 rounded-3xl border border-white/10 space-y-5">
         <div className="flex items-center gap-3">
           <div className={`w-9 h-9 rounded-2xl bg-gradient-to-tr ${accentGradient} flex items-center justify-center text-white shadow-lg flex-shrink-0`}>
@@ -154,7 +154,7 @@ export default function SettingsTab({
           </div>
         </div>
 
-        {/* Controles de Vidrio (Glassmorphism Sliders) */}
+        {/* Controles de transparencia y desenfoque */}
         <div className="pt-3 border-t border-white/5 space-y-4">
           <div className="flex items-center justify-between">
             <div>
@@ -164,7 +164,7 @@ export default function SettingsTab({
             <Sliders className="w-4 h-4 text-gray-500" />
           </div>
 
-          {/* Slider Opacidad */}
+          {/* Deslizador de opacidad */}
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs">
               <span className="text-gray-400 text-[11px]">Opacidad del Vidrio:</span>
@@ -180,7 +180,7 @@ export default function SettingsTab({
             />
           </div>
 
-          {/* Slider Blur */}
+          {/* Deslizador de desenfoque */}
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs">
               <span className="text-gray-400 text-[11px]">Desenfoque (Backdrop Blur):</span>
@@ -196,7 +196,7 @@ export default function SettingsTab({
             />
           </div>
 
-          {/* Toggle Resplandor Ambiental */}
+          {/* Interruptor de resplandor ambiental */}
           <div className="flex items-center justify-between pt-1">
             <div>
               <span className="text-xs font-semibold text-gray-300 block">Resplandor Ambiental Fluido (Dynamic Glow)</span>
@@ -216,7 +216,7 @@ export default function SettingsTab({
             </button>
           </div>
 
-          {/* Toggle Partículas Atmosféricas */}
+          {/* Interruptor de partículas atmosféricas */}
           <div className="flex items-center justify-between pt-2 border-t border-white/5">
             <div>
               <span className="text-xs font-semibold text-gray-300 flex items-center gap-1.5">

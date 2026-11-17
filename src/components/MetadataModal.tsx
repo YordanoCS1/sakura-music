@@ -122,7 +122,7 @@ export default function MetadataModal({
             className="glass-card rounded-3xl border border-white/10 w-full max-w-4xl shadow-2xl flex flex-col overflow-hidden max-h-[92vh] animate-in fade-in zoom-in-95 duration-200"
             onClick={(e) => e.stopPropagation()}>
             
-            {/* Header con tabs de navegación */}
+            {/* Cabecera con pestañas de navegación */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between px-6 py-4 border-b border-white/10 bg-white/[0.03] gap-3">
               <div className="flex items-center gap-3 min-w-0">
                 <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-accent-500/20 to-purple-500/20 border border-accent-500/30 flex items-center justify-center text-accent-400 flex-shrink-0">
@@ -141,7 +141,7 @@ export default function MetadataModal({
                 </div>
               </div>
 
-              {/* Selector de Pestañas (Pill Switcher) */}
+              {/* Selector de pestañas */}
               <div className="flex items-center gap-2">
                 <div className="flex bg-white/5 p-1 rounded-2xl border border-white/10">
                   <button
@@ -236,7 +236,7 @@ export default function MetadataModal({
                         </div>
                       )}
 
-                      {/* Badge sobre la portada */}
+                      {/* Etiqueta sobre la portada */}
                       <div className="absolute top-2 left-2 pointer-events-none">
                         {removeCover ? (
                           <span className="px-2 py-0.5 rounded-full bg-rose-500/80 backdrop-blur-md text-white text-[9px] font-bold">
@@ -514,7 +514,7 @@ export default function MetadataModal({
                   </div>
                 </div>
 
-                {/* Feedback */}
+                {/* Mensajes de estado */}
                 {metadataFeedback && (
                   <div className={`text-xs px-4 py-3 rounded-2xl flex items-center gap-2 ${
                     metadataFeedback.startsWith('✓') 
@@ -528,7 +528,7 @@ export default function MetadataModal({
               </form>
             )}
 
-            {/* PESTAÑA 2: BUSCADOR EN CATÁLOGO ONLINE (ITUNES / DEEZER / MUSICBRAINZ) */}
+            {/* PESTAÑA 2: BUSCADOR EN CATÁLOGOS DE INTERNET (ITUNES / DEEZER / MUSICBRAINZ) */}
             {editTab === 'catalog' && (
               <div className="p-6 overflow-y-auto space-y-4 flex-1">
 
@@ -860,7 +860,7 @@ export default function MetadataModal({
               </div>
             )}
 
-            {/* Footer / Barra de Acciones */}
+            {/* Pie con los botones de acción */}
             <div className="px-6 py-4 border-t border-white/10 bg-white/[0.02] flex flex-col sm:flex-row items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <button

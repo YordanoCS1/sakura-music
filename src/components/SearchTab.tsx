@@ -269,7 +269,7 @@ export default function SearchTab({
       {/* Panel de Álbum / Playlist Completa */}
       {playlistInfo && (
         <div className="glass-card rounded-3xl border border-accent-500/30 overflow-hidden shadow-2xl animate-in fade-in slide-in-from-top-3">
-          {/* Header de la playlist */}
+          {/* Cabecera de la playlist */}
           <div className="p-6 bg-gradient-to-r from-accent-900/40 via-purple-900/30 to-accent-900/20 border-b border-white/10">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-start gap-4">
@@ -389,7 +389,7 @@ export default function SearchTab({
         </div>
       )}
 
-      {/* Resultados de Búsqueda Online en Vivo */}
+      {/* Resultados de búsqueda en línea en vivo */}
       {onlineResults.length > 0 && (
         <div>
           <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">

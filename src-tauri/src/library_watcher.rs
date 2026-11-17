@@ -52,6 +52,8 @@ impl LibraryWatcher {
         std::thread::spawn(move || {
             while receiver.recv().is_ok() {
                 loop {
+                    // Agrupamos los eventos que llegan seguidos (copiar un álbum
+                    // dispara muchos) y avisamos a la UI solo cuando se detienen.
                     match receiver.recv_timeout(Duration::from_millis(700)) {
                         Ok(()) => continue,
                         Err(mpsc::RecvTimeoutError::Timeout) => {
