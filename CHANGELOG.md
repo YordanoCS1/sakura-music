@@ -31,6 +31,7 @@ Todos los cambios destacables de este proyecto se registran acá. El formato sig
 - El tema alternativo **WWM / "universos"** (bandera `isWWM`, ramas inalcanzables, CSS y partículas Jianghu).
 - Código muerto: ~5.700 líneas de CSS heredado, el archivo huérfano `featuredArtists.ts`, los comandos `allow_music_dir` y `clear_download_queue`, la dependencia `base64` y el plugin `opener`.
 - Paletas múltiples y las versiones antiguas de sidebar, toolbar, reproductor y home.
+- Las galerías de diseño decorativas de Ajustes (`SakuraDesignGallery`, `LibraryDesignGallery` y `LibraryConceptsGallery`) y su CSS (~830 líneas).
 
 ### Corregido
 - Comentarios en inglés, obsoletos o huérfanos dejados por la limpieza anterior.
