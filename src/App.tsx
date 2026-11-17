@@ -737,7 +737,7 @@ export default function App() {
   return (
     <div
       data-theme={theme}
-      className={`app-shell relative w-screen h-screen flex flex-col overflow-hidden ${worldStyle.bgClass} font-sans text-gray-100 select-none`}
+      className={`app-shell relative w-screen h-screen flex flex-col overflow-hidden ${worldStyle.bgClass} font-sans text-ink-100 select-none`}
       style={
         {
           '--glass-opacity': `${glassOpacity / 100}`,
@@ -760,25 +760,25 @@ export default function App() {
           {coverGlowColors ? (
             <>
               <div
-                className="absolute -top-32 -left-32 w-[34rem] h-[34rem] rounded-full blur-[130px] pointer-events-none transition-all duration-1000 animate-pulse"
+                className="absolute -top-32 -left-32 w-[34rem] h-[34rem] rounded-full blur-[130px] pointer-events-none transition-all duration-slow animate-pulse"
                 style={{ backgroundColor: coverGlowColors.color1 }}
               />
               <div
-                className="absolute -bottom-32 -right-32 w-[34rem] h-[34rem] rounded-full blur-[140px] pointer-events-none transition-all duration-1000"
+                className="absolute -bottom-32 -right-32 w-[34rem] h-[34rem] rounded-full blur-[140px] pointer-events-none transition-all duration-slow"
                 style={{ backgroundColor: coverGlowColors.color2 }}
               />
               <div
-                className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[36rem] h-[22rem] rounded-full blur-[150px] pointer-events-none opacity-40 transition-all duration-1000"
+                className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[36rem] h-[22rem] rounded-full blur-[150px] pointer-events-none opacity-40 transition-all duration-slow"
                 style={{ backgroundColor: coverGlowColors.color1 }}
               />
             </>
           ) : (
             <>
               <div
-                className={`absolute -top-32 -left-32 w-96 h-96 ${worldStyle.ambientGlow1} rounded-full blur-[110px] pointer-events-none transition-all duration-700 animate-pulse`}
+                className={`absolute -top-32 -left-32 w-96 h-96 ${worldStyle.ambientGlow1} rounded-full blur-[110px] pointer-events-none transition-all duration-slow animate-pulse`}
               ></div>
               <div
-                className={`absolute -bottom-32 -right-32 w-96 h-96 ${worldStyle.ambientGlow2} rounded-full blur-[120px] pointer-events-none transition-all duration-700`}
+                className={`absolute -bottom-32 -right-32 w-96 h-96 ${worldStyle.ambientGlow2} rounded-full blur-[120px] pointer-events-none transition-all duration-slow`}
               ></div>
             </>
           )}

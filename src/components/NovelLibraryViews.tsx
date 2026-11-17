@@ -97,7 +97,7 @@ function CdsView({
             </div>
             <div className="min-w-0 flex-1">
               <div className="text-xs font-bold nv-text truncate">{track.title}</div>
-              <div className="text-[11px] nv-muted truncate">
+              <div className="text-xs nv-muted truncate">
                 {track.artist} · {track.album}
               </div>
             </div>
@@ -114,7 +114,7 @@ function CdsView({
               />
             </button>
             <EditBtn track={track} onOpenEdit={onOpenEdit} />
-            <span className="text-[10px] nv-muted font-mono">{track.duration_str}</span>
+            <span className="text-2xs nv-muted font-mono">{track.duration_str}</span>
           </div>
         );
       })}
@@ -156,7 +156,7 @@ function TiltView({
               </div>
               <div className="mt-2.5">
                 <div className="text-xs font-bold nv-text truncate">{track.title}</div>
-                <div className="text-[10px] nv-muted truncate">{track.artist}</div>
+                <div className="text-2xs nv-muted truncate">{track.artist}</div>
               </div>
             </div>
           </div>
@@ -217,7 +217,7 @@ function PortadasView({
     <div className="nv-stack-wrap p-5">
       <div className="flex items-center gap-2 mb-5">
         <h3 className="text-sm font-bold nv-text">Tus álbumes</h3>
-        <span className="text-[10px] nv-muted">({albumGroups.length})</span>
+        <span className="text-2xs nv-muted">({albumGroups.length})</span>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
         {albumGroups.map((group) => {
@@ -252,8 +252,8 @@ function PortadasView({
                 </div>
               </div>
               <div className="p-3">
-                <div className="text-[11px] font-bold nv-text truncate">{group.album}</div>
-                <div className="text-[9px] nv-muted truncate">{group.artist}</div>
+                <div className="text-xs font-bold nv-text truncate">{group.album}</div>
+                <div className="text-2xs nv-muted truncate">{group.artist}</div>
               </div>
             </div>
           );

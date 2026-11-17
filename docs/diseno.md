@@ -1,0 +1,58 @@
+# Sistema de diseño
+
+Sakura Music usa un único tema, **M3 Zen**: superficies claras, acento rosa sakura, calma japonesa, sin glassmorphism ni blur decorativo. Este documento es la referencia de tokens; la fuente de verdad son `tailwind.config.js` y `:root` en `src/App.css`.
+
+## Tipografía
+
+Plus Jakarta Sans para la interfaz, JetBrains Mono para datos técnicos. Ambas se sirven desde `public/fonts/`.
+
+| Token | Tamaño | Uso |
+|---|---|---|
+| `text-2xs` | 12 px | Mínimo legible: ayuda, metadatos, contadores |
+| `text-xs` | 13 px | Etiquetas secundarias |
+| `text-sm` | 14 px | Texto base de la app |
+| `text-base` | 16 px | Títulos de sección |
+| `text-lg` | 20 px | Encabezados |
+| `text-xl` | 24 px | Títulos grandes |
+
+**Regla**: no se usan tamaños arbitrarios (`text-[10px]`). Si algo parece necesitar menos de 12 px, probablemente sobre información en esa vista.
+
+## Color
+
+- **Acento**: `--accent-200` … `--accent-950`, en canal RGB para soportar opacidad (`accent-500/20`).
+- **Neutros**: `--ink-100` … `--ink-600`, también en RGB. Se usan como `text-ink-400`, `bg-ink-200`, `border-ink-300`.
+- **Superficies M3**: `--m3-surface`, `--m3-surface-card`, `--m3-on-surface` y `--m3-primary` bajo `[data-theme='space']`.
+
+No se usan `gray-*` de Tailwind: los neutros salen de `ink-*` para que un cambio en `App.css` recoloree toda la app.
+
+## Movimiento
+
+| Token | Duración | Uso |
+|---|---|---|
+| `duration-fast` | 140 ms | Hover, focus, microinteracciones |
+| `duration-base` | 200 ms | Cambios de estado, barras de progreso |
+| `duration-slow` | 320 ms | Transiciones de vista y modales |
+
+Siempre se respeta `prefers-reduced-motion`.
+
+## Forma y elevación
+
+- `rounded-xl` y `rounded-2xl` son los valores por defecto; `rounded-3xl` para tarjetas grandes y `rounded-full` para píldoras.
+- Las tarjetas usan `.glass-card`, con borde sutil y una sola sombra suave. No se apilan blur ni resplandores.
+
+## Estados vacíos
+
+Todo estado vacío usa el componente `EmptyState.tsx`: una marca (sakura, descarga o búsqueda), un título, una descripción y **una acción concreta**. No se dejan carteles de texto suelto.
+
+## Accesibilidad
+
+- Foco siempre visible: la regla `:focus-visible` de `App.css` es la red de seguridad.
+- Los controles de icono llevan `aria-label`; los grupos de pestañas y menús, sus roles ARIA.
+- Contraste mínimo AA para texto normal; `text-ink-400` se reserva para texto auxiliar sobre superficies claras.
+
+## Antes de hacer un cambio visual
+
+1. ¿Usa un token existente? Si no, agregalo acá y en `App.css`/`tailwind.config.js`.
+2. ¿Respeta `prefers-reduced-motion`?
+3. ¿El estado vacío tiene acción?
+4. ¿El foco con teclado sigue siendo visible?

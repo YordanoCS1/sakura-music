@@ -89,7 +89,7 @@ export default function BatchModal({
         role="dialog"
         aria-modal="true"
         aria-label="Edición en lote"
-        className="glass-card rounded-3xl border border-white/10 w-full max-w-2xl shadow-2xl flex flex-col overflow-hidden max-h-[92vh] animate-in fade-in zoom-in-95 duration-200"
+        className="glass-card rounded-3xl border border-white/10 w-full max-w-2xl shadow-2xl flex flex-col overflow-hidden max-h-[92vh] animate-in fade-in zoom-in-95 duration-base"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Cabecera */}
@@ -101,11 +101,11 @@ export default function BatchModal({
             <div>
               <h3 className="text-base font-bold text-white flex items-center gap-2">
                 <span>Edición de Metadatos en Lote</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-accent-500/20 text-accent-300 border border-accent-500/30">
+                <span className="text-2xs font-mono px-2 py-0.5 rounded-full bg-accent-500/20 text-accent-300 border border-accent-500/30">
                   {selectedCount} pistas
                 </span>
               </h3>
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-ink-400">
                 Marca los campos que deseas modificar. Los desmarcados se mantendrán intactos.
               </p>
             </div>
@@ -113,7 +113,7 @@ export default function BatchModal({
 
           <button
             onClick={() => !isSaving && onClose()}
-            className="p-2 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
+            className="p-2 rounded-xl text-ink-400 hover:text-white hover:bg-white/5 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -140,7 +140,7 @@ export default function BatchModal({
             className={`p-3.5 rounded-2xl border transition-all ${applyArtist ? 'bg-white/5 border-accent-500/40' : 'bg-white/[0.02] border-white/5 opacity-80'}`}
           >
             <div className="flex items-center justify-between mb-2">
-              <label className="flex items-center gap-2 font-medium text-gray-300 cursor-pointer select-none">
+              <label className="flex items-center gap-2 font-medium text-ink-300 cursor-pointer select-none">
                 <input
                   type="checkbox"
                   checked={applyArtist}
@@ -149,7 +149,7 @@ export default function BatchModal({
                 />
                 <span>Artista</span>
               </label>
-              <span className="text-[10px] text-gray-500 font-mono">
+              <span className="text-2xs text-ink-500 font-mono">
                 {applyArtist ? 'Se aplicará' : 'Sin cambios'}
               </span>
             </div>
@@ -159,7 +159,7 @@ export default function BatchModal({
               disabled={!applyArtist}
               onChange={(e) => onBatchArtistChange(e.target.value)}
               placeholder="Ej: LiSA, Aimer, Queen"
-              className="w-full bg-black/30 border border-white/10 rounded-xl px-3 py-2 text-white placeholder-gray-600 focus:outline-none focus:border-accent-500 disabled:opacity-40"
+              className="w-full bg-black/30 border border-white/10 rounded-xl px-3 py-2 text-white placeholder-ink-600 focus:outline-none focus:border-accent-500 disabled:opacity-40"
             />
           </div>
 
@@ -168,7 +168,7 @@ export default function BatchModal({
             className={`p-3.5 rounded-2xl border transition-all ${applyAlbum ? 'bg-white/5 border-accent-500/40' : 'bg-white/[0.02] border-white/5 opacity-80'}`}
           >
             <div className="flex items-center justify-between mb-2">
-              <label className="flex items-center gap-2 font-medium text-gray-300 cursor-pointer select-none">
+              <label className="flex items-center gap-2 font-medium text-ink-300 cursor-pointer select-none">
                 <input
                   type="checkbox"
                   checked={applyAlbum}
@@ -177,7 +177,7 @@ export default function BatchModal({
                 />
                 <span>Álbum</span>
               </label>
-              <span className="text-[10px] text-gray-500 font-mono">
+              <span className="text-2xs text-ink-500 font-mono">
                 {applyAlbum ? 'Se aplicará' : 'Sin cambios'}
               </span>
             </div>
@@ -187,7 +187,7 @@ export default function BatchModal({
               disabled={!applyAlbum}
               onChange={(e) => onBatchAlbumChange(e.target.value)}
               placeholder="Ej: THE BOOK, Greatest Hits"
-              className="w-full bg-black/30 border border-white/10 rounded-xl px-3 py-2 text-white placeholder-gray-600 focus:outline-none focus:border-accent-500 disabled:opacity-40"
+              className="w-full bg-black/30 border border-white/10 rounded-xl px-3 py-2 text-white placeholder-ink-600 focus:outline-none focus:border-accent-500 disabled:opacity-40"
             />
           </div>
 
@@ -196,7 +196,7 @@ export default function BatchModal({
             className={`p-3.5 rounded-2xl border transition-all ${applyAlbumArtist ? 'bg-white/5 border-accent-500/40' : 'bg-white/[0.02] border-white/5 opacity-80'}`}
           >
             <div className="flex items-center justify-between mb-2">
-              <label className="flex items-center gap-2 font-medium text-gray-300 cursor-pointer select-none">
+              <label className="flex items-center gap-2 font-medium text-ink-300 cursor-pointer select-none">
                 <input
                   type="checkbox"
                   checked={applyAlbumArtist}
@@ -205,7 +205,7 @@ export default function BatchModal({
                 />
                 <span>Artista del Álbum</span>
               </label>
-              <span className="text-[10px] text-gray-500 font-mono">
+              <span className="text-2xs text-ink-500 font-mono">
                 {applyAlbumArtist ? 'Se aplicará' : 'Sin cambios'}
               </span>
             </div>
@@ -215,7 +215,7 @@ export default function BatchModal({
               disabled={!applyAlbumArtist}
               onChange={(e) => onBatchAlbumArtistChange(e.target.value)}
               placeholder="Ej: Varios Artistas, Banda Sonora"
-              className="w-full bg-black/30 border border-white/10 rounded-xl px-3 py-2 text-white placeholder-gray-600 focus:outline-none focus:border-accent-500 disabled:opacity-40"
+              className="w-full bg-black/30 border border-white/10 rounded-xl px-3 py-2 text-white placeholder-ink-600 focus:outline-none focus:border-accent-500 disabled:opacity-40"
             />
           </div>
 
@@ -226,7 +226,7 @@ export default function BatchModal({
               className={`p-3.5 rounded-2xl border transition-all ${applyYear ? 'bg-white/5 border-accent-500/40' : 'bg-white/[0.02] border-white/5 opacity-80'}`}
             >
               <div className="flex items-center justify-between mb-2">
-                <label className="flex items-center gap-2 font-medium text-gray-300 cursor-pointer select-none">
+                <label className="flex items-center gap-2 font-medium text-ink-300 cursor-pointer select-none">
                   <input
                     type="checkbox"
                     checked={applyYear}
@@ -235,7 +235,7 @@ export default function BatchModal({
                   />
                   <span>Año</span>
                 </label>
-                <span className="text-[10px] text-gray-500 font-mono">
+                <span className="text-2xs text-ink-500 font-mono">
                   {applyYear ? 'Se aplicará' : 'Sin cambios'}
                 </span>
               </div>
@@ -245,7 +245,7 @@ export default function BatchModal({
                 disabled={!applyYear}
                 onChange={(e) => onBatchYearChange(e.target.value)}
                 placeholder="Ej: 2024"
-                className="w-full bg-black/30 border border-white/10 rounded-xl px-3 py-2 text-white placeholder-gray-600 focus:outline-none focus:border-accent-500 disabled:opacity-40"
+                className="w-full bg-black/30 border border-white/10 rounded-xl px-3 py-2 text-white placeholder-ink-600 focus:outline-none focus:border-accent-500 disabled:opacity-40"
               />
             </div>
 
@@ -254,7 +254,7 @@ export default function BatchModal({
               className={`p-3.5 rounded-2xl border transition-all ${applyGenre ? 'bg-white/5 border-accent-500/40' : 'bg-white/[0.02] border-white/5 opacity-80'}`}
             >
               <div className="flex items-center justify-between mb-2">
-                <label className="flex items-center gap-2 font-medium text-gray-300 cursor-pointer select-none">
+                <label className="flex items-center gap-2 font-medium text-ink-300 cursor-pointer select-none">
                   <input
                     type="checkbox"
                     checked={applyGenre}
@@ -263,7 +263,7 @@ export default function BatchModal({
                   />
                   <span>Género</span>
                 </label>
-                <span className="text-[10px] text-gray-500 font-mono">
+                <span className="text-2xs text-ink-500 font-mono">
                   {applyGenre ? 'Se aplicará' : 'Sin cambios'}
                 </span>
               </div>
@@ -273,7 +273,7 @@ export default function BatchModal({
                 disabled={!applyGenre}
                 onChange={(e) => onBatchGenreChange(e.target.value)}
                 placeholder="Ej: J-Pop, Rock, Anison"
-                className="w-full bg-black/30 border border-white/10 rounded-xl px-3 py-2 text-white placeholder-gray-600 focus:outline-none focus:border-accent-500 disabled:opacity-40"
+                className="w-full bg-black/30 border border-white/10 rounded-xl px-3 py-2 text-white placeholder-ink-600 focus:outline-none focus:border-accent-500 disabled:opacity-40"
               />
             </div>
           </div>
@@ -283,7 +283,7 @@ export default function BatchModal({
             className={`p-4 rounded-2xl border transition-all ${applyCover ? 'bg-white/5 border-accent-500/40' : 'bg-white/[0.02] border-white/5 opacity-80'}`}
           >
             <div className="flex items-center justify-between mb-3">
-              <label className="flex items-center gap-2 font-medium text-gray-300 cursor-pointer select-none">
+              <label className="flex items-center gap-2 font-medium text-ink-300 cursor-pointer select-none">
                 <input
                   type="checkbox"
                   checked={applyCover}
@@ -292,7 +292,7 @@ export default function BatchModal({
                 />
                 <span>Portada / Carátula Compartida</span>
               </label>
-              <span className="text-[10px] text-gray-500 font-mono">
+              <span className="text-2xs text-ink-500 font-mono">
                 {applyCover ? 'Se aplicará' : 'Sin cambios'}
               </span>
             </div>
@@ -301,7 +301,7 @@ export default function BatchModal({
               <div className="flex items-center gap-4">
                 <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-white/5 border border-white/10 flex-shrink-0 flex items-center justify-center">
                   {batchRemoveCover ? (
-                    <div className="flex flex-col items-center justify-center text-center p-1 text-[10px] text-rose-400">
+                    <div className="flex flex-col items-center justify-center text-center p-1 text-2xs text-rose-400">
                       <Trash2 className="w-5 h-5 mb-1" />
                       <span>Se eliminará</span>
                     </div>
@@ -312,7 +312,7 @@ export default function BatchModal({
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <Music2 className="w-6 h-6 text-gray-600" />
+                    <Music2 className="w-6 h-6 text-ink-600" />
                   )}
                 </div>
 
@@ -339,13 +339,13 @@ export default function BatchModal({
                       className={`px-3 py-1.5 rounded-xl text-xs transition-colors border ${
                         batchRemoveCover
                           ? 'bg-rose-500/20 text-rose-300 border-rose-500/40 font-semibold'
-                          : 'bg-white/5 text-gray-400 hover:text-white border-white/10'
+                          : 'bg-white/5 text-ink-400 hover:text-white border-white/10'
                       }`}
                     >
                       {batchRemoveCover ? '✓ Quitar Carátulas' : 'Quitar Carátulas'}
                     </button>
                   </div>
-                  <p className="text-[10px] text-gray-400">
+                  <p className="text-2xs text-ink-400">
                     {batchRemoveCover
                       ? 'Se removerán las portadas de todas las canciones seleccionadas.'
                       : batchCoverPath
@@ -360,7 +360,7 @@ export default function BatchModal({
 
         {/* Pie */}
         <div className="px-6 py-4 border-t border-white/10 bg-white/[0.02] flex items-center justify-between gap-3">
-          <span className="text-[11px] text-gray-400">
+          <span className="text-xs text-ink-400">
             Se modificarán sólo los campos con casilla marcada
           </span>
 
@@ -369,7 +369,7 @@ export default function BatchModal({
               type="button"
               onClick={() => !isSaving && onClose()}
               disabled={isSaving}
-              className="px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10 text-xs font-semibold transition-colors disabled:opacity-50"
+              className="px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-ink-300 hover:bg-white/10 text-xs font-semibold transition-colors disabled:opacity-50"
             >
               Cancelar
             </button>

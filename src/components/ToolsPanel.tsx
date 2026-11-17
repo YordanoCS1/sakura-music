@@ -45,7 +45,7 @@ export default function ToolsPanel() {
         <h3 className="text-xs font-bold text-white">Herramientas de descarga</h3>
       </div>
 
-      <p className="text-[11px] text-gray-500">
+      <p className="text-xs text-ink-500">
         yt-dlp y FFmpeg se usan para buscar y convertir música. Si ya están en tu sistema, Sakura
         las detecta y no las reemplaza.
       </p>
@@ -68,7 +68,7 @@ export default function ToolsPanel() {
                 {tool.instalada ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : null}
                 {tool.nombre}
               </div>
-              <div className="truncate text-[10px] text-gray-500" title={tool.ruta ?? undefined}>
+              <div className="truncate text-2xs text-ink-500" title={tool.ruta ?? undefined}>
                 {tool.instalada
                   ? tool.en_bin
                     ? 'Instalada por Sakura'
@@ -97,7 +97,7 @@ export default function ToolsPanel() {
                 type="button"
                 onClick={() => instalar(tool.id)}
                 disabled={!!descargando}
-                className="flex shrink-0 items-center gap-1.5 rounded-lg bg-accent-500 px-3 py-1.5 text-[11px] font-bold text-white transition hover:brightness-110 disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-500"
+                className="flex shrink-0 items-center gap-1.5 rounded-lg bg-accent-500 px-3 py-1.5 text-xs font-bold text-white transition hover:brightness-110 disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-500"
               >
                 {descargando ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -112,7 +112,7 @@ export default function ToolsPanel() {
       })}
 
       {error && (
-        <p role="alert" className="text-[11px] text-rose-300">
+        <p role="alert" className="text-xs text-rose-300">
           {error}
         </p>
       )}

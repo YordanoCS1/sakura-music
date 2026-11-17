@@ -39,7 +39,7 @@ export default function DeleteTracksDialog({
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 p-4 backdrop-blur-md animate-in fade-in duration-150"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 p-4 backdrop-blur-md animate-in fade-in duration-fast"
       role="presentation"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget && !isDeleting) onCancel();
@@ -51,7 +51,7 @@ export default function DeleteTracksDialog({
         aria-modal="true"
         aria-labelledby="delete-tracks-title"
         aria-describedby="delete-tracks-description"
-        className="glass-card w-full max-w-md overflow-hidden rounded-3xl border border-white/10 shadow-2xl animate-in zoom-in-95 duration-200"
+        className="glass-card w-full max-w-md overflow-hidden rounded-3xl border border-white/10 shadow-2xl animate-in zoom-in-95 duration-base"
         onMouseDown={(event) => event.stopPropagation()}
       >
         <header className="flex items-start gap-4 border-b border-white/10 bg-white/[0.03] px-6 py-5">
@@ -59,7 +59,7 @@ export default function DeleteTracksDialog({
             <Trash2 className="h-5 w-5" />
           </div>
           <div className="min-w-0 flex-1 pt-0.5">
-            <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.18em] text-rose-300/80">
+            <p className="mb-1 text-2xs font-bold uppercase tracking-[0.18em] text-rose-300/80">
               Acción permanente
             </p>
             <h2 id="delete-tracks-title" className="text-lg font-bold text-white">
@@ -71,14 +71,14 @@ export default function DeleteTracksDialog({
             onClick={onCancel}
             disabled={isDeleting}
             aria-label="Cancelar eliminación"
-            className="rounded-xl p-2 text-gray-400 transition-colors hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-xl p-2 text-ink-400 transition-colors hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
           >
             <X className="h-4 w-4" />
           </button>
         </header>
 
         <div className="space-y-4 px-6 py-5">
-          <p id="delete-tracks-description" className="text-sm leading-relaxed text-gray-300">
+          <p id="delete-tracks-description" className="text-sm leading-relaxed text-ink-300">
             {isSingleTrack
               ? 'Se borrará este archivo de audio de tu disco, no solo de la biblioteca.'
               : `Se borrarán ${tracks.length} archivos de audio de tu disco, no solo de la biblioteca.`}
@@ -91,24 +91,24 @@ export default function DeleteTracksDialog({
                   <Music2 className="h-4 w-4" />
                 </span>
                 <span
-                  className="min-w-0 flex-1 truncate text-xs font-semibold text-gray-100"
+                  className="min-w-0 flex-1 truncate text-xs font-semibold text-ink-100"
                   title={track.title}
                 >
                   {track.title}
                 </span>
-                <span className="shrink-0 rounded-md border border-white/10 px-1.5 py-0.5 text-[9px] font-bold uppercase text-gray-400">
+                <span className="shrink-0 rounded-md border border-white/10 px-1.5 py-0.5 text-2xs font-bold uppercase text-ink-400">
                   {track.format}
                 </span>
               </div>
             ))}
             {hiddenCount > 0 && (
-              <p className="pl-11 text-[11px] text-gray-400">
+              <p className="pl-11 text-xs text-ink-400">
                 y {hiddenCount} {hiddenCount === 1 ? 'canción más' : 'canciones más'}
               </p>
             )}
           </div>
 
-          <div className="flex items-start gap-2.5 rounded-xl border border-amber-400/15 bg-amber-400/[0.06] px-3.5 py-3 text-[11px] leading-relaxed text-amber-100/80">
+          <div className="flex items-start gap-2.5 rounded-xl border border-amber-400/15 bg-amber-400/[0.06] px-3.5 py-3 text-xs leading-relaxed text-amber-100/80">
             <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" />
             <span>Esta acción no se puede deshacer. El archivo no irá a la Papelera.</span>
           </div>
@@ -120,7 +120,7 @@ export default function DeleteTracksDialog({
             type="button"
             onClick={onCancel}
             disabled={isDeleting}
-            className="rounded-xl border border-white/10 px-4 py-2.5 text-xs font-semibold text-gray-300 transition-colors hover:bg-white/[0.06] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-xl border border-white/10 px-4 py-2.5 text-xs font-semibold text-ink-300 transition-colors hover:bg-white/[0.06] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
           >
             Cancelar
           </button>

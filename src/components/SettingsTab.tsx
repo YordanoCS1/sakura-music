@@ -51,7 +51,7 @@ export default function SettingsTab({
     <div className="w-full max-w-6xl mx-auto space-y-6 mb-24">
       <div>
         <h2 className="text-base font-bold text-white mb-1">Ajustes de Sakura Music</h2>
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-ink-400">
           Personalización visual, diseño de interfaz y motor nativo
         </p>
       </div>
@@ -59,17 +59,17 @@ export default function SettingsTab({
       <div className="glass-card p-5 rounded-2xl border border-white/10 space-y-3">
         <div>
           <h3 className="text-sm font-bold text-white">Carpeta de descargas</h3>
-          <p className="text-xs text-gray-400 mt-1">
+          <p className="text-xs text-ink-400 mt-1">
             Las nuevas descargas se guardarán aquí. Si no eliges una carpeta, se usará la biblioteca
             actual o Música.
           </p>
         </div>
         <div className="rounded-xl bg-black/20 border border-white/5 px-3 py-2">
-          <p className="text-[11px] text-gray-300 font-mono break-all">
+          <p className="text-xs text-ink-300 font-mono break-all">
             {downloadFolder || currentFolder || 'Carpeta Música predeterminada'}
           </p>
           {!downloadFolder && (
-            <p className="text-[10px] text-gray-500 mt-1">
+            <p className="text-2xs text-ink-500 mt-1">
               Destino automático (no se fijó una carpeta)
             </p>
           )}
@@ -92,7 +92,7 @@ export default function SettingsTab({
             <button
               type="button"
               onClick={onResetDownloadFolder}
-              className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10 text-xs font-semibold transition-colors"
+              className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-ink-300 hover:bg-white/10 text-xs font-semibold transition-colors"
             >
               Usar destino automático
             </button>
@@ -110,7 +110,7 @@ export default function SettingsTab({
           </div>
           <div>
             <h3 className="text-sm font-bold text-white">Diseño Visual</h3>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-ink-400">
               La aplicación usa el tema único M3 Zen · Material 3 con calma japonesa
             </p>
           </div>
@@ -120,12 +120,12 @@ export default function SettingsTab({
         <div className="relative p-4 rounded-2xl border border-accent-500/40 ring-2 ring-accent-500/30 bg-gradient-to-br from-accent-950/40 via-purple-950/30 to-black/60">
           <div className="flex items-center justify-between mb-2">
             <span className="text-2xl">🌸</span>
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-accent-500 text-white shadow-sm">
+            <span className="text-2xs font-bold px-2 py-0.5 rounded-full bg-accent-500 text-white shadow-sm">
               Activo
             </span>
           </div>
           <h4 className="text-xs font-bold text-white mb-1">M3 Zen · Sakura</h4>
-          <p className="text-[11px] text-gray-400 leading-relaxed mb-3">
+          <p className="text-xs text-ink-400 leading-relaxed mb-3">
             Superficies claras de Material 3, acento rosa sakura, calma zen y un reproductor
             inmersivo con la portada protagonista.
           </p>
@@ -133,13 +133,13 @@ export default function SettingsTab({
             <div className="w-3.5 h-3.5 rounded-full bg-rose-500"></div>
             <div className="w-3.5 h-3.5 rounded-full bg-pink-400"></div>
             <div className="w-3.5 h-3.5 rounded-full bg-rose-200"></div>
-            <span className="text-[9px] text-gray-500 font-mono ml-1">Sakura Zen</span>
+            <span className="text-2xs text-ink-500 font-mono ml-1">Sakura Zen</span>
           </div>
         </div>
 
         {/* Estilo del Reproductor */}
         <div className="pt-3 border-t border-white/5">
-          <label className="text-xs font-semibold text-gray-300 block mb-2.5">
+          <label className="text-xs font-semibold text-ink-300 block mb-2.5">
             Diseño del Reproductor:
           </label>
           <div className="grid grid-cols-3 gap-2">
@@ -149,7 +149,7 @@ export default function SettingsTab({
               className={`p-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2 transition-all ${
                 playerStyle === 'floating'
                   ? `${accentBadge} shadow-md`
-                  : 'bg-white/5 text-gray-400 border-white/10 hover:text-white'
+                  : 'bg-white/5 text-ink-400 border-white/10 hover:text-white'
               }`}
             >
               <Sparkles className="w-3.5 h-3.5" />
@@ -161,7 +161,7 @@ export default function SettingsTab({
               className={`p-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2 transition-all ${
                 playerStyle === 'fixed'
                   ? `${accentBadge} shadow-md`
-                  : 'bg-white/5 text-gray-400 border-white/10 hover:text-white'
+                  : 'bg-white/5 text-ink-400 border-white/10 hover:text-white'
               }`}
             >
               <Layers className="w-3.5 h-3.5" />
@@ -173,7 +173,7 @@ export default function SettingsTab({
               className={`p-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2 transition-all ${
                 playerStyle === 'mini'
                   ? `${accentBadge} shadow-md`
-                  : 'bg-white/5 text-gray-400 border-white/10 hover:text-white'
+                  : 'bg-white/5 text-ink-400 border-white/10 hover:text-white'
               }`}
               aria-pressed={playerStyle === 'mini'}
             >
@@ -181,7 +181,7 @@ export default function SettingsTab({
               <span>Mini</span>
             </button>
           </div>
-          <p className="mt-2 text-[10px] text-gray-500">
+          <p className="mt-2 text-2xs text-ink-500">
             El mini reproductor reduce la ventana y la mantiene siempre encima.
           </p>
         </div>
@@ -190,19 +190,19 @@ export default function SettingsTab({
         <div className="pt-3 border-t border-white/5 space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h4 className="text-xs font-semibold text-gray-300">Ajuste de Efectos de Cristal</h4>
-              <p className="text-[10px] text-gray-500">
+              <h4 className="text-xs font-semibold text-ink-300">Ajuste de Efectos de Cristal</h4>
+              <p className="text-2xs text-ink-500">
                 Personaliza la opacidad y el desenfoque en tiempo real
               </p>
             </div>
-            <Sliders className="w-4 h-4 text-gray-500" />
+            <Sliders className="w-4 h-4 text-ink-500" />
           </div>
 
           {/* Deslizador de opacidad */}
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs">
-              <span className="text-gray-400 text-[11px]">Opacidad del Vidrio:</span>
-              <span className="text-white font-mono text-[11px]">{glassOpacity}%</span>
+              <span className="text-ink-400 text-xs">Opacidad del Vidrio:</span>
+              <span className="text-white font-mono text-xs">{glassOpacity}%</span>
             </div>
             <input
               type="range"
@@ -217,8 +217,8 @@ export default function SettingsTab({
           {/* Deslizador de desenfoque */}
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs">
-              <span className="text-gray-400 text-[11px]">Desenfoque (Backdrop Blur):</span>
-              <span className="text-white font-mono text-[11px]">{glassBlur}px</span>
+              <span className="text-ink-400 text-xs">Desenfoque (Backdrop Blur):</span>
+              <span className="text-white font-mono text-xs">{glassBlur}px</span>
             </div>
             <input
               type="range"
@@ -233,10 +233,10 @@ export default function SettingsTab({
           {/* Interruptor de resplandor ambiental */}
           <div className="flex items-center justify-between pt-1">
             <div>
-              <span className="text-xs font-semibold text-gray-300 block">
+              <span className="text-xs font-semibold text-ink-300 block">
                 Resplandor Ambiental Fluido (Dynamic Glow)
               </span>
-              <span className="text-[10px] text-gray-500">
+              <span className="text-2xs text-ink-500">
                 {coverGlowActive
                   ? 'Sincronizado con los colores de la carátula activa'
                   : 'Auras de color en las esquinas aceleradas por GPU'}
@@ -260,11 +260,11 @@ export default function SettingsTab({
           {/* Interruptor de partículas atmosféricas */}
           <div className="flex items-center justify-between pt-2 border-t border-white/5">
             <div>
-              <span className="text-xs font-semibold text-gray-300 flex items-center gap-1.5">
+              <span className="text-xs font-semibold text-ink-300 flex items-center gap-1.5">
                 <span>{'🌸'}</span>
                 <span>Efectos Atmosféricos de Partículas</span>
               </span>
-              <span className="text-[10px] text-gray-500">
+              <span className="text-2xs text-ink-500">
                 {'Pétalos suaves de flor de cerezo cayendo con la brisa'}
               </span>
             </div>
@@ -296,26 +296,26 @@ export default function SettingsTab({
 
         <div className="space-y-2 text-xs">
           <div className="flex justify-between py-1 border-b border-white/5">
-            <span className="text-gray-400">Versión del Compilador:</span>
+            <span className="text-ink-400">Versión del Compilador:</span>
             <span className="text-white font-mono">{appInfo?.rust_version ?? 'rustc'}</span>
           </div>
           <div className="flex justify-between py-1 border-b border-white/5">
-            <span className="text-gray-400">Consumo de Memoria Base:</span>
+            <span className="text-ink-400">Consumo de Memoria Base:</span>
             <span className="text-emerald-400 font-mono font-semibold">
               {appInfo?.memory_usage ?? '—'}
             </span>
           </div>
           <div className="flex justify-between py-1 border-b border-white/5">
-            <span className="text-gray-400">Escaneo Multihilo:</span>
+            <span className="text-ink-400">Escaneo Multihilo:</span>
             <span className="text-accent-300 font-mono">Rayon Parallel Engine (Activo)</span>
           </div>
           <div className="flex justify-between py-1 border-b border-white/5">
-            <span className="text-gray-400">Decodificador de Tags Hi-Res:</span>
+            <span className="text-ink-400">Decodificador de Tags Hi-Res:</span>
             <span className="text-cyan-300 font-mono">Lofty 0.21 (Lossless FLAC/ALAC/ID3v2)</span>
           </div>
           <div className="flex justify-between py-1">
-            <span className="text-gray-400">Carpeta Activa:</span>
-            <span className="text-gray-300 font-mono text-[11px] truncate max-w-[200px]">
+            <span className="text-ink-400">Carpeta Activa:</span>
+            <span className="text-ink-300 font-mono text-xs truncate max-w-[200px]">
               {currentFolder ?? 'Ninguna'}
             </span>
           </div>
@@ -326,9 +326,7 @@ export default function SettingsTab({
       <div className="glass-card p-5 rounded-2xl border border-white/5 flex items-center justify-between">
         <div>
           <h4 className="text-xs font-bold text-white">Caché de Biblioteca</h4>
-          <p className="text-[11px] text-gray-400">
-            Borra los índices locales de canciones y carátulas
-          </p>
+          <p className="text-xs text-ink-400">Borra los índices locales de canciones y carátulas</p>
         </div>
         <button
           onClick={onClearCache}

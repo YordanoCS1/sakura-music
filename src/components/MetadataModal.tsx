@@ -154,7 +154,7 @@ export default function MetadataModal({
         role="dialog"
         aria-modal="true"
         aria-label="Editor de metadatos"
-        className="glass-card rounded-3xl border border-white/10 w-full max-w-4xl shadow-2xl flex flex-col overflow-hidden max-h-[92vh] animate-in fade-in zoom-in-95 duration-200"
+        className="glass-card rounded-3xl border border-white/10 w-full max-w-4xl shadow-2xl flex flex-col overflow-hidden max-h-[92vh] animate-in fade-in zoom-in-95 duration-base"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Cabecera con pestañas de navegación */}
@@ -166,12 +166,12 @@ export default function MetadataModal({
             <div className="min-w-0">
               <h3 className="text-base font-bold text-white flex items-center gap-2">
                 Editor de Metadatos & Catálogo
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-accent-500/20 text-accent-300 border border-accent-500/30">
+                <span className="text-2xs font-mono px-2 py-0.5 rounded-full bg-accent-500/20 text-accent-300 border border-accent-500/30">
                   {editingTrack.format}
                 </span>
               </h3>
               <p
-                className="text-[11px] text-gray-400 truncate max-w-md font-mono"
+                className="text-xs text-ink-400 truncate max-w-md font-mono"
                 title={editingTrack.path}
               >
                 {editingTrack.path.split('\\').pop() || editingTrack.path.split('/').pop()}
@@ -188,7 +188,7 @@ export default function MetadataModal({
                 className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                   editTab === 'tags'
                     ? 'bg-gradient-to-r from-accent-500 to-purple-600 text-white shadow-md'
-                    : 'text-gray-400 hover:text-white'
+                    : 'text-ink-400 hover:text-white'
                 }`}
               >
                 <Pencil className="w-3.5 h-3.5" />
@@ -206,7 +206,7 @@ export default function MetadataModal({
                 className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                   editTab === 'catalog'
                     ? 'bg-gradient-to-r from-accent-500 to-purple-600 text-white shadow-md'
-                    : 'text-gray-400 hover:text-white'
+                    : 'text-ink-400 hover:text-white'
                 }`}
               >
                 <Globe className="w-3.5 h-3.5" />
@@ -217,7 +217,7 @@ export default function MetadataModal({
 
             <button
               onClick={() => onClose()}
-              className="p-2 rounded-xl hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+              className="p-2 rounded-xl hover:bg-white/10 text-ink-400 hover:text-white transition-colors"
               aria-label="Cerrar editor de metadatos"
               title="Cerrar (Esc)"
             >
@@ -227,31 +227,31 @@ export default function MetadataModal({
         </div>
 
         {/* Barra técnica de especificaciones de audio */}
-        <div className="px-6 py-2 bg-black/30 border-b border-white/5 flex items-center justify-between text-[11px] text-gray-400 font-mono">
+        <div className="px-6 py-2 bg-black/30 border-b border-white/5 flex items-center justify-between text-xs text-ink-400 font-mono">
           <div className="flex items-center gap-4">
             <span>
-              Duración: <strong className="text-gray-200">{editingTrack.duration_str}</strong>
+              Duración: <strong className="text-ink-200">{editingTrack.duration_str}</strong>
             </span>
             <span>
               Tamaño:{' '}
-              <strong className="text-gray-200">
+              <strong className="text-ink-200">
                 {(editingTrack.file_size / (1024 * 1024)).toFixed(2)} MB
               </strong>
             </span>
             {editingTrack.year && (
               <span>
-                Año original: <strong className="text-gray-200">{editingTrack.year}</strong>
+                Año original: <strong className="text-ink-200">{editingTrack.year}</strong>
               </span>
             )}
             {editingTrack.track_number && (
               <span>
                 Pista original:{' '}
-                <strong className="text-gray-200">#{editingTrack.track_number}</strong>
+                <strong className="text-ink-200">#{editingTrack.track_number}</strong>
               </span>
             )}
           </div>
-          <div className="text-[10px] text-gray-500 hidden sm:block">
-            Presiona <kbd className="px-1.5 py-0.5 rounded bg-white/10 text-gray-300">Ctrl+V</kbd>{' '}
+          <div className="text-2xs text-ink-500 hidden sm:block">
+            Presiona <kbd className="px-1.5 py-0.5 rounded bg-white/10 text-ink-300">Ctrl+V</kbd>{' '}
             para pegar portada
           </div>
         </div>
@@ -267,7 +267,7 @@ export default function MetadataModal({
                     <div className="flex flex-col items-center justify-center text-rose-400 p-4 text-center">
                       <Trash2 className="w-10 h-10 mb-2 opacity-80" />
                       <span className="text-xs font-bold">Portada eliminada</span>
-                      <span className="text-[10px] text-gray-400 mt-1">
+                      <span className="text-2xs text-ink-400 mt-1">
                         Se borrarán los frames de portada al guardar
                       </span>
                     </div>
@@ -290,24 +290,24 @@ export default function MetadataModal({
                       alt="Portada actual"
                     />
                   ) : (
-                    <div className="flex flex-col items-center justify-center text-gray-600 p-4 text-center">
+                    <div className="flex flex-col items-center justify-center text-ink-600 p-4 text-center">
                       <Music2 className="w-14 h-14 mb-2 opacity-50" />
-                      <span className="text-xs text-gray-400">Sin carátula incrustada</span>
+                      <span className="text-xs text-ink-400">Sin carátula incrustada</span>
                     </div>
                   )}
 
                   {/* Etiqueta sobre la portada */}
                   <div className="absolute top-2 left-2 pointer-events-none">
                     {removeCover ? (
-                      <span className="px-2 py-0.5 rounded-full bg-rose-500/80 backdrop-blur-md text-white text-[9px] font-bold">
+                      <span className="px-2 py-0.5 rounded-full bg-rose-500/80 backdrop-blur-md text-white text-2xs font-bold">
                         Para eliminar
                       </span>
                     ) : editCoverPreviewUrl || editCoverPath ? (
-                      <span className="px-2 py-0.5 rounded-full bg-green-500/80 backdrop-blur-md text-white text-[9px] font-bold">
+                      <span className="px-2 py-0.5 rounded-full bg-green-500/80 backdrop-blur-md text-white text-2xs font-bold">
                         Nueva portada lista
                       </span>
                     ) : getCoverSrc(editingTrack.cover_url) ? (
-                      <span className="px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md text-gray-300 text-[9px]">
+                      <span className="px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md text-ink-300 text-2xs">
                         Original
                       </span>
                     ) : null}
@@ -353,7 +353,7 @@ export default function MetadataModal({
                             onSetCoverPath(null);
                             onSetCoverPreview(null);
                           }}
-                          className="flex-1 px-2.5 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 text-[11px] font-medium transition-colors border border-rose-500/20 flex items-center justify-center gap-1.5"
+                          className="flex-1 px-2.5 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 text-xs font-medium transition-colors border border-rose-500/20 flex items-center justify-center gap-1.5"
                         >
                           <Trash2 className="w-3 h-3" />
                           <span>Quitar carátula</span>
@@ -368,7 +368,7 @@ export default function MetadataModal({
                           onSetCoverPath(null);
                           onSetCoverPreview(null);
                         }}
-                        className="flex-1 px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 text-[11px] font-medium transition-colors border border-white/10 flex items-center justify-center gap-1"
+                        className="flex-1 px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-ink-300 text-xs font-medium transition-colors border border-white/10 flex items-center justify-center gap-1"
                       >
                         <Undo2 className="w-3 h-3" />
                         <span>Restaurar</span>
@@ -383,7 +383,7 @@ export default function MetadataModal({
                 {/* Sección: Información Principal */}
                 <div className="space-y-3 p-4 rounded-2xl bg-white/[0.02] border border-white/5">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-accent-400">
+                    <span className="text-2xs font-bold uppercase tracking-wider text-accent-400">
                       Información Principal
                     </span>
                   </div>
@@ -391,14 +391,14 @@ export default function MetadataModal({
                   {/* Título */}
                   <div>
                     <div className="flex justify-between items-center mb-1">
-                      <label className="text-[10px] font-medium text-gray-400 uppercase">
+                      <label className="text-2xs font-medium text-ink-400 uppercase">
                         Título de la canción
                       </label>
                       {editTitle !== editingTrack.title && (
                         <button
                           type="button"
                           onClick={() => onResetField('title')}
-                          className="text-[10px] text-accent-400 hover:underline flex items-center gap-1"
+                          className="text-2xs text-accent-400 hover:underline flex items-center gap-1"
                         >
                           <Undo2 className="w-2.5 h-2.5" /> Revertir
                         </button>
@@ -417,14 +417,14 @@ export default function MetadataModal({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <div className="flex justify-between items-center mb-1">
-                        <label className="text-[10px] font-medium text-gray-400 uppercase">
+                        <label className="text-2xs font-medium text-ink-400 uppercase">
                           Artista
                         </label>
                         {editArtist !== editingTrack.artist && (
                           <button
                             type="button"
                             onClick={() => onResetField('artist')}
-                            className="text-[10px] text-accent-400 hover:underline flex items-center gap-1"
+                            className="text-2xs text-accent-400 hover:underline flex items-center gap-1"
                           >
                             <Undo2 className="w-2.5 h-2.5" /> Revertir
                           </button>
@@ -441,14 +441,14 @@ export default function MetadataModal({
 
                     <div>
                       <div className="flex justify-between items-center mb-1">
-                        <label className="text-[10px] font-medium text-gray-400 uppercase">
+                        <label className="text-2xs font-medium text-ink-400 uppercase">
                           Artista del Álbum
                         </label>
                         {editAlbumArtist !== (editingTrack.album_artist || editingTrack.artist) && (
                           <button
                             type="button"
                             onClick={() => onResetField('album_artist')}
-                            className="text-[10px] text-accent-400 hover:underline flex items-center gap-1"
+                            className="text-2xs text-accent-400 hover:underline flex items-center gap-1"
                           >
                             <Undo2 className="w-2.5 h-2.5" /> Revertir
                           </button>
@@ -467,21 +467,19 @@ export default function MetadataModal({
 
                 {/* Sección: Álbum y Pista */}
                 <div className="space-y-3 p-4 rounded-2xl bg-white/[0.02] border border-white/5">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400">
+                  <span className="text-2xs font-bold uppercase tracking-wider text-purple-400">
                     Álbum & Posición
                   </span>
 
                   <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
                     <div className="sm:col-span-8">
                       <div className="flex justify-between items-center mb-1">
-                        <label className="text-[10px] font-medium text-gray-400 uppercase">
-                          Álbum
-                        </label>
+                        <label className="text-2xs font-medium text-ink-400 uppercase">Álbum</label>
                         {editAlbum !== editingTrack.album && (
                           <button
                             type="button"
                             onClick={() => onResetField('album')}
-                            className="text-[10px] text-accent-400 hover:underline flex items-center gap-1"
+                            className="text-2xs text-accent-400 hover:underline flex items-center gap-1"
                           >
                             <Undo2 className="w-2.5 h-2.5" /> Revertir
                           </button>
@@ -498,7 +496,7 @@ export default function MetadataModal({
 
                     <div className="sm:col-span-4">
                       <div className="flex justify-between items-center mb-1">
-                        <label className="text-[10px] font-medium text-gray-400 uppercase">
+                        <label className="text-2xs font-medium text-ink-400 uppercase">
                           Pista Nº
                         </label>
                         {editTrackNumber !==
@@ -508,7 +506,7 @@ export default function MetadataModal({
                           <button
                             type="button"
                             onClick={() => onResetField('track_number')}
-                            className="text-[10px] text-accent-400 hover:underline flex items-center gap-1"
+                            className="text-2xs text-accent-400 hover:underline flex items-center gap-1"
                           >
                             <Undo2 className="w-2.5 h-2.5" /> Revertir
                           </button>
@@ -530,21 +528,19 @@ export default function MetadataModal({
 
                 {/* Sección: Año & Género con Sugerencias Rápidas */}
                 <div className="space-y-3 p-4 rounded-2xl bg-white/[0.02] border border-white/5">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-400">
+                  <span className="text-2xs font-bold uppercase tracking-wider text-cyan-400">
                     Año & Género Musical
                   </span>
 
                   <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
                     <div className="sm:col-span-4">
                       <div className="flex justify-between items-center mb-1">
-                        <label className="text-[10px] font-medium text-gray-400 uppercase">
-                          Año
-                        </label>
+                        <label className="text-2xs font-medium text-ink-400 uppercase">Año</label>
                         {editYear !== (editingTrack.year ? editingTrack.year.toString() : '') && (
                           <button
                             type="button"
                             onClick={() => onResetField('year')}
-                            className="text-[10px] text-accent-400 hover:underline flex items-center gap-1"
+                            className="text-2xs text-accent-400 hover:underline flex items-center gap-1"
                           >
                             <Undo2 className="w-2.5 h-2.5" /> Revertir
                           </button>
@@ -562,14 +558,14 @@ export default function MetadataModal({
 
                     <div className="sm:col-span-8">
                       <div className="flex justify-between items-center mb-1">
-                        <label className="text-[10px] font-medium text-gray-400 uppercase">
+                        <label className="text-2xs font-medium text-ink-400 uppercase">
                           Género
                         </label>
                         {editGenre !== (editingTrack.genre || '') && (
                           <button
                             type="button"
                             onClick={() => onResetField('genre')}
-                            className="text-[10px] text-accent-400 hover:underline flex items-center gap-1"
+                            className="text-2xs text-accent-400 hover:underline flex items-center gap-1"
                           >
                             <Undo2 className="w-2.5 h-2.5" /> Revertir
                           </button>
@@ -604,10 +600,10 @@ export default function MetadataModal({
                         key={g}
                         type="button"
                         onClick={() => onEditGenreChange(g)}
-                        className={`px-2.5 py-1 rounded-lg text-[10px] font-medium transition-colors ${
+                        className={`px-2.5 py-1 rounded-lg text-2xs font-medium transition-colors ${
                           editGenre.toLowerCase() === g.toLowerCase()
                             ? 'bg-accent-500 text-white'
-                            : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'
+                            : 'bg-white/5 text-ink-400 hover:text-white hover:bg-white/10'
                         }`}
                       >
                         {g}
@@ -656,10 +652,10 @@ export default function MetadataModal({
                     key={s.value}
                     type="button"
                     onClick={() => onCatalogSourceChange(s.value)}
-                    className={`px-3 py-1.5 rounded-xl text-[11px] font-semibold transition-all flex items-center gap-1.5 ${
+                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
                       catalogSource === s.value
                         ? 'bg-gradient-to-r from-accent-500 to-purple-600 text-white shadow-md'
-                        : 'bg-white/5 text-gray-400 hover:text-white border border-white/10'
+                        : 'bg-white/5 text-ink-400 hover:text-white border border-white/10'
                     }`}
                   >
                     {s.value === 'musicbrainz' ? (
@@ -680,7 +676,7 @@ export default function MetadataModal({
                   className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                     catalogMode === 'songs'
                       ? 'bg-gradient-to-r from-accent-500 to-purple-600 text-white shadow-md'
-                      : 'text-gray-400 hover:text-white'
+                      : 'text-ink-400 hover:text-white'
                   }`}
                 >
                   <Music2 className="w-3.5 h-3.5" />
@@ -692,7 +688,7 @@ export default function MetadataModal({
                   className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                     catalogMode === 'albums'
                       ? 'bg-gradient-to-r from-accent-500 to-purple-600 text-white shadow-md'
-                      : 'text-gray-400 hover:text-white'
+                      : 'text-ink-400 hover:text-white'
                   }`}
                 >
                   <Layers className="w-3.5 h-3.5" />
@@ -704,7 +700,7 @@ export default function MetadataModal({
             {/* Barra de Búsqueda de Catálogo */}
             <div className="flex flex-col sm:flex-row gap-2">
               <div className="relative flex-1">
-                <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-400" />
                 <input
                   type="text"
                   value={catalogQuery}
@@ -740,7 +736,7 @@ export default function MetadataModal({
             </div>
 
             {/* Explicación */}
-            <p className="text-[11px] text-gray-400">
+            <p className="text-xs text-ink-400">
               {catalogMode === 'albums'
                 ? `Busca álbumes en ${catalogSource === 'musicbrainz' ? 'MusicBrainz' : catalogSource === 'deezer' ? 'Deezer' : 'Apple Music / iTunes'}, ábrelos y aplica la pista que corresponda a la canción en edición.`
                 : `Busca canciones en ${catalogSource === 'musicbrainz' ? 'MusicBrainz' : catalogSource === 'deezer' ? 'Deezer' : 'Apple Music / iTunes'} para autocompletar título, artista, álbum, año, género, número de pista y carátula en alta definición.`}
@@ -749,7 +745,7 @@ export default function MetadataModal({
             {/* Pegar enlace del álbum (solo iTunes en modo Álbumes) */}
             {catalogMode === 'albums' && catalogSource === 'itunes' && !openedAlbum && (
               <div className="p-3 rounded-2xl bg-cyan-500/[0.04] border border-cyan-500/20">
-                <div className="flex items-center gap-2 mb-1.5 text-cyan-300 text-[11px] font-semibold">
+                <div className="flex items-center gap-2 mb-1.5 text-cyan-300 text-xs font-semibold">
                   <Link2 className="w-3.5 h-3.5" />
                   ¿No encuentras el álbum? Pega el enlace de Apple Music / iTunes
                 </div>
@@ -760,7 +756,7 @@ export default function MetadataModal({
                     onChange={(e) => onSetAlbumLink(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && onOpenAlbumByLink(albumLink)}
                     placeholder="https://music.apple.com/us/album/1440833068"
-                    className="flex-1 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-[11px] font-mono focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 outline-none transition-colors"
+                    className="flex-1 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs font-mono focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 outline-none transition-colors"
                   />
                   <button
                     type="button"
@@ -794,7 +790,7 @@ export default function MetadataModal({
                   <button
                     type="button"
                     onClick={() => onSetCatalogMode('albums')}
-                    className="text-[11px] text-accent-400 hover:underline flex items-center gap-1"
+                    className="text-xs text-accent-400 hover:underline flex items-center gap-1"
                   >
                     <ChevronLeft className="w-3.5 h-3.5" />
                     Volver a álbumes
@@ -810,27 +806,27 @@ export default function MetadataModal({
                     />
                   ) : (
                     <div className="w-14 h-14 rounded-xl bg-white/5 flex items-center justify-center flex-shrink-0">
-                      <Layers className="w-6 h-6 text-gray-500" />
+                      <Layers className="w-6 h-6 text-ink-500" />
                     </div>
                   )}
                   <div className="min-w-0">
                     <h4 className="text-sm font-bold text-white truncate flex items-center gap-2">
                       {openedAlbum.title}
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-accent-500/20 text-accent-300 border border-accent-500/30">
+                      <span className="text-2xs font-mono px-2 py-0.5 rounded-full bg-accent-500/20 text-accent-300 border border-accent-500/30">
                         {openedAlbum.track_count} pistas
                       </span>
                     </h4>
-                    <p className="text-[11px] text-gray-300 truncate">
+                    <p className="text-xs text-ink-300 truncate">
                       {openedAlbum.artist}
                       {openedAlbum.year && (
-                        <span className="text-gray-500"> • {openedAlbum.year}</span>
+                        <span className="text-ink-500"> • {openedAlbum.year}</span>
                       )}
                     </p>
                   </div>
                 </div>
 
                 {isOpeningAlbum ? (
-                  <div className="flex items-center justify-center gap-2 py-8 text-gray-400 text-xs">
+                  <div className="flex items-center justify-center gap-2 py-8 text-ink-400 text-xs">
                     <Loader2 className="w-4 h-4 animate-spin" />
                     Cargando pistas del álbum...
                   </div>
@@ -842,16 +838,16 @@ export default function MetadataModal({
                         className="p-3 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 hover:border-accent-500/30 transition-all flex items-center justify-between gap-3 group"
                       >
                         <div className="flex items-center gap-3 min-w-0">
-                          <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-gray-400 font-mono text-[10px] flex-shrink-0">
+                          <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-ink-400 font-mono text-2xs flex-shrink-0">
                             {track.track_number || idx + 1}
                           </div>
                           <div className="min-w-0">
                             <h4 className="text-xs font-bold text-white truncate group-hover:text-accent-300 transition-colors">
                               {track.title}
                             </h4>
-                            <p className="text-[11px] text-gray-300 truncate">
+                            <p className="text-xs text-ink-300 truncate">
                               {track.artist}
-                              {track.year && <span className="text-gray-500"> • {track.year}</span>}
+                              {track.year && <span className="text-ink-500"> • {track.year}</span>}
                             </p>
                           </div>
                         </div>
@@ -885,7 +881,7 @@ export default function MetadataModal({
             {/* ── Resultados: ÁLBUMES ── */}
             {!openedAlbum && catalogMode === 'albums' && catalogAlbums.length > 0 && (
               <div className="space-y-2 pt-2">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                <span className="text-2xs font-bold uppercase tracking-wider text-ink-400">
                   Álbumes encontrados ({catalogAlbums.length})
                 </span>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[50vh] overflow-y-auto pr-1">
@@ -903,7 +899,7 @@ export default function MetadataModal({
                         />
                       ) : (
                         <div className="w-14 h-14 rounded-xl bg-white/5 flex items-center justify-center flex-shrink-0">
-                          <Layers className="w-6 h-6 text-gray-500" />
+                          <Layers className="w-6 h-6 text-ink-500" />
                         </div>
                       )}
                       <div className="min-w-0 flex-1">
@@ -911,15 +907,15 @@ export default function MetadataModal({
                           <ListMusic className="w-3.5 h-3.5 text-accent-400 flex-shrink-0" />
                           {album.title}
                         </h4>
-                        <p className="text-[11px] text-gray-300 truncate">
+                        <p className="text-xs text-ink-300 truncate">
                           {album.artist}
-                          {album.year && <span className="text-gray-500"> • {album.year}</span>}
+                          {album.year && <span className="text-ink-500"> • {album.year}</span>}
                         </p>
-                        <div className="flex items-center gap-2 text-[10px] text-gray-400 font-mono mt-0.5">
+                        <div className="flex items-center gap-2 text-2xs text-ink-400 font-mono mt-0.5">
                           <span>{album.track_count} pistas</span>
                         </div>
                       </div>
-                      <ChevronLeft className="w-4 h-4 text-gray-500 -rotate-180 flex-shrink-0 group-hover:text-accent-300 transition-colors" />
+                      <ChevronLeft className="w-4 h-4 text-ink-500 -rotate-180 flex-shrink-0 group-hover:text-accent-300 transition-colors" />
                     </div>
                   ))}
                 </div>
@@ -929,7 +925,7 @@ export default function MetadataModal({
             {/* ── Resultados: CANCIONES ── */}
             {catalogMode === 'songs' && catalogResults.length > 0 && (
               <div className="space-y-2 pt-2">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                <span className="text-2xs font-bold uppercase tracking-wider text-ink-400">
                   Resultados encontrados ({catalogResults.length})
                 </span>
 
@@ -948,7 +944,7 @@ export default function MetadataModal({
                           />
                         ) : (
                           <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center flex-shrink-0">
-                            <Music2 className="w-5 h-5 text-gray-500" />
+                            <Music2 className="w-5 h-5 text-ink-500" />
                           </div>
                         )}
 
@@ -956,10 +952,10 @@ export default function MetadataModal({
                           <h4 className="text-xs font-bold text-white truncate group-hover:text-accent-300 transition-colors">
                             {item.title}
                           </h4>
-                          <p className="text-[11px] text-gray-300 truncate">
-                            {item.artist} <span className="text-gray-500">•</span> {item.album}
+                          <p className="text-xs text-ink-300 truncate">
+                            {item.artist} <span className="text-ink-500">•</span> {item.album}
                           </p>
-                          <div className="flex items-center gap-2 text-[10px] text-gray-400 font-mono mt-0.5">
+                          <div className="flex items-center gap-2 text-2xs text-ink-400 font-mono mt-0.5">
                             {item.year && <span>{item.year}</span>}
                             {item.genre && <span>• {item.genre}</span>}
                             {item.track_number && <span>• Pista #{item.track_number}</span>}
@@ -1004,7 +1000,7 @@ export default function MetadataModal({
             <button
               type="button"
               onClick={onResetAll}
-              className="px-3 py-2 rounded-xl text-xs text-gray-400 hover:text-white hover:bg-white/5 transition-colors flex items-center gap-1.5"
+              className="px-3 py-2 rounded-xl text-xs text-ink-400 hover:text-white hover:bg-white/5 transition-colors flex items-center gap-1.5"
             >
               <Undo2 className="w-3.5 h-3.5" />
               <span>Restablecer valores originales</span>
@@ -1015,7 +1011,7 @@ export default function MetadataModal({
             <button
               type="button"
               onClick={() => onClose()}
-              className="flex-1 sm:flex-none px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10 text-xs font-semibold transition-colors"
+              className="flex-1 sm:flex-none px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-ink-300 hover:bg-white/10 text-xs font-semibold transition-colors"
             >
               Cancelar
             </button>

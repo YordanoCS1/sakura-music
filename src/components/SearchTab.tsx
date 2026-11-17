@@ -87,7 +87,7 @@ export default function SearchTab({
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h2 className="text-base font-bold text-white mb-1">Buscador y Descargas de Música</h2>
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-ink-400">
             Búsqueda instantánea en YouTube o descarga por enlace directo en FLAC / MP3 320k.
           </p>
         </div>
@@ -95,7 +95,7 @@ export default function SearchTab({
         {/* Badges de estado de herramientas */}
         <div className="flex items-center gap-2">
           <div
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono border ${
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-2xs font-mono border ${
               toolsStatus?.ytdlp_available
                 ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'
                 : 'bg-rose-500/10 text-rose-300 border-rose-500/30'
@@ -108,7 +108,7 @@ export default function SearchTab({
           </div>
 
           <div
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono border ${
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-2xs font-mono border ${
               toolsStatus?.ffmpeg_available
                 ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'
                 : 'bg-rose-500/10 text-rose-300 border-rose-500/30'
@@ -125,7 +125,7 @@ export default function SearchTab({
       {/* Barra de Búsqueda y Opciones */}
       <div className="glass-card p-5 rounded-3xl border border-white/10 space-y-4">
         <form onSubmit={onSearchSubmit}>
-          <label className="text-[11px] text-gray-400 font-medium block mb-2">
+          <label className="text-xs text-ink-400 font-medium block mb-2">
             Escribe el nombre de la canción/artista o pega un enlace de video o Playlist / Álbum de
             YouTube:
           </label>
@@ -136,9 +136,9 @@ export default function SearchTab({
                 value={onlineQuery}
                 onChange={(e) => onQueryChange(e.target.value)}
                 placeholder="Ej: LiSA Gurenge, YOASOBI Idol, o https://youtube.com/playlist?list=..."
-                className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-accent-500 focus:ring-1 focus:ring-accent-500/30"
+                className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-ink-500 focus:outline-none focus:border-accent-500 focus:ring-1 focus:ring-accent-500/30"
               />
-              <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-3" />
+              <Search className="w-4 h-4 text-ink-400 absolute left-3.5 top-3" />
             </div>
 
             <button
@@ -168,7 +168,7 @@ export default function SearchTab({
 
         {/* Calidad deseada en un selector compacto */}
         <div className="flex flex-wrap items-center justify-between gap-2 border-t border-white/5 pt-3">
-          <label htmlFor="download-format" className="text-[11px] text-gray-400">
+          <label htmlFor="download-format" className="text-xs text-ink-400">
             Calidad de audio
           </label>
           <select
@@ -192,7 +192,7 @@ export default function SearchTab({
             <DownloadCloud className="w-4 h-4 text-accent-300" />
             <div>
               <h3 className="text-xs font-bold text-white">Descargas en curso</h3>
-              <p className="text-[10px] text-gray-400">
+              <p className="text-2xs text-ink-400">
                 {activeDownloads.length === 0
                   ? 'Al añadir una canción a la cola, su progreso aparecerá aquí.'
                   : `${activeDownloads.length} pendiente${activeDownloads.length === 1 ? '' : 's'} o en curso`}
@@ -202,7 +202,7 @@ export default function SearchTab({
           <button
             type="button"
             onClick={onGoQueue}
-            className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[10px] font-semibold text-gray-300 hover:text-white transition-colors"
+            className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-2xs font-semibold text-ink-300 hover:text-white transition-colors"
           >
             Ver cola completa
           </button>
@@ -224,14 +224,12 @@ export default function SearchTab({
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
-                      <h4 className="text-[11px] font-semibold text-white truncate">
-                        {item.title}
-                      </h4>
-                      <span className="text-[9px] text-amber-300 whitespace-nowrap">
+                      <h4 className="text-xs font-semibold text-white truncate">{item.title}</h4>
+                      <span className="text-2xs text-amber-300 whitespace-nowrap">
                         {item.status}
                       </span>
                     </div>
-                    <p className="text-[10px] text-gray-400 truncate">
+                    <p className="text-2xs text-ink-400 truncate">
                       {item.artist} · {item.format}
                     </p>
                     <div
@@ -243,11 +241,11 @@ export default function SearchTab({
                       aria-valuenow={Math.min(100, Math.max(0, item.progress))}
                     >
                       <div
-                        className="h-full bg-gradient-to-r from-accent-500 to-accent-300 transition-all duration-300"
+                        className="h-full bg-gradient-to-r from-accent-500 to-accent-300 transition-all duration-base"
                         style={{ width: `${Math.min(100, Math.max(0, item.progress))}%` }}
                       />
                     </div>
-                    <div className="mt-1 flex justify-between text-[9px] text-gray-500 font-mono">
+                    <div className="mt-1 flex justify-between text-2xs text-ink-500 font-mono">
                       <span>
                         {item.progress.toFixed(0)}%
                         {item.speed && item.speed !== '--' ? ` · ${item.speed}` : ''}
@@ -275,7 +273,7 @@ export default function SearchTab({
               <button
                 type="button"
                 onClick={onGoQueue}
-                className="w-full py-1.5 text-[10px] text-accent-300 hover:text-white transition-colors"
+                className="w-full py-1.5 text-2xs text-accent-300 hover:text-white transition-colors"
               >
                 Ver {activeDownloads.length - visibleDownloads.length} descargas más
               </button>
@@ -307,7 +305,7 @@ export default function SearchTab({
           <h4 className="text-sm font-bold text-white mb-1">
             Extrayendo pistas de la Playlist / Álbum...
           </h4>
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-ink-400">
             {playlistInfo
               ? `${playlistInfo.items.length} pistas recibidas; la lista sigue cargando`
               : 'Esperando las primeras pistas de yt-dlp'}
@@ -326,13 +324,13 @@ export default function SearchTab({
                   <ListMusic className="w-7 h-7" />
                 </div>
                 <div>
-                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-accent-500/20 border border-accent-500/30 text-accent-300 text-[10px] font-semibold mb-1">
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-accent-500/20 border border-accent-500/30 text-accent-300 text-2xs font-semibold mb-1">
                     <span>Álbum / Playlist Completa</span>
                   </div>
                   <h3 className="text-lg font-black text-white tracking-tight">
                     {playlistInfo.title}
                   </h3>
-                  <p className="text-xs text-gray-300">
+                  <p className="text-xs text-ink-300">
                     Canal:{' '}
                     <span className="font-semibold text-white">
                       {playlistInfo.uploader || 'YouTube'}
@@ -345,7 +343,7 @@ export default function SearchTab({
 
               <button
                 onClick={onClosePlaylist}
-                className="self-start sm:self-center p-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white border border-white/10 transition-colors"
+                className="self-start sm:self-center p-2 rounded-xl bg-white/5 hover:bg-white/10 text-ink-400 hover:text-white border border-white/10 transition-colors"
                 title="Cerrar vista de playlist"
               >
                 <X className="w-4 h-4" />
@@ -354,7 +352,7 @@ export default function SearchTab({
 
             {/* Acciones y carpeta */}
             <div className="flex items-center justify-between flex-wrap gap-3 mt-5 pt-4 border-t border-white/10">
-              <label className="flex items-center gap-2 cursor-pointer text-xs text-gray-300 select-none">
+              <label className="flex items-center gap-2 cursor-pointer text-xs text-ink-300 select-none">
                 <input
                   type="checkbox"
                   checked={createAlbumFolder}
@@ -372,7 +370,7 @@ export default function SearchTab({
                       ? onClearPlaylist
                       : onSelectAllPlaylist
                   }
-                  className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 text-xs font-semibold border border-white/10 transition-all"
+                  className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-ink-300 text-xs font-semibold border border-white/10 transition-all"
                 >
                   {selectedPlaylistItems.size === playlistInfo.items.length
                     ? 'Deseleccionar Todas'
@@ -411,7 +409,7 @@ export default function SearchTab({
                         e.stopPropagation();
                         onTogglePlaylistItem(it.id);
                       }}
-                      className={`p-1 rounded transition-colors ${isSelected ? 'text-accent-400' : 'text-gray-500'}`}
+                      className={`p-1 rounded transition-colors ${isSelected ? 'text-accent-400' : 'text-ink-500'}`}
                     >
                       {isSelected ? (
                         <CheckSquare className="w-4 h-4" />
@@ -420,7 +418,7 @@ export default function SearchTab({
                       )}
                     </button>
 
-                    <span className="w-6 text-center font-mono text-[11px] text-gray-500">
+                    <span className="w-6 text-center font-mono text-xs text-ink-500">
                       {idx + 1}
                     </span>
 
@@ -440,22 +438,22 @@ export default function SearchTab({
 
                     <div className="min-w-0">
                       <h4
-                        className={`text-xs font-semibold truncate ${isSelected ? 'text-white' : 'text-gray-300'}`}
+                        className={`text-xs font-semibold truncate ${isSelected ? 'text-white' : 'text-ink-300'}`}
                       >
                         {it.title}
                       </h4>
-                      <p className="text-[10px] text-gray-400 truncate">{it.uploader}</p>
+                      <p className="text-2xs text-ink-400 truncate">{it.uploader}</p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    <span className="text-[11px] font-mono text-gray-400">{it.duration}</span>
+                    <span className="text-xs font-mono text-ink-400">{it.duration}</span>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         onTriggerDownload(it.title, it.uploader, it.url, it.thumbnail);
                       }}
-                      className="p-1.5 rounded-lg bg-white/5 hover:bg-accent-500/20 text-gray-400 hover:text-accent-300 transition-colors"
+                      className="p-1.5 rounded-lg bg-white/5 hover:bg-accent-500/20 text-ink-400 hover:text-accent-300 transition-colors"
                       title="Añadir solo esta pista a la cola"
                     >
                       <ArrowDownToLine className="w-3.5 h-3.5" />
@@ -471,7 +469,7 @@ export default function SearchTab({
       {/* Resultados de búsqueda en línea en vivo */}
       {onlineResults.length > 0 && (
         <div>
-          <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+          <h3 className="text-xs font-semibold text-ink-400 uppercase tracking-wider mb-3">
             Resultados en YouTube ({onlineResults.length})
           </h3>
 
@@ -501,10 +499,10 @@ export default function SearchTab({
                   <h4 className="text-xs font-semibold text-white truncate group-hover:text-accent-300 transition-colors">
                     {item.title}
                   </h4>
-                  <div className="flex items-center gap-2 text-[10px] text-gray-400 mt-0.5">
+                  <div className="flex items-center gap-2 text-2xs text-ink-400 mt-0.5">
                     <span className="truncate">{item.uploader}</span>
                     <span>•</span>
-                    <span className="font-mono bg-white/10 px-1.5 py-0.5 rounded text-gray-300">
+                    <span className="font-mono bg-white/10 px-1.5 py-0.5 rounded text-ink-300">
                       {item.duration}
                     </span>
                   </div>
@@ -529,7 +527,7 @@ export default function SearchTab({
       {/* Sugerencias compactas */}
       {onlineResults.length === 0 && !isSearchingOnline && (
         <div className="space-y-2">
-          <h3 className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">
+          <h3 className="text-2xs font-semibold text-ink-500 uppercase tracking-wider">
             Búsquedas sugeridas
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -542,14 +540,14 @@ export default function SearchTab({
                 className="flex items-center justify-between gap-3 p-2.5 rounded-xl glass-card hover:bg-white/5 border border-white/5"
               >
                 <div className="min-w-0">
-                  <div className="text-[11px] font-semibold text-white truncate">{sug.title}</div>
-                  <div className="text-[10px] text-gray-500">
+                  <div className="text-xs font-semibold text-white truncate">{sug.title}</div>
+                  <div className="text-2xs text-ink-500">
                     {sug.genre} · {sug.duration}
                   </div>
                 </div>
                 <button
                   onClick={() => onSuggestionSearch(sug.title)}
-                  className="flex-shrink-0 px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-accent-300 hover:text-white text-[10px] font-medium border border-white/5 transition-colors"
+                  className="flex-shrink-0 px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-accent-300 hover:text-white text-2xs font-medium border border-white/5 transition-colors"
                 >
                   Buscar
                 </button>
