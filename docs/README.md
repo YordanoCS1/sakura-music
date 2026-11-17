@@ -16,6 +16,7 @@ Esta carpeta contiene la documentación técnica y de referencia del proyecto Sa
 | Flujos paso a paso | [casos-de-uso.md](casos-de-uso.md) |
 | Setup, tests y recetas | [desarrollo.md](desarrollo.md) |
 | Versionar, firmar y publicar | [release.md](release.md) |
+| Ver el pipeline de CI | [pipeline.md](pipeline.md) |
 | Comandos y eventos disponibles | [ipc-contract.md](ipc-contract.md) |
 | Dónde y cómo se guardan los datos | [data-formats.md](data-formats.md) |
 | Buscar, descargar y entender la cola | [manual/buscar-y-descargar.md](manual/buscar-y-descargar.md) |
@@ -35,6 +36,7 @@ docs/
   arquitectura.md            capas, hilos, persistencia, seguridad y secuencias
   desarrollo.md              setup, tests, tipos y recetas para extender
   release.md                 versionado, build, firma y publicación
+  pipeline.md                diagrama y etapas del CI
   ipc-contract.md            20 comandos Tauri y 4 eventos (contrato frontend/Rust)
   data-formats.md            SQLite, download_queue.json y preferencias
   manual/

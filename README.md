@@ -196,7 +196,7 @@ Todo el detalle vivido en `docs/`, en Markdown plano con Mermaid, sin MkDocs:
 - [Formatos de datos](docs/data-formats.md) — SQLite, cola persistente y preferencias.
 - [Manual de usuario](docs/manual/README.md) — instalación, buscar/descargar, biblioteca, metadatos y resolución de problemas.
 - [ADRs](docs/adr/README.md) — decisiones. Los 0001–0008 quedaron como histórico de la v1; 0009 y posteriores rigen la v2.
-- [Cómo contribuir](CONTRIBUTING.md), [Seguridad](SECURITY.md), [Changelog](CHANGELOG.md) y [guía de release](docs/release.md).
+- [Cómo contribuir](CONTRIBUTING.md), [Seguridad](SECURITY.md), [Changelog](CHANGELOG.md), [pipeline de CI](docs/pipeline.md) y [guía de release](docs/release.md).
 
 > Las capturas en `docs/img/` son de la UI de la v1 (PySide6). Están pendientes de reemplazo por capturas de la app Tauri/React.
 

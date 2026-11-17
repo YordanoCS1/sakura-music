@@ -34,11 +34,20 @@ Antes de tocar código, leé [arquitectura.md](docs/arquitectura.md) y [desarrol
 Ejecutá todo esto en local:
 
 ```powershell
+npm run pipeline        # todo lo que corre el CI, en orden
+```
+
+O, si querés correr las etapas por separado:
+
+```powershell
 npm run check                                   # tipos + lint + formato + tests + build
+npm run test:e2e                                # navegador + arranque de la UI
 cargo test --manifest-path src-tauri/Cargo.toml  # 17 tests Rust
 cargo fmt --check --manifest-path src-tauri/Cargo.toml
 cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings
 ```
+
+El mapa visual está en [docs/pipeline.md](docs/pipeline.md).
 
 Eso mismo corre el CI en Windows, macOS y Linux. Si agregás lógica al
 frontend, sumá un test con Vitest en `src/**/*.test.ts`.
