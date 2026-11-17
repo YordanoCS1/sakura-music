@@ -59,7 +59,11 @@ async fn http_client() -> reqwest::Client {
 
 /// Lanza un GET y devuelve el JSON crudo (serde_json::Value).
 async fn get_json(client: &reqwest::Client, url: &str) -> Result<serde_json::Value, String> {
-    let res = client.get(url).send().await.map_err(|e| format!("Error de red: {e}"))?;
+    let res = client
+        .get(url)
+        .send()
+        .await
+        .map_err(|e| format!("Error de red: {e}"))?;
     let status = res.status();
     if !status.is_success() {
         return Err(format!("La API respondió con HTTP {}", status.as_u16()));
@@ -75,21 +79,33 @@ fn itunes_hd(url: &str) -> String {
     url.replace("/100x100bb", "/600x600bb")
 }
 
-async fn search_itunes_albums(client: &reqwest::Client, q: &str) -> Result<Vec<CatalogAlbum>, String> {
+async fn search_itunes_albums(
+    client: &reqwest::Client,
+    q: &str,
+) -> Result<Vec<CatalogAlbum>, String> {
     let url = format!(
         "https://itunes.apple.com/search?term={}&entity=album&limit=20",
         urlencoding(q)
     );
     let data = get_json(client, &url).await?;
-    let items = data.get("results").and_then(|r| r.as_array()).cloned().unwrap_or_default();
+    let items = data
+        .get("results")
+        .and_then(|r| r.as_array())
+        .cloned()
+        .unwrap_or_default();
     let albums = items
         .into_iter()
         .map(|it| CatalogAlbum {
             source: "itunes".to_string(),
-            id: it["collectionId"].as_u64().map(|v| v.to_string()).unwrap_or_default(),
+            id: it["collectionId"]
+                .as_u64()
+                .map(|v| v.to_string())
+                .unwrap_or_default(),
             title: it["collectionName"].as_str().unwrap_or("").to_string(),
             artist: it["artistName"].as_str().unwrap_or("").to_string(),
-            year: it["releaseDate"].as_str().map(|s| s.chars().take(4).collect()),
+            year: it["releaseDate"]
+                .as_str()
+                .map(|s| s.chars().take(4).collect()),
             track_count: it["trackCount"].as_u64().unwrap_or(0) as u32,
             cover_url: Some(itunes_hd(it["artworkUrl100"].as_str().unwrap_or(""))),
         })
@@ -111,11 +127,25 @@ async fn open_itunes_album(
         urlencoding(cc)
     );
     let data = get_json(client, &url).await?;
-    let results = data.get("results").and_then(|r| r.as_array()).cloned().unwrap_or_default();
-    let album = results.iter().find(|r| r["wrapperType"].as_str() == Some("collection"));
-    let album_title = album.and_then(|a| a["collectionName"].as_str()).unwrap_or("").to_string();
-    let album_artist = album.and_then(|a| a["artistName"].as_str()).unwrap_or("").to_string();
-    let album_cover = album.and_then(|a| a["artworkUrl100"].as_str()).map(itunes_hd);
+    let results = data
+        .get("results")
+        .and_then(|r| r.as_array())
+        .cloned()
+        .unwrap_or_default();
+    let album = results
+        .iter()
+        .find(|r| r["wrapperType"].as_str() == Some("collection"));
+    let album_title = album
+        .and_then(|a| a["collectionName"].as_str())
+        .unwrap_or("")
+        .to_string();
+    let album_artist = album
+        .and_then(|a| a["artistName"].as_str())
+        .unwrap_or("")
+        .to_string();
+    let album_cover = album
+        .and_then(|a| a["artworkUrl100"].as_str())
+        .map(itunes_hd);
 
     let tracks = results
         .iter()
@@ -123,13 +153,26 @@ async fn open_itunes_album(
         .map(|t| CatalogAlbumTrack {
             source: "itunes".to_string(),
             title: t["trackName"].as_str().unwrap_or("").to_string(),
-            artist: t["artistName"].as_str().unwrap_or(&album_artist).to_string(),
-            album: t["collectionName"].as_str().unwrap_or(&album_title).to_string(),
+            artist: t["artistName"]
+                .as_str()
+                .unwrap_or(&album_artist)
+                .to_string(),
+            album: t["collectionName"]
+                .as_str()
+                .unwrap_or(&album_title)
+                .to_string(),
             album_artist: Some(album_artist.clone()),
-            year: t["releaseDate"].as_str().map(|s| s.chars().take(4).collect()),
+            year: t["releaseDate"]
+                .as_str()
+                .map(|s| s.chars().take(4).collect()),
             genre: t["primaryGenreName"].as_str().map(|s| s.to_string()),
             track_number: t["trackNumber"].as_u64().map(|v| v.to_string()),
-            cover_url: Some(t["artworkUrl100"].as_str().map(itunes_hd).unwrap_or_else(|| album_cover.clone().unwrap_or_default())),
+            cover_url: Some(
+                t["artworkUrl100"]
+                    .as_str()
+                    .map(itunes_hd)
+                    .unwrap_or_else(|| album_cover.clone().unwrap_or_default()),
+            ),
         })
         .collect();
     Ok(tracks)
@@ -137,13 +180,23 @@ async fn open_itunes_album(
 
 // ── Deezer ────────────────────────────────────────────────────────────────
 
-async fn search_deezer_albums(client: &reqwest::Client, q: &str) -> Result<Vec<CatalogAlbum>, String> {
-    let url = format!("https://api.deezer.com/search/album?q={}&limit=20", urlencoding(q));
+async fn search_deezer_albums(
+    client: &reqwest::Client,
+    q: &str,
+) -> Result<Vec<CatalogAlbum>, String> {
+    let url = format!(
+        "https://api.deezer.com/search/album?q={}&limit=20",
+        urlencoding(q)
+    );
     let data = get_json(client, &url).await?;
     if data.get("error").is_some() {
-        return Err(format!("La API de Deezer devolvió un error."));
+        return Err("La API de Deezer devolvió un error.".to_string());
     }
-    let items = data.get("data").and_then(|r| r.as_array()).cloned().unwrap_or_default();
+    let items = data
+        .get("data")
+        .and_then(|r| r.as_array())
+        .cloned()
+        .unwrap_or_default();
     let albums = items
         .into_iter()
         .map(|it| {
@@ -153,7 +206,9 @@ async fn search_deezer_albums(client: &reqwest::Client, q: &str) -> Result<Vec<C
                 id: it["id"].as_u64().map(|v| v.to_string()).unwrap_or_default(),
                 title: it["title"].as_str().unwrap_or("").to_string(),
                 artist,
-                year: it["release_date"].as_str().map(|s| s.chars().take(4).collect()),
+                year: it["release_date"]
+                    .as_str()
+                    .map(|s| s.chars().take(4).collect()),
                 track_count: it["nb_tracks"].as_u64().unwrap_or(0) as u32,
                 cover_url: it["cover_xl"]
                     .as_str()
@@ -174,24 +229,32 @@ async fn open_deezer_album(
     let url = format!("https://api.deezer.com/album/{}", urlencoding(id));
     let data = get_json(client, &url).await?;
     if data.get("error").is_some() {
-        return Err(format!("La API de Deezer devolvió un error."));
+        return Err("La API de Deezer devolvió un error.".to_string());
     }
     let album_title = data["title"].as_str().unwrap_or("").to_string();
     let album_artist = data["artist"]["name"].as_str().unwrap_or("").to_string();
-    let album_year = data["release_date"].as_str().map(|s| s.chars().take(4).collect());
+    let album_year = data["release_date"]
+        .as_str()
+        .map(|s| s.chars().take(4).collect());
     let cover = data["cover_xl"]
         .as_str()
         .or(data["cover_big"].as_str())
         .or(data["cover_medium"].as_str())
         .map(|s| s.to_string());
 
-    let items = data["tracks"]["data"].as_array().cloned().unwrap_or_default();
+    let items = data["tracks"]["data"]
+        .as_array()
+        .cloned()
+        .unwrap_or_default();
     let tracks = items
         .into_iter()
         .map(|t| CatalogAlbumTrack {
             source: "deezer".to_string(),
             title: t["title"].as_str().unwrap_or("").to_string(),
-            artist: t["artist"]["name"].as_str().unwrap_or(&album_artist).to_string(),
+            artist: t["artist"]["name"]
+                .as_str()
+                .unwrap_or(&album_artist)
+                .to_string(),
             album: album_title.clone(),
             album_artist: Some(album_artist.clone()),
             year: album_year.clone(),
@@ -205,13 +268,20 @@ async fn open_deezer_album(
 
 // ── MusicBrainz ───────────────────────────────────────────────────────────
 
-async fn search_musicbrainz_albums(client: &reqwest::Client, q: &str) -> Result<Vec<CatalogAlbum>, String> {
+async fn search_musicbrainz_albums(
+    client: &reqwest::Client,
+    q: &str,
+) -> Result<Vec<CatalogAlbum>, String> {
     let url = format!(
         "https://musicbrainz.org/ws/2/release/?query=release:{}&fmt=json&limit=20&inc=artist-credits+release-groups+media",
         urlencoding(q)
     );
     let data = get_json(client, &url).await?;
-    let items = data.get("releases").and_then(|r| r.as_array()).cloned().unwrap_or_default();
+    let items = data
+        .get("releases")
+        .and_then(|r| r.as_array())
+        .cloned()
+        .unwrap_or_default();
     let albums = items
         .into_iter()
         .map(|it| {
@@ -227,7 +297,11 @@ async fn search_musicbrainz_albums(client: &reqwest::Client, q: &str) -> Result<
                 .unwrap_or_default();
             let track_count: u32 = it["media"]
                 .as_array()
-                .map(|m| m.iter().map(|x| x["track-count"].as_u64().unwrap_or(0)).sum::<u64>() as u32)
+                .map(|m| {
+                    m.iter()
+                        .map(|x| x["track-count"].as_u64().unwrap_or(0))
+                        .sum::<u64>() as u32
+                })
                 .unwrap_or(0);
             CatalogAlbum {
                 source: "musicbrainz".to_string(),
@@ -235,7 +309,7 @@ async fn search_musicbrainz_albums(client: &reqwest::Client, q: &str) -> Result<
                 title: it["title"].as_str().unwrap_or("").to_string(),
                 artist,
                 year: it["date"].as_str().map(|s| s.chars().take(4).collect()),
-                track_count: track_count as u32,
+                track_count,
                 cover_url: Some(format!(
                     "https://coverartarchive.org/release/{}/front-500",
                     it["id"].as_str().unwrap_or("")
@@ -277,7 +351,11 @@ async fn open_musicbrainz_album(
                 let rec_artist = t["artist-credit"]
                     .as_array()
                     .and_then(|ac| ac[0]["artist"]["name"].as_str())
-                    .or_else(|| t["artist-credit"].as_array().and_then(|ac| ac[0]["name"].as_str()))
+                    .or_else(|| {
+                        t["artist-credit"]
+                            .as_array()
+                            .and_then(|ac| ac[0]["name"].as_str())
+                    })
                     .map(|s| s.to_string())
                     .unwrap_or_else(|| album_artist.clone());
                 tracks.push(CatalogAlbumTrack {
@@ -299,13 +377,20 @@ async fn open_musicbrainz_album(
 
 // ── Reexpedición pública (comandos Tauri) ─────────────────────────────────
 
-async fn search_itunes_songs(client: &reqwest::Client, q: &str) -> Result<Vec<CatalogCandidate>, String> {
+async fn search_itunes_songs(
+    client: &reqwest::Client,
+    q: &str,
+) -> Result<Vec<CatalogCandidate>, String> {
     let url = format!(
         "https://itunes.apple.com/search?term={}&entity=song&limit=16",
         urlencoding(q)
     );
     let data = get_json(client, &url).await?;
-    let items = data.get("results").and_then(|r| r.as_array()).cloned().unwrap_or_default();
+    let items = data
+        .get("results")
+        .and_then(|r| r.as_array())
+        .cloned()
+        .unwrap_or_default();
     Ok(items
         .into_iter()
         .map(|it| CatalogCandidate {
@@ -314,7 +399,9 @@ async fn search_itunes_songs(client: &reqwest::Client, q: &str) -> Result<Vec<Ca
             artist: it["artistName"].as_str().unwrap_or("").to_string(),
             album: it["collectionName"].as_str().unwrap_or("").to_string(),
             album_artist: it["artistName"].as_str().map(|s| s.to_string()),
-            year: it["releaseDate"].as_str().map(|s| s.chars().take(4).collect()),
+            year: it["releaseDate"]
+                .as_str()
+                .map(|s| s.chars().take(4).collect()),
             genre: it["primaryGenreName"].as_str().map(|s| s.to_string()),
             track_number: it["trackNumber"].as_u64().map(|v| v.to_string()),
             cover_url: Some(itunes_hd(it["artworkUrl100"].as_str().unwrap_or(""))),
@@ -322,13 +409,23 @@ async fn search_itunes_songs(client: &reqwest::Client, q: &str) -> Result<Vec<Ca
         .collect())
 }
 
-async fn search_deezer_songs(client: &reqwest::Client, q: &str) -> Result<Vec<CatalogCandidate>, String> {
-    let url = format!("https://api.deezer.com/search?q={}&limit=16", urlencoding(q));
+async fn search_deezer_songs(
+    client: &reqwest::Client,
+    q: &str,
+) -> Result<Vec<CatalogCandidate>, String> {
+    let url = format!(
+        "https://api.deezer.com/search?q={}&limit=16",
+        urlencoding(q)
+    );
     let data = get_json(client, &url).await?;
     if data.get("error").is_some() {
-        return Err(format!("La API de Deezer devolvió un error."));
+        return Err("La API de Deezer devolvió un error.".to_string());
     }
-    let items = data.get("data").and_then(|r| r.as_array()).cloned().unwrap_or_default();
+    let items = data
+        .get("data")
+        .and_then(|r| r.as_array())
+        .cloned()
+        .unwrap_or_default();
     Ok(items
         .into_iter()
         .map(|it| {
@@ -352,13 +449,20 @@ async fn search_deezer_songs(client: &reqwest::Client, q: &str) -> Result<Vec<Ca
         .collect())
 }
 
-async fn search_musicbrainz_songs(client: &reqwest::Client, q: &str) -> Result<Vec<CatalogCandidate>, String> {
+async fn search_musicbrainz_songs(
+    client: &reqwest::Client,
+    q: &str,
+) -> Result<Vec<CatalogCandidate>, String> {
     let url = format!(
         "https://musicbrainz.org/ws/2/recording/?query=recording:{}&fmt=json&limit=20",
         urlencoding(q)
     );
     let data = get_json(client, &url).await?;
-    let items = data.get("recordings").and_then(|r| r.as_array()).cloned().unwrap_or_default();
+    let items = data
+        .get("recordings")
+        .and_then(|r| r.as_array())
+        .cloned()
+        .unwrap_or_default();
     Ok(items
         .into_iter()
         .map(|it| {
@@ -372,7 +476,10 @@ async fn search_musicbrainz_songs(client: &reqwest::Client, q: &str) -> Result<V
                 source: "musicbrainz".to_string(),
                 title: it["title"].as_str().unwrap_or("").to_string(),
                 artist: artist.clone(),
-                album: it["releases"][0]["title"].as_str().unwrap_or("").to_string(),
+                album: it["releases"][0]["title"]
+                    .as_str()
+                    .unwrap_or("")
+                    .to_string(),
                 album_artist: Some(artist),
                 year: it["first-release-date"]
                     .as_str()
@@ -382,7 +489,9 @@ async fn search_musicbrainz_songs(client: &reqwest::Client, q: &str) -> Result<V
                 cover_url: if release_id.is_empty() {
                     None
                 } else {
-                    Some(format!("https://coverartarchive.org/release/{release_id}/front-500"))
+                    Some(format!(
+                        "https://coverartarchive.org/release/{release_id}/front-500"
+                    ))
                 },
             }
         })
@@ -390,7 +499,10 @@ async fn search_musicbrainz_songs(client: &reqwest::Client, q: &str) -> Result<V
 }
 
 #[tauri::command]
-pub async fn search_catalog_songs(source: String, query: String) -> Result<Vec<CatalogCandidate>, String> {
+pub async fn search_catalog_songs(
+    source: String,
+    query: String,
+) -> Result<Vec<CatalogCandidate>, String> {
     let client = http_client().await;
     let q = query.trim();
     if q.is_empty() {
@@ -405,7 +517,10 @@ pub async fn search_catalog_songs(source: String, query: String) -> Result<Vec<C
 }
 
 #[tauri::command]
-pub async fn search_catalog_albums(source: String, query: String) -> Result<Vec<CatalogAlbum>, String> {
+pub async fn search_catalog_albums(
+    source: String,
+    query: String,
+) -> Result<Vec<CatalogAlbum>, String> {
     let client = http_client().await;
     let q = query.trim();
     if q.is_empty() {

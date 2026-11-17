@@ -1,7 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
 import {
-  Disc3, FolderOpen, FolderTree, Layers, LayoutGrid, List,
-  Loader2, Pencil, RotateCw, Sparkles, Trash2, ChevronDown, Check,
+  Disc3,
+  FolderOpen,
+  FolderTree,
+  Layers,
+  LayoutGrid,
+  List,
+  Loader2,
+  Pencil,
+  RotateCw,
+  Sparkles,
+  Trash2,
+  ChevronDown,
+  Check,
 } from 'lucide-react';
 import type { ViewMode } from '../types';
 
@@ -22,7 +33,10 @@ interface LibraryToolbarProps {
   onDeleteSelected: () => void;
 }
 
-const VIEW_GROUPS: { label: string; items: { id: ViewMode; label: string; desc: string; icon: typeof Disc3 }[] }[] = [
+const VIEW_GROUPS: {
+  label: string;
+  items: { id: ViewMode; label: string; desc: string; icon: typeof Disc3 }[];
+}[] = [
   {
     label: 'Clásicas',
     items: [
@@ -44,7 +58,7 @@ const VIEW_GROUPS: { label: string; items: { id: ViewMode; label: string; desc: 
   },
 ];
 
-const ALL_VIEWS = VIEW_GROUPS.flatMap(g => g.items);
+const ALL_VIEWS = VIEW_GROUPS.flatMap((g) => g.items);
 
 export default function LibraryToolbar({
   currentFolder,
@@ -64,7 +78,7 @@ export default function LibraryToolbar({
 }: LibraryToolbarProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-  const current = ALL_VIEWS.find(v => v.id === viewMode) ?? ALL_VIEWS[0];
+  const current = ALL_VIEWS.find((v) => v.id === viewMode) ?? ALL_VIEWS[0];
   const CurrentIcon = current.icon;
 
   useEffect(() => {
@@ -90,7 +104,9 @@ export default function LibraryToolbar({
           <h2>Biblioteca</h2>
           <p title={currentFolder || undefined}>
             {isScanning ? (
-              <span className="lt-scanning"><Loader2 className="w-3 h-3 animate-spin" /> Escaneando…</span>
+              <span className="lt-scanning">
+                <Loader2 className="w-3 h-3 animate-spin" /> Escaneando…
+              </span>
             ) : (
               currentFolder || `${filteredCount} canciones en tu colección`
             )}
@@ -102,15 +118,16 @@ export default function LibraryToolbar({
           <button
             type="button"
             className={`lt-view-trigger ${open ? 'is-open' : ''}`}
-            onClick={() => setOpen(o => !o)}
-            aria-expanded={open}>
+            onClick={() => setOpen((o) => !o)}
+            aria-expanded={open}
+          >
             <CurrentIcon className="w-4 h-4" />
             <span>{current.label}</span>
             <ChevronDown className={`w-3.5 h-3.5 lt-chevron ${open ? 'is-open' : ''}`} />
           </button>
           {open && (
             <div className="lt-view-menu">
-              {VIEW_GROUPS.map(group => (
+              {VIEW_GROUPS.map((group) => (
                 <div key={group.label} className="lt-view-group">
                   <div className="lt-view-group-label">{group.label}</div>
                   {group.items.map(({ id, label, desc, icon: Icon }) => (
@@ -118,8 +135,11 @@ export default function LibraryToolbar({
                       key={id}
                       type="button"
                       onClick={() => choose(id)}
-                      className={`lt-view-option ${viewMode === id ? 'is-active' : ''}`}>
-                      <span className="lt-view-option-icon"><Icon className="w-4 h-4" /></span>
+                      className={`lt-view-option ${viewMode === id ? 'is-active' : ''}`}
+                    >
+                      <span className="lt-view-option-icon">
+                        <Icon className="w-4 h-4" />
+                      </span>
                       <span className="lt-view-option-copy">
                         <strong>{label}</strong>
                         <small>{desc}</small>
@@ -140,14 +160,16 @@ export default function LibraryToolbar({
               onClick={() => onScanFolder(currentFolder)}
               disabled={isScanning || isDeleting}
               className="lt-icon-btn"
-              title="Volver a escanear la carpeta">
+              title="Volver a escanear la carpeta"
+            >
               <RotateCw className={`w-4 h-4 ${isScanning ? 'animate-spin' : ''}`} />
             </button>
           )}
           <button
             onClick={onOpenFolderDialog}
             disabled={isScanning || isDeleting}
-            className="lt-folder-btn">
+            className="lt-folder-btn"
+          >
             <FolderOpen className="w-4 h-4" />
             <span>Carpeta</span>
           </button>
@@ -158,15 +180,23 @@ export default function LibraryToolbar({
       {selectedCount > 0 && (
         <div className={`lt-selection ${''}`}>
           <div className="lt-selection-info">
-            <span className="lt-selection-icon"><Layers className="w-4 h-4" /></span>
+            <span className="lt-selection-icon">
+              <Layers className="w-4 h-4" />
+            </span>
             <div>
-              <p><strong>{selectedCount}</strong> de {filteredCount} canciones seleccionadas</p>
+              <p>
+                <strong>{selectedCount}</strong> de {filteredCount} canciones seleccionadas
+              </p>
               <small>Edición en lote: álbum, artista, año, género o portada</small>
             </div>
           </div>
           <div className="lt-selection-actions">
-            <button onClick={onSelectAllFiltered} className="lt-sel-secondary">Todas</button>
-            <button onClick={onClearSelection} className="lt-sel-secondary">Limpiar</button>
+            <button onClick={onSelectAllFiltered} className="lt-sel-secondary">
+              Todas
+            </button>
+            <button onClick={onClearSelection} className="lt-sel-secondary">
+              Limpiar
+            </button>
             <button onClick={onOpenBatchModal} className="lt-sel-primary">
               <Pencil className="w-3.5 h-3.5" /> Editar ({selectedCount})
             </button>
@@ -174,8 +204,13 @@ export default function LibraryToolbar({
               onClick={onDeleteSelected}
               disabled={isDeleting || isScanning}
               className="lt-sel-delete"
-              title="Borrar del disco">
-              {isDeleting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+              title="Borrar del disco"
+            >
+              {isDeleting ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <Trash2 className="w-3.5 h-3.5" />
+              )}
             </button>
           </div>
         </div>

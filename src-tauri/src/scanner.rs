@@ -1,8 +1,8 @@
-use std::path::{Path, PathBuf};
-use serde::{Deserialize, Serialize};
-use walkdir::WalkDir;
 use lofty::prelude::*;
 use lofty::probe::Probe;
+use serde::{Deserialize, Serialize};
+use std::path::{Path, PathBuf};
+use walkdir::WalkDir;
 
 use crate::paths;
 
@@ -169,7 +169,9 @@ pub fn scan_audio_file(path: &Path) -> Option<ScannedTrack> {
 
     match Probe::open(path).and_then(|p| p.read()) {
         Ok(tagged_file) => {
-            let tag = tagged_file.primary_tag().or_else(|| tagged_file.first_tag());
+            let tag = tagged_file
+                .primary_tag()
+                .or_else(|| tagged_file.first_tag());
             let properties = tagged_file.properties();
             let duration = properties.duration().as_secs();
             let bitrate_kbps = properties.audio_bitrate();
@@ -182,13 +184,21 @@ pub fn scan_audio_file(path: &Path) -> Option<ScannedTrack> {
 
             // Sin tags, los campos quedan vacíos y la UI muestra "—".
             // No se inventa ningún "desconocido": las canciones salen tal cual.
-            let artist = tag.and_then(|t| t.artist()).map(|s| s.trim().to_string()).unwrap_or_default();
-            let album = tag.and_then(|t| t.album()).map(|s| s.trim().to_string()).unwrap_or_default();
+            let artist = tag
+                .and_then(|t| t.artist())
+                .map(|s| s.trim().to_string())
+                .unwrap_or_default();
+            let album = tag
+                .and_then(|t| t.album())
+                .map(|s| s.trim().to_string())
+                .unwrap_or_default();
 
             let year = tag.and_then(|t| t.year());
             let genre = tag.and_then(|t| t.genre()).map(|s| s.to_string());
             let track_number = tag.and_then(|t| t.track());
-            let album_artist = tag.and_then(|t| t.get_string(&lofty::tag::ItemKey::AlbumArtist)).map(|s| s.to_string());
+            let album_artist = tag
+                .and_then(|t| t.get_string(&lofty::tag::ItemKey::AlbumArtist))
+                .map(|s| s.to_string());
             let cover_url = extract_cover_art(tag, parent);
 
             Some(ScannedTrack {
@@ -209,25 +219,23 @@ pub fn scan_audio_file(path: &Path) -> Option<ScannedTrack> {
                 file_size,
             })
         }
-        Err(_) => {
-            Some(ScannedTrack {
-                id: format!("{:x}", fnv1a_128(path.to_string_lossy().as_bytes())),
-                path: path.to_string_lossy().to_string(),
-                title: filename,
-                artist: String::new(),
-                album: String::new(),
-                album_artist: None,
-                track_number: None,
-                duration: 0,
-                duration_str: "--:--".to_string(),
-                format: ext.to_uppercase(),
-                bitrate_kbps: None,
-                cover_url: extract_cover_art(None, parent),
-                year: None,
-                genre: None,
-                file_size,
-            })
-        }
+        Err(_) => Some(ScannedTrack {
+            id: format!("{:x}", fnv1a_128(path.to_string_lossy().as_bytes())),
+            path: path.to_string_lossy().to_string(),
+            title: filename,
+            artist: String::new(),
+            album: String::new(),
+            album_artist: None,
+            track_number: None,
+            duration: 0,
+            duration_str: "--:--".to_string(),
+            format: ext.to_uppercase(),
+            bitrate_kbps: None,
+            cover_url: extract_cover_art(None, parent),
+            year: None,
+            genre: None,
+            file_size,
+        }),
     }
 }
 
@@ -270,6 +278,10 @@ fn fnv1a_128(data: &[u8]) -> u128 {
     hash
 }
 
+// Los campos opcionales viajan explícitos para distinguir "no tocar" de
+// "vaciar". Quitar el atributo de solo lectura es intencional: Windows no
+// permite renombrar sobre un archivo protegido.
+#[allow(clippy::too_many_arguments, clippy::permissions_set_readonly_false)]
 pub fn update_track_tags(
     path_str: &str,
     title: String,
@@ -288,8 +300,7 @@ pub fn update_track_tags(
     }
 
     // 1. Leer los bytes completos a memoria (evita bloqueos de descriptor de archivo en Windows)
-    let file_bytes = std::fs::read(path)
-        .map_err(|e| format!("Error al leer archivo: {}", e))?;
+    let file_bytes = std::fs::read(path).map_err(|e| format!("Error al leer archivo: {}", e))?;
 
     let mut cursor = std::io::Cursor::new(file_bytes);
 
@@ -299,11 +310,13 @@ pub fn update_track_tags(
         .guess_file_type()
         .map_err(|e| format!("Error al detectar formato: {}", e))?;
 
-    let tag_type = probe.file_type()
+    let tag_type = probe
+        .file_type()
         .map(|ft| ft.primary_tag_type())
         .unwrap_or(lofty::tag::TagType::VorbisComments);
 
-    let mut tagged_file = probe.read()
+    let mut tagged_file = probe
+        .read()
         .map_err(|e| format!("Error al leer tags: {}", e))?;
 
     // Un archivo sin tags no tiene bloque que editar: crear el del tipo detectado.
@@ -364,23 +377,23 @@ pub fn update_track_tags(
         }
     } else if let Some(ref c_path) = cover_path {
         let cp = Path::new(c_path);
-        if cp.exists() {
-            if let Ok(mut file) = std::fs::File::open(cp) {
-                if let Ok(mut pic) = lofty::picture::Picture::from_reader(&mut file) {
-                    pic.set_pic_type(lofty::picture::PictureType::CoverFront);
-                    if !tag.pictures().is_empty() {
-                        tag.set_picture(0, pic);
-                    } else {
-                        tag.push_picture(pic);
-                    }
-                }
+        if cp.exists()
+            && let Ok(mut file) = std::fs::File::open(cp)
+            && let Ok(mut pic) = lofty::picture::Picture::from_reader(&mut file)
+        {
+            pic.set_pic_type(lofty::picture::PictureType::CoverFront);
+            if !tag.pictures().is_empty() {
+                tag.set_picture(0, pic);
+            } else {
+                tag.push_picture(pic);
             }
         }
     }
 
     // 5. Ensamblar los tags en un búfer en memoria: el archivo original queda
     // intacto hasta que la escritura atómica lo reemplaza de una vez.
-    tagged_file.save_to(&mut cursor, lofty::config::WriteOptions::default())
+    tagged_file
+        .save_to(&mut cursor, lofty::config::WriteOptions::default())
         .map_err(|e| format!("Error al ensamblar tags con Lofty: {}", e))?;
 
     let updated_bytes = cursor.into_inner();
@@ -409,6 +422,8 @@ pub struct BatchUpdateResult {
     pub errors: Vec<String>,
 }
 
+// Misma firma extendida que la edición individual; ver el comentario de arriba.
+#[allow(clippy::too_many_arguments, clippy::permissions_set_readonly_false)]
 pub fn update_batch_tags(
     paths: Vec<String>,
     artist: Option<String>,
@@ -477,7 +492,8 @@ pub fn update_batch_tags(
             }
         };
 
-        let tag_type = probe.file_type()
+        let tag_type = probe
+            .file_type()
             .map(|ft| ft.primary_tag_type())
             .unwrap_or(lofty::tag::TagType::VorbisComments);
 
@@ -558,7 +574,10 @@ pub fn update_batch_tags(
 
         // 7. Reintentar la escritura: otro proceso puede tener el archivo abierto unos ms.
         if let Err(err) = write_atomic_with_retries(path, &updated_bytes, 4) {
-            errors.push(format!("{}: no se pudo escribir en disco: {}", path_str, err));
+            errors.push(format!(
+                "{}: no se pudo escribir en disco: {}",
+                path_str, err
+            ));
             continue;
         }
 
@@ -582,10 +601,7 @@ mod tests {
     fn detecta_extension_por_firma() {
         assert_eq!(detect_image_ext(&[0x89, b'P', b'N', b'G', 0, 0]), "png");
         assert_eq!(detect_image_ext(&[0xFF, 0xD8, 0xFF, 0xE0]), "jpg");
-        assert_eq!(
-            detect_image_ext(b"RIFF\0\0\0\0WEBPVP8 "),
-            "webp"
-        );
+        assert_eq!(detect_image_ext(b"RIFF\0\0\0\0WEBPVP8 "), "webp");
         assert_eq!(detect_image_ext(b"GIF89a"), "gif");
         assert_eq!(detect_image_ext(b"otra cosa"), "jpg");
     }

@@ -77,9 +77,10 @@ export function usePlayer({
       audioRef.current.pause();
       setIsPlaying(false);
     } else {
-      audioRef.current.play()
+      audioRef.current
+        .play()
         .then(() => setIsPlaying(true))
-        .catch(error => console.error('Error al reanudar:', error));
+        .catch((error) => console.error('Error al reanudar:', error));
     }
   };
 
@@ -91,7 +92,7 @@ export function usePlayer({
       void handlePlayTrack(queue[randomIndex]);
       return;
     }
-    const currentIndex = queue.findIndex(track => track.id === activeTrack?.id);
+    const currentIndex = queue.findIndex((track) => track.id === activeTrack?.id);
     if (currentIndex < 0) {
       void handlePlayTrack(queue[0]);
       return;
@@ -112,7 +113,7 @@ export function usePlayer({
       if (audioRef.current) audioRef.current.currentTime = 0;
       return;
     }
-    const currentIndex = queue.findIndex(track => track.id === activeTrack?.id);
+    const currentIndex = queue.findIndex((track) => track.id === activeTrack?.id);
     const previousIndex = (currentIndex - 1 + queue.length) % queue.length;
     void handlePlayTrack(queue[previousIndex]);
   };
@@ -125,7 +126,7 @@ export function usePlayer({
       handleNextTrack(true);
     } else {
       const queue = playbackQueueRef.current;
-      const currentIndex = queue.findIndex(track => track.id === activeTrack?.id);
+      const currentIndex = queue.findIndex((track) => track.id === activeTrack?.id);
       if (currentIndex >= 0 && currentIndex < queue.length - 1) {
         handleNextTrack(true);
       } else {
@@ -157,7 +158,7 @@ export function usePlayer({
   };
 
   const cycleRepeatMode = () => {
-    setRepeatMode(mode => mode === 'off' ? 'all' : mode === 'all' ? 'one' : 'off');
+    setRepeatMode((mode) => (mode === 'off' ? 'all' : mode === 'all' ? 'one' : 'off'));
   };
 
   return {
@@ -178,8 +179,8 @@ export function usePlayer({
     handleTimeUpdate,
     handleLoadedMetadata,
     handleVolumeChange,
-    toggleShuffle: () => setIsShuffle(value => !value),
-    toggleMute: () => setIsMuted(value => !value),
+    toggleShuffle: () => setIsShuffle((value) => !value),
+    toggleMute: () => setIsMuted((value) => !value),
     cycleRepeatMode,
   };
 }

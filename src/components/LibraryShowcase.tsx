@@ -11,7 +11,14 @@ interface LibraryShowcaseProps {
   onOpenEdit: (track: ScannedTrack, e: React.MouseEvent) => void;
 }
 
-function MosaicView({ tracks, activeTrack, isPlaying, getCoverSrc, onPlayTrack, onOpenEdit }: LibraryShowcaseProps) {
+function MosaicView({
+  tracks,
+  activeTrack,
+  isPlaying,
+  getCoverSrc,
+  onPlayTrack,
+  onOpenEdit,
+}: LibraryShowcaseProps) {
   return (
     <div className="show-mosaic">
       {tracks.map((t, i) => {
@@ -23,11 +30,19 @@ function MosaicView({ tracks, activeTrack, isPlaying, getCoverSrc, onPlayTrack, 
             type="button"
             onClick={() => onPlayTrack(t)}
             className={`show-mos-tile show-mos-${size} ${isActive ? 'is-playing' : ''}`}
-            title={`${t.title} · ${t.artist}`}>
+            title={`${t.title} · ${t.artist}`}
+          >
             {t.cover_url ? (
-              <img src={getCoverSrc(t.cover_url)} alt={t.title} className="show-mos-img" loading="lazy" />
+              <img
+                src={getCoverSrc(t.cover_url)}
+                alt={t.title}
+                className="show-mos-img"
+                loading="lazy"
+              />
             ) : (
-              <div className="show-mos-fallback"><Music2 /></div>
+              <div className="show-mos-fallback">
+                <Music2 />
+              </div>
             )}
             <span className="show-mos-caption">
               <span className="show-mos-caption-title">{t.title}</span>
@@ -36,8 +51,12 @@ function MosaicView({ tracks, activeTrack, isPlaying, getCoverSrc, onPlayTrack, 
             <span className="show-mos-play">{isActive ? <Pause /> : <Play />}</span>
             <span
               className="show-mos-edit"
-              onClick={(e) => { e.stopPropagation(); onOpenEdit(t, e); }}
-              title="Editar metadatos">
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpenEdit(t, e);
+              }}
+              title="Editar metadatos"
+            >
               <Pencil />
             </span>
           </button>
@@ -49,5 +68,9 @@ function MosaicView({ tracks, activeTrack, isPlaying, getCoverSrc, onPlayTrack, 
 
 export default function LibraryShowcase(props: LibraryShowcaseProps) {
   if (props.mode !== 'mosaic') return null;
-  return <div className="library-showcase"><MosaicView {...props} /></div>;
+  return (
+    <div className="library-showcase">
+      <MosaicView {...props} />
+    </div>
+  );
 }

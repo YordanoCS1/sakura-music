@@ -19,7 +19,10 @@ export default function TitleBar() {
       }
     })();
     const unlisten = win.onResized(() => {
-      win.isMaximized().then(setIsMax).catch(() => {});
+      win
+        .isMaximized()
+        .then(setIsMax)
+        .catch(() => {});
     });
     return () => {
       disposed = true;
@@ -30,9 +33,15 @@ export default function TitleBar() {
   return (
     <div className="titlebar" data-tauri-drag-region>
       <div className="titlebar-brand" data-tauri-drag-region>
-        <span className="titlebar-brand-mark" aria-hidden="true" data-tauri-drag-region>桜</span>
-        <span className="titlebar-brand-name" data-tauri-drag-region>Sakura Music</span>
-        <span className="titlebar-brand-tag" data-tauri-drag-region>M3 Zen</span>
+        <span className="titlebar-brand-mark" aria-hidden="true" data-tauri-drag-region>
+          桜
+        </span>
+        <span className="titlebar-brand-name" data-tauri-drag-region>
+          Sakura Music
+        </span>
+        <span className="titlebar-brand-tag" data-tauri-drag-region>
+          M3 Zen
+        </span>
       </div>
 
       <div className="titlebar-actions">
@@ -41,7 +50,8 @@ export default function TitleBar() {
           className="titlebar-btn"
           onClick={() => getCurrentWindow().minimize()}
           aria-label="Minimizar"
-          title="Minimizar">
+          title="Minimizar"
+        >
           <Minus className="w-3.5 h-3.5" />
         </button>
         <button
@@ -49,7 +59,8 @@ export default function TitleBar() {
           className="titlebar-btn"
           onClick={() => getCurrentWindow().toggleMaximize()}
           aria-label={isMax ? 'Restaurar' : 'Maximizar'}
-          title={isMax ? 'Restaurar' : 'Maximizar'}>
+          title={isMax ? 'Restaurar' : 'Maximizar'}
+        >
           {isMax ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
         </button>
         <button
@@ -57,7 +68,8 @@ export default function TitleBar() {
           className="titlebar-btn titlebar-btn-close"
           onClick={() => getCurrentWindow().close()}
           aria-label="Cerrar"
-          title="Cerrar">
+          title="Cerrar"
+        >
           <X className="w-3.5 h-3.5" />
         </button>
       </div>

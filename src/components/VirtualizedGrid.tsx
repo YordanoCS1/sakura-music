@@ -20,7 +20,13 @@ export default function VirtualizedGrid<T>({
   renderItem,
 }: VirtualizedGridProps<T>) {
   const gridRef = useRef<HTMLDivElement>(null);
-  const [layout, setLayout] = useState({ columns: 1, columnGap: 0, rowGap: 0, paddingTop: 0, paddingBottom: 0 });
+  const [layout, setLayout] = useState({
+    columns: 1,
+    columnGap: 0,
+    rowGap: 0,
+    paddingTop: 0,
+    paddingBottom: 0,
+  });
 
   // El número de columnas se deduce del CSS, no se fija a mano: así el
   // mismo componente respeta los media queries de cada vista. Se mide
@@ -33,10 +39,14 @@ export default function VirtualizedGrid<T>({
       const style = window.getComputedStyle(grid);
       const columnGap = Number.parseFloat(style.columnGap) || 0;
       const rowGap = Number.parseFloat(style.rowGap) || 0;
-      const availableWidth = grid.clientWidth
-        - (Number.parseFloat(style.paddingLeft) || 0)
-        - (Number.parseFloat(style.paddingRight) || 0);
-      const columns = Math.max(1, Math.floor((availableWidth + columnGap) / (minItemWidth + columnGap)));
+      const availableWidth =
+        grid.clientWidth -
+        (Number.parseFloat(style.paddingLeft) || 0) -
+        (Number.parseFloat(style.paddingRight) || 0);
+      const columns = Math.max(
+        1,
+        Math.floor((availableWidth + columnGap) / (minItemWidth + columnGap)),
+      );
       const next = {
         columns,
         columnGap,
@@ -45,14 +55,14 @@ export default function VirtualizedGrid<T>({
         paddingBottom: Number.parseFloat(style.paddingBottom) || 0,
       };
 
-      setLayout(current =>
-        current.columns === next.columns
-        && current.columnGap === next.columnGap
-        && current.rowGap === next.rowGap
-        && current.paddingTop === next.paddingTop
-        && current.paddingBottom === next.paddingBottom
+      setLayout((current) =>
+        current.columns === next.columns &&
+        current.columnGap === next.columnGap &&
+        current.rowGap === next.rowGap &&
+        current.paddingTop === next.paddingTop &&
+        current.paddingBottom === next.paddingBottom
           ? current
-          : next
+          : next,
       );
     };
 
@@ -64,9 +74,12 @@ export default function VirtualizedGrid<T>({
 
   const grid = gridRef.current;
   const scrollElement = scrollElementRef.current;
-  const scrollMargin = grid && scrollElement
-    ? grid.getBoundingClientRect().top - scrollElement.getBoundingClientRect().top + scrollElement.scrollTop
-    : 0;
+  const scrollMargin =
+    grid && scrollElement
+      ? grid.getBoundingClientRect().top -
+        scrollElement.getBoundingClientRect().top +
+        scrollElement.scrollTop
+      : 0;
   const virtualizer = useVirtualizer({
     count: items.length,
     getScrollElement: () => scrollElementRef.current,
@@ -83,8 +96,9 @@ export default function VirtualizedGrid<T>({
     <div
       ref={gridRef}
       className={`${className} virtualized-grid`}
-      style={{ height: Math.max(0, virtualizer.getTotalSize() - scrollMargin) }}>
-      {virtualizer.getVirtualItems().map(virtualItem => {
+      style={{ height: Math.max(0, virtualizer.getTotalSize() - scrollMargin) }}
+    >
+      {virtualizer.getVirtualItems().map((virtualItem) => {
         const item = items[virtualItem.index];
         if (item === undefined) return null;
         const left = `calc((100% + ${layout.columnGap}px) * ${virtualItem.lane} / ${layout.columns})`;
@@ -100,7 +114,8 @@ export default function VirtualizedGrid<T>({
               width,
               height: itemHeight,
               transform: `translateY(${virtualItem.start - scrollMargin}px)`,
-            }}>
+            }}
+          >
             {renderItem(item, virtualItem.index)}
           </div>
         );

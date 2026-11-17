@@ -92,13 +92,7 @@ impl DownloadManager {
         }
     }
 
-    fn register_job(
-        &self,
-        job_id: &str,
-        url: &str,
-        output_folder: &str,
-        format: &str,
-    ) -> bool {
+    fn register_job(&self, job_id: &str, url: &str, output_folder: &str, format: &str) -> bool {
         let url_key = extract_video_id(url)
             .map(|id| format!("youtube:{}", id))
             .unwrap_or_else(|| url.trim().to_string());
@@ -440,7 +434,10 @@ pub fn search_youtube(
             },
         ) {
             let _ = child.kill();
-            return Err(format!("No se pudo enviar un resultado de búsqueda: {}", error));
+            return Err(format!(
+                "No se pudo enviar un resultado de búsqueda: {}",
+                error
+            ));
         }
         results.push(result);
     }
@@ -508,10 +505,10 @@ pub fn resolve_playlist(
             }
         };
         if let Some((item, playlist_title)) = parse_result_line(&line) {
-            if detected_title.is_empty() {
-                if let Some(title) = playlist_title {
-                    detected_title = title;
-                }
+            if detected_title.is_empty()
+                && let Some(title) = playlist_title
+            {
+                detected_title = title;
             }
             if detected_uploader.is_empty() && !item.uploader.is_empty() && item.uploader != "NA" {
                 detected_uploader = item.uploader.clone();
@@ -530,7 +527,10 @@ pub fn resolve_playlist(
                 },
             ) {
                 let _ = child.kill();
-                return Err(format!("No se pudo enviar una pista de la playlist: {}", error));
+                return Err(format!(
+                    "No se pudo enviar una pista de la playlist: {}",
+                    error
+                ));
             }
             items.push(item);
         }
@@ -626,7 +626,7 @@ fn find_downloaded_file(dir: &Path, url: &str) -> Option<String> {
             .ok()
             .and_then(|m| m.modified().ok())
             .unwrap_or(std::time::UNIX_EPOCH);
-        if best.as_ref().map_or(true, |(time, _)| modified >= *time) {
+        if best.as_ref().is_none_or(|(time, _)| modified >= *time) {
             best = Some((modified, path));
         }
     }
@@ -746,7 +746,14 @@ fn run_download(
 
     cmd.args(["--embed-thumbnail", "--add-metadata"]);
     cmd.args(["--no-playlist", "--windows-filenames"]);
-    cmd.args(["--socket-timeout", "30", "--retries", "3", "--fragment-retries", "3"]);
+    cmd.args([
+        "--socket-timeout",
+        "30",
+        "--retries",
+        "3",
+        "--fragment-retries",
+        "3",
+    ]);
     cmd.args([
         "--newline",
         "--progress-template",
@@ -755,10 +762,10 @@ fn run_download(
     // yt-dlp imprime la ruta final; así el frontend sabe qué archivo quedó.
     cmd.args(["--print", "after_move:filepath", "--no-simulate"]);
 
-    if let Some(ffmpeg) = find_ffmpeg_binary() {
-        if let Some(parent) = ffmpeg.parent() {
-            cmd.args(["--ffmpeg-location", &parent.to_string_lossy()]);
-        }
+    if let Some(ffmpeg) = find_ffmpeg_binary()
+        && let Some(parent) = ffmpeg.parent()
+    {
+        cmd.args(["--ffmpeg-location", &parent.to_string_lossy()]);
     }
 
     cmd.stdout(Stdio::piped());
@@ -821,17 +828,8 @@ fn run_download(
 
     match status {
         Ok(status) if status.success() => {
-            let file_path =
-                final_path.or_else(|| find_downloaded_file(out_dir, url));
-            emit_progress(
-                app,
-                job_id,
-                100.0,
-                "--",
-                "00:00",
-                "completado",
-                file_path,
-            );
+            let file_path = final_path.or_else(|| find_downloaded_file(out_dir, url));
+            emit_progress(app, job_id, 100.0, "--", "00:00", "completado", file_path);
         }
         _ => {
             let detail = stderr_text
@@ -857,8 +855,7 @@ mod tests {
 
     #[test]
     fn parsea_linea_de_busqueda() {
-        let line =
-            "abc123|||Una canción|||Canal|||3:45|||https://img.example/thumb.jpg";
+        let line = "abc123|||Una canción|||Canal|||3:45|||https://img.example/thumb.jpg";
         let (result, playlist) = parse_result_line(line).expect("debería parsear");
         assert_eq!(result.id, "abc123");
         assert_eq!(result.title, "Una canción");
@@ -891,8 +888,7 @@ mod tests {
 
     #[test]
     fn progreso_finished_pasa_a_convirtiendo() {
-        let (_, _, _, status) =
-            parse_progress_line("sakuradl|100%|--|00:00|finished").unwrap();
+        let (_, _, _, status) = parse_progress_line("sakuradl|100%|--|00:00|finished").unwrap();
         assert_eq!(status, "convirtiendo audio");
     }
 

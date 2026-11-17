@@ -1,7 +1,15 @@
 import { useMemo } from 'react';
 import {
-  Sparkles, Library, Search, DownloadCloud, Settings, Disc3,
-  Cpu, ShieldCheck, ArrowRight, Waves,
+  Sparkles,
+  Library,
+  Search,
+  DownloadCloud,
+  Settings,
+  Disc3,
+  Cpu,
+  ShieldCheck,
+  ArrowRight,
+  Waves,
 } from 'lucide-react';
 import type { AppTab } from '../types';
 
@@ -74,11 +82,16 @@ export default function HomeTab({ trackCount, onNavigate }: HomeTabProps) {
         <span className="wb-orb wb-orb-3" />
 
         <div className="wb-hero-content">
-          <div className="wb-logo"><span>桜</span></div>
-          <div className="wb-badge"><Sparkles className="w-3 h-3" /> BIENVENIDO</div>
+          <div className="wb-logo">
+            <span>桜</span>
+          </div>
+          <div className="wb-badge">
+            <Sparkles className="w-3 h-3" /> BIENVENIDO
+          </div>
           <h1 className="wb-title">{greeting}</h1>
           <p className="wb-subtitle">
-            Este es tu espacio musical. Una app de escritorio rápida, privada y hecha para tu colección.
+            Este es tu espacio musical. Una app de escritorio rápida, privada y hecha para tu
+            colección.
           </p>
           <div className="wb-hero-actions">
             <button onClick={() => onNavigate('library')} className="wb-primary">
@@ -91,9 +104,13 @@ export default function HomeTab({ trackCount, onNavigate }: HomeTabProps) {
         </div>
 
         <div className="wb-stats-float">
-          <span className="wb-stat-f"><strong>{trackCount}</strong> pistas en tu biblioteca</span>
+          <span className="wb-stat-f">
+            <strong>{trackCount}</strong> pistas en tu biblioteca
+          </span>
           <span className="wb-divider" />
-          <span className="wb-stat-f"><ShieldCheck className="w-3.5 h-3.5" /> 100% local y privado</span>
+          <span className="wb-stat-f">
+            <ShieldCheck className="w-3.5 h-3.5" /> 100% local y privado
+          </span>
         </div>
       </div>
 
@@ -108,7 +125,9 @@ export default function HomeTab({ trackCount, onNavigate }: HomeTabProps) {
         <div className="wb-features">
           {FEATURES.map(({ icon: Icon, title, desc, tone }) => (
             <div key={title} className={`wb-feature wb-feature-${tone}`}>
-              <span className="wb-feature-icon"><Icon className="w-5 h-5" /></span>
+              <span className="wb-feature-icon">
+                <Icon className="w-5 h-5" />
+              </span>
               <h3>{title}</h3>
               <p>{desc}</p>
             </div>
@@ -127,7 +146,9 @@ export default function HomeTab({ trackCount, onNavigate }: HomeTabProps) {
         <div className="wb-nav">
           {NAV.map(({ id, label, desc, icon: Icon }) => (
             <button key={id} onClick={() => onNavigate(id)} className="wb-nav-card">
-              <span className="wb-nav-icon"><Icon className="w-5 h-5" /></span>
+              <span className="wb-nav-icon">
+                <Icon className="w-5 h-5" />
+              </span>
               <span className="wb-nav-copy">
                 <strong>{label}</strong>
                 <small>{desc}</small>

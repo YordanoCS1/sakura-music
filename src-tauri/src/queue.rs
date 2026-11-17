@@ -130,8 +130,7 @@ mod tests {
         }
         // Solo verificamos que el parser rechaza basura y que load_queue
         // tolera un archivo ilegible (no puede fijar paths en este test).
-        let parsed: Result<Vec<PersistedDownload>, _> =
-            serde_json::from_str("esto no es json");
+        let parsed: Result<Vec<PersistedDownload>, _> = serde_json::from_str("esto no es json");
         assert!(parsed.is_err());
         let probe: Result<Probe, _> = serde_json::from_str("{}");
         assert!(probe.is_err());

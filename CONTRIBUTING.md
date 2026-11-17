@@ -34,12 +34,14 @@ Antes de tocar código, leé [arquitectura.md](docs/arquitectura.md) y [desarrol
 Ejecutá todo esto en local:
 
 ```powershell
-node node_modules/typescript/bin/tsc --noEmit   # tipos del frontend
-npm run build                                    # tsc + vite build
+npm run check                                   # tipos + lint + formato + tests + build
 cargo test --manifest-path src-tauri/Cargo.toml  # 17 tests Rust
 cargo fmt --check --manifest-path src-tauri/Cargo.toml
 cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings
 ```
+
+Eso mismo corre el CI en Windows, macOS y Linux. Si agregás lógica al
+frontend, sumá un test con Vitest en `src/**/*.test.ts`.
 
 Si tu cambio toca la UI, revisá también el comportamiento con `npm run tauri dev`: búsqueda, reproducción (incluido renombrar una pista mientras suena) y persistencia de la cola al reabrir.
 

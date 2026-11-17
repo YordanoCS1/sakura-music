@@ -1,6 +1,20 @@
-import { Clock, Disc3, FolderOpen, Heart, List, Pause, Play, Plus, Search, SkipBack, SkipForward, Volume2 } from 'lucide-react';
+import {
+  Clock,
+  Disc3,
+  FolderOpen,
+  Heart,
+  List,
+  Pause,
+  Play,
+  Plus,
+  Search,
+  SkipBack,
+  SkipForward,
+  Volume2,
+} from 'lucide-react';
 
-type DesignId = 'albumfocus' | 'gridcovers' | 'denselist' | 'folderexplorer' | 'splitlist' | 'compactcards';
+type DesignId =
+  'albumfocus' | 'gridcovers' | 'denselist' | 'folderexplorer' | 'splitlist' | 'compactcards';
 
 const designs: { id: DesignId; name: string; direction: string; note: string; pros: string }[] = [
   {
@@ -55,21 +69,52 @@ function DiscThumb({ hue }: { hue: string }) {
 function AlbumFocus() {
   return (
     <div className="lb-preview lb-albumfocus">
-      <div className="lb-topbar"><Search /><span>Biblioteca</span><span className="lb-chip">Todo</span></div>
+      <div className="lb-topbar">
+        <Search />
+        <span>Biblioteca</span>
+        <span className="lb-chip">Todo</span>
+      </div>
       <div className="lb-albumhead">
-        <div className="lb-bigcover" style={{ background: 'linear-gradient(135deg,#f6a8c8,#9d174d)' }}><Disc3 /></div>
+        <div
+          className="lb-bigcover"
+          style={{ background: 'linear-gradient(135deg,#f6a8c8,#9d174d)' }}
+        >
+          <Disc3 />
+        </div>
         <div className="lb-albumcopy">
           <small>ÁLBUM</small>
           <h4>In a Silent Way</h4>
           <span>Miles Davis · 1969 · Jazz</span>
           <span className="lb-metarow">18 canciones · 1h 04m</span>
-          <div className="lb-actions"><button className="lb-playbtn"><Play />Reproducir</button><button className="lb-ghostbtn"><Plus />Guardar</button></div>
+          <div className="lb-actions">
+            <button className="lb-playbtn">
+              <Play />
+              Reproducir
+            </button>
+            <button className="lb-ghostbtn">
+              <Plus />
+              Guardar
+            </button>
+          </div>
         </div>
       </div>
       <div className="lb-tracklist">
-        <Track num="01" title="Shhh / Peaceful" artist="Miles Davis" dur="18:33" active hue="#ec4899" />
+        <Track
+          num="01"
+          title="Shhh / Peaceful"
+          artist="Miles Davis"
+          dur="18:33"
+          active
+          hue="#ec4899"
+        />
         <Track num="02" title="In a Silent Way" artist="Miles Davis" dur="19:10" hue="#db2777" />
-        <Track num="03" title="It's About That Time" artist="Miles Davis" dur="11:27" hue="#be185d" />
+        <Track
+          num="03"
+          title="It's About That Time"
+          artist="Miles Davis"
+          dur="11:27"
+          hue="#be185d"
+        />
       </div>
     </div>
   );
@@ -79,9 +124,18 @@ function AlbumFocus() {
 function GridCovers() {
   return (
     <div className="lb-preview lb-gridcovers">
-      <div className="lb-topbar"><Search /><span>Biblioteca</span><span className="lb-chip">1248</span></div>
+      <div className="lb-topbar">
+        <Search />
+        <span>Biblioteca</span>
+        <span className="lb-chip">1248</span>
+      </div>
       <div className="lb-grid">
-        <CoverCard t="Blue in Green" a="Miles Davis" g="linear-gradient(135deg,#7c3aed,#ec4899)" active />
+        <CoverCard
+          t="Blue in Green"
+          a="Miles Davis"
+          g="linear-gradient(135deg,#7c3aed,#ec4899)"
+          active
+        />
         <CoverCard t="Midnight City" a="M83" g="linear-gradient(135deg,#06b6d4,#3b82f6)" />
         <CoverCard t="Nude" a="Radiohead" g="linear-gradient(135deg,#f59e0b,#ef4444)" />
         <CoverCard t="Soul Love" a="David Bowie" g="linear-gradient(135deg,#22c55e,#14b8a6)" />
@@ -96,14 +150,43 @@ function GridCovers() {
 function DenseList() {
   return (
     <div className="lb-preview lb-denselist">
-      <div className="lb-topbar"><Search /><span>Biblioteca</span><span className="lb-chip">Lista</span></div>
-      <div className="lb-thead"><span>#</span><span>Título</span><span>Artista</span><span>Fmt</span><span>Bitrate</span><span>Dur</span></div>
-      <DenseRow num="1" title="Blue in Green" artist="Miles Davis" fmt="FLAC" br="24/96" dur="5:37" active />
+      <div className="lb-topbar">
+        <Search />
+        <span>Biblioteca</span>
+        <span className="lb-chip">Lista</span>
+      </div>
+      <div className="lb-thead">
+        <span>#</span>
+        <span>Título</span>
+        <span>Artista</span>
+        <span>Fmt</span>
+        <span>Bitrate</span>
+        <span>Dur</span>
+      </div>
+      <DenseRow
+        num="1"
+        title="Blue in Green"
+        artist="Miles Davis"
+        fmt="FLAC"
+        br="24/96"
+        dur="5:37"
+        active
+      />
       <DenseRow num="2" title="Midnight City" artist="M83" fmt="FLAC" br="24/96" dur="4:03" />
       <DenseRow num="3" title="Nude" artist="Radiohead" fmt="MP3" br="320k" dur="4:15" />
       <DenseRow num="4" title="Soul Love" artist="David Bowie" fmt="MP3" br="320k" dur="3:45" />
       <DenseRow num="5" title="Intro" artist="The xx" fmt="OPUS" br="OGG" dur="2:07" />
-      <div className="lb-foobar"><SkipBack /><span className="lb-playpill"><Pause /></span><SkipForward /><i style={{ width: '40%' }} /><Volume2 /><Clock /><span>02:14</span></div>
+      <div className="lb-foobar">
+        <SkipBack />
+        <span className="lb-playpill">
+          <Pause />
+        </span>
+        <SkipForward />
+        <i style={{ width: '40%' }} />
+        <Volume2 />
+        <Clock />
+        <span>02:14</span>
+      </div>
     </div>
   );
 }
@@ -112,8 +195,15 @@ function DenseList() {
 function FolderExplorer() {
   return (
     <div className="lb-preview lb-folder">
-      <div className="lb-topbar"><Search /><span>Biblioteca</span><span className="lb-chip">Carpetas</span></div>
-      <div className="lb-breadcrumb"><FolderOpen />Música <span>›</span> Jazz <span>›</span> <b>1969</b></div>
+      <div className="lb-topbar">
+        <Search />
+        <span>Biblioteca</span>
+        <span className="lb-chip">Carpetas</span>
+      </div>
+      <div className="lb-breadcrumb">
+        <FolderOpen />
+        Música <span>›</span> Jazz <span>›</span> <b>1969</b>
+      </div>
       <div className="lb-folderfolders">
         <FolderCard name="Blue Note" n="24" />
         <FolderCard name="Columbia" n="18" />
@@ -121,7 +211,15 @@ function FolderExplorer() {
         <FolderCard name="Verve" n="15" />
       </div>
       <div className="lb-folderlabel">Canciones en 1969</div>
-      <Track num="01" title="In a Silent Way" artist="Miles Davis" dur="19:10" active hue="#ec4899" mini />
+      <Track
+        num="01"
+        title="In a Silent Way"
+        artist="Miles Davis"
+        dur="19:10"
+        active
+        hue="#ec4899"
+        mini
+      />
       <Track num="02" title="Bitches Brew" artist="Miles Davis" dur="26:42" hue="#db2777" mini />
     </div>
   );
@@ -131,15 +229,37 @@ function FolderExplorer() {
 function SplitList() {
   return (
     <div className="lb-preview lb-splitlist">
-      <div className="lb-topbar"><Search /><span>Biblioteca</span><span className="lb-chip">1248</span></div>
+      <div className="lb-topbar">
+        <Search />
+        <span>Biblioteca</span>
+        <span className="lb-chip">1248</span>
+      </div>
       <div className="lb-splitbody">
         <div className="lb-splitart">
-          <div className="lb-sidecover" style={{ background: 'linear-gradient(135deg,#f6a8c8,#9d174d)' }}><Disc3 /></div>
-          <b>In a Silent Way</b><small>Miles Davis</small><em>FLAC · 24/96</em>
+          <div
+            className="lb-sidecover"
+            style={{ background: 'linear-gradient(135deg,#f6a8c8,#9d174d)' }}
+          >
+            <Disc3 />
+          </div>
+          <b>In a Silent Way</b>
+          <small>Miles Davis</small>
+          <em>FLAC · 24/96</em>
         </div>
         <div className="lb-splitlist">
-          <div className="lb-listhead"><List /> <b>Colección</b><small>1248 pistas</small></div>
-          <Track num="01" title="Blue in Green" artist="Miles Davis" dur="5:37" active hue="#ec4899" mini />
+          <div className="lb-listhead">
+            <List /> <b>Colección</b>
+            <small>1248 pistas</small>
+          </div>
+          <Track
+            num="01"
+            title="Blue in Green"
+            artist="Miles Davis"
+            dur="5:37"
+            active
+            hue="#ec4899"
+            mini
+          />
           <Track num="02" title="Midnight City" artist="M83" dur="4:03" hue="#db2777" mini />
           <Track num="03" title="Nude" artist="Radiohead" dur="4:15" hue="#be185d" mini />
           <Track num="04" title="Soul Love" artist="David Bowie" dur="3:45" hue="#9d174d" mini />
@@ -153,7 +273,11 @@ function SplitList() {
 function CompactCards() {
   return (
     <div className="lb-preview lb-compact">
-      <div className="lb-topbar"><Search /><span>Biblioteca</span><span className="lb-chip">1248</span></div>
+      <div className="lb-topbar">
+        <Search />
+        <span>Biblioteca</span>
+        <span className="lb-chip">1248</span>
+      </div>
       <div className="lb-compactlist">
         <CompactRow title="Blue in Green" artist="Miles Davis" dur="5:37" hue="#ec4899" active />
         <CompactRow title="Midnight City" artist="M83" dur="4:03" hue="#db2777" />
@@ -167,38 +291,112 @@ function CompactCards() {
 }
 
 /* --- subcomponentes de maqueta --- */
-function Track({ num, title, artist, dur, active, mini, hue }: { num: string; title: string; artist: string; dur: string; active?: boolean; mini?: boolean; hue: string }) {
+function Track({
+  num,
+  title,
+  artist,
+  dur,
+  active,
+  mini,
+  hue,
+}: {
+  num: string;
+  title: string;
+  artist: string;
+  dur: string;
+  active?: boolean;
+  mini?: boolean;
+  hue: string;
+}) {
   return (
     <div className={`lb-track ${active ? 'is-active' : ''} ${mini ? 'lb-track-mini' : ''}`}>
       <span className="lb-tracknum">{active ? <span className="lb-eq" /> : num}</span>
       <DiscThumb hue={hue} />
-      <span className="lb-trackcopy"><b>{title}</b><small>{artist}</small></span>
+      <span className="lb-trackcopy">
+        <b>{title}</b>
+        <small>{artist}</small>
+      </span>
       <span className="lb-trackdur">{dur}</span>
-      <span className="lb-trackheart"><Heart /></span>
+      <span className="lb-trackheart">
+        <Heart />
+      </span>
     </div>
   );
 }
 function CoverCard({ t, a, g, active }: { t: string; a: string; g: string; active?: boolean }) {
   return (
     <div className={`lb-covercard ${active ? 'is-active' : ''}`}>
-      <div className="lb-cover" style={{ background: g }}><span className="lb-coverplay">{active ? <Pause /> : <Play />}</span></div>
-      <b>{t}</b><small>{a}</small>
+      <div className="lb-cover" style={{ background: g }}>
+        <span className="lb-coverplay">{active ? <Pause /> : <Play />}</span>
+      </div>
+      <b>{t}</b>
+      <small>{a}</small>
     </div>
   );
 }
-function DenseRow({ num, title, artist, fmt, br, dur, active }: { num: string; title: string; artist: string; fmt: string; br: string; dur: string; active?: boolean }) {
+function DenseRow({
+  num,
+  title,
+  artist,
+  fmt,
+  br,
+  dur,
+  active,
+}: {
+  num: string;
+  title: string;
+  artist: string;
+  fmt: string;
+  br: string;
+  dur: string;
+  active?: boolean;
+}) {
   return (
-    <div className={`lb-denserow ${active ? 'is-active' : ''}`}><span>{num}</span><span><DiscThumb hue="#f1b6cd" />{title}</span><span>{artist}</span><em>{fmt}</em><em>{br}</em><span>{dur}</span></div>
+    <div className={`lb-denserow ${active ? 'is-active' : ''}`}>
+      <span>{num}</span>
+      <span>
+        <DiscThumb hue="#f1b6cd" />
+        {title}
+      </span>
+      <span>{artist}</span>
+      <em>{fmt}</em>
+      <em>{br}</em>
+      <span>{dur}</span>
+    </div>
   );
 }
 function FolderCard({ name, n }: { name: string; n: string }) {
   return (
-    <div className="lb-foldercard"><span className="lb-foldericon"><FolderOpen /></span><b>{name}</b><small>{n} canciones</small></div>
+    <div className="lb-foldercard">
+      <span className="lb-foldericon">
+        <FolderOpen />
+      </span>
+      <b>{name}</b>
+      <small>{n} canciones</small>
+    </div>
   );
 }
-function CompactRow({ title, artist, dur, hue, active }: { title: string; artist: string; dur: string; hue: string; active?: boolean }) {
+function CompactRow({
+  title,
+  artist,
+  dur,
+  hue,
+  active,
+}: {
+  title: string;
+  artist: string;
+  dur: string;
+  hue: string;
+  active?: boolean;
+}) {
   return (
-    <div className={`lb-compactrow ${active ? 'is-active' : ''}`}><DiscThumb hue={hue} /><b>{title}</b><small>{artist}</small><em>{dur}</em><span className="lb-compactheart">{active ? <Pause /> : <Play />}</span></div>
+    <div className={`lb-compactrow ${active ? 'is-active' : ''}`}>
+      <DiscThumb hue={hue} />
+      <b>{title}</b>
+      <small>{artist}</small>
+      <em>{dur}</em>
+      <span className="lb-compactheart">{active ? <Pause /> : <Play />}</span>
+    </div>
   );
 }
 
@@ -218,7 +416,10 @@ export default function LibraryDesignGallery() {
         <div>
           <span className="lbg-eyebrow">NUEVOS DISEÑOS DE BIBLIOTECA</span>
           <h3 id="lbg-title">Seis propuestas para la biblioteca</h3>
-          <p>Direcciones de layout en estilo M3 Zen. Son maquetas de referencia para elegir antes de construir.</p>
+          <p>
+            Direcciones de layout en estilo M3 Zen. Son maquetas de referencia para elegir antes de
+            construir.
+          </p>
         </div>
         <span className="lbg-count">01 — 06</span>
       </div>
@@ -230,7 +431,9 @@ export default function LibraryDesignGallery() {
               <Preview />
               <div className="lbg-copy">
                 <span className="lbg-direction">{d.direction}</span>
-                <h4>{String(i + 1).padStart(2, '0')} · {d.name}</h4>
+                <h4>
+                  {String(i + 1).padStart(2, '0')} · {d.name}
+                </h4>
                 <p>{d.note}</p>
                 <small className="lbg-pros">✓ {d.pros}</small>
               </div>
@@ -238,7 +441,9 @@ export default function LibraryDesignGallery() {
           );
         })}
       </div>
-      <p className="lbg-footer">Elige uno (o una mezcla) y lo implemento como la biblioteca real en M3 Zen.</p>
+      <p className="lbg-footer">
+        Elige uno (o una mezcla) y lo implemento como la biblioteca real en M3 Zen.
+      </p>
     </section>
   );
 }

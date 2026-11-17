@@ -1,19 +1,19 @@
+use rayon::prelude::*;
+use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
-use serde::{Deserialize, Serialize};
 use tauri::{Manager, State};
-use rayon::prelude::*;
 
-mod scanner;
 mod catalog;
 mod downloader;
 mod library_db;
 mod library_watcher;
 mod paths;
 mod queue;
+mod scanner;
+use downloader::{DownloadManager, DownloaderStatus, OnlineSearchResult};
 use queue::PersistedDownload;
 use scanner::{BatchUpdateResult, ScannedTrack};
-use downloader::{DownloadManager, DownloaderStatus, OnlineSearchResult};
 
 #[tauri::command]
 fn check_downloader_tools() -> DownloaderStatus {
@@ -45,14 +45,7 @@ fn start_download(
             .unwrap_or_else(|_| ".".to_string())
     });
 
-    downloader::execute_download(
-        app,
-        Arc::clone(manager.inner()),
-        job_id,
-        url,
-        format,
-        out,
-    )?;
+    downloader::execute_download(app, Arc::clone(manager.inner()), job_id, url, format, out)?;
     Ok(true)
 }
 
@@ -141,10 +134,10 @@ fn allow_track_paths(app: &tauri::AppHandle, tracks: &[ScannedTrack]) {
     let scope = app.asset_protocol_scope();
     let mut seen = std::collections::HashSet::new();
     for track in tracks {
-        if let Some(parent) = Path::new(&track.path).parent() {
-            if seen.insert(parent.to_path_buf()) {
-                let _ = scope.allow_directory(parent, true);
-            }
+        if let Some(parent) = Path::new(&track.path).parent()
+            && seen.insert(parent.to_path_buf())
+        {
+            let _ = scope.allow_directory(parent, true);
         }
     }
 }
@@ -201,6 +194,8 @@ fn save_temp_cover(bytes: Vec<u8>) -> Result<String, String> {
 }
 
 #[tauri::command]
+// Un argumento por campo opcional del editor, para no perder "no tocar".
+#[allow(clippy::too_many_arguments)]
 fn update_track_metadata(
     path: String,
     title: String,
@@ -214,18 +209,18 @@ fn update_track_metadata(
     remove_cover: Option<bool>,
 ) -> Result<ScannedTrack, String> {
     let updated = scanner::update_track_tags(
-        &path, 
-        title, 
-        artist, 
-        album, 
+        &path,
+        title,
+        artist,
+        album,
         album_artist,
         track_number,
-        year, 
-        genre, 
+        year,
+        genre,
         cover_path,
-        remove_cover.unwrap_or(false)
+        remove_cover.unwrap_or(false),
     )?;
-    
+
     library_db::upsert_track(&updated)
         .map_err(|error| format!("Metadatos guardados, pero falló la caché: {}", error))?;
 
@@ -233,6 +228,8 @@ fn update_track_metadata(
 }
 
 #[tauri::command]
+// Igual que la edición individual: la firma refleja el formulario del editor.
+#[allow(clippy::too_many_arguments)]
 fn update_batch_metadata(
     paths: Vec<String>,
     artist: Option<String>,
@@ -283,7 +280,10 @@ fn scan_library(
 ) -> Result<Vec<ScannedTrack>, String> {
     let p = Path::new(&folder_path);
     if !p.is_dir() {
-        return Err(format!("La carpeta de biblioteca no existe: {}", folder_path));
+        return Err(format!(
+            "La carpeta de biblioteca no existe: {}",
+            folder_path
+        ));
     }
     watcher.watch(app.clone(), p)?;
     let _ = app.asset_protocol_scope().allow_directory(p, true);
@@ -298,19 +298,22 @@ fn scan_library(
                 Ok(fingerprint) => fingerprint,
                 Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
                 Err(error) => {
-                    return Err(format!("No se pudo consultar {}: {}", path.display(), error));
+                    return Err(format!(
+                        "No se pudo consultar {}: {}",
+                        path.display(),
+                        error
+                    ));
                 }
             };
             let path_string = path.to_string_lossy().to_string();
-            if let Some(entry) = cached.get(&path_string) {
-                if entry.track.file_size == file_size && entry.modified_ns == modified_ns {
-                    return Ok(Some(entry.clone()));
-                }
+            if let Some(entry) = cached.get(&path_string)
+                && entry.track.file_size == file_size
+                && entry.modified_ns == modified_ns
+            {
+                return Ok(Some(entry.clone()));
             }
-            Ok(scanner::scan_audio_file(path).map(|track| library_db::ScanEntry {
-                track,
-                modified_ns,
-            }))
+            Ok(scanner::scan_audio_file(path)
+                .map(|track| library_db::ScanEntry { track, modified_ns }))
         })
         .collect::<Result<Vec<_>, _>>()?
         .into_iter()
@@ -346,27 +349,24 @@ pub fn run() {
             app.asset_protocol_scope()
                 .allow_directory(&covers_dir, true)?;
 
-            let _window = tauri::WebviewWindowBuilder::new(
-                &handle,
-                "main",
-                tauri::WebviewUrl::default(),
-            )
-            .title("Sakura Music")
-            .inner_size(1200.0, 760.0)
-            .min_inner_size(940.0, 600.0)
-            .center()
-            // Sin barra de título nativa: la UI dibuja una barra personalizada
-            // (TitleBar.tsx) acorde al tema M3 Zen.
-            .decorations(false)
-            .data_directory(data_dir)
-            .build()?;
+            let _window =
+                tauri::WebviewWindowBuilder::new(&handle, "main", tauri::WebviewUrl::default())
+                    .title("Sakura Music")
+                    .inner_size(1200.0, 760.0)
+                    .min_inner_size(940.0, 600.0)
+                    .center()
+                    // Sin barra de título nativa: la UI dibuja una barra personalizada
+                    // (TitleBar.tsx) acorde al tema M3 Zen.
+                    .decorations(false)
+                    .data_directory(data_dir)
+                    .build()?;
 
             Ok(())
         })
         .plugin(tauri_plugin_dialog::init())
         .invoke_handler(tauri::generate_handler![
-            get_app_info, 
-            get_default_music_dir, 
+            get_app_info,
+            get_default_music_dir,
             get_cached_library,
             clear_library_cache,
             delete_library_track,
@@ -393,10 +393,9 @@ pub fn run() {
         if matches!(
             event,
             tauri::RunEvent::Exit | tauri::RunEvent::ExitRequested { .. }
-        ) {
-            if let Some(manager) = app_handle.try_state::<Arc<DownloadManager>>() {
-                manager.cancel_all();
-            }
+        ) && let Some(manager) = app_handle.try_state::<Arc<DownloadManager>>()
+        {
+            manager.cancel_all();
         }
     });
 }

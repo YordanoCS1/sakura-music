@@ -43,7 +43,7 @@ export interface CatalogCandidate {
 // Álbum encontrado en el buscador del catálogo (pestaña "Álbumes").
 export interface CatalogAlbum {
   source: CatalogSource;
-  id: string;                     // id propio de la plataforma (collectionId, album id, release id)
+  id: string; // id propio de la plataforma (collectionId, album id, release id)
   title: string;
   artist: string;
   year?: string;
@@ -121,7 +121,8 @@ export interface DownloadItem {
 export type ThemeMode = 'space';
 export type AppTab = 'home' | 'search' | 'library' | 'queue' | 'settings';
 export type PlayerStyle = 'floating' | 'fixed';
-export type ViewMode = 'folders' | 'grid' | 'table' | 'albums' | 'mosaic' | 'cds' | 'tilt' | 'glow' | 'portadas';
+export type ViewMode =
+  'folders' | 'grid' | 'table' | 'albums' | 'mosaic' | 'cds' | 'tilt' | 'glow' | 'portadas';
 
 export interface AlbumGroup {
   key: string;

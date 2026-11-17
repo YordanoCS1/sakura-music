@@ -5,7 +5,13 @@
 import { useState } from 'react';
 import { convertFileSrc, invoke } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-dialog';
-import type { CatalogAlbum, CatalogAlbumTrack, CatalogCandidate, CatalogSource, ScannedTrack } from '../types';
+import type {
+  CatalogAlbum,
+  CatalogAlbumTrack,
+  CatalogCandidate,
+  CatalogSource,
+  ScannedTrack,
+} from '../types';
 
 type EditField = 'title' | 'artist' | 'album' | 'album_artist' | 'track_number' | 'year' | 'genre';
 
@@ -68,7 +74,8 @@ export function useMetadataEditor({
     setMetadataFeedback(null);
 
     // Sugerencia de búsqueda de catálogo basada en artista y título
-    const cleanArtist = track.artist !== "Artista Desconocido" && track.artist !== "Desconocido" ? track.artist : "";
+    const cleanArtist =
+      track.artist !== 'Artista Desconocido' && track.artist !== 'Desconocido' ? track.artist : '';
     const cleanTitle = track.title;
     const suggestedQuery = `${cleanArtist} ${cleanTitle}`.trim();
     setCatalogQuery(suggestedQuery);
@@ -83,13 +90,27 @@ export function useMetadataEditor({
   const resetField = (field: EditField) => {
     if (!editingTrack) return;
     switch (field) {
-      case 'title': setEditTitle(editingTrack.title); break;
-      case 'artist': setEditArtist(editingTrack.artist); break;
-      case 'album': setEditAlbum(editingTrack.album); break;
-      case 'album_artist': setEditAlbumArtist(editingTrack.album_artist || editingTrack.artist); break;
-      case 'track_number': setEditTrackNumber(editingTrack.track_number ? editingTrack.track_number.toString() : ''); break;
-      case 'year': setEditYear(editingTrack.year ? editingTrack.year.toString() : ''); break;
-      case 'genre': setEditGenre(editingTrack.genre || ''); break;
+      case 'title':
+        setEditTitle(editingTrack.title);
+        break;
+      case 'artist':
+        setEditArtist(editingTrack.artist);
+        break;
+      case 'album':
+        setEditAlbum(editingTrack.album);
+        break;
+      case 'album_artist':
+        setEditAlbumArtist(editingTrack.album_artist || editingTrack.artist);
+        break;
+      case 'track_number':
+        setEditTrackNumber(editingTrack.track_number ? editingTrack.track_number.toString() : '');
+        break;
+      case 'year':
+        setEditYear(editingTrack.year ? editingTrack.year.toString() : '');
+        break;
+      case 'genre':
+        setEditGenre(editingTrack.genre || '');
+        break;
     }
   };
 
@@ -111,10 +132,12 @@ export function useMetadataEditor({
     try {
       const selected = await open({
         multiple: false,
-        filters: [{
-          name: 'Imágenes',
-          extensions: ['jpg', 'jpeg', 'png', 'webp']
-        }]
+        filters: [
+          {
+            name: 'Imágenes',
+            extensions: ['jpg', 'jpeg', 'png', 'webp'],
+          },
+        ],
       });
       if (selected && typeof selected === 'string') {
         setEditCoverPath(selected);
@@ -122,7 +145,7 @@ export function useMetadataEditor({
         setRemoveCover(false);
       }
     } catch (e) {
-      console.error("Error al seleccionar imagen:", e);
+      console.error('Error al seleccionar imagen:', e);
     }
   };
 
@@ -137,7 +160,7 @@ export function useMetadataEditor({
       setEditCoverPath(tempPath);
       setRemoveCover(false);
     } catch (err) {
-      console.warn("No se pudo descargar la portada HD del catálogo:", err);
+      console.warn('No se pudo descargar la portada HD del catálogo:', err);
     }
   };
 
@@ -155,7 +178,9 @@ export function useMetadataEditor({
         deezer: 'Deezer',
         musicbrainz: 'MusicBrainz',
       };
-      setCatalogError(`No se encontraron coincidencias en ${names[catalogSource] || catalogSource}.`);
+      setCatalogError(
+        `No se encontraron coincidencias en ${names[catalogSource] || catalogSource}.`,
+      );
     }
   };
 
@@ -195,7 +220,7 @@ export function useMetadataEditor({
         setCatalogAlbums([]);
       }
     } catch (err) {
-      console.error("Error al buscar en catálogo:", err);
+      console.error('Error al buscar en catálogo:', err);
       setCatalogError(`Error al conectar con el catálogo: ${String(err)}`);
     } finally {
       setIsSearchingCatalog(false);
@@ -220,7 +245,7 @@ export function useMetadataEditor({
         setCatalogError(`El álbum «${album.title}» no tiene pistas disponibles.`);
       }
     } catch (err) {
-      console.error("Error al abrir álbum:", err);
+      console.error('Error al abrir álbum:', err);
       setCatalogError(`Error al cargar las pistas del álbum: ${String(err)}`);
       setOpenedAlbum(null);
     } finally {
@@ -234,16 +259,20 @@ export function useMetadataEditor({
   const openAlbumByLink = async (link: string) => {
     const trimmed = link.trim();
     if (!trimmed) {
-      setCatalogError("Pega primero el enlace del álbum de iTunes/Apple Music.");
+      setCatalogError('Pega primero el enlace del álbum de iTunes/Apple Music.');
       return;
     }
     // storefront: /music.apple.com/<cc>/album/...  o  /itunes.apple.com/<cc>/album/...
-    const ccMatch = trimmed.match(/\/music\.apple\.com\/([a-z]{2})\//i) || trimmed.match(/\/itunes\.apple\.com\/([a-z]{2})\//i);
+    const ccMatch =
+      trimmed.match(/\/music\.apple\.com\/([a-z]{2})\//i) ||
+      trimmed.match(/\/itunes\.apple\.com\/([a-z]{2})\//i);
     const country = ccMatch ? ccMatch[1].toLowerCase() : 'us';
     const idMatch = trimmed.match(/\/(\d{8,15})\/?$/);
     const collectionId = idMatch ? idMatch[1] : null;
     if (!collectionId) {
-      setCatalogError("No se pudo extraer el ID del álbum. Pega un enlace tipo https://music.apple.com/us/album/<id> o https://itunes.apple.com/us/album/<id>.");
+      setCatalogError(
+        'No se pudo extraer el ID del álbum. Pega un enlace tipo https://music.apple.com/us/album/<id> o https://itunes.apple.com/us/album/<id>.',
+      );
       return;
     }
 
@@ -271,10 +300,12 @@ export function useMetadataEditor({
       setCatalogAlbumTracks(tracks);
       setCatalogAlbums([]);
       if (tracks.length === 0) {
-        setCatalogError('No se encontraron pistas para ese álbum. Verifica el enlace (debe apuntar al álbum, no a una canción).');
+        setCatalogError(
+          'No se encontraron pistas para ese álbum. Verifica el enlace (debe apuntar al álbum, no a una canción).',
+        );
       }
     } catch (err) {
-      console.error("Error al cargar álbum por enlace:", err);
+      console.error('Error al cargar álbum por enlace:', err);
       setCatalogError(`Error al cargar el álbum desde el enlace: ${String(err)}`);
       setOpenedAlbum(null);
     } finally {
@@ -283,7 +314,15 @@ export function useMetadataEditor({
   };
 
   // Aplicar campos de un candidato (canción) al formulario.
-  const applyFields = (fields: { title?: string; artist?: string; album?: string; album_artist?: string; year?: string; genre?: string; track_number?: string }) => {
+  const applyFields = (fields: {
+    title?: string;
+    artist?: string;
+    album?: string;
+    album_artist?: string;
+    year?: string;
+    genre?: string;
+    track_number?: string;
+  }) => {
     if (fields.title) setEditTitle(fields.title);
     if (fields.artist) setEditArtist(fields.artist);
     if (fields.album) setEditAlbum(fields.album);
@@ -302,9 +341,11 @@ export function useMetadataEditor({
       await downloadCover(candidate.cover_url);
     }
     setEditTab('tags');
-    setMetadataFeedback(applyCoverOnly
-      ? "✓ Portada de alta resolución importada con éxito."
-      : "✓ ¡Metadatos importados desde el catálogo oficial!");
+    setMetadataFeedback(
+      applyCoverOnly
+        ? '✓ Portada de alta resolución importada con éxito.'
+        : '✓ ¡Metadatos importados desde el catálogo oficial!',
+    );
     setTimeout(() => setMetadataFeedback(null), 3000);
   };
 
@@ -317,9 +358,11 @@ export function useMetadataEditor({
       await downloadCover(track.cover_url);
     }
     setEditTab('tags');
-    setMetadataFeedback(applyCoverOnly
-      ? "✓ Portada de alta resolución importada con éxito."
-      : "✓ ¡Metadatos del álbum aplicados a la canción!");
+    setMetadataFeedback(
+      applyCoverOnly
+        ? '✓ Portada de alta resolución importada con éxito.'
+        : '✓ ¡Metadatos del álbum aplicados a la canción!',
+    );
     setTimeout(() => setMetadataFeedback(null), 3000);
   };
 
@@ -337,7 +380,7 @@ export function useMetadataEditor({
           setEditCoverPath(tempPath);
           setEditCoverPreviewUrl(URL.createObjectURL(file));
           setRemoveCover(false);
-          setMetadataFeedback("✓ Imagen pegada desde el portapapeles.");
+          setMetadataFeedback('✓ Imagen pegada desde el portapapeles.');
           setTimeout(() => setMetadataFeedback(null), 2500);
           break;
         }
@@ -369,18 +412,18 @@ export function useMetadataEditor({
       });
 
       // Actualizar pistas locales en memoria
-      setTracks(prev => prev.map(t => t.id === updated.id ? updated : t));
+      setTracks((prev) => prev.map((t) => (t.id === updated.id ? updated : t)));
       if (activeTrack?.id === updated.id) {
         setActiveTrack(updated);
       }
 
-      setMetadataFeedback("✓ ¡Metadatos guardados con éxito en el archivo!");
+      setMetadataFeedback('✓ ¡Metadatos guardados con éxito en el archivo!');
       setTimeout(() => {
         setEditingTrack(null);
         setMetadataFeedback(null);
       }, 700);
     } catch (err) {
-      console.error("Error al actualizar metadatos:", err);
+      console.error('Error al actualizar metadatos:', err);
       setMetadataFeedback(`Error al guardar: ${String(err)}`);
     } finally {
       setIsSavingMetadata(false);
@@ -388,31 +431,56 @@ export function useMetadataEditor({
   };
 
   return {
-    editingTrack, setEditingTrack,
-    editTab, setEditTab,
-    editTitle, setEditTitle,
-    editArtist, setEditArtist,
-    editAlbum, setEditAlbum,
-    editAlbumArtist, setEditAlbumArtist,
-    editTrackNumber, setEditTrackNumber,
-    editYear, setEditYear,
-    editGenre, setEditGenre,
-    editCoverPath, setEditCoverPath,
-    editCoverPreviewUrl, setEditCoverPreviewUrl,
-    removeCover, setRemoveCover,
-    isSavingMetadata, setIsSavingMetadata,
-    metadataFeedback, setMetadataFeedback,
-    catalogQuery, setCatalogQuery,
-    catalogSource, setCatalogSource,
-    catalogMode, setCatalogMode,
-    catalogResults, setCatalogResults,
-    isSearchingCatalog, setIsSearchingCatalog,
-    catalogError, setCatalogError,
-    catalogAlbums, setCatalogAlbums,
-    openedAlbum, setOpenedAlbum,
-    catalogAlbumTracks, setCatalogAlbumTracks,
-    isOpeningAlbum, setIsOpeningAlbum,
-    albumLink, setAlbumLink,
+    editingTrack,
+    setEditingTrack,
+    editTab,
+    setEditTab,
+    editTitle,
+    setEditTitle,
+    editArtist,
+    setEditArtist,
+    editAlbum,
+    setEditAlbum,
+    editAlbumArtist,
+    setEditAlbumArtist,
+    editTrackNumber,
+    setEditTrackNumber,
+    editYear,
+    setEditYear,
+    editGenre,
+    setEditGenre,
+    editCoverPath,
+    setEditCoverPath,
+    editCoverPreviewUrl,
+    setEditCoverPreviewUrl,
+    removeCover,
+    setRemoveCover,
+    isSavingMetadata,
+    setIsSavingMetadata,
+    metadataFeedback,
+    setMetadataFeedback,
+    catalogQuery,
+    setCatalogQuery,
+    catalogSource,
+    setCatalogSource,
+    catalogMode,
+    setCatalogMode,
+    catalogResults,
+    setCatalogResults,
+    isSearchingCatalog,
+    setIsSearchingCatalog,
+    catalogError,
+    setCatalogError,
+    catalogAlbums,
+    setCatalogAlbums,
+    openedAlbum,
+    setOpenedAlbum,
+    catalogAlbumTracks,
+    setCatalogAlbumTracks,
+    isOpeningAlbum,
+    setIsOpeningAlbum,
+    albumLink,
+    setAlbumLink,
     openEditModal,
     resetField,
     resetAllFields,

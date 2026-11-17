@@ -40,14 +40,16 @@ export default function DeleteTracksDialog({
       role="presentation"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget && !isDeleting) onCancel();
-      }}>
+      }}
+    >
       <section
         role="alertdialog"
         aria-modal="true"
         aria-labelledby="delete-tracks-title"
         aria-describedby="delete-tracks-description"
         className="glass-card w-full max-w-md overflow-hidden rounded-3xl border border-white/10 shadow-2xl animate-in zoom-in-95 duration-200"
-        onMouseDown={(event) => event.stopPropagation()}>
+        onMouseDown={(event) => event.stopPropagation()}
+      >
         <header className="flex items-start gap-4 border-b border-white/10 bg-white/[0.03] px-6 py-5">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-rose-400/25 bg-gradient-to-br from-rose-500/20 to-orange-500/10 text-rose-300 shadow-lg shadow-rose-950/20">
             <Trash2 className="h-5 w-5" />
@@ -65,7 +67,8 @@ export default function DeleteTracksDialog({
             onClick={onCancel}
             disabled={isDeleting}
             aria-label="Cancelar eliminación"
-            className="rounded-xl p-2 text-gray-400 transition-colors hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-50">
+            className="rounded-xl p-2 text-gray-400 transition-colors hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+          >
             <X className="h-4 w-4" />
           </button>
         </header>
@@ -83,7 +86,10 @@ export default function DeleteTracksDialog({
                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white/[0.06] text-accent-300">
                   <Music2 className="h-4 w-4" />
                 </span>
-                <span className="min-w-0 flex-1 truncate text-xs font-semibold text-gray-100" title={track.title}>
+                <span
+                  className="min-w-0 flex-1 truncate text-xs font-semibold text-gray-100"
+                  title={track.title}
+                >
                   {track.title}
                 </span>
                 <span className="shrink-0 rounded-md border border-white/10 px-1.5 py-0.5 text-[9px] font-bold uppercase text-gray-400">
@@ -110,17 +116,21 @@ export default function DeleteTracksDialog({
             type="button"
             onClick={onCancel}
             disabled={isDeleting}
-            className="rounded-xl border border-white/10 px-4 py-2.5 text-xs font-semibold text-gray-300 transition-colors hover:bg-white/[0.06] hover:text-white disabled:cursor-not-allowed disabled:opacity-50">
+            className="rounded-xl border border-white/10 px-4 py-2.5 text-xs font-semibold text-gray-300 transition-colors hover:bg-white/[0.06] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+          >
             Cancelar
           </button>
           <button
             type="button"
             onClick={() => void onConfirm()}
             disabled={isDeleting}
-            className="inline-flex items-center gap-2 rounded-xl border border-rose-300/20 bg-gradient-to-r from-rose-600 to-rose-500 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-rose-950/30 transition-all hover:brightness-110 active:scale-[0.98] disabled:cursor-wait disabled:opacity-70">
-            {isDeleting
-              ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              : <Trash2 className="h-3.5 w-3.5" />}
+            className="inline-flex items-center gap-2 rounded-xl border border-rose-300/20 bg-gradient-to-r from-rose-600 to-rose-500 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-rose-950/30 transition-all hover:brightness-110 active:scale-[0.98] disabled:cursor-wait disabled:opacity-70"
+          >
+            {isDeleting ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Trash2 className="h-3.5 w-3.5" />
+            )}
             {isDeleting ? 'Eliminando…' : 'Eliminar permanentemente'}
           </button>
         </footer>

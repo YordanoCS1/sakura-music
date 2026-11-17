@@ -1,9 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
       fontFamily: {
@@ -21,8 +18,8 @@ export default {
           900: 'rgb(var(--accent-900) / <alpha-value>)',
           950: 'rgb(var(--accent-950) / <alpha-value>)',
         },
-      }
+      },
     },
   },
   plugins: [],
-}
+};

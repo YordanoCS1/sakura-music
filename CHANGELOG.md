@@ -9,12 +9,16 @@ Todos los cambios destacables de este proyecto se registran acá. El formato sig
 - Exploración de álbumes del catálogo: se abren sus pistas y se aplica la que corresponda a la canción en edición.
 - Cuatro vistas nuevas de biblioteca: **CDs, 3D, Luz y Portadas** (llegamos a 9 vistas en total).
 - Contrato IPC documentado en [docs/ipc-contract.md](docs/ipc-contract.md) y formatos de datos en [docs/data-formats.md](docs/data-formats.md).
-- Documentación base: `LICENSE`, `CONTRIBUTING.md`, `SECURITY.md` y este changelog.
+- Documentación base: `LICENSE`, `CONTRIBUTING.md`, `SECURITY.md`, `CHANGELOG.md`, contrato IPC y formatos de datos.
+- **CI** en GitHub Actions con matriz Windows/macOS/Linux: tipos, lint, formato, tests y build del frontend, más `fmt`, `clippy` y tests de Rust. Dependabot para npm, Cargo y Actions.
+- Tooling de calidad: ESLint, Prettier, `rustfmt.toml`, scripts `check`/`typecheck`/`lint`/`format`/`test` y primeros 5 tests unitarios del frontend con Vitest.
 
 ### Cambiado
 - El único tema visual tiene id `space`; los tokens `--m3-*` se aplican bajo `[data-theme='space']`.
 - Todos los comentarios del código están en español rioplatense y explican decisiones no obvias.
 - La documentación se actualizó para reflejar 20 comandos Tauri, 17 tests Rust y 9 vistas.
+- Código Rust y frontend formateados con `rustfmt` y Prettier; clippy pasa con `-D warnings`.
+- La ventana se declara sin decoraciones también en `tauri.conf.json`, igual que en `lib.rs`.
 
 ### Eliminado
 - El tema alternativo **WWM / "universos"** (bandera `isWWM`, ramas inalcanzables, CSS y partículas Jianghu).
@@ -23,6 +27,7 @@ Todos los cambios destacables de este proyecto se registran acá. El formato sig
 
 ### Corregido
 - Comentarios en inglés, obsoletos o huérfanos dejados por la limpieza anterior.
+- Dependencias de desarrollo obsoletas y el `@ts-expect-error` de `vite.config.ts` (ya está `@types/node`).
 - El doc de `paths.rs` describía `app_local_data_dir` cuando el código usa `.tauri_data` dentro del directorio de trabajo.
 - Referencias de documentación a archivos y comandos que ya no existen.
 

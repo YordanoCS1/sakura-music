@@ -25,7 +25,13 @@ function createRequestId(prefix: string) {
 }
 
 interface UseOnlineSearchDeps {
-  triggerDownload: (title: string, artist: string, url: string, thumbnail?: string | null, customFolder?: string) => void | Promise<void>;
+  triggerDownload: (
+    title: string,
+    artist: string,
+    url: string,
+    thumbnail?: string | null,
+    customFolder?: string,
+  ) => void | Promise<void>;
   currentFolder: string | null;
   defaultMusicDir: string | null;
   downloadFolder: string | null;
@@ -61,9 +67,9 @@ export function useOnlineSearch({
     try {
       unlisten = await listen<PlaylistItemEvent>('playlist-item', ({ payload }) => {
         if (payload.request_id !== requestId) return;
-        setPlaylistInfo(current => {
+        setPlaylistInfo((current) => {
           const currentItems = current?.items ?? [];
-          if (currentItems.some(item => item.id === payload.item.id)) return current;
+          if (currentItems.some((item) => item.id === payload.item.id)) return current;
           const items = [...currentItems, payload.item];
           return {
             title: payload.title || current?.title || 'Playlist / Álbum',
@@ -72,16 +78,16 @@ export function useOnlineSearch({
             items,
           };
         });
-        setSelectedPlaylistItems(current => new Set(current).add(payload.item.id));
+        setSelectedPlaylistItems((current) => new Set(current).add(payload.item.id));
       });
       const info = await invoke<PlaylistInfo>('resolve_playlist', {
         url: url.trim(),
         requestId,
       });
       setPlaylistInfo(info);
-      setSelectedPlaylistItems(new Set(info.items.map(it => it.id)));
+      setSelectedPlaylistItems(new Set(info.items.map((it) => it.id)));
     } catch (err) {
-      console.error("Error al resolver playlist:", err);
+      console.error('Error al resolver playlist:', err);
       setPlaylistSearchError(`Error al consultar playlist: ${String(err)}`);
     } finally {
       unlisten?.();
@@ -90,7 +96,7 @@ export function useOnlineSearch({
   };
 
   const toggleSelectPlaylistItem = (id: string) => {
-    setSelectedPlaylistItems(prev => {
+    setSelectedPlaylistItems((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
@@ -100,7 +106,7 @@ export function useOnlineSearch({
 
   const selectAllPlaylistItems = () => {
     if (playlistInfo) {
-      setSelectedPlaylistItems(new Set(playlistInfo.items.map(it => it.id)));
+      setSelectedPlaylistItems(new Set(playlistInfo.items.map((it) => it.id)));
     }
   };
 
@@ -117,7 +123,7 @@ export function useOnlineSearch({
       ? `${baseFolder}\\${sanitizeFolderName(playlistInfo.title)}`
       : baseFolder;
 
-    const itemsToDownload = playlistInfo.items.filter(it => selectedPlaylistItems.has(it.id));
+    const itemsToDownload = playlistInfo.items.filter((it) => selectedPlaylistItems.has(it.id));
 
     for (const item of itemsToDownload) {
       triggerDownload(item.title, item.uploader, item.url, item.thumbnail, targetFolder);
@@ -133,8 +139,10 @@ export function useOnlineSearch({
     if (!query) return;
 
     // Si es enlace directo de playlist / álbum
-    if ((query.startsWith('http://') || query.startsWith('https://')) &&
-        (query.includes('list=') || query.includes('playlist') || query.includes('/album/'))) {
+    if (
+      (query.startsWith('http://') || query.startsWith('https://')) &&
+      (query.includes('list=') || query.includes('playlist') || query.includes('/album/'))
+    ) {
       await handleResolvePlaylist(query);
       return;
     }
@@ -155,11 +163,11 @@ export function useOnlineSearch({
     try {
       unlisten = await listen<OnlineSearchEvent>('online-search-result', ({ payload }) => {
         if (payload.request_id !== requestId) return;
-        setOnlineResults(current => (
-          current.some(result => result.id === payload.result.id)
+        setOnlineResults((current) =>
+          current.some((result) => result.id === payload.result.id)
             ? current
-            : [...current, payload.result]
-        ));
+            : [...current, payload.result],
+        );
       });
       const results = await invoke<OnlineSearchResult[]>('search_online', {
         query,
@@ -170,7 +178,7 @@ export function useOnlineSearch({
         setOnlineSearchError('No se encontraron resultados para la búsqueda.');
       }
     } catch (err) {
-      console.error("Error al buscar en línea:", err);
+      console.error('Error al buscar en línea:', err);
       setOnlineSearchError(`Error al buscar en YouTube: ${String(err)}`);
     } finally {
       unlisten?.();
@@ -179,15 +187,24 @@ export function useOnlineSearch({
   };
 
   return {
-    onlineQuery, setOnlineQuery,
-    onlineResults, setOnlineResults,
-    isSearchingOnline, setIsSearchingOnline,
-    onlineSearchError, setOnlineSearchError,
-    playlistInfo, setPlaylistInfo,
-    isResolvingPlaylist, setIsResolvingPlaylist,
-    playlistSearchError, setPlaylistSearchError,
-    selectedPlaylistItems, setSelectedPlaylistItems,
-    createAlbumFolder, setCreateAlbumFolder,
+    onlineQuery,
+    setOnlineQuery,
+    onlineResults,
+    setOnlineResults,
+    isSearchingOnline,
+    setIsSearchingOnline,
+    onlineSearchError,
+    setOnlineSearchError,
+    playlistInfo,
+    setPlaylistInfo,
+    isResolvingPlaylist,
+    setIsResolvingPlaylist,
+    playlistSearchError,
+    setPlaylistSearchError,
+    selectedPlaylistItems,
+    setSelectedPlaylistItems,
+    createAlbumFolder,
+    setCreateAlbumFolder,
     handleResolvePlaylist,
     toggleSelectPlaylistItem,
     selectAllPlaylistItems,

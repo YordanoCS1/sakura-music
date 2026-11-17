@@ -1,0 +1,14 @@
+dist/
+node_modules/
+src-tauri/target/
+src-tauri/gen/
+.tauri_data/
+legacy_python/
+docs/temas/
+package-lock.json
+src-tauri/Cargo.lock
+
+# Prosa y hojas de estilo escritas a mano: se mantienen sin reformatear.
+**/*.md
+index.html
+src/App.css

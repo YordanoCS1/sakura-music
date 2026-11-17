@@ -3,14 +3,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { convertFileSrc } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { open } from '@tauri-apps/plugin-dialog';
-import {
-  Search,
-  Heart,
-  Sparkles,
-  X,
-  AudioLines,
-  Music2,
-} from 'lucide-react';
+import { Search, Heart, Sparkles, X, AudioLines, Music2 } from 'lucide-react';
 
 import type {
   ScannedTrack,
@@ -92,7 +85,14 @@ export default function App() {
   }, [theme]);
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
     const saved = localStorage.getItem('sakura_view_mode') as ViewMode | null;
-    if (saved && (saved === 'folders' || saved === 'grid' || saved === 'table' || saved === 'albums' || saved === 'mosaic')) {
+    if (
+      saved &&
+      (saved === 'folders' ||
+        saved === 'grid' ||
+        saved === 'table' ||
+        saved === 'albums' ||
+        saved === 'mosaic')
+    ) {
       return saved;
     }
     return 'folders';
@@ -113,7 +113,7 @@ export default function App() {
   const [currentFolder, setCurrentFolder] = useState<string | null>(null);
   const [defaultMusicDir, setDefaultMusicDir] = useState<string | null>(null);
   const [downloadFolder, setDownloadFolder] = useState<string | null>(() =>
-    localStorage.getItem('sakura_download_folder')
+    localStorage.getItem('sakura_download_folder'),
   );
   const [downloadFolderError, setDownloadFolderError] = useState<string | null>(null);
   const handleChooseDownloadFolder = async () => {
@@ -176,8 +176,8 @@ export default function App() {
     const folder = localStorage.getItem('sakura_current_folder');
     if (folder) {
       invoke<ScannedTrack[]>('scan_library', { folderPath: folder })
-        .then(scanned => setTracks(scanned))
-        .catch(e => console.error("Error al auto-actualizar biblioteca:", e));
+        .then((scanned) => setTracks(scanned))
+        .catch((e) => console.error('Error al auto-actualizar biblioteca:', e));
     }
   }, []);
 
@@ -189,13 +189,13 @@ export default function App() {
       if (!folder || folder !== payload) return;
       invoke<ScannedTrack[]>('scan_library', { folderPath: folder })
         .then(setTracks)
-        .catch(error => console.error('Error al actualizar biblioteca tras un cambio:', error));
+        .catch((error) => console.error('Error al actualizar biblioteca tras un cambio:', error));
     })
-      .then(stopListening => {
+      .then((stopListening) => {
         if (active) unlisten = stopListening;
         else stopListening();
       })
-      .catch(error => console.error('No se pudo escuchar cambios de biblioteca:', error));
+      .catch((error) => console.error('No se pudo escuchar cambios de biblioteca:', error));
 
     return () => {
       active = false;
@@ -204,9 +204,12 @@ export default function App() {
   }, []);
 
   const {
-    downloads, setDownloads,
-    downloadFormat, setDownloadFormat,
-    restoredNotice, setRestoredNotice,
+    downloads,
+    setDownloads,
+    downloadFormat,
+    setDownloadFormat,
+    restoredNotice,
+    setRestoredNotice,
     triggerDownload,
     cancelDownload,
     cancelAllDownloads,
@@ -219,15 +222,19 @@ export default function App() {
   });
 
   const {
-    onlineQuery, setOnlineQuery,
-    onlineResults, setOnlineResults,
+    onlineQuery,
+    setOnlineQuery,
+    onlineResults,
+    setOnlineResults,
     isSearchingOnline,
     onlineSearchError,
-    playlistInfo, setPlaylistInfo,
+    playlistInfo,
+    setPlaylistInfo,
     isResolvingPlaylist,
     playlistSearchError,
     selectedPlaylistItems,
-    createAlbumFolder, setCreateAlbumFolder,
+    createAlbumFolder,
+    setCreateAlbumFolder,
     toggleSelectPlaylistItem,
     selectAllPlaylistItems,
     clearAllPlaylistItems,
@@ -241,19 +248,24 @@ export default function App() {
     setActiveTab,
   });
 
-
   // Las portadas en línea (data: o http) se usan tal cual; las locales pasan
   // por convertFileSrc para que el protocolo asset: de Tauri pueda leerlas.
   const getCoverSrc = (coverUrl: string | null) => {
     if (!coverUrl) return '';
-    if (coverUrl.startsWith('data:') || coverUrl.startsWith('http://') || coverUrl.startsWith('https://')) {
+    if (
+      coverUrl.startsWith('data:') ||
+      coverUrl.startsWith('http://') ||
+      coverUrl.startsWith('https://')
+    ) {
       return coverUrl;
     }
     return convertFileSrc(coverUrl);
   };
 
   // Extrae el color dominante de la portada para teñir el resplandor del reproductor.
-  const [coverGlowColors, setCoverGlowColors] = useState<{ color1: string; color2: string } | null>(null);
+  const [coverGlowColors, setCoverGlowColors] = useState<{ color1: string; color2: string } | null>(
+    null,
+  );
 
   useEffect(() => {
     if (!activeTrack?.cover_url) {
@@ -278,9 +290,14 @@ export default function App() {
         ctx.drawImage(img, 0, 0, 16, 16);
         const data = ctx.getImageData(0, 0, 16, 16).data;
 
-        let rSum = 0, gSum = 0, bSum = 0, count = 0;
+        let rSum = 0,
+          gSum = 0,
+          bSum = 0,
+          count = 0;
         let maxSat = 0;
-        let vibrantR = 244, vibrantG = 63, vibrantB = 130;
+        let vibrantR = 244,
+          vibrantG = 63,
+          vibrantB = 130;
 
         for (let i = 0; i < data.length; i += 4) {
           const r = data[i];
@@ -317,7 +334,7 @@ export default function App() {
             color2: `rgba(${avgR}, ${avgG}, ${avgB}, 0.20)`,
           });
         }
-      } catch (err) {
+      } catch {
         setCoverGlowColors(null);
       }
     };
@@ -342,17 +359,17 @@ export default function App() {
       savedFolder = localStorage.getItem('sakura_current_folder');
       if (savedFolder) setCurrentFolder(savedFolder);
     } catch (e) {
-      console.warn("No se pudieron cargar datos en caché:", e);
+      console.warn('No se pudieron cargar datos en caché:', e);
     }
 
     // Verificar estado de herramientas nativas (yt-dlp y ffmpeg)
     invoke<DownloaderStatus>('check_downloader_tools')
-      .then(status => setToolsStatus(status))
-      .catch(err => console.error("Error al verificar herramientas:", err));
+      .then((status) => setToolsStatus(status))
+      .catch((err) => console.error('Error al verificar herramientas:', err));
 
     // Cargar biblioteca desde la caché persistente en disco de Rust (sin límites de navegador)
     invoke<ScannedTrack[]>('get_cached_library')
-      .then(async cached => {
+      .then(async (cached) => {
         if (cached && cached.length > 0) {
           setTracks(cached);
           setActiveTrack(cached[0]);
@@ -362,34 +379,33 @@ export default function App() {
             folderPath: savedFolder,
           });
           setTracks(refreshed);
-          setActiveTrack(current =>
+          setActiveTrack((current) =>
             current
-              ? refreshed.find(track => track.id === current.id) ?? current
-              : refreshed[0] ?? null
+              ? (refreshed.find((track) => track.id === current.id) ?? current)
+              : (refreshed[0] ?? null),
           );
         }
       })
-      .catch(err => console.error("Error al cargar o actualizar biblioteca:", err));
+      .catch((err) => console.error('Error al cargar o actualizar biblioteca:', err));
 
     // Solicitar info de Rust
     invoke<AppInfo>('get_app_info', { tracksCount: tracks.length })
-      .then(info => setAppInfo(info))
-      .catch(err => console.error("Error al invocar get_app_info:", err));
+      .then((info) => setAppInfo(info))
+      .catch((err) => console.error('Error al invocar get_app_info:', err));
 
     // Detectar carpeta de música predeterminada del usuario
     invoke<string | null>('get_default_music_dir')
-      .then(dir => {
+      .then((dir) => {
         if (dir) setDefaultMusicDir(dir);
       })
-      .catch(err => console.error("Error al obtener directorio de música:", err));
+      .catch((err) => console.error('Error al obtener directorio de música:', err));
+    // Se consulta una sola vez al arrancar; el directorio del sistema no cambia en caliente.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
 
   // Sincronizar conteo en appInfo
   useEffect(() => {
-    if (appInfo) {
-      setAppInfo(prev => prev ? { ...prev, tracks_loaded: tracks.length } : null);
-    }
+    setAppInfo((prev) => (prev ? { ...prev, tracks_loaded: tracks.length } : null));
   }, [tracks.length]);
 
   // Formatear segundos en mm:ss
@@ -409,14 +425,14 @@ export default function App() {
       setTracks(scanned);
       setCurrentFolder(folderPath);
       localStorage.setItem('sakura_current_folder', folderPath);
-      
+
       if (scanned.length > 0 && !activeTrack) {
         setActiveTrack(scanned[0]);
       }
       setScanMessage(`✓ ¡Listo! ${scanned.length} canciones indexadas en milisegundos.`);
       setTimeout(() => setScanMessage(null), 4000);
     } catch (err) {
-      console.error("Error al escanear la biblioteca:", err);
+      console.error('Error al escanear la biblioteca:', err);
       setScanMessage(`Error al escanear: ${String(err)}`);
     } finally {
       setIsScanning(false);
@@ -435,15 +451,17 @@ export default function App() {
         scanFolder(selected);
       }
     } catch (err) {
-      console.error("Error al abrir diálogo de selección:", err);
+      console.error('Error al abrir diálogo de selección:', err);
     }
   };
 
   // Alternar favorito
   const toggleFavorite = (trackId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    setFavorites(prev => {
-      const next = prev.includes(trackId) ? prev.filter(id => id !== trackId) : [...prev, trackId];
+    setFavorites((prev) => {
+      const next = prev.includes(trackId)
+        ? prev.filter((id) => id !== trackId)
+        : [...prev, trackId];
       localStorage.setItem('sakura_favorites', JSON.stringify(next));
       return next;
     });
@@ -456,7 +474,7 @@ export default function App() {
   // y src/hooks/useMetadataEditor.ts)
   const toggleSelectTrack = (trackId: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    setSelectedTrackIds(prev => {
+    setSelectedTrackIds((prev) => {
       const next = new Set(prev);
       if (next.has(trackId)) {
         next.delete(trackId);
@@ -468,7 +486,7 @@ export default function App() {
   };
 
   const selectAllFilteredTracks = () => {
-    setSelectedTrackIds(new Set(filteredTracks.map(t => t.id)));
+    setSelectedTrackIds(new Set(filteredTracks.map((t) => t.id)));
   };
 
   const clearTrackSelection = () => {
@@ -476,7 +494,7 @@ export default function App() {
   };
 
   const requestDeleteSelectedTracks = () => {
-    const selectedTracks = tracks.filter(track => selectedTrackIds.has(track.id));
+    const selectedTracks = tracks.filter((track) => selectedTrackIds.has(track.id));
     if (selectedTracks.length === 0 || isDeletingTracks || isScanning) return;
     setPendingDeleteTracks(selectedTracks);
   };
@@ -499,12 +517,12 @@ export default function App() {
       }
 
       if (deletedIds.size > 0) {
-        setTracks(current => current.filter(track => !deletedIds.has(track.id)));
-        setSelectedTrackIds(current => new Set(
-          [...current].filter(trackId => !deletedIds.has(trackId))
-        ));
-        setFavorites(current => {
-          const next = current.filter(trackId => !deletedIds.has(trackId));
+        setTracks((current) => current.filter((track) => !deletedIds.has(track.id)));
+        setSelectedTrackIds(
+          (current) => new Set([...current].filter((trackId) => !deletedIds.has(trackId))),
+        );
+        setFavorites((current) => {
+          const next = current.filter((trackId) => !deletedIds.has(trackId));
           localStorage.setItem('sakura_favorites', JSON.stringify(next));
           return next;
         });
@@ -524,12 +542,12 @@ export default function App() {
         const firstFailure = failures[0];
         setScanMessage(
           `Se eliminaron ${deletedIds.size}; ${failures.length} no se pudieron eliminar. ` +
-          `Error en "${firstFailure.title}": ${String(firstFailure.error)}`
+            `Error en "${firstFailure.title}": ${String(firstFailure.error)}`,
         );
       } else {
         setScanMessage(
           `Se ${deletedIds.size === 1 ? 'eliminó' : 'eliminaron'} ${deletedIds.size} ` +
-          `${deletedIds.size === 1 ? 'canción' : 'canciones'} del disco.`
+            `${deletedIds.size === 1 ? 'canción' : 'canciones'} del disco.`,
         );
       }
       setTimeout(() => setScanMessage(null), 6000);
@@ -554,21 +572,36 @@ export default function App() {
   });
 
   const {
-    isBatchModalOpen, setIsBatchModalOpen,
-    batchArtist, setBatchArtist,
-    applyBatchArtist, setApplyBatchArtist,
-    batchAlbum, setBatchAlbum,
-    applyBatchAlbum, setApplyBatchAlbum,
-    batchAlbumArtist, setBatchAlbumArtist,
-    applyBatchAlbumArtist, setApplyBatchAlbumArtist,
-    batchYear, setBatchYear,
-    applyBatchYear, setApplyBatchYear,
-    batchGenre, setBatchGenre,
-    applyBatchGenre, setApplyBatchGenre,
-    batchCoverPath, setBatchCoverPath,
-    batchCoverPreviewUrl, setBatchCoverPreviewUrl,
-    applyBatchCover, setApplyBatchCover,
-    batchRemoveCover, setBatchRemoveCover,
+    isBatchModalOpen,
+    setIsBatchModalOpen,
+    batchArtist,
+    setBatchArtist,
+    applyBatchArtist,
+    setApplyBatchArtist,
+    batchAlbum,
+    setBatchAlbum,
+    applyBatchAlbum,
+    setApplyBatchAlbum,
+    batchAlbumArtist,
+    setBatchAlbumArtist,
+    applyBatchAlbumArtist,
+    setApplyBatchAlbumArtist,
+    batchYear,
+    setBatchYear,
+    applyBatchYear,
+    setApplyBatchYear,
+    batchGenre,
+    setBatchGenre,
+    applyBatchGenre,
+    setApplyBatchGenre,
+    batchCoverPath,
+    setBatchCoverPath,
+    batchCoverPreviewUrl,
+    setBatchCoverPreviewUrl,
+    applyBatchCover,
+    setApplyBatchCover,
+    batchRemoveCover,
+    setBatchRemoveCover,
     isSavingBatch,
     batchFeedback,
     openBatchModal,
@@ -577,23 +610,38 @@ export default function App() {
   } = batch;
 
   const {
-    editingTrack, setEditingTrack,
-    editTab, setEditTab,
-    editTitle, setEditTitle,
-    editArtist, setEditArtist,
-    editAlbum, setEditAlbum,
-    editAlbumArtist, setEditAlbumArtist,
-    editTrackNumber, setEditTrackNumber,
-    editYear, setEditYear,
-    editGenre, setEditGenre,
-    editCoverPath, setEditCoverPath,
-    editCoverPreviewUrl, setEditCoverPreviewUrl,
-    removeCover, setRemoveCover,
+    editingTrack,
+    setEditingTrack,
+    editTab,
+    setEditTab,
+    editTitle,
+    setEditTitle,
+    editArtist,
+    setEditArtist,
+    editAlbum,
+    setEditAlbum,
+    editAlbumArtist,
+    setEditAlbumArtist,
+    editTrackNumber,
+    setEditTrackNumber,
+    editYear,
+    setEditYear,
+    editGenre,
+    setEditGenre,
+    editCoverPath,
+    setEditCoverPath,
+    editCoverPreviewUrl,
+    setEditCoverPreviewUrl,
+    removeCover,
+    setRemoveCover,
     isSavingMetadata,
     metadataFeedback,
-    catalogQuery, setCatalogQuery,
-    catalogSource, setCatalogSource,
-    catalogMode, setCatalogMode,
+    catalogQuery,
+    setCatalogQuery,
+    catalogSource,
+    setCatalogSource,
+    catalogMode,
+    setCatalogMode,
     catalogResults,
     isSearchingCatalog,
     catalogError,
@@ -601,7 +649,8 @@ export default function App() {
     openedAlbum,
     catalogAlbumTracks,
     isOpeningAlbum,
-    albumLink, setAlbumLink,
+    albumLink,
+    setAlbumLink,
     openEditModal,
     resetField,
     resetAllFields,
@@ -617,13 +666,12 @@ export default function App() {
 
   // (handlers del lote viven en useBatchEditor.ts)
 
-
-
   // Base común de carpetas para el Explorador
   // Explorador, filtrado y álbumes. Vive en useFolderExplorer.ts;
   // Se destructura con los nombres de siempre para no modificar quienes lo consumen.
   const {
-    currentFolderNav, setCurrentFolderNav,
+    currentFolderNav,
+    setCurrentFolderNav,
     setExpandedAlbumKey,
     folderExplorerData,
     filteredTracks,
@@ -650,7 +698,10 @@ export default function App() {
   playbackQueueRef.current = filteredTracks;
 
   // Colores del tema activo (hoy único: 'space').
-  const themeGlows: Record<ThemeMode, { glow1: string; glow2: string; accent: string; badge: string }> = {
+  const themeGlows: Record<
+    ThemeMode,
+    { glow1: string; glow2: string; accent: string; badge: string }
+  > = {
     space: {
       glow1: 'bg-purple-500/25',
       glow2: 'bg-indigo-700/20',
@@ -668,45 +719,51 @@ export default function App() {
     accentBadge: currentTheme.badge,
   };
   return (
-    <div 
+    <div
       data-theme={theme}
       className={`app-shell relative w-screen h-screen flex flex-col overflow-hidden ${worldStyle.bgClass} font-sans text-gray-100 select-none`}
-      style={{
-        '--glass-opacity': `${glassOpacity / 100}`,
-        '--glass-blur': `${glassBlur}px`,
-      } as React.CSSProperties}>
-      
+      style={
+        {
+          '--glass-opacity': `${glassOpacity / 100}`,
+          '--glass-blur': `${glassBlur}px`,
+        } as React.CSSProperties
+      }
+    >
       {/* Elemento de Audio Nativo HTML5 */}
       <audio
         ref={audioRef}
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
         onEnded={handleSongEnded}
-        onError={(e) => console.error("Error nativo del elemento audio:", e)}
+        onError={(e) => console.error('Error nativo del elemento audio:', e)}
       />
 
       {/* Resplandor ambiental de fondo dinámico (Acelerado por GPU) */}
-      {(ambientGlow) && (
+      {ambientGlow && (
         <>
           {coverGlowColors ? (
             <>
-              <div 
+              <div
                 className="absolute -top-32 -left-32 w-[34rem] h-[34rem] rounded-full blur-[130px] pointer-events-none transition-all duration-1000 animate-pulse"
                 style={{ backgroundColor: coverGlowColors.color1 }}
               />
-              <div 
+              <div
                 className="absolute -bottom-32 -right-32 w-[34rem] h-[34rem] rounded-full blur-[140px] pointer-events-none transition-all duration-1000"
                 style={{ backgroundColor: coverGlowColors.color2 }}
               />
-              <div 
+              <div
                 className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[36rem] h-[22rem] rounded-full blur-[150px] pointer-events-none opacity-40 transition-all duration-1000"
                 style={{ backgroundColor: coverGlowColors.color1 }}
               />
             </>
           ) : (
             <>
-              <div className={`absolute -top-32 -left-32 w-96 h-96 ${worldStyle.ambientGlow1} rounded-full blur-[110px] pointer-events-none transition-all duration-700 animate-pulse`}></div>
-              <div className={`absolute -bottom-32 -right-32 w-96 h-96 ${worldStyle.ambientGlow2} rounded-full blur-[120px] pointer-events-none transition-all duration-700`}></div>
+              <div
+                className={`absolute -top-32 -left-32 w-96 h-96 ${worldStyle.ambientGlow1} rounded-full blur-[110px] pointer-events-none transition-all duration-700 animate-pulse`}
+              ></div>
+              <div
+                className={`absolute -bottom-32 -right-32 w-96 h-96 ${worldStyle.ambientGlow2} rounded-full blur-[120px] pointer-events-none transition-all duration-700`}
+              ></div>
             </>
           )}
         </>
@@ -727,18 +784,20 @@ export default function App() {
                     top: '-25px',
                     animation: `petal-fall ${14 + (i % 5) * 2.5}s ease-in-out infinite`,
                     animationDelay: `${(i * 1.6) % 10}s`,
-                  }}>
-                  <svg 
-                    width={`${12 + (i % 4) * 2}`} 
-                    height={`${12 + (i % 4) * 2}`} 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
+                  }}
+                >
+                  <svg
+                    width={`${12 + (i % 4) * 2}`}
+                    height={`${12 + (i % 4) * 2}`}
+                    viewBox="0 0 24 24"
+                    fill="none"
                     className="opacity-60 drop-shadow-[0_2px_4px_rgba(244,63,130,0.3)]"
-                    style={{ transform: `rotate(${i * 30}deg)` }}>
-                    <path 
-                      d="M12 2C9 6 4 10 4 15C4 18.5 7.5 21 12 21C16.5 21 20 18.5 20 15C20 10 15 6 12 2Z" 
-                      fill={i % 2 === 0 ? "#f472b6" : "#fb7185"} 
-                      opacity="0.8" 
+                    style={{ transform: `rotate(${i * 30}deg)` }}
+                  >
+                    <path
+                      d="M12 2C9 6 4 10 4 15C4 18.5 7.5 21 12 21C16.5 21 20 18.5 20 15C20 10 15 6 12 2Z"
+                      fill={i % 2 === 0 ? '#f472b6' : '#fb7185'}
+                      opacity="0.8"
                     />
                   </svg>
                 </div>
@@ -753,381 +812,399 @@ export default function App() {
 
       {/* Fila principal: nav + contenido */}
       <div className="app-rail-row flex flex-1 min-h-0 overflow-hidden">
-      {/* Navegación superior (M3 Zen) */}
-      <ZenTopNav
-        activeTab={activeTab}
-        onNavigate={setActiveTab}
-        trackCount={tracks.length}
-        downloads={downloads}
-      />
+        {/* Navegación superior (M3 Zen) */}
+        <ZenTopNav
+          activeTab={activeTab}
+          onNavigate={setActiveTab}
+          trackCount={tracks.length}
+          downloads={downloads}
+        />
 
-      {/* ========================================================= */}
-      {/* ÁREA PRINCIPAL CON VISTA DINÁMICA                        */}
-      {/* ========================================================= */}
-      <main className="flex-1 flex flex-col overflow-hidden z-10">
-        
-        {/* Barra superior moderna (búsqueda + filtros + contexto) */}
-        <header className="gh-header">
-          <div className="gh-context">
-            <span className="gh-context-dot" />
-            <span className="gh-context-label">
-              {activeTab === 'home' ? 'Inicio' :
-               activeTab === 'library' ? 'Biblioteca' :
-               activeTab === 'search' ? 'Buscar' :
-               activeTab === 'queue' ? 'Cola' : 'Ajustes'}
-            </span>
-          </div>
+        {/* ========================================================= */}
+        {/* ÁREA PRINCIPAL CON VISTA DINÁMICA                        */}
+        {/* ========================================================= */}
+        <main className="flex-1 flex flex-col overflow-hidden z-10">
+          {/* Barra superior moderna (búsqueda + filtros + contexto) */}
+          <header className="gh-header">
+            <div className="gh-context">
+              <span className="gh-context-dot" />
+              <span className="gh-context-label">
+                {activeTab === 'home'
+                  ? 'Inicio'
+                  : activeTab === 'library'
+                    ? 'Biblioteca'
+                    : activeTab === 'search'
+                      ? 'Buscar'
+                      : activeTab === 'queue'
+                        ? 'Cola'
+                        : 'Ajustes'}
+              </span>
+            </div>
 
-          <div className="gh-search">
-            <Search className="gh-search-icon" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Buscar en tu música..."
-              className="gh-search-input"
-            />
-            {searchQuery ? (
-              <button onClick={() => setSearchQuery('')} className="gh-search-clear" title="Limpiar búsqueda">
-                <X className="w-3.5 h-3.5" />
+            <div className="gh-search">
+              <Search className="gh-search-icon" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Buscar en tu música..."
+                className="gh-search-input"
+              />
+              {searchQuery ? (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="gh-search-clear"
+                  title="Limpiar búsqueda"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              ) : (
+                <span className="gh-search-kbd">⌘ K</span>
+              )}
+            </div>
+
+            <div className="gh-filters">
+              <button
+                onClick={() => setFilterChip('all')}
+                className={`gh-chip ${filterChip === 'all' ? 'is-active' : ''}`}
+              >
+                <Music2 className="w-3.5 h-3.5" />
+                <span>Todo</span>
+                <span className="gh-chip-num">{tracks.length}</span>
               </button>
-            ) : (
-              <span className="gh-search-kbd">⌘ K</span>
+              <button
+                onClick={() => setFilterChip('flac')}
+                className={`gh-chip ${filterChip === 'flac' ? 'is-active' : ''}`}
+              >
+                <AudioLines className="w-3.5 h-3.5" />
+                <span>FLAC</span>
+              </button>
+              <button
+                onClick={() => setFilterChip('favorites')}
+                className={`gh-chip ${filterChip === 'favorites' ? 'is-active' : ''}`}
+              >
+                <Heart
+                  className="w-3.5 h-3.5"
+                  fill={filterChip === 'favorites' ? 'currentColor' : 'none'}
+                />
+                <span>Favoritas</span>
+                <span className="gh-chip-num">{favorites.length}</span>
+              </button>
+            </div>
+          </header>
+
+          {/* Mensaje de escaneo / notificaciones */}
+          {scanMessage && (
+            <div className="bg-accent-500/10 border-b border-accent-500/20 px-6 py-2 flex items-center justify-between text-xs text-accent-300">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-accent-400 animate-spin" />
+                <span>{scanMessage}</span>
+              </div>
+            </div>
+          )}
+
+          {/* ========================================================= */}
+          {/* VISTAS DE PESTAÑAS (TABS)                                 */}
+          {/* ========================================================= */}
+          {activeTab === 'library' && (
+            <LibraryToolbar
+              currentFolder={currentFolder}
+              isScanning={isScanning}
+              viewMode={viewMode}
+              selectedCount={selectedTrackIds.size}
+              filteredCount={filteredTracks.length}
+              isDeleting={isDeletingTracks}
+              onOpenFolderDialog={handleOpenFolderDialog}
+              onScanFolder={scanFolder}
+              onSetViewMode={handleSetViewMode}
+              onClearExpandedAlbum={() => setExpandedAlbumKey(null)}
+              onSelectAllFiltered={selectAllFilteredTracks}
+              onClearSelection={clearTrackSelection}
+              onOpenBatchModal={openBatchModal}
+              onDeleteSelected={requestDeleteSelectedTracks}
+            />
+          )}
+          <div
+            ref={libraryScrollRef}
+            className="main-scroll-region flex-1 overflow-y-auto p-6 custom-scroll"
+          >
+            {/* TAB: BIBLIOTECA */}
+            {activeTab === 'library' && (
+              <LibraryTab
+                tracks={tracks}
+                scrollElementRef={libraryScrollRef}
+                filteredTracks={filteredTracks}
+                favorites={favorites}
+                defaultMusicDir={defaultMusicDir}
+                isScanning={isScanning}
+                isPlaying={isPlaying}
+                activeTrack={activeTrack}
+                viewMode={viewMode}
+                selectedTrackIds={selectedTrackIds}
+                currentFolderNav={currentFolderNav}
+                folderExplorerData={folderExplorerData}
+                albumGroups={albumGroups}
+                selectedAlbum={selectedAlbum}
+                getCoverSrc={getCoverSrc}
+                formatTotalTime={formatTotalTime}
+                onOpenFolderDialog={handleOpenFolderDialog}
+                onScanFolder={scanFolder}
+                onNavigateUp={handleNavigateUp}
+                onNavigateToBreadcrumb={handleNavigateToBreadcrumb}
+                onNavigateIntoFolder={handleNavigateIntoFolder}
+                onPlayFolderTracks={handlePlayFolderTracks}
+                onSelectFolderTracks={handleSelectFolderTracks}
+                onPlayTrack={handlePlayTrack}
+                onOpenEdit={openEditModal}
+                onToggleFavorite={toggleFavorite}
+                onToggleSelectTrack={toggleSelectTrack}
+                onSelectAllFiltered={selectAllFilteredTracks}
+                onClearSelection={clearTrackSelection}
+                onSetFolderNav={setCurrentFolderNav}
+                onSetExpandedAlbumKey={setExpandedAlbumKey}
+                onPlayAlbum={handlePlayAlbum}
+                onSelectAlbumTracks={handleSelectAlbumTracks}
+              />
+            )}
+
+            {/* TAB: INICIO (HOME) */}
+            {activeTab === 'home' && (
+              <HomeTab trackCount={tracks.length} onNavigate={(tab) => setActiveTab(tab)} />
+            )}
+
+            {/* TAB: BUSCAR Y DESCARGAR */}
+            {activeTab === 'search' && (
+              <SearchTab
+                toolsStatus={toolsStatus}
+                onlineQuery={onlineQuery}
+                onlineResults={onlineResults}
+                isSearchingOnline={isSearchingOnline}
+                onlineSearchError={onlineSearchError}
+                playlistSearchError={playlistSearchError}
+                isResolvingPlaylist={isResolvingPlaylist}
+                playlistInfo={playlistInfo}
+                downloadFormat={downloadFormat}
+                downloads={downloads}
+                createAlbumFolder={createAlbumFolder}
+                selectedPlaylistItems={selectedPlaylistItems}
+                onQueryChange={setOnlineQuery}
+                onSearchSubmit={handleOnlineSearch}
+                onFormatChange={setDownloadFormat}
+                onGoQueue={() => setActiveTab('queue')}
+                onCancelDownload={cancelDownload}
+                onClosePlaylist={() => setPlaylistInfo(null)}
+                onCreateFolderChange={setCreateAlbumFolder}
+                onSelectAllPlaylist={selectAllPlaylistItems}
+                onClearPlaylist={clearAllPlaylistItems}
+                onDownloadSelectedPlaylist={handleDownloadSelectedPlaylist}
+                onTogglePlaylistItem={toggleSelectPlaylistItem}
+                onTriggerDownload={triggerDownload}
+                onSuggestionSearch={(title) => {
+                  setOnlineQuery(title);
+                  invoke<OnlineSearchResult[]>('search_online', { query: title })
+                    .then((res) => setOnlineResults(res))
+                    .catch((err) => console.error(err));
+                }}
+              />
+            )}
+
+            {/* TAB: COLA DE DESCARGAS */}
+            {activeTab === 'queue' && (
+              <QueueTab
+                downloads={downloads}
+                restoredNotice={restoredNotice}
+                onClearNotice={() => setRestoredNotice(null)}
+                onGoSearch={() => setActiveTab('search')}
+                onGoLibrary={() => setActiveTab('library')}
+                onCancelAll={cancelAllDownloads}
+                onCancel={cancelDownload}
+                onRetry={retryDownload}
+                onClearFinished={() =>
+                  setDownloads((prev) =>
+                    prev.filter(
+                      (d) =>
+                        !d.status.startsWith('completado') &&
+                        !d.status.includes('error') &&
+                        d.status !== 'cancelado',
+                    ),
+                  )
+                }
+              />
+            )}
+
+            {/* TAB: AJUSTES */}
+            {activeTab === 'settings' && (
+              <SettingsTab
+                accentGradient={worldStyle.accentGradient}
+                accentBadge={worldStyle.accentBadge}
+                coverGlowActive={!!coverGlowColors}
+                playerStyle={playerStyle}
+                glassOpacity={glassOpacity}
+                glassBlur={glassBlur}
+                ambientGlow={ambientGlow}
+                ambientParticles={ambientParticles}
+                appInfo={appInfo}
+                currentFolder={currentFolder}
+                downloadFolder={downloadFolder}
+                downloadFolderError={downloadFolderError}
+                onChooseDownloadFolder={handleChooseDownloadFolder}
+                onResetDownloadFolder={handleResetDownloadFolder}
+                onSetPlayerStyle={handleSetPlayerStyle}
+                onSetGlassOpacity={handleSetGlassOpacity}
+                onSetGlassBlur={handleSetGlassBlur}
+                onSetAmbientGlow={handleSetAmbientGlow}
+                onSetAmbientParticles={handleSetAmbientParticles}
+                onClearCache={async () => {
+                  try {
+                    await invoke('clear_library_cache');
+                    localStorage.removeItem('sakura_library_cache');
+                    setTracks([]);
+                    setActiveTrack(null);
+                  } catch (error) {
+                    console.error('Error al limpiar la caché de biblioteca:', error);
+                    setScanMessage(`No se pudo limpiar la caché: ${String(error)}`);
+                  }
+                }}
+              />
             )}
           </div>
 
-          <div className="gh-filters">
-            <button
-              onClick={() => setFilterChip('all')}
-              className={`gh-chip ${filterChip === 'all' ? 'is-active' : ''}`}>
-              <Music2 className="w-3.5 h-3.5" />
-              <span>Todo</span>
-              <span className="gh-chip-num">{tracks.length}</span>
-            </button>
-            <button
-              onClick={() => setFilterChip('flac')}
-              className={`gh-chip ${filterChip === 'flac' ? 'is-active' : ''}`}>
-              <AudioLines className="w-3.5 h-3.5" />
-              <span>FLAC</span>
-            </button>
-            <button
-              onClick={() => setFilterChip('favorites')}
-              className={`gh-chip ${filterChip === 'favorites' ? 'is-active' : ''}`}>
-              <Heart className="w-3.5 h-3.5" fill={filterChip === 'favorites' ? 'currentColor' : 'none'} />
-              <span>Favoritas</span>
-              <span className="gh-chip-num">{favorites.length}</span>
-            </button>
-          </div>
-        </header>
-
-        {/* Mensaje de escaneo / notificaciones */}
-        {scanMessage && (
-          <div className="bg-accent-500/10 border-b border-accent-500/20 px-6 py-2 flex items-center justify-between text-xs text-accent-300">
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-accent-400 animate-spin" />
-              <span>{scanMessage}</span>
-            </div>
-          </div>
-        )}
-
-        {/* ========================================================= */}
-        {/* VISTAS DE PESTAÑAS (TABS)                                 */}
-        {/* ========================================================= */}
-        {activeTab === 'library' && (
-          <LibraryToolbar
-            currentFolder={currentFolder}
-            isScanning={isScanning}
-            viewMode={viewMode}
-            selectedCount={selectedTrackIds.size}
-            filteredCount={filteredTracks.length}
-            isDeleting={isDeletingTracks}
-            onOpenFolderDialog={handleOpenFolderDialog}
-            onScanFolder={scanFolder}
-            onSetViewMode={handleSetViewMode}
-            onClearExpandedAlbum={() => setExpandedAlbumKey(null)}
-            onSelectAllFiltered={selectAllFilteredTracks}
-            onClearSelection={clearTrackSelection}
-            onOpenBatchModal={openBatchModal}
-            onDeleteSelected={requestDeleteSelectedTracks}
+          {/* ========================================================= */}
+          {/* REPRODUCTOR TEMÁTICO (DOCK FLOTANTE / BARRA FIJA)         */}
+          {/* ========================================================= */}
+          <PlayerBar
+            playerStyle={playerStyle}
+            activeTrack={activeTrack}
+            favorites={favorites}
+            isPlaying={isPlaying}
+            isShuffle={isShuffle}
+            repeatMode={repeatMode}
+            audioRef={audioRef}
+            duration={duration}
+            volume={volume}
+            isMuted={isMuted}
+            getCoverSrc={getCoverSrc}
+            formatTime={formatTime}
+            onTogglePlay={togglePlay}
+            onNext={() => handleNextTrack()}
+            onPrevious={handlePreviousTrack}
+            onSeek={handleSeek}
+            onToggleShuffle={toggleShuffle}
+            onCycleRepeat={cycleRepeatMode}
+            onToggleMute={toggleMute}
+            onVolumeChange={handleVolumeChange}
+            onToggleFavorite={toggleFavorite}
           />
-        )}
-        <div ref={libraryScrollRef} className="main-scroll-region flex-1 overflow-y-auto p-6 custom-scroll">
 
-          {/* TAB: BIBLIOTECA */}
-          {activeTab === 'library' && (
-            <LibraryTab
-              tracks={tracks}
-              scrollElementRef={libraryScrollRef}
-              filteredTracks={filteredTracks}
-              favorites={favorites}
-              defaultMusicDir={defaultMusicDir}
-              isScanning={isScanning}
-              isPlaying={isPlaying}
-              activeTrack={activeTrack}
-              viewMode={viewMode}
-              selectedTrackIds={selectedTrackIds}
-              currentFolderNav={currentFolderNav}
-              folderExplorerData={folderExplorerData}
-              albumGroups={albumGroups}
-              selectedAlbum={selectedAlbum}
+          {/* ── MODAL EDITOR DE METADATOS PRO & CATÁLOGO ── */}
+          {editingTrack && (
+            <MetadataModal
+              editingTrack={editingTrack}
+              editTab={editTab}
+              editTitle={editTitle}
+              editArtist={editArtist}
+              editAlbum={editAlbum}
+              editAlbumArtist={editAlbumArtist}
+              editTrackNumber={editTrackNumber}
+              editYear={editYear}
+              editGenre={editGenre}
+              editCoverPath={editCoverPath}
+              editCoverPreviewUrl={editCoverPreviewUrl}
+              removeCover={removeCover}
+              isSavingMetadata={isSavingMetadata}
+              metadataFeedback={metadataFeedback}
+              catalogQuery={catalogQuery}
+              catalogSource={catalogSource}
+              catalogResults={catalogResults}
+              isSearchingCatalog={isSearchingCatalog}
+              catalogError={catalogError}
+              catalogMode={catalogMode}
+              catalogAlbums={catalogAlbums}
+              openedAlbum={openedAlbum}
+              catalogAlbumTracks={catalogAlbumTracks}
+              isOpeningAlbum={isOpeningAlbum}
               getCoverSrc={getCoverSrc}
-              formatTotalTime={formatTotalTime}
-              onOpenFolderDialog={handleOpenFolderDialog}
-              onScanFolder={scanFolder}
-              onNavigateUp={handleNavigateUp}
-              onNavigateToBreadcrumb={handleNavigateToBreadcrumb}
-              onNavigateIntoFolder={handleNavigateIntoFolder}
-              onPlayFolderTracks={handlePlayFolderTracks}
-              onSelectFolderTracks={handleSelectFolderTracks}
-              onPlayTrack={handlePlayTrack}
-              onOpenEdit={openEditModal}
-              onToggleFavorite={toggleFavorite}
-              onToggleSelectTrack={toggleSelectTrack}
-              onSelectAllFiltered={selectAllFilteredTracks}
-              onClearSelection={clearTrackSelection}
-              onSetFolderNav={setCurrentFolderNav}
-              onSetExpandedAlbumKey={setExpandedAlbumKey}
-              onPlayAlbum={handlePlayAlbum}
-              onSelectAlbumTracks={handleSelectAlbumTracks}
+              onClose={() => setEditingTrack(null)}
+              onPaste={handlePaste}
+              onSetEditTab={setEditTab}
+              onSearchCatalog={() => searchCatalog()}
+              onApplyCandidate={applyCandidate}
+              onOpenAlbum={openAlbum}
+              onApplyAlbumTrack={applyAlbumTrack}
+              albumLink={albumLink}
+              onSetAlbumLink={setAlbumLink}
+              onOpenAlbumByLink={openAlbumByLink}
+              onSetCatalogMode={setCatalogMode}
+              onPickCover={pickNewCoverImage}
+              onResetField={resetField}
+              onResetAll={resetAllFields}
+              onSave={handleSaveMetadata}
+              onEditTitleChange={setEditTitle}
+              onEditArtistChange={setEditArtist}
+              onEditAlbumChange={setEditAlbum}
+              onEditAlbumArtistChange={setEditAlbumArtist}
+              onEditTrackNumberChange={setEditTrackNumber}
+              onEditYearChange={setEditYear}
+              onEditGenreChange={setEditGenre}
+              onSetCoverPath={setEditCoverPath}
+              onSetCoverPreview={setEditCoverPreviewUrl}
+              onSetRemoveCover={setRemoveCover}
+              onCatalogQueryChange={setCatalogQuery}
+              onCatalogSourceChange={(v) => setCatalogSource(v)}
             />
           )}
 
-          {/* TAB: INICIO (HOME) */}
-          {activeTab === 'home' && (
-            <HomeTab
-              trackCount={tracks.length}
-              onNavigate={(tab) => setActiveTab(tab)}
-            />
-          )}
+          <DeleteTracksDialog
+            tracks={pendingDeleteTracks}
+            isDeleting={isDeletingTracks}
+            onCancel={() => {
+              if (!isDeletingTracks) setPendingDeleteTracks([]);
+            }}
+            onConfirm={confirmDeleteSelectedTracks}
+          />
 
-          {/* TAB: BUSCAR Y DESCARGAR */}
-          {activeTab === 'search' && (
-            <SearchTab
-              toolsStatus={toolsStatus}
-              onlineQuery={onlineQuery}
-              onlineResults={onlineResults}
-              isSearchingOnline={isSearchingOnline}
-              onlineSearchError={onlineSearchError}
-              playlistSearchError={playlistSearchError}
-              isResolvingPlaylist={isResolvingPlaylist}
-              playlistInfo={playlistInfo}
-              downloadFormat={downloadFormat}
-              downloads={downloads}
-              createAlbumFolder={createAlbumFolder}
-              selectedPlaylistItems={selectedPlaylistItems}
-              onQueryChange={setOnlineQuery}
-              onSearchSubmit={handleOnlineSearch}
-              onFormatChange={setDownloadFormat}
-              onGoQueue={() => setActiveTab('queue')}
-              onCancelDownload={cancelDownload}
-              onClosePlaylist={() => setPlaylistInfo(null)}
-              onCreateFolderChange={setCreateAlbumFolder}
-              onSelectAllPlaylist={selectAllPlaylistItems}
-              onClearPlaylist={clearAllPlaylistItems}
-              onDownloadSelectedPlaylist={handleDownloadSelectedPlaylist}
-              onTogglePlaylistItem={toggleSelectPlaylistItem}
-              onTriggerDownload={triggerDownload}
-              onSuggestionSearch={(title) => {
-                setOnlineQuery(title);
-                invoke<OnlineSearchResult[]>('search_online', { query: title })
-                  .then(res => setOnlineResults(res))
-                  .catch(err => console.error(err));
-              }}
-            />
-          )}
-
-          {/* TAB: COLA DE DESCARGAS */}
-          {activeTab === 'queue' && (
-            <QueueTab
-              downloads={downloads}
-              restoredNotice={restoredNotice}
-              onClearNotice={() => setRestoredNotice(null)}
-              onGoSearch={() => setActiveTab('search')}
-              onGoLibrary={() => setActiveTab('library')}
-              onCancelAll={cancelAllDownloads}
-              onCancel={cancelDownload}
-              onRetry={retryDownload}
-              onClearFinished={() => setDownloads(prev => prev.filter(d => !d.status.startsWith('completado') && !d.status.includes('error') && d.status !== 'cancelado'))}
-            />
-          )}
-
-          {/* TAB: AJUSTES */}
-          {activeTab === 'settings' && (
-            <SettingsTab
-              accentGradient={worldStyle.accentGradient}
-              accentBadge={worldStyle.accentBadge}
-              coverGlowActive={!!coverGlowColors}
-              playerStyle={playerStyle}
-              glassOpacity={glassOpacity}
-              glassBlur={glassBlur}
-              ambientGlow={ambientGlow}
-              ambientParticles={ambientParticles}
-              appInfo={appInfo}
-              currentFolder={currentFolder}
-              downloadFolder={downloadFolder}
-              downloadFolderError={downloadFolderError}
-              onChooseDownloadFolder={handleChooseDownloadFolder}
-              onResetDownloadFolder={handleResetDownloadFolder}
-              onSetPlayerStyle={handleSetPlayerStyle}
-              onSetGlassOpacity={handleSetGlassOpacity}
-              onSetGlassBlur={handleSetGlassBlur}
-              onSetAmbientGlow={handleSetAmbientGlow}
-              onSetAmbientParticles={handleSetAmbientParticles}
-              onClearCache={async () => {
-                try {
-                  await invoke('clear_library_cache');
-                  localStorage.removeItem('sakura_library_cache');
-                  setTracks([]);
-                  setActiveTrack(null);
-                } catch (error) {
-                  console.error('Error al limpiar la caché de biblioteca:', error);
-                  setScanMessage(`No se pudo limpiar la caché: ${String(error)}`);
-                }
-              }}
-            />
-          )}
-
-        </div>
-
-        {/* ========================================================= */}
-        {/* REPRODUCTOR TEMÁTICO (DOCK FLOTANTE / BARRA FIJA)         */}
-        {/* ========================================================= */}
-        <PlayerBar
-          playerStyle={playerStyle}
-          activeTrack={activeTrack}
-          favorites={favorites}
-          isPlaying={isPlaying}
-          isShuffle={isShuffle}
-          repeatMode={repeatMode}
-          audioRef={audioRef}
-          duration={duration}
-          volume={volume}
-          isMuted={isMuted}
-          getCoverSrc={getCoverSrc}
-          formatTime={formatTime}
-          onTogglePlay={togglePlay}
-          onNext={() => handleNextTrack()}
-          onPrevious={handlePreviousTrack}
-          onSeek={handleSeek}
-          onToggleShuffle={toggleShuffle}
-          onCycleRepeat={cycleRepeatMode}
-          onToggleMute={toggleMute}
-          onVolumeChange={handleVolumeChange}
-          onToggleFavorite={toggleFavorite}
-        />
-
-      {/* ── MODAL EDITOR DE METADATOS PRO & CATÁLOGO ── */}
-      {editingTrack && (
-        <MetadataModal
-          editingTrack={editingTrack}
-          editTab={editTab}
-          editTitle={editTitle}
-          editArtist={editArtist}
-          editAlbum={editAlbum}
-          editAlbumArtist={editAlbumArtist}
-          editTrackNumber={editTrackNumber}
-          editYear={editYear}
-          editGenre={editGenre}
-          editCoverPath={editCoverPath}
-          editCoverPreviewUrl={editCoverPreviewUrl}
-          removeCover={removeCover}
-          isSavingMetadata={isSavingMetadata}
-          metadataFeedback={metadataFeedback}
-          catalogQuery={catalogQuery}
-          catalogSource={catalogSource}
-          catalogResults={catalogResults}
-          isSearchingCatalog={isSearchingCatalog}
-          catalogError={catalogError}
-          catalogMode={catalogMode}
-          catalogAlbums={catalogAlbums}
-          openedAlbum={openedAlbum}
-          catalogAlbumTracks={catalogAlbumTracks}
-          isOpeningAlbum={isOpeningAlbum}
-          getCoverSrc={getCoverSrc}
-          onClose={() => setEditingTrack(null)}
-          onPaste={handlePaste}
-          onSetEditTab={setEditTab}
-          onSearchCatalog={() => searchCatalog()}
-          onApplyCandidate={applyCandidate}
-          onOpenAlbum={openAlbum}
-          onApplyAlbumTrack={applyAlbumTrack}
-          albumLink={albumLink}
-          onSetAlbumLink={setAlbumLink}
-          onOpenAlbumByLink={openAlbumByLink}
-          onSetCatalogMode={setCatalogMode}
-          onPickCover={pickNewCoverImage}
-          onResetField={resetField}
-          onResetAll={resetAllFields}
-          onSave={handleSaveMetadata}
-          onEditTitleChange={setEditTitle}
-          onEditArtistChange={setEditArtist}
-          onEditAlbumChange={setEditAlbum}
-          onEditAlbumArtistChange={setEditAlbumArtist}
-          onEditTrackNumberChange={setEditTrackNumber}
-          onEditYearChange={setEditYear}
-          onEditGenreChange={setEditGenre}
-          onSetCoverPath={setEditCoverPath}
-          onSetCoverPreview={setEditCoverPreviewUrl}
-          onSetRemoveCover={setRemoveCover}
-          onCatalogQueryChange={setCatalogQuery}
-    onCatalogSourceChange={(v) => setCatalogSource(v)}
-        />
-      )}
-
-      <DeleteTracksDialog
-        tracks={pendingDeleteTracks}
-        isDeleting={isDeletingTracks}
-        onCancel={() => {
-          if (!isDeletingTracks) setPendingDeleteTracks([]);
-        }}
-        onConfirm={confirmDeleteSelectedTracks}
-      />
-
-      {/* ========================================================= */}
-      {/* MODAL: EDITOR DE METADATOS EN LOTE (BATCH EDITOR)         */}
-      {/* ========================================================= */}
-      <BatchModal
-        open={isBatchModalOpen}
-        selectedCount={selectedTrackIds.size}
-        isSaving={isSavingBatch}
-        feedback={batchFeedback}
-        batchArtist={batchArtist}
-        batchAlbum={batchAlbum}
-        batchAlbumArtist={batchAlbumArtist}
-        batchYear={batchYear}
-        batchGenre={batchGenre}
-        batchCoverPath={batchCoverPath}
-        batchCoverPreviewUrl={batchCoverPreviewUrl}
-        batchRemoveCover={batchRemoveCover}
-        applyArtist={applyBatchArtist}
-        applyAlbum={applyBatchAlbum}
-        applyAlbumArtist={applyBatchAlbumArtist}
-        applyYear={applyBatchYear}
-        applyGenre={applyBatchGenre}
-        applyCover={applyBatchCover}
-        onClose={() => setIsBatchModalOpen(false)}
-        onSave={handleSaveBatchMetadata}
-        onPickCover={pickBatchCoverImage}
-        onBatchArtistChange={setBatchArtist}
-        onBatchAlbumChange={setBatchAlbum}
-        onBatchAlbumArtistChange={setBatchAlbumArtist}
-        onBatchYearChange={setBatchYear}
-        onBatchGenreChange={setBatchGenre}
-        onApplyArtistChange={setApplyBatchArtist}
-        onApplyAlbumChange={setApplyBatchAlbum}
-        onApplyAlbumArtistChange={setApplyBatchAlbumArtist}
-        onApplyYearChange={setApplyBatchYear}
-        onApplyGenreChange={setApplyBatchGenre}
-        onApplyCoverChange={setApplyBatchCover}
-        onSetCoverPath={setBatchCoverPath}
-        onSetCoverPreview={setBatchCoverPreviewUrl}
-        onSetRemoveCover={setBatchRemoveCover}
-      />
-
-      </main>
-
+          {/* ========================================================= */}
+          {/* MODAL: EDITOR DE METADATOS EN LOTE (BATCH EDITOR)         */}
+          {/* ========================================================= */}
+          <BatchModal
+            open={isBatchModalOpen}
+            selectedCount={selectedTrackIds.size}
+            isSaving={isSavingBatch}
+            feedback={batchFeedback}
+            batchArtist={batchArtist}
+            batchAlbum={batchAlbum}
+            batchAlbumArtist={batchAlbumArtist}
+            batchYear={batchYear}
+            batchGenre={batchGenre}
+            batchCoverPath={batchCoverPath}
+            batchCoverPreviewUrl={batchCoverPreviewUrl}
+            batchRemoveCover={batchRemoveCover}
+            applyArtist={applyBatchArtist}
+            applyAlbum={applyBatchAlbum}
+            applyAlbumArtist={applyBatchAlbumArtist}
+            applyYear={applyBatchYear}
+            applyGenre={applyBatchGenre}
+            applyCover={applyBatchCover}
+            onClose={() => setIsBatchModalOpen(false)}
+            onSave={handleSaveBatchMetadata}
+            onPickCover={pickBatchCoverImage}
+            onBatchArtistChange={setBatchArtist}
+            onBatchAlbumChange={setBatchAlbum}
+            onBatchAlbumArtistChange={setBatchAlbumArtist}
+            onBatchYearChange={setBatchYear}
+            onBatchGenreChange={setBatchGenre}
+            onApplyArtistChange={setApplyBatchArtist}
+            onApplyAlbumChange={setApplyBatchAlbum}
+            onApplyAlbumArtistChange={setApplyBatchAlbumArtist}
+            onApplyYearChange={setApplyBatchYear}
+            onApplyGenreChange={setApplyBatchGenre}
+            onApplyCoverChange={setApplyBatchCover}
+            onSetCoverPath={setBatchCoverPath}
+            onSetCoverPreview={setBatchCoverPreviewUrl}
+            onSetRemoveCover={setBatchRemoveCover}
+          />
+        </main>
       </div>
-
     </div>
   );
 }

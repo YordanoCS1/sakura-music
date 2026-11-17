@@ -77,9 +77,28 @@ comandos; `App.tsx` solo habla con `invoke` y eventos, nunca con `lofty` ni
 npm run tauri dev       # desarrollo (o doble clic en iniciar_sakura.bat)
 npm run build           # tsc + vite build → dist/
 npm run tauri build     # instalador .exe / .msi
+npm run check           # tipos + lint + formato + tests + build del frontend
+npm run typecheck       # solo tsc --noEmit
+npm run lint            # ESLint sobre src/
+npm run format          # Prettier sobre TS/TSX/JS/JSON/YAML
+npm run test            # Vitest (tests unitarios del frontend)
 cargo test --manifest-path src-tauri/Cargo.toml   # 17 tests Rust
-node node_modules/typescript/bin/tsc --noEmit      # tipos del frontend
+cargo fmt --check --manifest-path src-tauri/Cargo.toml
+cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings
 ```
+
+### Integración continua
+
+`.github/workflows/ci.yml` ejecuta en Windows, macOS y Linux las mismas
+comprobaciones: `npm ci`, los cinco scripts anteriores, `cargo fmt --check`,
+`cargo clippy -D warnings` y `cargo test`. La auditoría de npm
+(`npm run audit`) corre como paso informativo: hoy hay un aviso *high* de
+`picomatch` que afecta solo a dependencias de desarrollo y todavía no tiene
+corrección; no bloquea el pipeline.
+
+La generación del instalador de Windows se hace aparte, sólo cuando se
+dispara el workflow a mano o se pushea un tag, y sube el bundle como artefacto.
+Dependabot revisa npm, Cargo y GitHub Actions semanalmente.
 
 ### Recortar la corrida
 
@@ -99,7 +118,9 @@ porque el rename falla con `%TEMP%` desincronizado del cwd en este Windows.
 
 ## Casos de uso de desarrollo
 
-Todo lo demás se verifica a mano: búsqueda real en YouTube, descarga en los 4
+Los tests del frontend (`src/**/*.test.ts`) cubren la conversión entre el
+ítem de UI y el formato persistido de la cola. Todo lo demás se verifica a mano:
+búsqueda real en YouTube, descarga en los 4
 formatos, playlist completa, edición individual y en lote (incluido el mensaje
 de fallos parciales), iTunes/Deezer/MusicBrainz, temas y efectos, y
 cancelación/reintento de filas.

@@ -17,13 +17,19 @@ const items: { id: AppTab; label: string; icon: typeof Home }[] = [
   { id: 'settings', label: 'Ajustes', icon: Settings },
 ];
 
-export default function ZenTopNav({ activeTab, onNavigate, trackCount, downloads }: ZenTopNavProps) {
+export default function ZenTopNav({
+  activeTab,
+  onNavigate,
+  trackCount,
+  downloads,
+}: ZenTopNavProps) {
   const tabsRef = useRef<HTMLDivElement>(null);
   const btnRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const [slider, setSlider] = useState<{ left: number; width: number } | null>(null);
 
   const activeDownloads = downloads.filter(
-    d => !d.status.startsWith('completado') && !d.status.includes('error') && d.status !== 'cancelado'
+    (d) =>
+      !d.status.startsWith('completado') && !d.status.includes('error') && d.status !== 'cancelado',
   ).length;
 
   // Coloca el indicador deslizante bajo la pestaña activa.
@@ -49,11 +55,20 @@ export default function ZenTopNav({ activeTab, onNavigate, trackCount, downloads
         </div>
       </div>
 
-      <div className="zen-topnav-tabs" role="tablist" aria-label="Secciones de la aplicación" ref={tabsRef}>
+      <div
+        className="zen-topnav-tabs"
+        role="tablist"
+        aria-label="Secciones de la aplicación"
+        ref={tabsRef}
+      >
         <span
           className="zen-topnav-slider"
           aria-hidden="true"
-          style={slider ? { transform: `translate(${slider.left}px, -50%)`, width: `${slider.width}px` } : undefined}
+          style={
+            slider
+              ? { transform: `translate(${slider.left}px, -50%)`, width: `${slider.width}px` }
+              : undefined
+          }
         />
         {items.map(({ id, label, icon: Icon }) => {
           const active = activeTab === id;
@@ -61,11 +76,14 @@ export default function ZenTopNav({ activeTab, onNavigate, trackCount, downloads
           return (
             <button
               key={id}
-              ref={el => { btnRefs.current[id] = el; }}
+              ref={(el) => {
+                btnRefs.current[id] = el;
+              }}
               type="button"
               onClick={() => onNavigate(id)}
               aria-current={active ? 'page' : undefined}
-              className={`zen-topnav-tab ${active ? 'is-active' : ''}`}>
+              className={`zen-topnav-tab ${active ? 'is-active' : ''}`}
+            >
               <Icon className="zen-topnav-tab-icon" />
               <span className="zen-topnav-tab-label">{label}</span>
               {count > 0 && <span className="zen-topnav-tab-count">{count}</span>}

@@ -1,7 +1,6 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-// @ts-expect-error el proyecto no incluye @types/node; Vite resuelve el módulo igual.
-import process from "node:process";
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import process from 'node:process';
 const host = process.env.TAURI_DEV_HOST;
 
 // https://vite.dev/config/
@@ -19,14 +18,14 @@ export default defineConfig(() => ({
     host: host || false,
     hmr: host
       ? {
-          protocol: "ws",
+          protocol: 'ws',
           host,
           port: 1421,
         }
       : undefined,
     watch: {
       // 3. Ignorar `src-tauri`: ese árbol lo vigila Cargo, no Vite.
-      ignored: ["**/src-tauri/**"],
+      ignored: ['**/src-tauri/**'],
     },
   },
 }));
