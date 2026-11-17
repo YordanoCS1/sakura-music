@@ -26,7 +26,7 @@ Todas viven en `localStorage` y se restauran al reabrir la app:
 |---|---|
 | `sakura_theme` | Tema visual (hoy siempre `space`) |
 | `sakura_view_mode` | Vista de biblioteca activa (`folders`, `grid`, `table`, `albums`, `mosaic`, `cds`, `tilt`, `glow`, `portadas`) |
-| `sakura_player_style` | Estilo del reproductor (`floating` / `fixed`) |
+| `sakura_player_style` | Estilo del reproductor (`floating` / `fixed` / `mini`) |
 | `sakura_glass_opacity` | Opacidad del vidrio |
 | `sakura_glass_blur` | Desenfoque (backdrop blur) |
 | `sakura_ambient_glow` | Resplandor ambiental |
@@ -53,6 +53,9 @@ Todo se aplica en tiempo real.
 
 - **Cápsula Flotante (Dock)**: el reproductor flota sobre el contenido.
 - **Barra Fija Continua**: reproductor anclado abajo, siempre visible.
+- **Mini**: reduce la ventana a 400×132 px y la deja siempre encima, con
+  portada, título y controles básicos. El botón de maximizar dentro del mini
+  vuelve al modo flotante y restaura el tamaño original.
 
 En ambos, hacer clic en la **portada** del reproductor abre el **Now Playing
 inmersivo**: portada grande, fondo teñido con el color dominante de la carátula

@@ -107,7 +107,7 @@ Ubicación preferida para `yt-dlp.exe` y `ffmpeg.exe`. Si no están ahí, se bus
 |---|---|
 | `sakura_theme` | Siempre `'space'` (se persiste para conservar el contrato) |
 | `sakura_view_mode` | `folders`, `grid`, `table`, `albums`, `mosaic`, `cds`, `tilt`, `glow` o `portadas` |
-| `sakura_player_style` | `floating` o `fixed` |
+| `sakura_player_style` | `floating`, `fixed` o `mini` |
 | `sakura_glass_opacity` | Opacidad del vidrio (0–100) |
 | `sakura_glass_blur` | Desenfoque del vidrio en px |
 | `sakura_ambient_glow` | Activa/desactiva el resplandor de la carátula |

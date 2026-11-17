@@ -1,4 +1,4 @@
-import { Palette, Sparkles, Layers, Sliders, Cpu, FolderOpen } from 'lucide-react';
+import { Palette, Sparkles, Layers, Sliders, Cpu, FolderOpen, Minimize2 } from 'lucide-react';
 import type { AppInfo, PlayerStyle } from '../types';
 import ToolsPanel from './ToolsPanel';
 
@@ -142,7 +142,7 @@ export default function SettingsTab({
           <label className="text-xs font-semibold text-gray-300 block mb-2.5">
             Diseño del Reproductor:
           </label>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-3 gap-2">
             <button
               type="button"
               onClick={() => onSetPlayerStyle('floating')}
@@ -165,9 +165,25 @@ export default function SettingsTab({
               }`}
             >
               <Layers className="w-3.5 h-3.5" />
-              <span>Barra Fija Continua</span>
+              <span>Barra Fija</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => onSetPlayerStyle('mini')}
+              className={`p-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2 transition-all ${
+                playerStyle === 'mini'
+                  ? `${accentBadge} shadow-md`
+                  : 'bg-white/5 text-gray-400 border-white/10 hover:text-white'
+              }`}
+              aria-pressed={playerStyle === 'mini'}
+            >
+              <Minimize2 className="w-3.5 h-3.5" />
+              <span>Mini</span>
             </button>
           </div>
+          <p className="mt-2 text-[10px] text-gray-500">
+            El mini reproductor reduce la ventana y la mantiene siempre encima.
+          </p>
         </div>
 
         {/* Controles de transparencia y desenfoque */}

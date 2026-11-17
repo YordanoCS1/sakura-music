@@ -52,7 +52,7 @@ Gestor, reproductor, descargador y etiquetador de música para escritorio, const
 - **Navegación superior:** barra de pestañas con indicador deslizante animado y emblema de vinilo con el kanji 桜.
 - 5 pestañas: Inicio, Biblioteca, Buscar, Cola y Ajustes.
 - **9 vistas de biblioteca:** Carpetas (con breadcrumbs), Cuadrícula, Lista (tabla), Álbumes, **Pared** (mosaico de portadas con el título y artista de cada canción, filtrado por la carpeta seleccionada), **CDs**, **3D (Tilt)**, **Luz (Glow)** y **Portadas**.
-- Opacidad y blur del vidrio, resplandor ambiental, partículas, estilo de reproductor (flotante/fijo) y favoritos persistentes.
+- Opacidad y blur del vidrio, resplandor ambiental, partículas, estilo de reproductor (flotante/fijo/mini) y favoritos persistentes.
 - Datos técnicos reales: versión de `rustc` (inyectada en `build.rs`) y memoria del proceso en Windows (via `windows-sys`), nunca literales de ejemplo.
 
 ---

@@ -136,7 +136,7 @@ export interface ToolProgress {
 
 export type ThemeMode = 'space';
 export type AppTab = 'home' | 'search' | 'library' | 'queue' | 'settings';
-export type PlayerStyle = 'floating' | 'fixed';
+export type PlayerStyle = 'floating' | 'fixed' | 'mini';
 export type ViewMode =
   'folders' | 'grid' | 'table' | 'albums' | 'mosaic' | 'cds' | 'tilt' | 'glow' | 'portadas';
 

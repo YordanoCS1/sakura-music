@@ -15,6 +15,8 @@ import type {
   ViewMode,
   AppTab,
 } from './types';
+import { getCurrentWindow } from '@tauri-apps/api/window';
+import { LogicalSize } from '@tauri-apps/api/dpi';
 import ZenTopNav from './components/ZenTopNav';
 import { useBatchEditor } from './hooks/useBatchEditor';
 import { useMetadataEditor } from './hooks/useMetadataEditor';
@@ -54,9 +56,23 @@ export default function App() {
     return saved !== null ? saved === 'true' : true;
   });
 
-  const handleSetPlayerStyle = (s: PlayerStyle) => {
+  // En mini modo la ventana se reduce y queda siempre encima; al salir
+  // volvemos al tamaño normal. En el navegador (tests) simplemente se omite.
+  const handleSetPlayerStyle = async (s: PlayerStyle) => {
     setPlayerStyle(s);
     localStorage.setItem('sakura_player_style', s);
+    try {
+      const win = getCurrentWindow();
+      if (s === 'mini') {
+        await win.setAlwaysOnTop(true);
+        await win.setSize(new LogicalSize(400, 132));
+      } else {
+        await win.setSize(new LogicalSize(1200, 760));
+        await win.setAlwaysOnTop(false);
+      }
+    } catch (error) {
+      console.warn('No se pudo ajustar la ventana:', error);
+    }
   };
   const handleSetGlassOpacity = (val: number) => {
     setGlassOpacity(val);
@@ -1084,6 +1100,7 @@ export default function App() {
           {/* ========================================================= */}
           <PlayerBar
             playerStyle={playerStyle}
+            onSetPlayerStyle={handleSetPlayerStyle}
             activeTrack={activeTrack}
             favorites={favorites}
             isPlaying={isPlaying}

@@ -67,6 +67,11 @@ test('la app arranca, oculta el splash y navega entre pestañas', async ({ page 
   await ajustes.click();
   await expect(ajustes).toHaveAttribute('aria-selected', 'true');
   await expect(page.getByText(/Motor Nativo Tauri/)).toBeVisible();
+
+  const mini = page.getByRole('button', { name: 'Mini', exact: true });
+  await mini.click();
+  await expect(mini).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('button', { name: 'Salir del mini reproductor' })).toBeVisible();
 });
 
 test('el tablist responde al teclado', async ({ page }) => {
