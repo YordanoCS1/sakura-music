@@ -79,11 +79,6 @@ fn save_download_queue(items: Vec<PersistedDownload>) -> bool {
     queue::save_queue(items)
 }
 
-#[tauri::command]
-fn clear_download_queue() -> bool {
-    queue::clear_queue()
-}
-
 #[derive(Serialize, Deserialize)]
 pub struct AppInfo {
     pub engine: String,
@@ -149,13 +144,6 @@ fn allow_track_paths(app: &tauri::AppHandle, tracks: &[ScannedTrack]) {
             }
         }
     }
-}
-
-#[tauri::command]
-fn allow_music_dir(app: tauri::AppHandle, path: String) {
-    let _ = app
-        .asset_protocol_scope()
-        .allow_directory(Path::new(&path), true);
 }
 
 #[tauri::command]
@@ -371,12 +359,10 @@ pub fn run() {
 
             Ok(())
         })
-        .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .invoke_handler(tauri::generate_handler![
             get_app_info, 
             get_default_music_dir, 
-            allow_music_dir,
             get_cached_library,
             clear_library_cache,
             delete_library_track,
@@ -388,7 +374,6 @@ pub fn run() {
             cancel_all_downloads,
             get_download_queue,
             save_download_queue,
-            clear_download_queue,
             update_track_metadata,
             update_batch_metadata,
             save_temp_cover,

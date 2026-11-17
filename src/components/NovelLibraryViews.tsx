@@ -1,7 +1,7 @@
 import { Disc3, Heart, Pause, Pencil, Play } from 'lucide-react';
 import type { AlbumGroup, ScannedTrack } from '../types';
 
-export type NovelView = 'cds' | 'tilt' | 'glow' | 'portadas';
+type NovelView = 'cds' | 'tilt' | 'glow' | 'portadas';
 
 interface NovelLibraryViewsProps {
   view: NovelView;

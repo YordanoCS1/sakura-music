@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Disc3, Heart, Music2, Pause, Play, Repeat, Repeat1, Shuffle, SkipBack, SkipForward, Volume2, VolumeX } from 'lucide-react';
 import type { PlayerStyle, ScannedTrack } from '../types';
 
@@ -75,7 +75,6 @@ export default function PlayerBar({
 
   const [expanded, setExpanded] = useState(false);
   const [dominantColor, setDominantColor] = useState<string>('180, 26, 90');
-  const coverColorRef = useRef<HTMLImageElement | null>(null);
 
   useEffect(() => {
     if (!activeTrack?.cover_url) { setDominantColor('180, 26, 90'); return; }
@@ -121,7 +120,7 @@ export default function PlayerBar({
                 className="npr-cover"
                 title="Ver ahora reproduciendo">
                 {activeTrack.cover_url ? (
-                  <img ref={coverColorRef} src={getCoverSrc(activeTrack.cover_url)} alt={activeTrack.title} />
+                  <img src={getCoverSrc(activeTrack.cover_url)} alt={activeTrack.title} />
                 ) : (
                   <div className="npr-cover-fallback"><Music2 className="w-6 h-6" /></div>
                 )}

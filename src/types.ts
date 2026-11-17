@@ -118,8 +118,7 @@ export interface DownloadItem {
   createdAt: number;
 }
 
-export type ThemeMode = 'm3zen' | 'forest' | 'space';
-export type ThemeWorld = 'sakura_zen';
+export type ThemeMode = 'space';
 export type AppTab = 'home' | 'search' | 'library' | 'queue' | 'settings';
 export type PlayerStyle = 'floating' | 'fixed';
 export type ViewMode = 'folders' | 'grid' | 'table' | 'albums' | 'mosaic' | 'cds' | 'tilt' | 'glow' | 'portadas';

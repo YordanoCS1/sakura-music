@@ -162,7 +162,7 @@ Sakura_Music/
 │       └── useBatchEditor.ts     # edición en lote
 ├── src-tauri/                    # Backend Rust
 │   ├── src/
-│   │   ├── lib.rs                # comandos Tauri (19), caché, scope asset, ciclo de vida
+│   │   ├── lib.rs                # comandos Tauri (17), caché, scope asset, ciclo de vida
 │   │   ├── main.rs               # entrada desktop
 │   │   ├── scanner.rs            # escaneo Rayon, tags lofty, escritura atómica, tests
 │   │   ├── downloader.rs         # DownloadManager, yt-dlp, cancelación, tests

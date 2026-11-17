@@ -154,8 +154,7 @@ rename (el handle abierto bloquea el reemplazo).
   Como el usuario puede elegir cualquier unidad como biblioteca,
   `scan_library` y `get_cached_library` autorizan en runtime cada carpeta
   (`asset_protocol_scope().allow_directory(parent, true)`), y el arranque
-  autoriza la caché de portadas en `.tauri_data/covers`. También existe el
-  comando `allow_music_dir` para el diálogo de carpeta.
+  autoriza la caché de portadas en `.tauri_data/covers`.
 - **Sin rutas hardcodeadas:** la búsqueda de binarios nunca apunta a un usuario
   concreto. yt-dlp: carpeta de datos `bin/`, legado `%APPDATA%/sakura-music/bin`,
   `PATH`. ffmpeg: `bin/`, legado `%LOCALAPPDATA%/SakuraMusic/bin`, enlaces de

@@ -58,7 +58,7 @@ Sakura_Music/
 │   ├── Cargo.toml / Cargo.lock   # dependencias (Cargo.lock commiteado: es una app)
 │   ├── build.rs                  # inyecta RUSTC_VERSION real
 │   ├── tauri.conf.json           # ventana, CSP y asset scope
-│   └── capabilities/default.json # permisos: core, opener, dialog
+│   └── capabilities/default.json # permisos: core, dialog
 ├── docs/                         # esta documentación
 ├── legacy_python/                # v1.0 histórica (Python + PySide6), no se toca
 ├── iniciar_sakura.bat            # npm run tauri dev en Windows

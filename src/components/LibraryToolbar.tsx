@@ -8,7 +8,6 @@ import type { ViewMode } from '../types';
 interface LibraryToolbarProps {
   currentFolder: string | null;
   isScanning: boolean;
-  isWWM: boolean;
   viewMode: ViewMode;
   selectedCount: number;
   filteredCount: number;
@@ -50,7 +49,6 @@ const ALL_VIEWS = VIEW_GROUPS.flatMap(g => g.items);
 export default function LibraryToolbar({
   currentFolder,
   isScanning,
-  isWWM,
   viewMode,
   selectedCount,
   filteredCount,
@@ -158,7 +156,7 @@ export default function LibraryToolbar({
 
       {/* Barra de selección */}
       {selectedCount > 0 && (
-        <div className={`lt-selection ${isWWM ? 'is-wwm' : ''}`}>
+        <div className={`lt-selection ${''}`}>
           <div className="lt-selection-info">
             <span className="lt-selection-icon"><Layers className="w-4 h-4" /></span>
             <div>

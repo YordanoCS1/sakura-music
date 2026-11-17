@@ -7,7 +7,6 @@ import SakuraDesignGallery from './SakuraDesignGallery';
 interface SettingsTabProps {
   accentGradient: string;
   accentBadge: string;
-  isWWM: boolean;
   coverGlowActive: boolean;
   playerStyle: PlayerStyle;
   glassOpacity: number;
@@ -31,7 +30,6 @@ interface SettingsTabProps {
 export default function SettingsTab({
   accentGradient,
   accentBadge,
-  isWWM,
   coverGlowActive,
   playerStyle,
   glassOpacity,
@@ -210,7 +208,7 @@ export default function SettingsTab({
               type="button"
               onClick={() => onSetAmbientGlow(!ambientGlow)}
               className={`w-11 h-6 rounded-full transition-colors relative p-0.5 ${
-                ambientGlow ? (isWWM ? 'bg-emerald-500' : 'bg-accent-500') : 'bg-white/10'
+                ambientGlow ? ('bg-accent-500') : 'bg-white/10'
               }`}>
               <div className={`w-5 h-5 rounded-full bg-white transition-transform ${
                 ambientGlow ? 'translate-x-5' : 'translate-x-0'
@@ -222,20 +220,18 @@ export default function SettingsTab({
           <div className="flex items-center justify-between pt-2 border-t border-white/5">
             <div>
               <span className="text-xs font-semibold text-gray-300 flex items-center gap-1.5">
-                <span>{isWWM ? '🎋' : '🌸'}</span>
+                <span>{'🌸'}</span>
                 <span>Efectos Atmosféricos de Partículas</span>
               </span>
               <span className="text-[10px] text-gray-500">
-                {isWWM
-                  ? 'Chispas doradas de linterna y bruma ligera de Jianghu'
-                  : 'Pétalos suaves de flor de cerezo cayendo con la brisa'}
+                {'Pétalos suaves de flor de cerezo cayendo con la brisa'}
               </span>
             </div>
             <button
               type="button"
               onClick={() => onSetAmbientParticles(!ambientParticles)}
               className={`w-11 h-6 rounded-full transition-colors relative p-0.5 ${
-                ambientParticles ? (isWWM ? 'bg-emerald-500' : 'bg-accent-500') : 'bg-white/10'
+                ambientParticles ? ('bg-accent-500') : 'bg-white/10'
               }`}>
               <div className={`w-5 h-5 rounded-full bg-white transition-transform ${
                 ambientParticles ? 'translate-x-5' : 'translate-x-0'

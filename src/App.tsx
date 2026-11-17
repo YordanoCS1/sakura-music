@@ -18,7 +18,6 @@ import type {
   DownloaderStatus,
   AppInfo,
   ThemeMode,
-  ThemeWorld,
   PlayerStyle,
   ViewMode,
   AppTab,
@@ -46,7 +45,6 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<AppTab>('library');
   const libraryScrollRef = useRef<HTMLDivElement>(null);
   const theme = 'space' as ThemeMode;
-  const themeWorld = 'sakura_zen' as ThemeWorld;
   const [playerStyle, setPlayerStyle] = useState<PlayerStyle>(() => {
     return (localStorage.getItem('sakura_player_style') as PlayerStyle) || 'floating';
   });
@@ -553,7 +551,6 @@ export default function App() {
     clearTrackSelection,
   });
   const meta = useMetadataEditor({
-    tracks,
     setTracks,
     activeTrack,
     setActiveTrack,
@@ -656,58 +653,27 @@ export default function App() {
   playbackQueueRef.current = filteredTracks;
 
   // Configuración de temas dinámicos
-  const themeGlows: Record<ThemeMode, { glow1: string; glow2: string; accent: string; badge: string; border: string }> = {
-    m3zen: {
-      glow1: 'bg-rose-400/25',
-      glow2: 'bg-pink-600/15',
-      accent: 'from-rose-500 to-pink-500',
-      badge: 'bg-rose-500/15 text-rose-200 border-rose-400/30',
-      border: 'border-rose-400/40',
-    },
-    forest: {
-      glow1: 'bg-emerald-400/25',
-      glow2: 'bg-green-700/20',
-      accent: 'from-emerald-500 to-green-600',
-      badge: 'bg-emerald-500/15 text-emerald-100 border-emerald-400/30',
-      border: 'border-emerald-400/40',
-    },
+  const themeGlows: Record<ThemeMode, { glow1: string; glow2: string; accent: string; badge: string }> = {
     space: {
       glow1: 'bg-purple-500/25',
       glow2: 'bg-indigo-700/20',
       accent: 'from-purple-500 to-indigo-500',
       badge: 'bg-purple-500/15 text-purple-100 border-purple-400/30',
-      border: 'border-purple-400/40',
     },
   };
 
   const currentTheme = themeGlows[theme];
-  const isWWM = false;
   const worldStyle = {
-    id: 'sakura_zen',
-    name: 'Sakura Zen',
-    icon: '🌸',
     bgClass: 'bg-[#fbf7f4]',
     ambientGlow1: currentTheme.glow1,
     ambientGlow2: currentTheme.glow2,
     accentGradient: currentTheme.accent,
-    accentText: 'text-accent-400',
-    accentTextHover: 'hover:text-accent-300',
     accentBadge: currentTheme.badge,
-    activeTabBg: 'bg-white/10 text-white shadow-sm border border-white/10',
-    cardBorderHover: 'hover:border-accent-500/40',
-    playButtonGradient: currentTheme.accent,
-    seekAccent: 'accent-accent-500',
-    tagText: 'text-accent-300',
-    glowColor: 'shadow-accent-500/25',
-    sidebarTitle: 'Sakura Music',
-    sidebarSubtitle: 'Tauri 2 · Rust Core',
-    logoIcon: '🌸',
   };
   return (
     <div 
       data-theme={theme}
-      data-world={themeWorld}
-      className={`app-shell relative w-screen h-screen flex flex-col overflow-hidden ${worldStyle.bgClass} font-sans text-gray-100 select-none ${isWWM ? 'theme-where-winds-meet' : ''}`}
+      className={`app-shell relative w-screen h-screen flex flex-col overflow-hidden ${worldStyle.bgClass} font-sans text-gray-100 select-none`}
       style={{
         '--glass-opacity': `${glassOpacity / 100}`,
         '--glass-blur': `${glassBlur}px`,
@@ -749,31 +715,10 @@ export default function App() {
         </>
       )}
 
-      {/* Capa de Partículas Atmosféricas (Pétalos de Sakura / Chispas & Bruma Jianghu) */}
+      {/* Capa de Partículas Atmosféricas (Pétalos de Sakura) */}
       {ambientParticles && (
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 select-none">
-          {isWWM ? (
-            // Partículas Jianghu: Chispas doradas de linterna y bruma ascendente
-            <>
-              {[...Array(12)].map((_, i) => (
-                <div
-                  key={`spark-${i}`}
-                  className="absolute rounded-full pointer-events-none"
-                  style={{
-                    left: `${(i * 8.3 + 4) % 96}%`,
-                    bottom: '-20px',
-                    width: `${(i % 3) * 2 + 3}px`,
-                    height: `${(i % 3) * 2 + 3}px`,
-                    backgroundColor: i % 2 === 0 ? '#fbbf24' : '#34d399',
-                    boxShadow: i % 2 === 0 ? '0 0 10px #fbbf24' : '0 0 10px #34d399',
-                    animation: `spark-rise ${12 + (i % 6) * 2}s linear infinite`,
-                    animationDelay: `${(i * 1.3) % 8}s`,
-                    opacity: 0.65,
-                  }}
-                />
-              ))}
-            </>
-          ) : (
+          {
             // Partículas Sakura: Pétalos de flor de cerezo cayendo con la brisa
             <>
               {[...Array(12)].map((_, i) => (
@@ -802,7 +747,7 @@ export default function App() {
                 </div>
               ))}
             </>
-          )}
+          }
         </div>
       )}
 
@@ -895,7 +840,6 @@ export default function App() {
           <LibraryToolbar
             currentFolder={currentFolder}
             isScanning={isScanning}
-            isWWM={isWWM}
             viewMode={viewMode}
             selectedCount={selectedTrackIds.size}
             filteredCount={filteredTracks.length}
@@ -922,7 +866,6 @@ export default function App() {
               defaultMusicDir={defaultMusicDir}
               isScanning={isScanning}
               isPlaying={isPlaying}
-              isWWM={isWWM}
               activeTrack={activeTrack}
               viewMode={viewMode}
               selectedTrackIds={selectedTrackIds}
@@ -1016,7 +959,6 @@ export default function App() {
             <SettingsTab
               accentGradient={worldStyle.accentGradient}
               accentBadge={worldStyle.accentBadge}
-              isWWM={false}
               coverGlowActive={!!coverGlowColors}
               playerStyle={playerStyle}
               glassOpacity={glassOpacity}

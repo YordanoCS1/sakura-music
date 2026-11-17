@@ -83,15 +83,6 @@ pub fn save_queue(items: Vec<PersistedDownload>) -> bool {
     scanner::write_atomic(&paths::queue_file(), json.as_bytes()).is_ok()
 }
 
-/// Borra la foto (la cola se vacía de verdad, no queda `[]` huérfano).
-pub fn clear_queue() -> bool {
-    let file = paths::queue_file();
-    if file.exists() {
-        let _ = std::fs::remove_file(file);
-    }
-    true
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;

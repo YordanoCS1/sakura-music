@@ -2,7 +2,7 @@ import { AlertCircle, Check, ChevronLeft, Disc3, Globe, ImagePlus, Layers, Link2
 import { convertFileSrc } from '@tauri-apps/api/core';
 import type { CatalogAlbum, CatalogAlbumTrack, CatalogCandidate, CatalogSource, ScannedTrack } from '../types';
 
-export type EditField = 'title' | 'artist' | 'album' | 'album_artist' | 'track_number' | 'year' | 'genre';
+type EditField = 'title' | 'artist' | 'album' | 'album_artist' | 'track_number' | 'year' | 'genre';
 
 interface MetadataModalProps {
   editingTrack: ScannedTrack;

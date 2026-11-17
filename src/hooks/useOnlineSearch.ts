@@ -6,7 +6,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import type { OnlineSearchResult, PlaylistInfo } from '../types';
 
-export type ActiveTab = 'home' | 'search' | 'library' | 'queue' | 'settings';
+type ActiveTab = 'home' | 'search' | 'library' | 'queue' | 'settings';
 
 interface OnlineSearchEvent {
   request_id: string;

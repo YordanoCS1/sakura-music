@@ -21,18 +21,6 @@ export default {
           900: 'rgb(var(--accent-900) / <alpha-value>)',
           950: 'rgb(var(--accent-950) / <alpha-value>)',
         },
-        sakura: {
-          50: '#fff0f5',
-          100: '#ffe4ee',
-          200: '#fecddf',
-          300: '#fea3c5',
-          400: '#fc6fa2',
-          500: '#f43f82',
-          600: '#e11d67',
-          700: '#be0f4e',
-          800: '#9d1042',
-          900: '#83123b',
-        }
       }
     },
   },

@@ -4,7 +4,7 @@
 import { useMemo, useState } from 'react';
 import type { AlbumGroup, FolderExplorerData, ScannedTrack, ViewMode } from '../types';
 
-export type FilterChip = 'all' | 'flac' | 'recent' | 'favorites';
+type FilterChip = 'all' | 'flac' | 'recent' | 'favorites';
 
 interface UseFolderExplorerDeps {
   tracks: ScannedTrack[];

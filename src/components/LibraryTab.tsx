@@ -27,7 +27,6 @@ interface LibraryTabProps {
   defaultMusicDir: string | null;
   isScanning: boolean;
   isPlaying: boolean;
-  isWWM: boolean;
   activeTrack: ScannedTrack | null;
   viewMode: ViewMode;
   selectedTrackIds: Set<string>;
@@ -64,7 +63,6 @@ export default function LibraryTab({
   defaultMusicDir,
   isScanning,
   isPlaying,
-  isWWM,
   activeTrack,
   viewMode,
   selectedTrackIds,
@@ -159,8 +157,8 @@ export default function LibraryTab({
               {/* Estado vacío si no hay canciones */}
               {tracks.length === 0 && !isScanning && !(viewMode === 'mosaic') && !(viewMode === 'cds' || viewMode === 'tilt' || viewMode === 'glow' || viewMode === 'portadas') && (
                 <div className="library-empty-state flex flex-col items-center justify-center p-12 text-center glass-card rounded-3xl border border-white/5 my-6">
-                  <div className={`w-16 h-16 rounded-3xl ${isWWM ? 'bg-emerald-500/10 border border-emerald-500/20' : 'bg-accent-500/10 border border-accent-500/20'} flex items-center justify-center text-3xl mb-4`}>
-                    {isWWM ? '🎋' : '🌸'}
+                  <div className={`w-16 h-16 rounded-3xl ${'bg-accent-500/10 border border-accent-500/20'} flex items-center justify-center text-3xl mb-4`}>
+                    {'🌸'}
                   </div>
                   <h3 className="text-base font-bold text-white mb-1">Tu biblioteca aún está vacía</h3>
                   <p className="text-xs text-gray-400 max-w-sm mb-6">
@@ -169,7 +167,7 @@ export default function LibraryTab({
                   <div className="flex items-center gap-3">
                     <button 
                       onClick={onOpenFolderDialog}
-                      className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r ${isWWM ? 'from-emerald-500 to-teal-400 shadow-emerald-500/25' : 'from-accent-500 to-accent-400 shadow-accent-500/25'} text-white text-xs font-bold shadow-xl hover:brightness-110 active:scale-95 transition-all`}>
+                      className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r ${'from-accent-500 to-accent-400 shadow-accent-500/25'} text-white text-xs font-bold shadow-xl hover:brightness-110 active:scale-95 transition-all`}>
                       <FolderOpen className="w-4 h-4" />
                       <span>Escanear Carpeta de Música</span>
                     </button>
@@ -188,7 +186,7 @@ export default function LibraryTab({
               {currentFolderNav.length > 0 && viewMode !== 'folders' && (
                 <div className="flex items-center justify-between p-2.5 px-4 mb-4 rounded-xl bg-white/5 border border-white/10 text-xs text-gray-300 animate-in fade-in">
                   <div className="flex items-center gap-2">
-                    <Folder className={`w-3.5 h-3.5 ${isWWM ? 'text-emerald-400' : 'text-accent-400'}`} />
+                    <Folder className={`w-3.5 h-3.5 ${'text-accent-400'}`} />
                     <span>Filtrando por carpeta:</span>
                     <span className="font-semibold text-white">{currentFolderNav.join(' / ')}</span>
                     <span className="text-gray-500 font-mono text-[11px]">({filteredTracks.length} canciones)</span>
@@ -260,7 +258,7 @@ export default function LibraryTab({
                       <button 
                         onClick={() => onPlayFolderTracks(folderExplorerData.allFolderTracks)}
                         disabled={folderExplorerData.allFolderTracks.length === 0}
-                        className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-gradient-to-r ${isWWM ? 'from-emerald-500 to-teal-400 shadow-emerald-500/20' : 'from-accent-500 to-accent-400 shadow-accent-500/20'} text-white text-xs font-bold shadow-md hover:brightness-110 active:scale-95 transition-all disabled:opacity-40`}>
+                        className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-gradient-to-r ${'from-accent-500 to-accent-400 shadow-accent-500/20'} text-white text-xs font-bold shadow-md hover:brightness-110 active:scale-95 transition-all disabled:opacity-40`}>
                         <Play className="w-3.5 h-3.5 fill-current" />
                         <span>Reproducir Carpeta ({folderExplorerData.allFolderTracks.length})</span>
                       </button>
@@ -281,7 +279,7 @@ export default function LibraryTab({
                     <div>
                       <div className="flex items-center justify-between mb-3 px-1">
                         <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
-                          <Folder className={`w-3.5 h-3.5 ${isWWM ? 'text-emerald-400' : 'text-accent-400'}`} />
+                          <Folder className={`w-3.5 h-3.5 ${'text-accent-400'}`} />
                           <span>Carpetas ({folderExplorerData.subfolders.length})</span>
                         </h3>
                       </div>
@@ -292,12 +290,12 @@ export default function LibraryTab({
                             key={sub.name}
                             onClick={() => onNavigateIntoFolder(sub.name)}
                             className={`group relative p-3.5 rounded-2xl glass-card transition-all duration-200 cursor-pointer hover:-translate-y-1 hover:shadow-xl border ${
-                              isWWM ? 'border-white/5 hover:border-emerald-500/40' : 'border-white/5 hover:border-accent-500/40'
+                              'border-white/5 hover:border-accent-500/40'
                             } flex flex-col justify-between`}>
                             
                             <div className="flex items-start justify-between">
                               <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${
-                                isWWM ? 'bg-gradient-to-tr from-emerald-950/60 to-teal-900/40 text-emerald-400 border border-emerald-500/30' : 'bg-gradient-to-tr from-accent-950/60 to-purple-900/40 text-accent-400 border border-accent-500/30'
+                                'bg-gradient-to-tr from-accent-950/60 to-purple-900/40 text-accent-400 border border-accent-500/30'
                               } shadow-md group-hover:scale-105 transition-transform`}>
                                 <Folder className="w-5 h-5 fill-current/25" />
                               </div>
@@ -305,7 +303,7 @@ export default function LibraryTab({
                               <button 
                                 onClick={(e) => { e.stopPropagation(); onPlayFolderTracks(sub.tracks); }}
                                 className={`p-2 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-r ${
-                                  isWWM ? 'from-emerald-500 to-teal-400 shadow-emerald-500/30' : 'from-accent-500 to-accent-400 shadow-accent-500/30'
+                                  'from-accent-500 to-accent-400 shadow-accent-500/30'
                                 } text-white shadow-md hover:scale-110 active:scale-95`}
                                 title={`Reproducir carpeta ${sub.name}`}>
                                 <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
@@ -313,7 +311,7 @@ export default function LibraryTab({
                             </div>
 
                             <div className="mt-3">
-                              <h4 className={`text-xs font-bold text-white truncate ${isWWM ? 'group-hover:text-emerald-300' : 'group-hover:text-accent-300'} transition-colors`} title={sub.name}>
+                              <h4 className={`text-xs font-bold text-white truncate ${'group-hover:text-accent-300'} transition-colors`} title={sub.name}>
                                 {sub.name}
                               </h4>
                               <div className="flex items-center justify-between text-[10px] text-gray-500 font-mono mt-1">
@@ -333,7 +331,7 @@ export default function LibraryTab({
                     <div>
                       <div className="flex items-center justify-between mb-3 px-1">
                         <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
-                          <Music2 className={`w-3.5 h-3.5 ${isWWM ? 'text-emerald-400' : 'text-accent-400'}`} />
+                          <Music2 className={`w-3.5 h-3.5 ${'text-accent-400'}`} />
                           <span>Canciones en {currentFolderNav.length === 0 ? 'la raíz' : currentFolderNav[currentFolderNav.length - 1]} ({folderExplorerData.directTracks.length})</span>
                         </h3>
                       </div>
@@ -348,7 +346,7 @@ export default function LibraryTab({
                                   className="text-gray-400 hover:text-white transition-colors"
                                   title="Seleccionar todas las canciones de este nivel">
                                   {folderExplorerData.directTracks.every(t => selectedTrackIds.has(t.id)) ? (
-                                    <CheckSquare className={`w-3.5 h-3.5 ${isWWM ? 'text-emerald-400' : 'text-accent-400'}`} />
+                                    <CheckSquare className={`w-3.5 h-3.5 ${'text-accent-400'}`} />
                                   ) : (
                                     <Square className="w-3.5 h-3.5" />
                                   )}
@@ -375,16 +373,16 @@ export default function LibraryTab({
                                   onClick={() => onPlayTrack(track)}
                                   className={`cursor-pointer transition-colors ${
                                     isSelected
-                                      ? isWWM ? 'bg-emerald-500/20 text-emerald-200' : 'bg-accent-500/20 text-accent-200'
+                                      ? 'bg-accent-500/20 text-accent-200'
                                       : isCurrent 
-                                        ? isWWM ? 'bg-emerald-500/10 text-emerald-300' : 'bg-accent-500/10 text-accent-300' 
+                                        ? 'bg-accent-500/10 text-accent-300' 
                                         : 'hover:bg-white/5 text-gray-300'
                                   }`}>
                                   <td className="py-2 px-3 text-center" onClick={(e) => e.stopPropagation()}>
                                     <button 
                                       onClick={(e) => onToggleSelectTrack(track.id, e)}
                                       className={`p-1 rounded-md transition-colors ${
-                                        isSelected ? (isWWM ? 'text-emerald-400' : 'text-accent-400') : 'text-gray-600 hover:text-gray-400'
+                                        isSelected ? ('text-accent-400') : 'text-gray-600 hover:text-gray-400'
                                       }`}>
                                       {isSelected ? <CheckSquare className="w-3.5 h-3.5" /> : <Square className="w-3.5 h-3.5" />}
                                     </button>
@@ -412,7 +410,7 @@ export default function LibraryTab({
                                   <td className="py-2 px-4 truncate max-w-[160px] text-gray-400">
                                     {track.album || '—'}
                                   </td>
-                                  <td className={`py-2 px-4 text-center font-mono text-[10px] ${isWWM ? 'text-emerald-300' : 'text-accent-300'}`}>
+                                  <td className={`py-2 px-4 text-center font-mono text-[10px] ${'text-accent-300'}`}>
                                     {track.format}
                                   </td>
                                   <td className="py-2 px-4 text-right font-mono text-gray-400">
@@ -428,9 +426,9 @@ export default function LibraryTab({
                                       </button>
                                       <button 
                                         onClick={(e) => onToggleFavorite(track.id, e)}
-                                        className={`text-gray-500 ${isWWM ? 'hover:text-emerald-400' : 'hover:text-accent-400'} transition-colors p-1`}
+                                        className={`text-gray-500 ${'hover:text-accent-400'} transition-colors p-1`}
                                         title={isFav ? "Quitar de favoritas" : "Marcar como favorita"}>
-                                        <Heart className={`w-3.5 h-3.5 ${isFav ? (isWWM ? 'text-emerald-400 fill-current' : 'text-accent-400 fill-current') : ''}`} />
+                                        <Heart className={`w-3.5 h-3.5 ${isFav ? ('text-accent-400 fill-current') : ''}`} />
                                       </button>
                                     </div>
                                   </td>
@@ -475,10 +473,10 @@ export default function LibraryTab({
                         onClick={() => onPlayTrack(track)}
                         className={`group relative flex items-center gap-3.5 p-3 rounded-2xl glass-card transition-all duration-200 cursor-pointer ${
                           isSelected
-                            ? isWWM ? 'ring-2 ring-emerald-500 bg-emerald-500/15 shadow-lg shadow-emerald-950/40' : 'ring-2 ring-accent-500 bg-accent-500/15 shadow-lg'
+                            ? 'ring-2 ring-accent-500 bg-accent-500/15 shadow-lg'
                             : isCurrent 
-                              ? isWWM ? 'ring-1 ring-emerald-500/60 bg-emerald-950/30 shadow-lg shadow-emerald-950/40' : 'ring-1 ring-accent-500/60 bg-white/10 shadow-lg' 
-                              : isWWM ? 'hover:bg-emerald-950/20 hover:border-emerald-500/20' : 'hover:bg-white/5 hover:border-white/10'
+                              ? 'ring-1 ring-accent-500/60 bg-white/10 shadow-lg' 
+                              : 'hover:bg-white/5 hover:border-white/10'
                         }`}>
                         
                         {/* Checkbox de selección rápida para lote */}
@@ -486,7 +484,7 @@ export default function LibraryTab({
                           onClick={(e) => onToggleSelectTrack(track.id, e)}
                           className={`absolute top-2.5 left-2.5 z-10 p-1 rounded-lg backdrop-blur-md transition-all ${
                             isSelected 
-                              ? isWWM ? 'bg-emerald-500 text-white shadow-md' : 'bg-accent-500 text-white shadow-md' 
+                              ? 'bg-accent-500 text-white shadow-md' 
                               : 'bg-black/60 text-gray-400 hover:text-white opacity-0 group-hover:opacity-100'
                           }`}
                           title={isSelected ? "Deseleccionar" : "Seleccionar para edición en lote"}>
@@ -502,13 +500,13 @@ export default function LibraryTab({
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                             />
                           ) : (
-                            <div className={`w-full h-full bg-gradient-to-br ${isWWM ? 'from-emerald-950/60 to-teal-900/40' : 'from-purple-900/40 to-accent-900/40'} flex items-center justify-center`}>
-                              <Music2 className={`w-6 h-6 ${isWWM ? 'text-emerald-400/80' : 'text-accent-400/80'}`} />
+                            <div className={`w-full h-full bg-gradient-to-br ${'from-purple-900/40 to-accent-900/40'} flex items-center justify-center`}>
+                              <Music2 className={`w-6 h-6 ${'text-accent-400/80'}`} />
                             </div>
                           )}
                           <div className={`absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity ${isCurrent ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
                             {isCurrent && isPlaying ? (
-                              <Pause className={`w-5 h-5 ${isWWM ? 'text-emerald-400' : 'text-accent-400'} fill-current`} />
+                              <Pause className={`w-5 h-5 ${'text-accent-400'} fill-current`} />
                             ) : (
                               <Play className="w-5 h-5 text-white fill-current ml-0.5" />
                             )}
@@ -519,8 +517,8 @@ export default function LibraryTab({
                         <div className="flex-1 min-w-0">
                           <h3 className={`text-xs font-semibold truncate transition-colors ${
                             isCurrent 
-                              ? isWWM ? 'text-emerald-300' : 'text-accent-300' 
-                              : isWWM ? 'text-white group-hover:text-emerald-200' : 'text-white group-hover:text-accent-200'
+                              ? 'text-accent-300' 
+                              : 'text-white group-hover:text-accent-200'
                           }`}>
                             {track.title}
                           </h3>
@@ -528,7 +526,7 @@ export default function LibraryTab({
                             {track.artist} {track.album ? `· ${track.album}` : ''}
                           </p>
                           <div className="flex items-center gap-2 mt-1">
-                            <span className={`text-[9px] px-1.5 py-0.5 rounded-md bg-white/10 ${isWWM ? 'text-emerald-300' : 'text-accent-300'} font-mono font-medium`}>
+                            <span className={`text-[9px] px-1.5 py-0.5 rounded-md bg-white/10 ${'text-accent-300'} font-mono font-medium`}>
                               {track.format}
                             </span>
                             {track.year && (
@@ -551,9 +549,9 @@ export default function LibraryTab({
                             </button>
                             <button 
                               onClick={(e) => onToggleFavorite(track.id, e)}
-                              className={`text-gray-500 ${isWWM ? 'hover:text-emerald-400' : 'hover:text-accent-400'} transition-colors p-1`}
+                              className={`text-gray-500 ${'hover:text-accent-400'} transition-colors p-1`}
                               title={isFav ? "Quitar de favoritas" : "Marcar como favorita"}>
-                              <Heart className={`w-3.5 h-3.5 ${isFav ? (isWWM ? 'text-emerald-400 fill-current' : 'text-accent-400 fill-current') : ''}`} />
+                              <Heart className={`w-3.5 h-3.5 ${isFav ? ('text-accent-400 fill-current') : ''}`} />
                             </button>
                           </div>
                         </div>
@@ -566,7 +564,7 @@ export default function LibraryTab({
 
               {/* VISTA PERGAMINO MAKIMONO */}
               {false && ( /* makimono (reemplazada) */
-                <section className={`makimono-scene mb-24 rounded-3xl ${isWWM ? 'makimono-wwm' : 'makimono-sakura'}`}>
+                <section className={`makimono-scene mb-24 rounded-3xl ${'makimono-sakura'}`}>
                   <div className="flex items-center justify-between gap-4 px-5 pt-4 pb-3">
                     <div className="min-w-0">
                       <p className="text-[10px] uppercase tracking-[0.24em] text-amber-100/70">巻物 · Makimono</p>
@@ -692,7 +690,7 @@ export default function LibraryTab({
 
               {/* VISTA JARDÍN NOCTURNO */}
               {false && ( /* lanterns (reemplazada) */
-                <section className={`lantern-scene mb-24 rounded-3xl ${isWWM ? 'lantern-wwm' : 'lantern-sakura'}`}>
+                <section className={`lantern-scene mb-24 rounded-3xl ${'lantern-sakura'}`}>
                   <header className="lantern-heading">
                     <div className="min-w-0">
                       <p className="lantern-kicker">夜 · Biblioteca nocturna</p>
@@ -774,7 +772,7 @@ export default function LibraryTab({
 
               {/* VISTA CELOSÍAS SHŌJI */}
               {false && ( /* shoji (reemplazada) */
-                <section className={`shoji-scene mb-24 rounded-3xl ${isWWM ? 'shoji-wwm' : ''}`}>
+                <section className={`shoji-scene mb-24 rounded-3xl ${''}`}>
                   <header className="shoji-heading">
                     <div>
                       <p className="shoji-kicker">障子 · Shōji</p>
@@ -849,7 +847,7 @@ export default function LibraryTab({
 
               {/* VISTA CARTAS HANAFUDA */}
               {false && ( /* hanafuda (reemplazada) */
-                <section className={`hanafuda-scene mb-24 ${isWWM ? 'hanafuda-wwm' : ''}`}>
+                <section className={`hanafuda-scene mb-24 ${''}`}>
                   <header className="hanafuda-heading">
                     <div>
                       <p className="hanafuda-kicker">花札 · Hanafuda</p>
@@ -940,7 +938,7 @@ export default function LibraryTab({
                             className="text-gray-400 hover:text-white transition-colors"
                             title={selectedTrackIds.size === filteredTracks.length ? "Deseleccionar todas" : "Seleccionar todas"}>
                             {selectedTrackIds.size > 0 && selectedTrackIds.size === filteredTracks.length ? (
-                              <CheckSquare className={`w-3.5 h-3.5 ${isWWM ? 'text-emerald-400' : 'text-accent-400'}`} />
+                              <CheckSquare className={`w-3.5 h-3.5 ${'text-accent-400'}`} />
                             ) : (
                               <Square className="w-3.5 h-3.5" />
                             )}
@@ -967,16 +965,16 @@ export default function LibraryTab({
                             onClick={() => onPlayTrack(track)}
                             className={`h-7 cursor-pointer transition-colors ${
                               isSelected
-                                ? isWWM ? 'bg-emerald-500/20 text-emerald-200' : 'bg-accent-500/20 text-accent-200'
+                                ? 'bg-accent-500/20 text-accent-200'
                                 : isCurrent 
-                                  ? isWWM ? 'bg-emerald-500/10 text-emerald-300' : 'bg-accent-500/10 text-accent-300' 
+                                  ? 'bg-accent-500/10 text-accent-300' 
                                   : 'hover:bg-white/5 text-gray-300'
                             }`}>
                             <td className="px-2 text-center" onClick={(e) => e.stopPropagation()}>
                               <button 
                                 onClick={(e) => onToggleSelectTrack(track.id, e)}
                                 className={`p-0.5 rounded-md transition-colors ${
-                                  isSelected ? (isWWM ? 'text-emerald-400' : 'text-accent-400') : 'text-gray-600 hover:text-gray-400'
+                                  isSelected ? ('text-accent-400') : 'text-gray-600 hover:text-gray-400'
                                 }`}>
                                 {isSelected ? <CheckSquare className="w-3 h-3" /> : <Square className="w-3 h-3" />}
                               </button>
@@ -996,7 +994,7 @@ export default function LibraryTab({
                             <td className="px-2 text-center text-gray-400 font-mono">
                               {track.year ?? '—'}
                             </td>
-                            <td className={`px-2 text-center font-mono text-[10px] ${isWWM ? 'text-emerald-300' : 'text-accent-300'}`}>
+                            <td className={`px-2 text-center font-mono text-[10px] ${'text-accent-300'}`}>
                               {track.format}
                             </td>
                             <td className="px-2 text-right font-mono text-gray-400">
@@ -1015,9 +1013,9 @@ export default function LibraryTab({
                                 </button>
                                 <button 
                                   onClick={(e) => onToggleFavorite(track.id, e)}
-                                  className={`text-gray-500 ${isWWM ? 'hover:text-emerald-400' : 'hover:text-accent-400'} transition-colors p-0.5`}
+                                  className={`text-gray-500 ${'hover:text-accent-400'} transition-colors p-0.5`}
                                   title={favoriteTrackIds.has(track.id) ? "Quitar de favoritas" : "Marcar como favorita"}>
-                                  <Heart className={`w-3 h-3 ${favoriteTrackIds.has(track.id) ? (isWWM ? 'text-emerald-400 fill-current' : 'text-accent-400 fill-current') : ''}`} />
+                                  <Heart className={`w-3 h-3 ${favoriteTrackIds.has(track.id) ? ('text-accent-400 fill-current') : ''}`} />
                                 </button>
                               </div>
                             </td>
@@ -1054,7 +1052,7 @@ export default function LibraryTab({
                       </div>
 
                       {/* Hero Banner del Álbum con Funda y Vinilo */}
-                      <div className={`relative overflow-hidden rounded-3xl p-6 sm:p-8 glass-card border border-white/10 bg-gradient-to-r ${isWWM ? 'from-emerald-950/40 via-teal-950/30 to-black/20' : 'from-accent-950/40 via-purple-950/30 to-black/20'}`}>
+                      <div className={`relative overflow-hidden rounded-3xl p-6 sm:p-8 glass-card border border-white/10 bg-gradient-to-r ${'from-accent-950/40 via-purple-950/30 to-black/20'}`}>
                         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 sm:gap-8 relative z-10">
                           
                           {/* Portada 3D con disco de vinilo asomándose */}
@@ -1065,7 +1063,7 @@ export default function LibraryTab({
                                 ? 'animate-spin-slow shadow-2xl' 
                                 : 'group-hover/sleeve:translate-x-3'
                             }`}>
-                              <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full border border-white/20 ${isWWM ? 'bg-gradient-to-tr from-emerald-800 to-teal-700' : 'bg-gradient-to-tr from-accent-800 to-purple-700'} flex items-center justify-center shadow-inner`}>
+                              <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full border border-white/20 ${'bg-gradient-to-tr from-accent-800 to-purple-700'} flex items-center justify-center shadow-inner`}>
                                 <div className="w-4 h-4 rounded-full bg-black/90 border border-white/10" />
                               </div>
                             </div>
@@ -1079,8 +1077,8 @@ export default function LibraryTab({
                                   className="w-full h-full object-cover" 
                                 />
                               ) : (
-                                <div className={`w-full h-full bg-gradient-to-br ${isWWM ? 'from-emerald-950/80 to-teal-900/60' : 'from-purple-900/60 to-accent-900/60'} flex flex-col items-center justify-center p-4 text-center`}>
-                                  <Disc3 className={`w-16 h-16 ${isWWM ? 'text-emerald-400/80' : 'text-accent-400/80'} mb-2`} />
+                                <div className={`w-full h-full bg-gradient-to-br ${'from-purple-900/60 to-accent-900/60'} flex flex-col items-center justify-center p-4 text-center`}>
+                                  <Disc3 className={`w-16 h-16 ${'text-accent-400/80'} mb-2`} />
                                   <span className="text-xs text-gray-300 font-bold truncate max-w-full">{selectedAlbum.album}</span>
                                 </div>
                               )}
@@ -1091,7 +1089,7 @@ export default function LibraryTab({
                           {/* Metadatos y acciones del álbum */}
                           <div className="flex-1 min-w-0 text-center sm:text-left">
                             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider mb-2 border border-white/10 bg-white/5">
-                              <Disc3 className={`w-3.5 h-3.5 ${isWWM ? 'text-emerald-400' : 'text-accent-400'}`} />
+                              <Disc3 className={`w-3.5 h-3.5 ${'text-accent-400'}`} />
                               <span className="text-gray-300">Álbum Completo</span>
                             </div>
                             
@@ -1120,7 +1118,7 @@ export default function LibraryTab({
                                 <span>{formatTotalTime(selectedAlbum.totalDurationSec)}</span>
                               </span>
                               {selectedAlbum.formats.map((fmt) => (
-                                <span key={fmt} className={`px-2 py-0.5 rounded-md font-bold text-[10px] ${isWWM ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-accent-500/20 text-accent-300 border border-accent-500/30'}`}>
+                                <span key={fmt} className={`px-2 py-0.5 rounded-md font-bold text-[10px] ${'bg-accent-500/20 text-accent-300 border border-accent-500/30'}`}>
                                   {fmt}
                                 </span>
                               ))}
@@ -1130,7 +1128,7 @@ export default function LibraryTab({
                             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3">
                               <button 
                                 onClick={() => onPlayAlbum(selectedAlbum)}
-                                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r ${isWWM ? 'from-emerald-500 to-teal-400 shadow-emerald-500/25' : 'from-accent-500 to-accent-400 shadow-accent-500/25'} text-white text-xs font-bold shadow-xl hover:brightness-110 active:scale-95 transition-all`}>
+                                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r ${'from-accent-500 to-accent-400 shadow-accent-500/25'} text-white text-xs font-bold shadow-xl hover:brightness-110 active:scale-95 transition-all`}>
                                 <Play className="w-4 h-4 fill-current" />
                                 <span>Reproducir Álbum</span>
                               </button>
@@ -1162,7 +1160,7 @@ export default function LibraryTab({
                                   className="text-gray-400 hover:text-white transition-colors"
                                   title="Seleccionar todas las pistas del álbum">
                                   {selectedAlbum.tracks.every(t => selectedTrackIds.has(t.id)) ? (
-                                    <CheckSquare className={`w-3.5 h-3.5 ${isWWM ? 'text-emerald-400' : 'text-accent-400'}`} />
+                                    <CheckSquare className={`w-3.5 h-3.5 ${'text-accent-400'}`} />
                                   ) : (
                                     <Square className="w-3.5 h-3.5" />
                                   )}
@@ -1187,16 +1185,16 @@ export default function LibraryTab({
                                   onClick={() => onPlayTrack(track)}
                                   className={`cursor-pointer transition-colors ${
                                     isSelected
-                                      ? isWWM ? 'bg-emerald-500/20 text-emerald-200' : 'bg-accent-500/20 text-accent-200'
+                                      ? 'bg-accent-500/20 text-accent-200'
                                       : isCurrent 
-                                        ? isWWM ? 'bg-emerald-500/10 text-emerald-300' : 'bg-accent-500/10 text-accent-300' 
+                                        ? 'bg-accent-500/10 text-accent-300' 
                                         : 'hover:bg-white/5 text-gray-300'
                                   }`}>
                                   <td className="py-2 px-3 text-center" onClick={(e) => e.stopPropagation()}>
                                     <button 
                                       onClick={(e) => onToggleSelectTrack(track.id, e)}
                                       className={`p-1 rounded-md transition-colors ${
-                                        isSelected ? (isWWM ? 'text-emerald-400' : 'text-accent-400') : 'text-gray-600 hover:text-gray-400'
+                                        isSelected ? ('text-accent-400') : 'text-gray-600 hover:text-gray-400'
                                       }`}>
                                       {isSelected ? <CheckSquare className="w-3.5 h-3.5" /> : <Square className="w-3.5 h-3.5" />}
                                     </button>
@@ -1210,7 +1208,7 @@ export default function LibraryTab({
                                   <td className="py-2 px-4 truncate max-w-[160px] text-gray-400">
                                     {track.artist}
                                   </td>
-                                  <td className={`py-2 px-4 text-center font-mono text-[10px] ${isWWM ? 'text-emerald-300' : 'text-accent-300'}`}>
+                                  <td className={`py-2 px-4 text-center font-mono text-[10px] ${'text-accent-300'}`}>
                                     {track.format}
                                   </td>
                                   <td className="py-2 px-4 text-right font-mono text-gray-400">
@@ -1226,9 +1224,9 @@ export default function LibraryTab({
                                       </button>
                                       <button 
                                         onClick={(e) => onToggleFavorite(track.id, e)}
-                                        className={`text-gray-500 ${isWWM ? 'hover:text-emerald-400' : 'hover:text-accent-400'} transition-colors p-1`}
+                                        className={`text-gray-500 ${'hover:text-accent-400'} transition-colors p-1`}
                                         title={isFav ? "Quitar de favoritas" : "Marcar como favorita"}>
-                                        <Heart className={`w-3.5 h-3.5 ${isFav ? (isWWM ? 'text-emerald-400 fill-current' : 'text-accent-400 fill-current') : ''}`} />
+                                        <Heart className={`w-3.5 h-3.5 ${isFav ? ('text-accent-400 fill-current') : ''}`} />
                                       </button>
                                     </div>
                                   </td>
@@ -1261,9 +1259,9 @@ export default function LibraryTab({
                               onClick={() => onSetExpandedAlbumKey(group.key)}
                               className={`group relative flex flex-col p-3 rounded-2xl glass-card transition-all duration-300 cursor-pointer hover:-translate-y-1 hover:shadow-2xl border ${
                                 hasSelectedTracks 
-                                  ? isWWM ? 'border-emerald-500/60 ring-1 ring-emerald-500/40 bg-emerald-950/20' : 'border-accent-500/60 ring-1 ring-accent-500/40 bg-accent-950/20' 
+                                  ? 'border-accent-500/60 ring-1 ring-accent-500/40 bg-accent-950/20' 
                                   : isAlbumPlaying 
-                                    ? isWWM ? 'border-emerald-500/50 shadow-lg shadow-emerald-950/40' : 'border-accent-500/50 shadow-lg shadow-accent-950/40'
+                                    ? 'border-accent-500/50 shadow-lg shadow-accent-950/40'
                                     : 'border-white/5 hover:border-white/20'
                               }`}>
                               
@@ -1274,7 +1272,7 @@ export default function LibraryTab({
                                 <div className={`absolute right-1 top-1/2 -translate-y-1/2 w-4/5 h-4/5 rounded-full vinyl-disc opacity-0 group-hover:opacity-100 group-hover:translate-x-3 transition-all duration-300 pointer-events-none flex items-center justify-center ${
                                   isAlbumPlaying ? 'opacity-100 translate-x-2 animate-spin-slow' : ''
                                 }`}>
-                                  <div className={`w-8 h-8 rounded-full border border-white/20 ${isWWM ? 'bg-emerald-800' : 'bg-accent-800'} flex items-center justify-center shadow-inner`}>
+                                  <div className={`w-8 h-8 rounded-full border border-white/20 ${'bg-accent-800'} flex items-center justify-center shadow-inner`}>
                                     <div className="w-2.5 h-2.5 rounded-full bg-black/90" />
                                   </div>
                                 </div>
@@ -1287,8 +1285,8 @@ export default function LibraryTab({
                                     className="relative z-10 w-full h-full object-cover rounded-xl group-hover:shadow-lg transition-transform duration-300 group-hover:scale-102" 
                                   />
                                 ) : (
-                                  <div className={`relative z-10 w-full h-full rounded-xl bg-gradient-to-br ${isWWM ? 'from-emerald-950/60 to-teal-900/40' : 'from-purple-900/40 to-accent-900/40'} flex flex-col items-center justify-center text-center p-3`}>
-                                    <Disc3 className={`w-10 h-10 ${isWWM ? 'text-emerald-400/80' : 'text-accent-400/80'} mb-1`} />
+                                  <div className={`relative z-10 w-full h-full rounded-xl bg-gradient-to-br ${'from-purple-900/40 to-accent-900/40'} flex flex-col items-center justify-center text-center p-3`}>
+                                    <Disc3 className={`w-10 h-10 ${'text-accent-400/80'} mb-1`} />
                                     <span className="text-[10px] text-gray-400 font-mono truncate max-w-full">{group.album}</span>
                                   </div>
                                 )}
@@ -1297,7 +1295,7 @@ export default function LibraryTab({
                                 <div className="absolute inset-0 z-20 bg-black/40 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center gap-2">
                                   <button 
                                     onClick={(e) => { e.stopPropagation(); onPlayAlbum(group); }}
-                                    className={`p-3 rounded-full bg-gradient-to-r ${isWWM ? 'from-emerald-500 to-teal-400 shadow-emerald-500/40' : 'from-accent-500 to-accent-400 shadow-accent-500/40'} text-white shadow-xl hover:scale-110 active:scale-95 transition-all`}
+                                    className={`p-3 rounded-full bg-gradient-to-r ${'from-accent-500 to-accent-400 shadow-accent-500/40'} text-white shadow-xl hover:scale-110 active:scale-95 transition-all`}
                                     title="Reproducir álbum">
                                     <Play className="w-4 h-4 fill-current ml-0.5" />
                                   </button>
@@ -1312,7 +1310,7 @@ export default function LibraryTab({
                               </div>
 
                               {/* Título y Artista */}
-                              <h3 className={`text-xs font-bold text-white truncate ${isWWM ? 'group-hover:text-emerald-300' : 'group-hover:text-accent-300'} transition-colors`} title={group.album}>
+                              <h3 className={`text-xs font-bold text-white truncate ${'group-hover:text-accent-300'} transition-colors`} title={group.album}>
                                 {group.album}
                               </h3>
                               <p className="text-[11px] text-gray-400 truncate mt-0.5" title={group.artist}>

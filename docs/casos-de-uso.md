@@ -148,7 +148,7 @@ cada fila conserva su historial y las interrumpidas siguen solas.
 cada cambio),
 `src-tauri/src/downloader.rs` (`cancel`, `cancel_all`, `is_cancelled`),
 `src-tauri/src/lib.rs` (`cancel_download`, `cancel_all_downloads`,
-`get_download_queue`, `save_download_queue`, `clear_download_queue`, `run`),
+`get_download_queue`, `save_download_queue`, `run`),
 `src-tauri/src/queue.rs` (`load_queue`, `save_queue`, `reconcile_status`).
 
 ---

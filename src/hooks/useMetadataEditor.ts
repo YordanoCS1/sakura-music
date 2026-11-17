@@ -7,19 +7,15 @@ import { convertFileSrc, invoke } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-dialog';
 import type { CatalogAlbum, CatalogAlbumTrack, CatalogCandidate, CatalogSource, ScannedTrack } from '../types';
 
-export type EditField = 'title' | 'artist' | 'album' | 'album_artist' | 'track_number' | 'year' | 'genre';
+type EditField = 'title' | 'artist' | 'album' | 'album_artist' | 'track_number' | 'year' | 'genre';
 
 interface UseMetadataEditorDeps {
-  tracks: ScannedTrack[];
   setTracks: React.Dispatch<React.SetStateAction<ScannedTrack[]>>;
   activeTrack: ScannedTrack | null;
   setActiveTrack: React.Dispatch<React.SetStateAction<ScannedTrack | null>>;
 }
 
-// tracks se usa solo para mantener la firma de actualización; el editor guarda
-// por updated.id igual que antes.
 export function useMetadataEditor({
-  tracks,
   setTracks,
   activeTrack,
   setActiveTrack,
@@ -390,10 +386,6 @@ export function useMetadataEditor({
       setIsSavingMetadata(false);
     }
   };
-
-  // `tracks` no se lee acá (solo se pasa para mantener compatibilidad);
-  // referenciarlo evita el aviso de variable sin usar.
-  void tracks;
 
   return {
     editingTrack, setEditingTrack,
