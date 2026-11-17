@@ -3,6 +3,9 @@ node_modules/
 src-tauri/target/
 src-tauri/gen/
 .tauri_data/
+coverage/
+test-results/
+playwright-report/
 legacy_python/
 docs/temas/
 package-lock.json

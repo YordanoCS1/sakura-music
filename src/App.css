@@ -2,6 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Fuentes locales: la app funciona sin conexión y no consulta a Google. */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('/fonts/plus-jakarta-sans-latin.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-latin.woff2') format('woff2');
+}
+
 @layer base {
   :root {
     --bg-primary: #0f0a14;

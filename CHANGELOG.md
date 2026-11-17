@@ -14,6 +14,8 @@ Todos los cambios destacables de este proyecto se registran acá. El formato sig
 - Tooling de calidad: ESLint, Prettier, `rustfmt.toml`, scripts `check`/`typecheck`/`lint`/`format`/`test` y tests unitarios del frontend con Vitest (7 pruebas).
 - `ErrorBoundary` que evita la pantalla en blanco y permite recargar; registro de avisos en `sakura.log`.
 - Navegación por pestañas accesible (roles ARIA, flechas), menú de vistas con teclado, `aria-label` en controles de icono y trampa de foco en los modales.
+- Fuentes servidas localmente (sin Google Fonts) y CSP ajustado en consecuencia; `getBoundingClientRect` del virtualizador se mide fuera del render.
+- Tests E2E con Playwright sobre Vite con IPC simulado y guía de release con firma de bundles.
 
 ### Cambiado
 - El único tema visual tiene id `space`; los tokens `--m3-*` se aplican bajo `[data-theme='space']`.

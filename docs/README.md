@@ -15,6 +15,7 @@ Esta carpeta contiene la documentación técnica y de referencia del proyecto Sa
 | La promesa verificable de la app | [requisitos.md](requisitos.md) |
 | Flujos paso a paso | [casos-de-uso.md](casos-de-uso.md) |
 | Setup, tests y recetas | [desarrollo.md](desarrollo.md) |
+| Versionar, firmar y publicar | [release.md](release.md) |
 | Comandos y eventos disponibles | [ipc-contract.md](ipc-contract.md) |
 | Dónde y cómo se guardan los datos | [data-formats.md](data-formats.md) |
 | Buscar, descargar y entender la cola | [manual/buscar-y-descargar.md](manual/buscar-y-descargar.md) |
@@ -33,6 +34,7 @@ docs/
   requisitos.md              RF/RNF con criterio de aceptación y tests
   arquitectura.md            capas, hilos, persistencia, seguridad y secuencias
   desarrollo.md              setup, tests, tipos y recetas para extender
+  release.md                 versionado, build, firma y publicación
   ipc-contract.md            20 comandos Tauri y 4 eventos (contrato frontend/Rust)
   data-formats.md            SQLite, download_queue.json y preferencias
   manual/
