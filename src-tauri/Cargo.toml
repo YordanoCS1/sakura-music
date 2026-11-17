@@ -25,6 +25,9 @@ rusqlite = { version = "0.42.0", features = ["bundled"] }
 notify = "8.2.2"
 # Mutex que no se envenena: un panic en un hilo de descarga no puede matar la app.
 parking_lot = "0.12"
+# Verificación de las herramientas que se descargan a `bin/`.
+sha2 = "0.10"
+zip = { version = "2", default-features = false, features = ["deflate"] }
 
 [target.'cfg(windows)'.dependencies]
 windows-sys = { version = "0.61", features = [

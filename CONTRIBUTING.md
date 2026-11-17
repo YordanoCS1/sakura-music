@@ -42,7 +42,7 @@ O, si querés correr las etapas por separado:
 ```powershell
 npm run check                                   # tipos + lint + formato + tests + build
 npm run test:e2e                                # navegador + arranque de la UI
-cargo test --manifest-path src-tauri/Cargo.toml  # 17 tests Rust
+cargo test --manifest-path src-tauri/Cargo.toml  # 21 tests Rust
 cargo fmt --check --manifest-path src-tauri/Cargo.toml
 cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings
 ```

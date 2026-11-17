@@ -124,7 +124,7 @@ npm run tauri build   # instalador .exe / .msi
 Checks de código:
 
 ```powershell
-cargo test --manifest-path src-tauri/Cargo.toml   # 17 tests Rust
+cargo test --manifest-path src-tauri/Cargo.toml   # 21 tests Rust
 node node_modules/typescript/bin/tsc --noEmit     # tipos del frontend
 ```
 
@@ -163,7 +163,7 @@ Sakura_Music/
 │       └── useBatchEditor.ts     # edición en lote
 ├── src-tauri/                    # Backend Rust
 │   ├── src/
-│   │   ├── lib.rs                # comandos Tauri (17), caché, scope asset, ciclo de vida
+│   │   ├── lib.rs                # comandos Tauri (19), caché, scope asset, ciclo de vida
 │   │   ├── catalog.rs            # 3 comandos de catálogo (iTunes/Deezer/MusicBrainz)
 │   │   ├── main.rs               # entrada desktop
 │   │   ├── scanner.rs            # escaneo Rayon, tags lofty, escritura atómica, tests
@@ -192,7 +192,7 @@ Todo el detalle vivido en `docs/`, en Markdown plano con Mermaid, sin MkDocs:
 - [Requisitos](docs/requisitos.md) — promesas verificables con su criterio.
 - [Casos de uso](docs/casos-de-uso.md) — actores y flujos contra el código real.
 - [Desarrollo](docs/desarrollo.md) — setup, tests y recetas.
-- [Contrato IPC](docs/ipc-contract.md) — los 20 comandos Tauri y los 4 eventos.
+- [Contrato IPC](docs/ipc-contract.md) — los 22 comandos Tauri y los 5 eventos.
 - [Formatos de datos](docs/data-formats.md) — SQLite, cola persistente y preferencias.
 - [Manual de usuario](docs/manual/README.md) — instalación, buscar/descargar, biblioteca, metadatos y resolución de problemas.
 - [ADRs](docs/adr/README.md) — decisiones. Los 0001–0008 quedaron como histórico de la v1; 0009 y posteriores rigen la v2.

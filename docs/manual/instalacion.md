@@ -15,7 +15,11 @@ guardás todo lo suyo en la carpeta de datos del usuario
 | **WebView2** | Mostrar la interfaz | Preinstalado en Windows 10/11 |
 
 La app **detecta** yt-dlp y ffmpeg y te informa dónde los encontró (Cola y
-Ajustes). Sin yt-dlp no podés buscar ni descargar. ¿No tenés ninguno?
+Ajustes). Sin yt-dlp no podés buscar ni descargar.
+
+Si no los tenés, abrí **Ajustes → Herramientas de descarga** y tocá **Instalar**:
+Sakura baja la versión fijada, verifica su hash SHA256 y la guarda en `bin/`.
+No reemplaza un binario que ya estés usando. Si preferís instalarlos vos:
 
 **Windows (con winget):**
 
@@ -95,7 +99,7 @@ Los siguientes pasos están en [buscar-y-descargar.md](buscar-y-descargar.md) y
 | `node` no reconocido | Node no instalado o no en `PATH` | Instalá Node 20+ y reabrí la terminal |
 | `cargo` no reconocido | Rust no instalado o no en `PATH` | Instalá rustup y reabrí la terminal |
 | La ventana no aparece | Vite no arrancó | Corré `npm run tauri dev` desde terminal y leé el error |
-| “yt-dlp no encontrado” | Falta el binario | Instalalo (ver arriba) |
-| “ffmpeg no encontrado” | Falta el binario | Instalalo (ver arriba) |
+| “yt-dlp no encontrado” | Falta el binario | Instalalo desde Ajustes → Herramientas de descarga |
+| “ffmpeg no encontrado” | Falta el binario | Instalalo desde Ajustes → Herramientas de descarga |
 
 Más casos en [problemas.md](problemas.md).

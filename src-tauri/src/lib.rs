@@ -12,6 +12,7 @@ mod logging;
 mod paths;
 mod queue;
 mod scanner;
+mod tools;
 use downloader::{DownloadManager, DownloaderStatus, OnlineSearchResult};
 use queue::PersistedDownload;
 use scanner::{BatchUpdateResult, ScannedTrack};
@@ -19,6 +20,20 @@ use scanner::{BatchUpdateResult, ScannedTrack};
 #[tauri::command]
 fn check_downloader_tools() -> DownloaderStatus {
     downloader::get_status()
+}
+
+/// Estado de las herramientas instalables, para el panel de Ajustes.
+#[tauri::command]
+fn tools_status() -> Vec<tools::ToolStatus> {
+    tools::estados()
+}
+
+#[tauri::command]
+async fn install_downloader_tools(
+    app: tauri::AppHandle,
+    tool: String,
+) -> Result<tools::ToolStatus, String> {
+    tools::instalar(&app, &tool).await
 }
 
 #[tauri::command]
@@ -415,6 +430,8 @@ pub fn run() {
             delete_library_track,
             scan_library,
             check_downloader_tools,
+            tools_status,
+            install_downloader_tools,
             search_online,
             start_download,
             cancel_download,

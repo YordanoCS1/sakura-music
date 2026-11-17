@@ -38,6 +38,7 @@ Fuera de alcance: el contenido de las canciones descargadas, las políticas de l
 - **Validación de rutas** antes de borrar: `symlink_metadata` + `canonicalize` + comprobación de que el archivo quede dentro de la carpeta raíz. El mismo criterio se aplica al ampliar el scope: una ruta canónica fuera de la raíz activa se rechaza y el fallo se informa al frontend.
 - **Registro local** en `<datos>/sakura.log` para avisos que antes se perdían en una consola inexistente; no guarda datos personales ni rutas de búsquedas.
 - **Subprocessos sin shell**: `Command` con argumentos por `.arg()`, sin interpolación.
+- **Herramientas verificadas**: si el usuario instala yt-dlp o FFmpeg desde Ajustes, se descargan de URLs fijadas y se valida su SHA256 antes de escribir nada; nunca se pisa un binario existente.
 - **Sin secretos en el código** ni rutas hardcodeadas de usuarios.
 
 ## Para releases

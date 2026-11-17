@@ -37,7 +37,7 @@ docs/
   desarrollo.md              setup, tests, tipos y recetas para extender
   release.md                 versionado, build, firma y publicación
   pipeline.md                diagrama y etapas del CI
-  ipc-contract.md            20 comandos Tauri y 4 eventos (contrato frontend/Rust)
+  ipc-contract.md            22 comandos Tauri y 4 eventos (contrato frontend/Rust)
   data-formats.md            SQLite, download_queue.json y preferencias
   manual/
     README.md                índice del manual
@@ -109,7 +109,7 @@ docs/
 | Documento | Última revisión | Fuente principal |
 |---|---|---|
 | `casos-de-uso.md` | 2026-11-17 | `src/App.tsx`, `src-tauri/src/` |
-| `requisitos.md` | 2026-11-17 | código + `cargo test` (17 tests) + `tsc` |
+| `requisitos.md` | 2026-11-17 | código + `cargo test` (21 tests) + `tsc` |
 | `arquitectura.md` | 2026-11-17 | `src-tauri/src/`, `src/App.tsx`, `tauri.conf.json` |
 | `ipc-contract.md` | 2026-11-17 | `lib.rs`, `catalog.rs`, `downloader.rs`, `library_watcher.rs` |
 | `data-formats.md` | 2026-11-17 | `library_db.rs`, `queue.rs`, `paths.rs`, `localStorage` |

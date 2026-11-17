@@ -151,7 +151,7 @@ Incluí:
 ## Diagnóstico para desarrolladores
 
 ```powershell
-cargo test --manifest-path src-tauri/Cargo.toml   # 17 tests Rust
+cargo test --manifest-path src-tauri/Cargo.toml   # 21 tests Rust
 node node_modules/typescript/bin/tsc --noEmit      # tipos
 npm run build                                      # tsc + vite build
 ```

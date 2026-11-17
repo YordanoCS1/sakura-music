@@ -18,7 +18,7 @@ flowchart TD
       S6 --> S7["build · vite"]
       S7 --> S8["cargo fmt --check"]
       S8 --> S9["cargo clippy -D warnings"]
-      S9 --> S10["cargo test (17)"]
+      S9 --> S10["cargo test (21)"]
       S10 --> S11["npm audit · informativo"]
     end
 
@@ -47,7 +47,7 @@ flowchart TD
 | 7 | Build | `npm run build` | sí | `tsc` + bundle de producción |
 | 8 | Formato Rust | `cargo fmt --check` | sí | `rustfmt.toml` |
 | 9 | Lint Rust | `cargo clippy -D warnings` | sí | 0 avisos |
-| 10 | Tests Rust | `cargo test` | sí | 17 pruebas |
+| 10 | Tests Rust | `cargo test` | sí | 21 pruebas |
 | 11 | Auditoría | `npm run audit` | **no** | `picomatch`: aviso *high* sin corrección |
 | 12 | Instalador | `npm run tauri build` | sí | Sólo con tag o manual |
 

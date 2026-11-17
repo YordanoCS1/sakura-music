@@ -15,12 +15,13 @@ Todos los cambios destacables de este proyecto se registran acá. El formato sig
 - `ErrorBoundary` que evita la pantalla en blanco y permite recargar; registro de avisos en `sakura.log`.
 - Navegación por pestañas accesible (roles ARIA, flechas), menú de vistas con teclado, `aria-label` en controles de icono y trampa de foco en los modales.
 - Fuentes servidas localmente (sin Google Fonts) y CSP ajustado en consecuencia; `getBoundingClientRect` del virtualizador se mide fuera del render.
+- Instalación de yt-dlp y FFmpeg bajo demanda desde **Ajustes → Herramientas de descarga**, con URLs y hashes SHA256 fijados, progreso en vivo y sin reemplazar binarios existentes.
 - Tests E2E con Playwright sobre Vite con IPC simulado y guía de release con firma de bundles.
 
 ### Cambiado
 - El único tema visual tiene id `space`; los tokens `--m3-*` se aplican bajo `[data-theme='space']`.
 - Todos los comentarios del código están en español rioplatense y explican decisiones no obvias.
-- La documentación se actualizó para reflejar 20 comandos Tauri, 17 tests Rust y 9 vistas.
+- La documentación se actualizó para reflejar 22 comandos Tauri, 21 tests Rust y 9 vistas.
 - Código Rust y frontend formateados con `rustfmt` y Prettier; clippy pasa con `-D warnings`.
 - La ventana se declara sin decoraciones también en `tauri.conf.json`, igual que en `lib.rs`.
 - `DownloadManager` usa `parking_lot`: un panic en un hilo de descarga ya no envenena un mutex y, con `panic = "abort"`, no se lleva la app por delante.

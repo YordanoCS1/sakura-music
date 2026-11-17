@@ -118,6 +118,22 @@ export interface DownloadItem {
   createdAt: number;
 }
 
+export interface ToolStatus {
+  id: 'ytdlp' | 'ffmpeg';
+  nombre: string;
+  instalada: boolean;
+  en_bin: boolean;
+  ruta: string | null;
+  version: string;
+}
+
+export interface ToolProgress {
+  tool: string;
+  descargado: number;
+  total: number;
+  estado: string;
+}
+
 export type ThemeMode = 'space';
 export type AppTab = 'home' | 'search' | 'library' | 'queue' | 'settings';
 export type PlayerStyle = 'floating' | 'fixed';

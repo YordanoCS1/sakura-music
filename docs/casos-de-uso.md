@@ -376,4 +376,4 @@ Ajustes).
 
 **Dónde está:** `docs/desarrollo.md`.
 
-**Tests:** `cargo test` (17 Rust) y `node node_modules/typescript/bin/tsc --noEmit`.
+**Tests:** `cargo test` (21 Rust) y `node node_modules/typescript/bin/tsc --noEmit`.

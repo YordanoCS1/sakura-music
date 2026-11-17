@@ -376,8 +376,9 @@ pub fn search_youtube(
     request_id: &str,
     query: &str,
 ) -> Result<Vec<OnlineSearchResult>, String> {
-    let ytdlp =
-        find_ytdlp_binary().ok_or_else(|| "yt-dlp no encontrado en el sistema".to_string())?;
+    let ytdlp = find_ytdlp_binary().ok_or_else(|| {
+        "yt-dlp no encontrado. Instalalo desde Ajustes > Herramientas de descarga.".to_string()
+    })?;
 
     let search_arg = if query.starts_with("http://") || query.starts_with("https://") {
         query.to_string()
@@ -459,8 +460,9 @@ pub fn resolve_playlist(
     request_id: &str,
     url: &str,
 ) -> Result<PlaylistInfo, String> {
-    let ytdlp =
-        find_ytdlp_binary().ok_or_else(|| "yt-dlp no encontrado en el sistema".to_string())?;
+    let ytdlp = find_ytdlp_binary().ok_or_else(|| {
+        "yt-dlp no encontrado. Instalalo desde Ajustes > Herramientas de descarga.".to_string()
+    })?;
 
     let mut cmd = Command::new(ytdlp);
     configure_ytdlp_temp_dir(&mut cmd)

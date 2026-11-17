@@ -299,8 +299,8 @@ enlaza a `docs/`.
 | Apariencia | RF-17 … RF-18 | `tsc` + `npm run build`, manual |
 | Transversales | RNF-01 … RNF-08 | suite completa |
 
-**Total de la suite Rust: 17 tests** (6 de `downloader`, 4 de `queue`, 4 de
-`scanner` y 3 de `library_db`).
+**Total de la suite Rust: 21 tests** (6 de `downloader`, 4 de `queue`, 4 de
+`scanner`, 3 de `library_db` y 4 de `tools`).
 
 ## Requisitos retirados (v1)
 

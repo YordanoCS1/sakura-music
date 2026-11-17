@@ -22,6 +22,7 @@ test.beforeEach(async ({ page }) => {
       },
       get_default_music_dir: null,
       get_download_queue: [],
+      tools_status: [],
     };
     const internals = window as unknown as {
       __TAURI_INTERNALS__: {

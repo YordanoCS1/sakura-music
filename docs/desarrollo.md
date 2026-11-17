@@ -48,7 +48,7 @@ Sakura_Music/
 ├── src-tauri/                    # Backend (Tauri 2 + Rust)
 │   ├── src/
 │   │   ├── main.rs               # callback mínimo para desktop
-│   │   ├── lib.rs                # comandos Tauri (17), caché, scope asset, ciclo de vida
+│   │   ├── lib.rs                # comandos Tauri (19), caché, scope asset, ciclo de vida
 │   │   ├── catalog.rs            # 3 comandos de catálogo (iTunes/Deezer/MusicBrainz)
 │   │   ├── scanner.rs            # walkdir + rayon + lofty, escritura atómica, tests
 │   │   ├── downloader.rs         # DownloadManager, yt-dlp, cancelación, tests
@@ -82,7 +82,7 @@ npm run typecheck       # solo tsc --noEmit
 npm run lint            # ESLint sobre src/
 npm run format          # Prettier sobre TS/TSX/JS/JSON/YAML
 npm run test            # Vitest (tests unitarios del frontend)
-cargo test --manifest-path src-tauri/Cargo.toml   # 17 tests Rust
+cargo test --manifest-path src-tauri/Cargo.toml   # 21 tests Rust
 cargo fmt --check --manifest-path src-tauri/Cargo.toml
 cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings
 ```
