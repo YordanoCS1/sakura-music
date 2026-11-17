@@ -1,8 +1,9 @@
+use parking_lot::{Condvar, Mutex};
 use std::collections::{HashMap, HashSet};
 use std::io::{BufRead, BufReader};
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
-use std::sync::{Arc, Condvar, Mutex};
+use std::sync::Arc;
 
 use serde::{Deserialize, Serialize};
 use tauri::Emitter;
@@ -106,7 +107,7 @@ impl DownloadManager {
         }
         let key = (url_key, folder_key, format.trim().to_ascii_lowercase());
 
-        let mut inner = self.inner.lock().unwrap();
+        let mut inner = self.inner.lock();
         if inner.jobs.contains(job_id) || inner.active_keys.contains(&key) {
             return false;
         }
@@ -119,9 +120,10 @@ impl DownloadManager {
     /// Espera un turno. Devuelve `false` si el trabajo se canceló mientras
     /// estaba en cola.
     pub fn acquire(&self, job_id: &str) -> bool {
-        let mut inner = self.inner.lock().unwrap();
+        let mut inner = self.inner.lock();
         while inner.active >= inner.max_concurrent && !inner.cancelled.contains(job_id) {
-            inner = self.cv.wait(inner).unwrap();
+            // `wait` readquiere el mutex en el mismo guardia y devuelve ().
+            self.cv.wait(&mut inner);
         }
         if inner.cancelled.contains(job_id) {
             inner.cancelled.remove(job_id);
@@ -132,13 +134,13 @@ impl DownloadManager {
     }
 
     pub fn release(&self) {
-        let mut inner = self.inner.lock().unwrap();
+        let mut inner = self.inner.lock();
         inner.active = inner.active.saturating_sub(1);
         self.cv.notify_all();
     }
 
     pub fn register_pid(&self, job_id: &str, pid: u32) {
-        let mut inner = self.inner.lock().unwrap();
+        let mut inner = self.inner.lock();
         if inner.cancelled.contains(job_id) {
             // La cancelación llegó después de lanzar el proceso pero antes de
             // registrar su PID: hay que matarlo enseguida para que no siga bajando.
@@ -150,15 +152,15 @@ impl DownloadManager {
     }
 
     pub fn unregister_pid(&self, job_id: &str) {
-        self.inner.lock().unwrap().pids.remove(job_id);
+        self.inner.lock().pids.remove(job_id);
     }
 
     pub fn is_cancelled(&self, job_id: &str) -> bool {
-        self.inner.lock().unwrap().cancelled.contains(job_id)
+        self.inner.lock().cancelled.contains(job_id)
     }
 
     pub fn finish(&self, job_id: &str) {
-        let mut inner = self.inner.lock().unwrap();
+        let mut inner = self.inner.lock();
         inner.pids.remove(job_id);
         inner.cancelled.remove(job_id);
         inner.jobs.remove(job_id);
@@ -169,7 +171,7 @@ impl DownloadManager {
 
     pub fn cancel(&self, job_id: &str) -> bool {
         let pid = {
-            let mut inner = self.inner.lock().unwrap();
+            let mut inner = self.inner.lock();
             if !inner.jobs.contains(job_id) {
                 return false;
             }
@@ -184,7 +186,7 @@ impl DownloadManager {
 
     pub fn cancel_all(&self) {
         let pids: Vec<u32> = {
-            let mut inner = self.inner.lock().unwrap();
+            let mut inner = self.inner.lock();
             let job_ids: Vec<String> = inner.jobs.iter().cloned().collect();
             for job_id in job_ids {
                 inner.cancelled.insert(job_id);

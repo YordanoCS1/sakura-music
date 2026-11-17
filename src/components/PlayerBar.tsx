@@ -150,6 +150,7 @@ export default function PlayerBar({
                 type="button"
                 onClick={() => setExpanded(true)}
                 className="npr-cover"
+                aria-label="Ver ahora reproduciendo"
                 title="Ver ahora reproduciendo"
               >
                 {activeTrack.cover_url ? (
@@ -176,6 +177,7 @@ export default function PlayerBar({
               <button
                 onClick={(e) => activeTrack && onToggleFavorite(activeTrack.id, e)}
                 className={`npr-fav ${fav ? 'is-fav' : ''}`}
+                aria-label={fav ? 'Quitar de favoritos' : 'Añadir a favoritos'}
                 title="Favorito"
               >
                 <Heart className="w-4 h-4" fill={fav ? 'currentColor' : 'none'} />
@@ -195,16 +197,23 @@ export default function PlayerBar({
             <button
               onClick={onToggleShuffle}
               className={`npr-ctl ${isShuffle ? 'is-on' : ''}`}
+              aria-label="Reproducción aleatoria"
               title="Aleatorio"
             >
               <Shuffle />
             </button>
-            <button onClick={onPrevious} className="npr-ctl" title="Anterior">
+            <button
+              onClick={onPrevious}
+              className="npr-ctl"
+              aria-label="Pista anterior"
+              title="Anterior"
+            >
               <SkipBack />
             </button>
             <button
               onClick={onTogglePlay}
               className="npr-play"
+              aria-label={isPlaying ? 'Pausar' : 'Reproducir'}
               title={isPlaying ? 'Pausar' : 'Reproducir'}
             >
               {isPlaying ? (
@@ -213,12 +222,18 @@ export default function PlayerBar({
                 <Play className="w-5 h-5 fill-current ml-0.5" />
               )}
             </button>
-            <button onClick={onNext} className="npr-ctl" title="Siguiente">
+            <button
+              onClick={onNext}
+              className="npr-ctl"
+              aria-label="Pista siguiente"
+              title="Siguiente"
+            >
               <SkipForward />
             </button>
             <button
               onClick={onCycleRepeat}
               className={`npr-ctl ${repeatMode !== 'off' ? 'is-on' : ''}`}
+              aria-label={`Repetición: ${repeatMode}`}
               title={`Repetición: ${repeatMode}`}
             >
               {repeatMode === 'one' ? <Repeat1 /> : <Repeat />}
@@ -244,7 +259,12 @@ export default function PlayerBar({
 
         {/* ── DERECHA: volumen ── */}
         <div className="npr-right">
-          <button onClick={onToggleMute} className="npr-vol-btn" title="Silenciar">
+          <button
+            onClick={onToggleMute}
+            className="npr-vol-btn"
+            aria-label={isMuted || volume === 0 ? 'Activar sonido' : 'Silenciar'}
+            title="Silenciar"
+          >
             {isMuted || volume === 0 ? (
               <VolumeX className="w-4 h-4" />
             ) : (
@@ -271,7 +291,14 @@ export default function PlayerBar({
       {expanded && (
         <div
           className="player-nowplaying"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Ahora reproduciendo"
+          tabIndex={-1}
           onClick={() => setExpanded(false)}
+          onKeyDown={(event) => {
+            if (event.key === 'Escape') setExpanded(false);
+          }}
           style={{
             background: `linear-gradient(160deg, rgba(${dominantColor}, 0.94), rgba(28, 12, 20, 0.97))`,
           }}
@@ -307,22 +334,38 @@ export default function PlayerBar({
               <button
                 onClick={onToggleShuffle}
                 className={`np-ctl ${isShuffle ? 'is-on' : ''}`}
+                aria-label="Reproducción aleatoria"
                 title="Aleatorio"
               >
                 <Shuffle />
               </button>
-              <button onClick={onPrevious} className="np-ctl" title="Anterior">
+              <button
+                onClick={onPrevious}
+                className="np-ctl"
+                aria-label="Pista anterior"
+                title="Anterior"
+              >
                 <SkipBack />
               </button>
-              <button onClick={onTogglePlay} className="np-play">
+              <button
+                onClick={onTogglePlay}
+                className="np-play"
+                aria-label={isPlaying ? 'Pausar' : 'Reproducir'}
+              >
                 {isPlaying ? <Pause /> : <Play />}
               </button>
-              <button onClick={onNext} className="np-ctl" title="Siguiente">
+              <button
+                onClick={onNext}
+                className="np-ctl"
+                aria-label="Pista siguiente"
+                title="Siguiente"
+              >
                 <SkipForward />
               </button>
               <button
                 onClick={onCycleRepeat}
                 className={`np-ctl ${repeatMode !== 'off' ? 'is-on' : ''}`}
+                aria-label={`Repetición: ${repeatMode}`}
                 title={`Repetición: ${repeatMode}`}
               >
                 {repeatMode === 'one' ? <Repeat1 /> : <Repeat />}
@@ -337,6 +380,7 @@ export default function PlayerBar({
                 value={currentTime}
                 onChange={handleSeek}
                 className="np-seekbar"
+                aria-label="Progreso de reproducción"
               />
               <span>{formatTime(duration || (activeTrack?.duration ?? 0))}</span>
             </div>

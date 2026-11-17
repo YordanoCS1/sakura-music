@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { AlertTriangle, Loader2, Music2, Trash2, X } from 'lucide-react';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 import type { ScannedTrack } from '../types';
 
 interface DeleteTracksDialogProps {
@@ -16,6 +17,8 @@ export default function DeleteTracksDialog({
   onConfirm,
 }: DeleteTracksDialogProps) {
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
+  // Ya ponemos el foco en "Cancelar"; acá sólo queremos que Tab no se escape.
+  const dialogRef = useFocusTrap<HTMLElement>(tracks.length > 0, false);
 
   useEffect(() => {
     if (tracks.length === 0) return;
@@ -43,6 +46,7 @@ export default function DeleteTracksDialog({
       }}
     >
       <section
+        ref={dialogRef}
         role="alertdialog"
         aria-modal="true"
         aria-labelledby="delete-tracks-title"

@@ -118,8 +118,9 @@ porque el rename falla con `%TEMP%` desincronizado del cwd en este Windows.
 
 ## Casos de uso de desarrollo
 
-Los tests del frontend (`src/**/*.test.ts`) cubren la conversión entre el
-ítem de UI y el formato persistido de la cola. Todo lo demás se verifica a mano:
+Los tests del frontend (`src/**/*.test.ts` y `.test.tsx`) cubren la conversión
+entre el ítem de UI y el formato persistido de la cola y el fallback del
+`ErrorBoundary`. Todo lo demás se verifica a mano:
 búsqueda real en YouTube, descarga en los 4
 formatos, playlist completa, edición individual y en lote (incluido el mensaje
 de fallos parciales), iTunes/Deezer/MusicBrainz, temas y efectos, y

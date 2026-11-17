@@ -55,3 +55,7 @@ pub fn bin_dir() -> PathBuf {
     let _ = std::fs::create_dir_all(&dir);
     dir
 }
+
+pub fn log_file() -> PathBuf {
+    ensure_data_dir().join("sakura.log")
+}

@@ -11,7 +11,9 @@ Todos los cambios destacables de este proyecto se registran acá. El formato sig
 - Contrato IPC documentado en [docs/ipc-contract.md](docs/ipc-contract.md) y formatos de datos en [docs/data-formats.md](docs/data-formats.md).
 - Documentación base: `LICENSE`, `CONTRIBUTING.md`, `SECURITY.md`, `CHANGELOG.md`, contrato IPC y formatos de datos.
 - **CI** en GitHub Actions con matriz Windows/macOS/Linux: tipos, lint, formato, tests y build del frontend, más `fmt`, `clippy` y tests de Rust. Dependabot para npm, Cargo y Actions.
-- Tooling de calidad: ESLint, Prettier, `rustfmt.toml`, scripts `check`/`typecheck`/`lint`/`format`/`test` y primeros 5 tests unitarios del frontend con Vitest.
+- Tooling de calidad: ESLint, Prettier, `rustfmt.toml`, scripts `check`/`typecheck`/`lint`/`format`/`test` y tests unitarios del frontend con Vitest (7 pruebas).
+- `ErrorBoundary` que evita la pantalla en blanco y permite recargar; registro de avisos en `sakura.log`.
+- Navegación por pestañas accesible (roles ARIA, flechas), menú de vistas con teclado, `aria-label` en controles de icono y trampa de foco en los modales.
 
 ### Cambiado
 - El único tema visual tiene id `space`; los tokens `--m3-*` se aplican bajo `[data-theme='space']`.
@@ -19,6 +21,8 @@ Todos los cambios destacables de este proyecto se registran acá. El formato sig
 - La documentación se actualizó para reflejar 20 comandos Tauri, 17 tests Rust y 9 vistas.
 - Código Rust y frontend formateados con `rustfmt` y Prettier; clippy pasa con `-D warnings`.
 - La ventana se declara sin decoraciones también en `tauri.conf.json`, igual que en `lib.rs`.
+- `DownloadManager` usa `parking_lot`: un panic en un hilo de descarga ya no envenena un mutex y, con `panic = "abort"`, no se lleva la app por delante.
+- El scope del protocolo `asset:` se amplía sólo con rutas canónicas dentro de la biblioteca activa; antes se autorizaban sin validar.
 
 ### Eliminado
 - El tema alternativo **WWM / "universos"** (bandera `isWWM`, ramas inalcanzables, CSS y partículas Jianghu).

@@ -7,6 +7,7 @@ Todo lo que la app guarda vive en una única carpeta de datos. En desarrollo es 
 ├── library.sqlite3         # índice de la biblioteca (SQLite, modo WAL)
 ├── library_cache.json      # archivo histórico de la v1, se importa una sola vez
 ├── download_queue.json     # foto de la cola de descargas
+├── sakura.log              # avisos y contexto de ejecución (se anexa)
 ├── covers/                 # carátulas extraídas, con deduplicación por hash
 └── bin/                    # yt-dlp / ffmpeg si se descargan a la carpeta de datos
 ```

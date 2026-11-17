@@ -23,6 +23,8 @@ walkdir = "2"
 rayon = "1.10"
 rusqlite = { version = "0.42.0", features = ["bundled"] }
 notify = "8.2.2"
+# Mutex que no se envenena: un panic en un hilo de descarga no puede matar la app.
+parking_lot = "0.12"
 
 [target.'cfg(windows)'.dependencies]
 windows-sys = { version = "0.61", features = [

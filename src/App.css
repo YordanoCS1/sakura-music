@@ -4024,3 +4024,12 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .app-shell[data-theme='m3zen'] > main > header input::placeholder,
 .app-shell[data-theme='forest'] > main > header input::placeholder,
 .app-shell[data-theme='space'] > main > header input::placeholder { color: #7e719f !important; }
+
+/* Red de seguridad: ningún control queda sin indicador visible con teclado. */
+:focus-visible {
+  outline: 2px solid var(--m3-primary, #d63384);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  :focus-visible { outline-offset: 1px; }
+}

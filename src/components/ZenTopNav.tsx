@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { DownloadCloud, Heart, Home, Library, Search, Settings } from 'lucide-react';
 import type { AppTab, DownloadItem } from '../types';
 
@@ -32,7 +32,8 @@ export default function ZenTopNav({
       !d.status.startsWith('completado') && !d.status.includes('error') && d.status !== 'cancelado',
   ).length;
 
-  // Coloca el indicador deslizante bajo la pestaña activa.
+  // Medimos antes del paint para que el indicador aparezca ya en su sitio.
+  // useLayoutEffect evita el salto visible que daría un useEffect normal.
   useLayoutEffect(() => {
     const tabs = tabsRef.current;
     const btn = btnRefs.current[activeTab];
@@ -41,6 +42,23 @@ export default function ZenTopNav({
     const btnRect = btn.getBoundingClientRect();
     setSlider({ left: btnRect.left - tabsRect.left, width: btnRect.width });
   }, [activeTab]);
+
+  // Las pestañas siguen el patrón ARIA: sola la activa entra en el orden de
+  // tabulación y las flechas permiten recorrerlas sin salir del teclado.
+  const alNavegarConTeclado = (event: KeyboardEvent<HTMLButtonElement>, id: AppTab) => {
+    const indice = items.findIndex((item) => item.id === id);
+    let siguiente = indice;
+    if (event.key === 'ArrowRight') siguiente = (indice + 1) % items.length;
+    else if (event.key === 'ArrowLeft') siguiente = (indice - 1 + items.length) % items.length;
+    else if (event.key === 'Home') siguiente = 0;
+    else if (event.key === 'End') siguiente = items.length - 1;
+    else return;
+
+    event.preventDefault();
+    const destino = items[siguiente].id;
+    onNavigate(destino);
+    btnRefs.current[destino]?.focus();
+  };
 
   return (
     <div className="zen-topnav" role="navigation" aria-label="Navegación principal">
@@ -80,8 +98,13 @@ export default function ZenTopNav({
                 btnRefs.current[id] = el;
               }}
               type="button"
+              role="tab"
+              id={`tab-${id}`}
+              aria-controls={`panel-${id}`}
+              aria-selected={active}
+              tabIndex={active ? 0 : -1}
               onClick={() => onNavigate(id)}
-              aria-current={active ? 'page' : undefined}
+              onKeyDown={(event) => alNavegarConTeclado(event, id)}
               className={`zen-topnav-tab ${active ? 'is-active' : ''}`}
             >
               <Icon className="zen-topnav-tab-icon" />

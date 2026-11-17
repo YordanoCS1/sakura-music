@@ -823,7 +823,13 @@ export default function App() {
         {/* ========================================================= */}
         {/* ÁREA PRINCIPAL CON VISTA DINÁMICA                        */}
         {/* ========================================================= */}
-        <main className="flex-1 flex flex-col overflow-hidden z-10">
+        <main
+          className="flex-1 flex flex-col overflow-hidden z-10"
+          role="tabpanel"
+          id={`panel-${activeTab}`}
+          aria-labelledby={`tab-${activeTab}`}
+          tabIndex={-1}
+        >
           {/* Barra superior moderna (búsqueda + filtros + contexto) */}
           <header className="gh-header">
             <div className="gh-context">
@@ -854,6 +860,7 @@ export default function App() {
                 <button
                   onClick={() => setSearchQuery('')}
                   className="gh-search-clear"
+                  aria-label="Limpiar búsqueda"
                   title="Limpiar búsqueda"
                 >
                   <X className="w-3.5 h-3.5" />
@@ -866,6 +873,7 @@ export default function App() {
             <div className="gh-filters">
               <button
                 onClick={() => setFilterChip('all')}
+                aria-pressed={filterChip === 'all'}
                 className={`gh-chip ${filterChip === 'all' ? 'is-active' : ''}`}
               >
                 <Music2 className="w-3.5 h-3.5" />
@@ -874,6 +882,7 @@ export default function App() {
               </button>
               <button
                 onClick={() => setFilterChip('flac')}
+                aria-pressed={filterChip === 'flac'}
                 className={`gh-chip ${filterChip === 'flac' ? 'is-active' : ''}`}
               >
                 <AudioLines className="w-3.5 h-3.5" />
@@ -881,6 +890,7 @@ export default function App() {
               </button>
               <button
                 onClick={() => setFilterChip('favorites')}
+                aria-pressed={filterChip === 'favorites'}
                 className={`gh-chip ${filterChip === 'favorites' ? 'is-active' : ''}`}
               >
                 <Heart

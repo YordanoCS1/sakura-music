@@ -39,7 +39,10 @@ impl LibraryWatcher {
                     let _ = sender.send(());
                 }
                 Ok(_) => {}
-                Err(error) => eprintln!("Error al vigilar cambios en la biblioteca: {}", error),
+                Err(error) => crate::logging::warn(
+                    "library_watcher",
+                    &format!("Error al vigilar cambios en la biblioteca: {}", error),
+                ),
             },
         )
         .map_err(|error| format!("No se pudo crear el vigilante de biblioteca: {}", error))?;
@@ -60,9 +63,12 @@ impl LibraryWatcher {
                             if let Err(error) =
                                 event_app.emit("library-changed", event_root.to_string_lossy())
                             {
-                                eprintln!(
-                                    "No se pudo notificar un cambio de biblioteca: {}",
-                                    error
+                                crate::logging::warn(
+                                    "library_watcher",
+                                    &format!(
+                                        "No se pudo notificar un cambio de biblioteca: {}",
+                                        error
+                                    ),
                                 );
                             }
                             break;

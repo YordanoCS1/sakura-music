@@ -19,6 +19,7 @@ import {
   Undo2,
   X,
 } from 'lucide-react';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 import { convertFileSrc } from '@tauri-apps/api/core';
 import type {
   CatalogAlbum,
@@ -139,13 +140,20 @@ export default function MetadataModal({
   onCatalogQueryChange,
   onCatalogSourceChange,
 }: MetadataModalProps) {
+  const dialogRef = useFocusTrap<HTMLDivElement>();
+
   return (
     <div
       className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-6"
       onClick={() => onClose()}
       onPaste={onPaste}
+      role="presentation"
     >
       <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Editor de metadatos"
         className="glass-card rounded-3xl border border-white/10 w-full max-w-4xl shadow-2xl flex flex-col overflow-hidden max-h-[92vh] animate-in fade-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
@@ -210,6 +218,7 @@ export default function MetadataModal({
             <button
               onClick={() => onClose()}
               className="p-2 rounded-xl hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+              aria-label="Cerrar editor de metadatos"
               title="Cerrar (Esc)"
             >
               <X className="w-4 h-4" />

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import {
   Disc3,
   FolderOpen,
@@ -78,6 +78,8 @@ export default function LibraryToolbar({
 }: LibraryToolbarProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const current = ALL_VIEWS.find((v) => v.id === viewMode) ?? ALL_VIEWS[0];
   const CurrentIcon = current.icon;
 
@@ -94,6 +96,30 @@ export default function LibraryToolbar({
     onSetViewMode(id);
     if (id === 'albums') onClearExpandedAlbum();
     setOpen(false);
+    triggerRef.current?.focus();
+  };
+
+  // El menú se maneja con teclado igual que un selector nativo: Escape cierra
+  // y las flechas recorren las opciones sin salir del componente.
+  const alNavegarMenu = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      setOpen(false);
+      triggerRef.current?.focus();
+      return;
+    }
+    if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
+    event.preventDefault();
+    const opciones = Array.from(
+      menuRef.current?.querySelectorAll<HTMLButtonElement>('[role="menuitemradio"]') ?? [],
+    );
+    if (opciones.length === 0) return;
+    const actual = opciones.indexOf(document.activeElement as HTMLButtonElement);
+    const siguiente =
+      event.key === 'ArrowDown'
+        ? (actual + 1) % opciones.length
+        : (actual - 1 + opciones.length) % opciones.length;
+    opciones[siguiente].focus();
   };
 
   return (
@@ -116,17 +142,27 @@ export default function LibraryToolbar({
         {/* Selector de vista (dropdown) */}
         <div className="lt-view-select" ref={ref}>
           <button
+            ref={triggerRef}
             type="button"
             className={`lt-view-trigger ${open ? 'is-open' : ''}`}
             onClick={() => setOpen((o) => !o)}
             aria-expanded={open}
+            aria-haspopup="menu"
+            aria-controls="lt-view-menu"
           >
             <CurrentIcon className="w-4 h-4" />
             <span>{current.label}</span>
             <ChevronDown className={`w-3.5 h-3.5 lt-chevron ${open ? 'is-open' : ''}`} />
           </button>
           {open && (
-            <div className="lt-view-menu">
+            <div
+              id="lt-view-menu"
+              className="lt-view-menu"
+              role="menu"
+              aria-label="Vistas de biblioteca"
+              ref={menuRef}
+              onKeyDown={alNavegarMenu}
+            >
               {VIEW_GROUPS.map((group) => (
                 <div key={group.label} className="lt-view-group">
                   <div className="lt-view-group-label">{group.label}</div>
@@ -134,6 +170,8 @@ export default function LibraryToolbar({
                     <button
                       key={id}
                       type="button"
+                      role="menuitemradio"
+                      aria-checked={viewMode === id}
                       onClick={() => choose(id)}
                       className={`lt-view-option ${viewMode === id ? 'is-active' : ''}`}
                     >
@@ -160,6 +198,7 @@ export default function LibraryToolbar({
               onClick={() => onScanFolder(currentFolder)}
               disabled={isScanning || isDeleting}
               className="lt-icon-btn"
+              aria-label="Volver a escanear la carpeta"
               title="Volver a escanear la carpeta"
             >
               <RotateCw className={`w-4 h-4 ${isScanning ? 'animate-spin' : ''}`} />

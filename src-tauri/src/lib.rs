@@ -8,6 +8,7 @@ mod catalog;
 mod downloader;
 mod library_db;
 mod library_watcher;
+mod logging;
 mod paths;
 mod queue;
 mod scanner;
@@ -130,16 +131,47 @@ fn get_default_music_dir(app: tauri::AppHandle) -> Option<String> {
 /// Habilita en el scope del protocolo `asset:` las carpetas de una biblioteca.
 /// El alcance estático solo cubre Música y la carpeta de datos; si el usuario
 /// elige otra unidad, hay que autorizarla en tiempo de ejecución.
-fn allow_track_paths(app: &tauri::AppHandle, tracks: &[ScannedTrack]) {
+///
+/// Sólo se autorizan carpetas que, una vez resuelta la ruta canónica, quedan
+/// dentro de la raíz activa. Así un webview comprometido no puede ensanchar el
+/// scope con rutas que vinieran en un `invoke` manipulado.
+fn allow_track_paths(app: &tauri::AppHandle, tracks: &[ScannedTrack]) -> Result<(), String> {
+    let root_str = match library_db::root_path() {
+        Ok(root) => root,
+        // Todavía no se escaneó nada: no hay pistas a las que dar acceso.
+        Err(error) => {
+            logging::warn("lib", &format!("Sin raíz de biblioteca: {}", error));
+            return Ok(());
+        }
+    };
+    let root = Path::new(&root_str)
+        .canonicalize()
+        .map_err(|error| format!("No se pudo resolver la carpeta de la biblioteca: {}", error))?;
     let scope = app.asset_protocol_scope();
     let mut seen = std::collections::HashSet::new();
     for track in tracks {
-        if let Some(parent) = Path::new(&track.path).parent()
-            && seen.insert(parent.to_path_buf())
-        {
-            let _ = scope.allow_directory(parent, true);
+        let Some(parent) = Path::new(&track.path).parent() else {
+            continue;
+        };
+        let canonical = parent.canonicalize().map_err(|error| {
+            format!(
+                "No se pudo resolver la carpeta de {}: {}",
+                track.path, error
+            )
+        })?;
+        if !canonical.starts_with(&root) {
+            return Err(format!(
+                "La pista {} está fuera de la carpeta de la biblioteca",
+                track.path
+            ));
+        }
+        if seen.insert(canonical.clone()) {
+            scope.allow_directory(&canonical, true).map_err(|error| {
+                format!("No se pudo autorizar {}: {}", canonical.display(), error)
+            })?;
         }
     }
+    Ok(())
 }
 
 #[tauri::command]
@@ -148,7 +180,7 @@ fn get_cached_library(app: tauri::AppHandle) -> Result<Vec<ScannedTrack>, String
         .into_iter()
         .map(|entry| entry.track)
         .collect::<Vec<_>>();
-    allow_track_paths(&app, &tracks);
+    allow_track_paths(&app, &tracks)?;
     Ok(tracks)
 }
 
@@ -286,7 +318,14 @@ fn scan_library(
         ));
     }
     watcher.watch(app.clone(), p)?;
-    let _ = app.asset_protocol_scope().allow_directory(p, true);
+    // La ruta se canoniza antes de ampliar el scope: es la raíz que eligió el
+    // usuario, así que un fallo aquí debe llegar al frontend como error.
+    let canonical = p
+        .canonicalize()
+        .map_err(|error| format!("No se pudo resolver la carpeta elegida: {}", error))?;
+    app.asset_protocol_scope()
+        .allow_directory(&canonical, true)
+        .map_err(|error| format!("No se pudo autorizar la carpeta elegida: {}", error))?;
     let cached = library_db::cached_tracks()?
         .into_iter()
         .map(|entry| (entry.track.path.clone(), entry))
@@ -325,7 +364,11 @@ fn scan_library(
         .into_iter()
         .map(|entry| entry.track)
         .collect::<Vec<_>>();
-    allow_track_paths(&app, &tracks);
+    allow_track_paths(&app, &tracks)?;
+    logging::info(
+        "lib",
+        &format!("Escaneo terminado: {} pistas", tracks.len()),
+    );
     Ok(tracks)
 }
 

@@ -14,6 +14,20 @@ pub struct ScanEntry {
 const TRACK_COLUMNS: &str = "id, path, title, artist, album, album_artist, track_number, \
     duration, duration_str, format, bitrate_kbps, cover_url, year, genre, file_size, modified_ns";
 
+/// Carpeta raíz de la biblioteca activa, usada para validar scope y borrados.
+pub fn root_path() -> Result<String, String> {
+    let connection = open_connection()?;
+    connection
+        .query_row(
+            "SELECT value FROM library_state WHERE key = 'root_path'",
+            [],
+            |row| row.get(0),
+        )
+        .optional()
+        .map_err(|error| format!("No se pudo consultar la biblioteca activa: {}", error))?
+        .ok_or_else(|| "No hay una carpeta de biblioteca activa".to_string())
+}
+
 fn open_connection() -> Result<Connection, String> {
     let path = paths::library_db_file();
     let parent = path
@@ -168,21 +182,23 @@ fn insert_legacy_cache(connection: &mut Connection) -> Result<(), String> {
                         .commit()
                         .map_err(|error| format!("No se pudo confirmar la migración: {}", error))?;
                 }
-                Err(error) => {
-                    eprintln!(
+                Err(error) => crate::logging::warn(
+                    "library_db",
+                    &format!(
                         "No se pudo importar {} a SQLite; se conserva el archivo original: {}",
                         legacy_file.display(),
                         error
-                    );
-                }
+                    ),
+                ),
             },
-            Err(error) => {
-                eprintln!(
+            Err(error) => crate::logging::warn(
+                "library_db",
+                &format!(
                     "No se pudo leer la caché anterior {}: {}",
                     legacy_file.display(),
                     error
-                );
-            }
+                ),
+            ),
         }
     }
 
