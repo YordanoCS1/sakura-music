@@ -297,14 +297,14 @@ Tabla).
 
 **Flujo principal**
 
-1. La app usa **un único tema visual: M3 Zen** (Material 3 con calma japonesa).
-   No hay selector de temas: `data-theme='space'` se fija en el contenedor raíz y
-   `ThemeMode` tiene un solo valor, `'space'`. No existe `ThemeWorld`.
+1. La app ofrece cinco temas: **M3 Zen**, Sumi-e, Yoru, Hanabi y Aizuri. En Ajustes
+   se elige uno y `data-theme` se fija en el contenedor raíz. El valor se persiste
+   en `sakura_theme`; `ThemeMode` reúne los cinco identificadores.
 2. Los valores de superficie (`--m3-surface`, `--m3-primary`, etc.) y los
    `--accent-*` de `App.css` definen la paleta; Tailwind mapea `accent-*` a esas
    variables, así que toda la UI usa la misma identidad.
-3. En **Ajustes** se ajustan los efectos que quedan: opacidad/blur del vidrio,
-   resplandor ambiental, partículas y estilo del reproductor (flotante/fijo).
+3. En **Ajustes** se elige el tema y se ajustan los efectos: opacidad/blur del
+   vidrio, resplandor ambiental, partículas y estilo del reproductor (flotante/fijo/mini).
    Se persisten en `localStorage` (`sakura_*`).
 
 **Dónde está:** `src/types.ts` (`ThemeMode`), `src/App.tsx`

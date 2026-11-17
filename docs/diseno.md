@@ -1,6 +1,20 @@
 # Sistema de diseño
 
-Sakura Music usa un único tema, **M3 Zen**: superficies claras, acento rosa sakura, calma japonesa, sin glassmorphism ni blur decorativo. Este documento es la referencia de tokens; la fuente de verdad son `tailwind.config.js` y `:root` en `src/App.css`.
+Sakura Music usa cinco temas: **M3 Zen** (por defecto), Sumi-e, Yoru, Hanabi y Aizuri. Comparten la escala y el layout, y cambian color, tipografía y forma mediante tokens. Este documento es la referencia; la fuente de verdad son `tailwind.config.js` y `App.css`.
+
+## Temas disponibles
+
+| Id | Nombre | Personalidad |
+|---|---|---|
+| `space` | M3 Zen | Superficies marfil, acento rosa sakura, redondeado suave |
+| `sumie` | Sumi-e | Papel crudo, tinta carbón, bermellón, serif, esquinas sobrias |
+| `yoru` | Yoru | Noche cálida, grafito y ámbar, sans geométrica |
+| `hanabi` | Hanabi | Azul noche, cian y magenta, monoespacio, esquinas vivas |
+| `aizuri` | Aizuri | Índigo teñido, blanco hueso y cian, serif |
+
+Cada tema define `--m3-*`, `--space-*`, `--accent-*` y `--theme-*` en su bloque
+`.app-shell[data-skin='id']`. Las reglas comunes leen `--theme-*` para cambiar
+canvas, navegación, tarjetas, dock, tipografía de display, radio y sombra.
 
 ## Tipografía
 
@@ -21,7 +35,7 @@ Plus Jakarta Sans para la interfaz, JetBrains Mono para datos técnicos. Ambas s
 
 - **Acento**: `--accent-200` … `--accent-950`, en canal RGB para soportar opacidad (`accent-500/20`).
 - **Neutros**: `--ink-100` … `--ink-600`, también en RGB. Se usan como `text-ink-400`, `bg-ink-200`, `border-ink-300`.
-- **Superficies M3**: `--m3-surface`, `--m3-surface-card`, `--m3-on-surface` y `--m3-primary` bajo `[data-theme='space']`.
+- **Superficies M3**: `--m3-surface`, `--m3-surface-card`, `--m3-on-surface` y `--m3-primary`, más `--theme-*` para cada tema, bajo `[data-skin='id']`.
 
 No se usan `gray-*` de Tailwind: los neutros salen de `ink-*` para que un cambio en `App.css` recoloree toda la app.
 

@@ -48,7 +48,7 @@ Gestor, reproductor, descargador y etiquetador de música para escritorio, const
 - Timeouts y reintentos de red: `--socket-timeout 30`, `--retries 3`, `--fragment-retries 3`, `--windows-filenames`.
 
 ### 🎨 Interfaz M3 Zen (Material 3 + calma japonesa)
-- **Un único tema:** **M3 Zen** — superficies claras marfil (`#fbf7f4`), tarjetas blancas con sombras suaves, acento **rosa sakura** (`#b5126a`), sin glassmorphism ni blur, tipografía legible (base 14 px). Se guarda en `localStorage` con la clave `sakura_theme` y el valor `space` (el id del tema).
+- **Cinco temas seleccionables en Ajustes:** **M3 Zen** (marfil y rosa sakura), **Sumi-e** (tinta, papel y bermellón), **Yoru** (noche cálida y ámbar), **Hanabi** (neón cian y magenta) y **Aizuri** (índigo teñido). El cambio es instantáneo y se guarda en `sakura_theme`.
 - **Navegación superior:** barra de pestañas con indicador deslizante animado y emblema de vinilo con el kanji 桜.
 - 5 pestañas: Inicio, Biblioteca, Buscar, Cola y Ajustes.
 - **9 vistas de biblioteca:** Carpetas (con breadcrumbs), Cuadrícula, Lista (tabla), Álbumes, **Pared** (mosaico de portadas con el título y artista de cada canción, filtrado por la carpeta seleccionada), **CDs**, **3D (Tilt)**, **Luz (Glow)** y **Portadas**.

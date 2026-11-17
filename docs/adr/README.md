@@ -34,11 +34,12 @@ adelante rigen la v2.
 | [0009](0009-migracion-tauri-2-rust.md) | Migración de PySide6 a Tauri 2.0 y Rust nativo | Vigente |
 | [0010](0010-cierre-seguridad-atomicidad.md) | Cierre de deuda: seguridad, atomicidad y cancelación | Vigente |
 | [0011](0011-cola-persistente.md) | Persistir la cola y reanudar al abrir | Vigente |
+| [0012](0012-temas-multiples.md) | Temas múltiples con selector en Ajustes | Vigente (supera el tema único) |
 
 ## Cómo agregar una decisión
 
 1. Copiá la estructura de cualquier ADR existente (Estado, Contexto, Decisión,
    Consecuencias, Reflejo en el código).
-2. Numerá con el siguiente número libre (`0012-...`) y agregá la fila a la tabla.
+2. Numerá con el siguiente número libre (`0013-...`) y agregá la fila a la tabla.
 3. Linkeá desde el documento que corresponda (`arquitectura.md`, `requisitos.md`
    o el manual).

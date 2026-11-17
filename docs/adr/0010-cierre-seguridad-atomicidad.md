@@ -47,8 +47,8 @@ consultaba iTunes.
 6. **Temas que sí cambian (superado).** Los 4 temas definen `--accent-200…950`
    en `src/App.css` y Tailwind mapea `accent-*` a esas variables. Cambiar de tema
    recolorea toda la UI y se persiste en `localStorage` (`sakura_theme`).
-   Nota: esta decisión quedó superada por el tema único `space` (M3 Zen), basado
-   en tokens `--m3-*`, sin selector ni conmutación de paleta.
+   Nota: hubo una etapa de tema único `space` (M3 Zen) basada en tokens `--m3-*`.
+   El selector de paletas se reincorporó con cinco temas en [ADR 0012](0012-temas-multiples.md).
 7. **Deezer real.** La opción "Deezer" consulta `api.deezer.com/search`
    (`data[].artist.name`, `album.cover_xl`) en vez de iTunes.
 8. **CSP y scope acotados.** `tauri.conf.json` pasa de `csp: null` y scope `**`
@@ -73,7 +73,7 @@ consultaba iTunes.
 - Ninguna escritura deja un archivo a medio escribir; ningún lote miente éxito.
 - La cola se puede cancelar y reintentar de verdad; no quedan procesos huérfanos.
 - La superficie de ataque del WebView se recorta (CSP + scope mínimo + runtime).
-- Los 4 temas recolorean la UI completa (hoy superado por el tema único `space`); Deezer consulta Deezer.
+- Los 4 temas recolorean la UI completa (superado: hoy hay cinco temas, ver [ADR 0012](0012-temas-multiples.md)); Deezer consulta Deezer.
 - Datos técnicos siempre reales y repo sin restos de v1 en la raíz.
 
 ### Negativas / deuda que queda

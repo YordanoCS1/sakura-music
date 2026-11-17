@@ -1,8 +1,20 @@
 # Apariencia
 
-Sakura Music 2.0 usa **un único tema visual: M3 Zen**, basado en *Material 3*
-con calma japonesa. No hay selector de temas: la app siempre arranca con la
-misma identidad y las preferencias guardadas se respetan.
+Sakura Music 2.0 ofrece **cinco temas visuales**: M3 Zen, Sumi-e, Yoru, Hanabi y
+Aizuri. Elegí el que quieras en **Ajustes → Diseño Visual**; el cambio es
+inmediato y se recuerda al reabrir la app.
+
+## Los cinco temas
+
+| Tema | Cómo se ve |
+|---|---|
+| **M3 Zen** | Marfil y rosa sakura. El tema clásico de la app. |
+| **Sumi-e** | Papel crudo, tinta carbón y bermellón, con tipografía serif. |
+| **Yoru** | Noche cálida, grafito y ámbar. Oscuro pero sin neón. |
+| **Hanabi** | Azul noche con cian y magenta, tipografía monoespacio y esquinas vivas. |
+| **Aizuri** | Índigo profundo, blanco hueso y cian, con serif. |
+
+Los cinco comparten la misma distribución; cambian color, tipografía, bordes y sombras.
 
 ## Identidad del tema M3 Zen
 
@@ -24,7 +36,7 @@ Todas viven en `localStorage` y se restauran al reabrir la app:
 
 | Clave | Qué guarda |
 |---|---|
-| `sakura_theme` | Tema visual (hoy siempre `space`) |
+| `sakura_theme` | Tema visual (`space`, `sumie`, `yoru`, `hanabi` o `aizuri`) |
 | `sakura_view_mode` | Vista de biblioteca activa (`folders`, `grid`, `table`, `albums`, `mosaic`, `cds`, `tilt`, `glow`, `portadas`) |
 | `sakura_player_style` | Estilo del reproductor (`floating` / `fixed` / `mini`) |
 | `sakura_glass_opacity` | Opacidad del vidrio |

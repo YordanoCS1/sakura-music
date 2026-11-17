@@ -1,8 +1,19 @@
 import { Palette, Sparkles, Layers, Sliders, Cpu, FolderOpen, Minimize2 } from 'lucide-react';
-import type { AppInfo, PlayerStyle } from '../types';
+import type { AppInfo, PlayerStyle, ThemeMode, ThemeOption } from '../types';
 import ToolsPanel from './ToolsPanel';
 
+const SWATCHES: Record<ThemeMode, string> = {
+  space: 'bg-rose-400',
+  sumie: 'bg-[#b23a2b]',
+  yoru: 'bg-amber-400',
+  hanabi: 'bg-cyan-400',
+  aizuri: 'bg-sky-400',
+};
+
 interface SettingsTabProps {
+  theme: ThemeMode;
+  temas: ThemeOption[];
+  onSetTheme: (t: ThemeMode) => void;
   accentGradient: string;
   accentBadge: string;
   coverGlowActive: boolean;
@@ -26,6 +37,9 @@ interface SettingsTabProps {
 }
 
 export default function SettingsTab({
+  theme,
+  temas,
+  onSetTheme,
   accentGradient,
   accentBadge,
   coverGlowActive,
@@ -110,31 +124,39 @@ export default function SettingsTab({
           </div>
           <div>
             <h3 className="text-sm font-bold text-white">Diseño Visual</h3>
-            <p className="text-xs text-ink-400">
-              La aplicación usa el tema único M3 Zen · Material 3 con calma japonesa
-            </p>
+            <p className="text-xs text-ink-400">Elegí el tema visual de la aplicación</p>
           </div>
         </div>
 
-        {/* Info del tema M3 Zen */}
-        <div className="relative p-4 rounded-2xl border border-accent-500/40 ring-2 ring-accent-500/30 bg-gradient-to-br from-accent-950/40 via-purple-950/30 to-black/60">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-2xl">🌸</span>
-            <span className="text-2xs font-bold px-2 py-0.5 rounded-full bg-accent-500 text-white shadow-sm">
-              Activo
-            </span>
+        {/* Selector de tema */}
+        <div className="pt-3 border-t border-white/5">
+          <label className="mb-2.5 block text-xs font-semibold text-ink-200">Tema visual:</label>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {temas.map((opcion) => {
+              const activo = opcion.id === theme;
+              return (
+                <button
+                  key={opcion.id}
+                  type="button"
+                  onClick={() => onSetTheme(opcion.id)}
+                  aria-pressed={activo}
+                  className={`rounded-2xl border p-3 text-left transition-all ${
+                    activo
+                      ? 'border-accent-500 bg-accent-500/10'
+                      : 'border-white/10 bg-white/5 hover:border-accent-500/40'
+                  }`}
+                >
+                  <span className="flex items-center gap-1.5">
+                    <span className={`h-2.5 w-2.5 rounded-full ${SWATCHES[opcion.id]}`} />
+                    <span className="text-xs font-bold text-white">{opcion.nombre}</span>
+                    {activo && <span className="ml-auto text-2xs text-accent-300">Activo</span>}
+                  </span>
+                  <span className="mt-1 block text-2xs text-ink-400">{opcion.descripcion}</span>
+                </button>
+              );
+            })}
           </div>
-          <h4 className="text-xs font-bold text-white mb-1">M3 Zen · Sakura</h4>
-          <p className="text-xs text-ink-400 leading-relaxed mb-3">
-            Superficies claras de Material 3, acento rosa sakura, calma zen y un reproductor
-            inmersivo con la portada protagonista.
-          </p>
-          <div className="flex items-center gap-1.5">
-            <div className="w-3.5 h-3.5 rounded-full bg-rose-500"></div>
-            <div className="w-3.5 h-3.5 rounded-full bg-pink-400"></div>
-            <div className="w-3.5 h-3.5 rounded-full bg-rose-200"></div>
-            <span className="text-2xs text-ink-500 font-mono ml-1">Sakura Zen</span>
-          </div>
+          <p className="mt-2 text-2xs text-ink-500">El cambio se aplica al instante y se guarda.</p>
         </div>
 
         {/* Estilo del Reproductor */}

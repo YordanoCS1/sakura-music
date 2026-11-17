@@ -222,11 +222,12 @@ sequenceDiagram
 
 ## Tema visual
 
-La app usa un único tema, **M3 Zen**, definido con variables semánticas `--m3-*`
-en `App.css` (`[data-theme='space']`). Tailwind mapea `accent-*` a esas variables,
-así que `from-accent-500` o `text-accent-300` siguen al tema sin duplicar clases.
-El id `space` se fija en el contenedor raíz y se persiste en `localStorage`
-(`sakura_theme`). No hay conmutación de tema ni de paleta.
+La app usa cinco temas, **M3 Zen** (por defecto), Sumi-e, Yoru, Hanabi y Aizuri,
+definidos con variables semánticas `--m3-*`, `--space-*`, `--accent-*` y `--theme-*`
+en `App.css`. Tailwind mapea `accent-*` a esas variables, así que
+`from-accent-500` o `text-accent-300` siguen al tema sin duplicar clases.
+El id elegido se fija en el contenedor raíz y se persiste en `localStorage`
+(`sakura_theme`). Ver [ADR 0012](adr/0012-temas-multiples.md).
 
 ## Manejo de errores
 
@@ -249,7 +250,7 @@ El id `space` se fija en el contenedor raíz y se persiste en `localStorage`
 |---|---|---|
 | Un comando Tauri | `src-tauri/src/lib.rs` + `App.tsx` (`invoke`) | Registrarlo en `invoke_handler!` y mapear errores como `String` |
 | Un formato de descarga | `src-tauri/src/downloader.rs` (rama `fmt_lower` en `run_download`) | Agregar tests de parsing si cambia el progreso |
-| Un tema nuevo | `src/App.css` (`.app-shell[data-theme='space']`) + tipo `ThemeMode` en `src/types.ts` | Hoy hay un único tema, con id `space`; si se agregan, seguir el patrón de tokens `--m3-*` |
+| Un tema nuevo | `src/App.css` (bloque `.app-shell[data-skin='id']`) + tipo `ThemeMode` en `src/types.ts` | Seguir el patrón de tokens `--m3-*`, `--space-*`, `--accent-*` y `--theme-*` del ADR 0012 |
 | Una vista nueva | `src/components/LibraryTab.tsx` (ramas `viewMode`) y `src/components/LibraryShowcase.tsx` | El tipo `ViewMode`, el switcher en `LibraryToolbar.tsx` y las 9 vistas existentes |
 | Una fuente de catálogo | `src-tauri/src/catalog.rs` (comandos `search_catalog_songs`, `search_catalog_albums` y `open_catalog_album`) | Respetar el CSP: están permitidos `itunes.apple.com`, `api.deezer.com`, `musicbrainz.org` y `coverartarchive.org` (`ws://localhost:1420` solo en dev) |
 

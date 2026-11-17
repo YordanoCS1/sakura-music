@@ -3606,3 +3606,258 @@ input[type="range"]:hover::-webkit-slider-thumb {
 @media (prefers-reduced-motion: reduce) {
   :focus-visible { outline-offset: 1px; }
 }
+
+
+/* ========================================================= */
+/* TEMAS ADICIONALES                                          */
+/* Heredan el layout de M3 Zen y sólo cambian color,           */
+/* tipografía y forma. Los valores comunes viven en --theme-*.  */
+/* ========================================================= */
+
+/* --- Sumi-e · tinta, papel y bermellón --- */
+.app-shell[data-skin='sumie'] {
+  --m3-surface: #f4efe6;
+  --m3-surface-alt: #ebe3d5;
+  --m3-surface-card: #faf7f0;
+  --m3-on-surface: #1c1a17;
+  --m3-on-surface-muted: #6b6459;
+  --m3-primary: #b23a2b;
+  --m3-primary-dim: #8e2c20;
+  --m3-outline: #d8cdbb;
+  --m3-radius: 6px;
+  --space-bg2: #ebe3d5;
+  --space-card: #faf7f0;
+  --space-primary: #b23a2b;
+  --space-text: #1c1a17;
+  --space-muted: #6b6459;
+  --space-soft: #8a8175;
+  --space-border: rgba(28, 26, 23, 0.14);
+  --accent-200: 249 214 204;
+  --accent-300: 244 184 166;
+  --accent-400: 226 121 94;
+  --accent-500: 178 58 43;
+  --accent-600: 148 43 31;
+  --accent-800: 105 28 21;
+  --accent-900: 84 23 18;
+  --accent-950: 45 12 9;
+  --theme-canvas: #f4efe6;
+  --theme-topnav: #eee7da;
+  --theme-card: #faf7f0;
+  --theme-card-border: rgba(28, 26, 23, 0.12);
+  --theme-ink: #1c1a17;
+  --theme-ink-soft: #6b6459;
+  --theme-dock: #faf7f0;
+  --theme-dock-ink: #1c1a17;
+  --theme-font-display: Georgia, 'Times New Roman', serif;
+  --theme-radius: 8px;
+  --theme-shadow: 0 1px 3px rgba(28, 26, 23, 0.1);
+  background: linear-gradient(180deg, #f4efe6 0%, #e9e1d3 100%);
+  color: var(--m3-on-surface);
+}
+
+/* --- Yoru · noche cálida y ámbar --- */
+.app-shell[data-skin='yoru'] {
+  --m3-surface: #12100f;
+  --m3-surface-alt: #1a1714;
+  --m3-surface-card: #1c1917;
+  --m3-on-surface: #e8e2d8;
+  --m3-on-surface-muted: #a89f91;
+  --m3-primary: #d4a24c;
+  --m3-primary-dim: #b07f2e;
+  --m3-outline: rgba(212, 162, 76, 0.28);
+  --m3-radius: 18px;
+  --space-bg2: #1a1714;
+  --space-card: #1c1917;
+  --space-primary: #d4a24c;
+  --space-text: #e8e2d8;
+  --space-muted: #a89f91;
+  --space-soft: #8a7f70;
+  --space-border: rgba(212, 162, 76, 0.22);
+  --accent-200: 245 227 186;
+  --accent-300: 238 208 138;
+  --accent-400: 224 180 92;
+  --accent-500: 212 162 76;
+  --accent-600: 180 128 48;
+  --accent-800: 124 84 28;
+  --accent-900: 99 66 22;
+  --accent-950: 55 36 12;
+  --theme-canvas: #12100f;
+  --theme-topnav: #0d0b0a;
+  --theme-card: #1c1917;
+  --theme-card-border: rgba(212, 162, 76, 0.18);
+  --theme-ink: #e8e2d8;
+  --theme-ink-soft: #a89f91;
+  --theme-dock: #1c1917;
+  --theme-dock-ink: #e8e2d8;
+  --theme-font-display: 'Plus Jakarta Sans', sans-serif;
+  --theme-radius: 16px;
+  --theme-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  background:
+    radial-gradient(900px 460px at 10% -6%, rgba(212, 162, 76, 0.13), transparent 55%),
+    linear-gradient(180deg, #12100f 0%, #0a0908 100%);
+  color: var(--m3-on-surface);
+}
+
+/* --- Hanabi · neón cian y magenta --- */
+.app-shell[data-skin='hanabi'] {
+  --m3-surface: #080817;
+  --m3-surface-alt: #0e0e24;
+  --m3-surface-card: #12122b;
+  --m3-on-surface: #e9e9ff;
+  --m3-on-surface-muted: #9b9bd0;
+  --m3-primary: #22d3ee;
+  --m3-primary-dim: #06b6d4;
+  --m3-outline: rgba(34, 211, 238, 0.32);
+  --m3-radius: 2px;
+  --space-bg2: #0e0e24;
+  --space-card: #12122b;
+  --space-primary: #22d3ee;
+  --space-text: #e9e9ff;
+  --space-muted: #9b9bd0;
+  --space-soft: #7c7cb0;
+  --space-border: rgba(34, 211, 238, 0.24);
+  --accent-200: 165 243 252;
+  --accent-300: 103 232 249;
+  --accent-400: 34 211 238;
+  --accent-500: 6 182 212;
+  --accent-600: 8 145 178;
+  --accent-800: 14 116 144;
+  --accent-900: 22 78 99;
+  --accent-950: 8 51 68;
+  --theme-canvas: #080817;
+  --theme-topnav: #05050f;
+  --theme-card: #12122b;
+  --theme-card-border: rgba(34, 211, 238, 0.3);
+  --theme-ink: #e9e9ff;
+  --theme-ink-soft: #9b9bd0;
+  --theme-dock: #12122b;
+  --theme-dock-ink: #e9e9ff;
+  --theme-font-display: 'JetBrains Mono', monospace;
+  --theme-radius: 2px;
+  --theme-shadow: 0 0 0 1px rgba(34, 211, 238, 0.3), 0 0 24px rgba(236, 72, 153, 0.18);
+  background:
+    radial-gradient(800px 420px at 85% -6%, rgba(236, 72, 153, 0.22), transparent 55%),
+    radial-gradient(800px 420px at 5% 0%, rgba(34, 211, 238, 0.16), transparent 55%),
+    linear-gradient(180deg, #080817 0%, #05050f 100%);
+  color: var(--m3-on-surface);
+}
+
+/* --- Aizuri · índigo teñido --- */
+.app-shell[data-skin='aizuri'] {
+  --m3-surface: #0e1b2a;
+  --m3-surface-alt: #122338;
+  --m3-surface-card: #15263a;
+  --m3-on-surface: #eef4f7;
+  --m3-on-surface-muted: #93b0c4;
+  --m3-primary: #5ab4d6;
+  --m3-primary-dim: #3d92b5;
+  --m3-outline: rgba(90, 180, 214, 0.3);
+  --m3-radius: 14px;
+  --space-bg2: #122338;
+  --space-card: #15263a;
+  --space-primary: #5ab4d6;
+  --space-text: #eef4f7;
+  --space-muted: #93b0c4;
+  --space-soft: #7595ab;
+  --space-border: rgba(90, 180, 214, 0.24);
+  --accent-200: 186 230 246;
+  --accent-300: 125 211 252;
+  --accent-400: 56 189 248;
+  --accent-500: 90 180 214;
+  --accent-600: 37 126 184;
+  --accent-800: 30 102 148;
+  --accent-900: 24 83 122;
+  --accent-950: 12 42 66;
+  --theme-canvas: #0e1b2a;
+  --theme-topnav: #091522;
+  --theme-card: #15263a;
+  --theme-card-border: rgba(90, 180, 214, 0.24);
+  --theme-ink: #eef4f7;
+  --theme-ink-soft: #93b0c4;
+  --theme-dock: #15263a;
+  --theme-dock-ink: #eef4f7;
+  --theme-font-display: Georgia, 'Times New Roman', serif;
+  --theme-radius: 14px;
+  --theme-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+  background:
+    radial-gradient(900px 460px at 12% -8%, rgba(90, 180, 214, 0.18), transparent 55%),
+    linear-gradient(180deg, #0e1b2a 0%, #08131f 100%);
+  color: var(--m3-on-surface);
+}
+
+/* Reglas compartidas: leen --theme-* para que cada tema sea reconocible. */
+.app-shell[data-skin='sumie'] .titlebar,
+.app-shell[data-skin='yoru'] .titlebar,
+.app-shell[data-skin='hanabi'] .titlebar,
+.app-shell[data-skin='aizuri'] .titlebar {
+  background: var(--theme-canvas);
+  border-bottom-color: var(--theme-card-border);
+}
+.app-shell[data-skin='sumie'] .titlebar-brand-name,
+.app-shell[data-skin='yoru'] .titlebar-brand-name,
+.app-shell[data-skin='hanabi'] .titlebar-brand-name,
+.app-shell[data-skin='aizuri'] .titlebar-brand-name { color: var(--theme-ink); }
+.app-shell[data-skin='sumie'] .titlebar-btn,
+.app-shell[data-skin='yoru'] .titlebar-btn,
+.app-shell[data-skin='hanabi'] .titlebar-btn,
+.app-shell[data-skin='aizuri'] .titlebar-btn { color: var(--theme-ink-soft); }
+.app-shell[data-skin='sumie'] .zen-topnav,
+.app-shell[data-skin='yoru'] .zen-topnav,
+.app-shell[data-skin='hanabi'] .zen-topnav,
+.app-shell[data-skin='aizuri'] .zen-topnav {
+  background: var(--theme-topnav);
+  border-right-color: var(--theme-card-border);
+}
+.app-shell[data-skin='sumie'] .glass-card,
+.app-shell[data-skin='yoru'] .glass-card,
+.app-shell[data-skin='hanabi'] .glass-card,
+.app-shell[data-skin='aizuri'] .glass-card {
+  background: var(--theme-card);
+  border-color: var(--theme-card-border);
+  border-radius: var(--theme-radius);
+  box-shadow: var(--theme-shadow);
+}
+.app-shell[data-skin='sumie'] .npr-shell,
+.app-shell[data-skin='yoru'] .npr-shell,
+.app-shell[data-skin='hanabi'] .npr-shell,
+.app-shell[data-skin='aizuri'] .npr-shell {
+  background: var(--theme-dock);
+  border-color: var(--theme-card-border);
+  border-radius: var(--theme-radius);
+  color: var(--theme-dock-ink);
+}
+.app-shell[data-skin='sumie'] .npr-mini,
+.app-shell[data-skin='yoru'] .npr-mini,
+.app-shell[data-skin='hanabi'] .npr-mini,
+.app-shell[data-skin='aizuri'] .npr-mini {
+  background: var(--theme-dock);
+  border-color: var(--theme-card-border);
+  border-radius: var(--theme-radius);
+  color: var(--theme-dock-ink);
+}
+.app-shell[data-skin='sumie'] h1,
+.app-shell[data-skin='sumie'] h2,
+.app-shell[data-skin='sumie'] h3,
+.app-shell[data-skin='sumie'] h4,
+.app-shell[data-skin='aizuri'] h1,
+.app-shell[data-skin='aizuri'] h2,
+.app-shell[data-skin='aizuri'] h3,
+.app-shell[data-skin='aizuri'] h4,
+.app-shell[data-skin='hanabi'] h1,
+.app-shell[data-skin='hanabi'] h2,
+.app-shell[data-skin='hanabi'] h3,
+.app-shell[data-skin='hanabi'] h4 {
+  font-family: var(--theme-font-display);
+}
+.app-shell[data-skin='sumie'] .npr-title,
+.app-shell[data-skin='sumie'] .npr-artist,
+.app-shell[data-skin='sumie'] .npr-time,
+.app-shell[data-skin='yoru'] .npr-title,
+.app-shell[data-skin='yoru'] .npr-artist,
+.app-shell[data-skin='yoru'] .npr-time,
+.app-shell[data-skin='hanabi'] .npr-title,
+.app-shell[data-skin='hanabi'] .npr-artist,
+.app-shell[data-skin='hanabi'] .npr-time,
+.app-shell[data-skin='aizuri'] .npr-title,
+.app-shell[data-skin='aizuri'] .npr-artist,
+.app-shell[data-skin='aizuri'] .npr-time { color: var(--theme-dock-ink); }

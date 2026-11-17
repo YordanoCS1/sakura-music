@@ -11,6 +11,7 @@ import type {
   DownloaderStatus,
   AppInfo,
   ThemeMode,
+  ThemeOption,
   PlayerStyle,
   ViewMode,
   AppTab,
@@ -36,10 +37,21 @@ import { useOnlineSearch } from './hooks/useOnlineSearch';
 import { useFolderExplorer } from './hooks/useFolderExplorer';
 import { usePlayer } from './hooks/usePlayer';
 
+const TEMAS_DISPONIBLES: ThemeOption[] = [
+  { id: 'space', nombre: 'M3 Zen', descripcion: 'Marfil y rosa sakura' },
+  { id: 'sumie', nombre: 'Sumi-e', descripcion: 'Tinta, papel y bermellón' },
+  { id: 'yoru', nombre: 'Yoru', descripcion: 'Noche cálida y ámbar' },
+  { id: 'hanabi', nombre: 'Hanabi', descripcion: 'Neón cian y magenta' },
+  { id: 'aizuri', nombre: 'Aizuri', descripcion: 'Índigo teñido y cian' },
+];
+
 export default function App() {
   const [activeTab, setActiveTab] = useState<AppTab>('library');
   const libraryScrollRef = useRef<HTMLDivElement>(null);
-  const theme = 'space' as ThemeMode;
+  const [theme, setTheme] = useState<ThemeMode>(() => {
+    const guardado = localStorage.getItem('sakura_theme') as ThemeMode | null;
+    return guardado && TEMAS_DISPONIBLES.some((t) => t.id === guardado) ? guardado : 'space';
+  });
   const [playerStyle, setPlayerStyle] = useState<PlayerStyle>(() => {
     return (localStorage.getItem('sakura_player_style') as PlayerStyle) || 'floating';
   });
@@ -99,6 +111,11 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('sakura_theme', theme);
   }, [theme]);
+
+  const handleSetTheme = (siguiente: ThemeMode) => {
+    setTheme(siguiente);
+    localStorage.setItem('sakura_theme', siguiente);
+  };
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
     const saved = localStorage.getItem('sakura_view_mode') as ViewMode | null;
     if (
@@ -713,7 +730,7 @@ export default function App() {
   });
   playbackQueueRef.current = filteredTracks;
 
-  // Colores del tema activo (hoy único: 'space').
+  // Colores de acento del tema activo, usados en glows y badges del player.
   const themeGlows: Record<
     ThemeMode,
     { glow1: string; glow2: string; accent: string; badge: string }
@@ -723,6 +740,30 @@ export default function App() {
       glow2: 'bg-indigo-700/20',
       accent: 'from-purple-500 to-indigo-500',
       badge: 'bg-purple-500/15 text-purple-100 border-purple-400/30',
+    },
+    sumie: {
+      glow1: 'bg-red-800/15',
+      glow2: 'bg-amber-100/40',
+      accent: 'from-red-800 to-rose-700',
+      badge: 'bg-red-800/10 text-red-900 border-red-800/30',
+    },
+    yoru: {
+      glow1: 'bg-amber-500/20',
+      glow2: 'bg-orange-900/25',
+      accent: 'from-amber-500 to-orange-700',
+      badge: 'bg-amber-500/15 text-amber-100 border-amber-500/30',
+    },
+    hanabi: {
+      glow1: 'bg-cyan-400/25',
+      glow2: 'bg-fuchsia-600/20',
+      accent: 'from-cyan-400 to-fuchsia-500',
+      badge: 'bg-cyan-400/15 text-cyan-100 border-cyan-400/30',
+    },
+    aizuri: {
+      glow1: 'bg-sky-400/20',
+      glow2: 'bg-blue-900/25',
+      accent: 'from-sky-400 to-blue-600',
+      badge: 'bg-sky-400/15 text-sky-100 border-sky-400/30',
     },
   };
 
@@ -736,7 +777,8 @@ export default function App() {
   };
   return (
     <div
-      data-theme={theme}
+      data-theme="space"
+      data-skin={theme === 'space' ? undefined : theme}
       className={`app-shell relative w-screen h-screen flex flex-col overflow-hidden ${worldStyle.bgClass} font-sans text-ink-100 select-none`}
       style={
         {
@@ -1061,6 +1103,9 @@ export default function App() {
             {/* TAB: AJUSTES */}
             {activeTab === 'settings' && (
               <SettingsTab
+                theme={theme}
+                temas={TEMAS_DISPONIBLES}
+                onSetTheme={handleSetTheme}
                 accentGradient={worldStyle.accentGradient}
                 accentBadge={worldStyle.accentBadge}
                 coverGlowActive={!!coverGlowColors}

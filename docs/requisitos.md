@@ -179,14 +179,12 @@ guardado. La carpeta `covers/` no crece sin control entre sesiones.
 
 ### Apariencia
 
-#### RF-17 · Tema único M3 Zen
+#### RF-17 · Temas visuales seleccionables
 
-**Criterio:** la app tiene un solo tema visual, **M3 Zen**: superficies claras
-marfil (`--m3-surface`), tarjetas blancas con sombras suaves, acento rosa sakura
-(`--m3-primary`) y sin glassmorphism ni blur. Define las variables semánticas
-`--m3-*` en `App.css` (`[data-theme='space']`) y se persiste en `localStorage`
-(`sakura_theme`) con el valor `space`. No hay selector de temas: el `ThemeMode`
-es fijo en `'space'`.
+**Criterio:** la app ofrece cinco temas (M3 Zen, Sumi-e, Yoru, Hanabi y Aizuri)
+seleccionables desde Ajustes. Cada tema define variables semánticas `--m3-*`, `--space-*`,
+`--accent-*` y `--theme-*` bajo su `[data-skin='id']`. El elegido se persiste en
+`localStorage` (`sakura_theme`) y se aplica sin recargar.
 
 **Test:** `tsc --noEmit` + `npm run build` (verifica que Tailwind genera las
 clases `accent-*` que usan los tokens).

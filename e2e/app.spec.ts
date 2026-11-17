@@ -74,8 +74,22 @@ test('la app arranca, oculta el splash y navega entre pestañas', async ({ page 
   await expect(page.getByRole('button', { name: 'Salir del mini reproductor' })).toBeVisible();
 });
 
+test('el tema se cambia desde Ajustes y persiste al recargar', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('tab', { name: /Ajustes/ }).click();
+
+  const sumie = page.getByRole('button', { name: /Sumi-e/ });
+  await sumie.click();
+  await expect(page.locator('.app-shell')).toHaveAttribute('data-skin', 'sumie');
+  await expect(sumie).toHaveAttribute('aria-pressed', 'true');
+
+  await page.reload();
+  await expect(page.locator('.app-shell')).toHaveAttribute('data-skin', 'sumie');
+});
+
 test('el tablist responde al teclado', async ({ page }) => {
   await page.goto('/');
+  await page.waitForTimeout(2000);
   const biblioteca = page.getByRole('tab', { name: /Biblioteca/ });
   await biblioteca.focus();
   await expect(biblioteca).toBeFocused();

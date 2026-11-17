@@ -134,7 +134,13 @@ export interface ToolProgress {
   estado: string;
 }
 
-export type ThemeMode = 'space';
+export type ThemeMode = 'space' | 'sumie' | 'yoru' | 'hanabi' | 'aizuri';
+
+export interface ThemeOption {
+  id: ThemeMode;
+  nombre: string;
+  descripcion: string;
+}
 export type AppTab = 'home' | 'search' | 'library' | 'queue' | 'settings';
 export type PlayerStyle = 'floating' | 'fixed' | 'mini';
 export type ViewMode =

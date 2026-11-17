@@ -21,7 +21,7 @@ Todos los cambios destacables de este proyecto se registran acá. El formato sig
 - Tests E2E con Playwright sobre Vite con IPC simulado y guía de release con firma de bundles.
 
 ### Cambiado
-- El único tema visual tiene id `space`; los tokens `--m3-*` se aplican bajo `[data-theme='space']`.
+- Cinco temas seleccionables: M3 Zen (`space`), Sumi-e, Yoru, Hanabi y Aizuri, con paleta, tipografía y forma propias.
 - Todos los comentarios del código están en español rioplatense y explican decisiones no obvias.
 - La documentación se actualizó para reflejar 22 comandos Tauri, 21 tests Rust y 9 vistas.
 - Código Rust y frontend formateados con `rustfmt` y Prettier; clippy pasa con `-D warnings`.
