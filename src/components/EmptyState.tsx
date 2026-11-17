@@ -27,8 +27,8 @@ export default function EmptyState({
   const Icono = ICONOS[variante];
 
   return (
-    <div className="glass-card my-6 flex flex-col items-center justify-center rounded-3xl border border-white/5 p-12 text-center">
-      <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-3xl border border-accent-500/20 bg-accent-500/10 text-accent-300">
+    <div className="empty-state glass-card my-6 flex flex-col items-center justify-center rounded-3xl border border-white/5 p-12 text-center">
+      <div className="empty-state-mark mb-5 flex h-16 w-16 items-center justify-center rounded-3xl border border-accent-500/20 bg-accent-500/10 text-accent-300">
         <Icono className="h-8 w-8" strokeWidth={1.4} aria-hidden="true" />
       </div>
       <h3 className="mb-1 text-base font-bold text-white">{titulo}</h3>

@@ -7,7 +7,7 @@ Sakura Music usa cinco temas: **M3 Zen** (por defecto), Sumi-e, Yoru, Hanabi y A
 | Id | Nombre | Personalidad |
 |---|---|---|
 | `space` | M3 Zen | Superficies marfil, acento rosa sakura, redondeado suave |
-| `sumie` | Sumi-e | Papel crudo, tinta carbón, bermellón, serif, esquinas sobrias |
+| `sumie` | Sumi-e | Washi con fibra, sellos hanko bermellón, ensō en el estado vacío, pinceladas bajo las pestañas y serif japonés |
 | `yoru` | Yoru | Noche cálida, grafito y ámbar, sans geométrica |
 | `hanabi` | Hanabi | Azul noche, cian y magenta, monoespacio, esquinas vivas |
 | `aizuri` | Aizuri | Índigo teñido, blanco hueso y cian, serif |
