@@ -15,10 +15,12 @@ Esta carpeta contiene la documentación técnica y de referencia del proyecto Sa
 | La promesa verificable de la app | [requisitos.md](requisitos.md) |
 | Flujos paso a paso | [casos-de-uso.md](casos-de-uso.md) |
 | Setup, tests y recetas | [desarrollo.md](desarrollo.md) |
+| Comandos y eventos disponibles | [ipc-contract.md](ipc-contract.md) |
+| Dónde y cómo se guardan los datos | [data-formats.md](data-formats.md) |
 | Buscar, descargar y entender la cola | [manual/buscar-y-descargar.md](manual/buscar-y-descargar.md) |
 | Escaneo, ordenar y filtrar biblioteca | [manual/biblioteca.md](manual/biblioteca.md) |
 | Editar tags, portadas y catálogo | [manual/metadatos-y-letras.md](manual/metadatos-y-letras.md) |
-| Cambiar tema, universo y efectos | [manual/apariencia.md](manual/apariencia.md) |
+| Cambiar efectos y apariencia | [manual/apariencia.md](manual/apariencia.md) |
 | Resolver un error concreto | [manual/problemas.md](manual/problemas.md) |
 | Índice de decisiones técnicas | [adr/README.md](adr/README.md) |
 
@@ -31,13 +33,15 @@ docs/
   requisitos.md              RF/RNF con criterio de aceptación y tests
   arquitectura.md            capas, hilos, persistencia, seguridad y secuencias
   desarrollo.md              setup, tests, tipos y recetas para extender
+  ipc-contract.md            20 comandos Tauri y 4 eventos (contrato frontend/Rust)
+  data-formats.md            SQLite, download_queue.json y preferencias
   manual/
     README.md                índice del manual
     instalacion.md           requisitos, ffmpeg, yt-dlp, datos y arranque
     buscar-y-descargar.md    búsqueda, playlists, cola, errores
     biblioteca.md            escaneo, caché, vistas y reproducción
     metadatos-y-letras.md    editor, lote, catálogos, portadas
-    apariencia.md            temas, universos, vidrio, vistas
+    apariencia.md            efectos, apariencia y vistas
     problemas.md             síntomas, causas y qué hacer
   adr/
     README.md                índice de decisiones
@@ -51,6 +55,8 @@ docs/
     0008-hilos-y-cierre-limpio.md
     0009-migracion-tauri-2-rust.md
     0010-cierre-seguridad-atomicidad.md
+    0011-cola-persistente.md
+  temas/                     propuestas de diseño HTML (no implementadas)
   img/                       capturas históricas (v1, pendientes de reemplazo)
     preview_home.png           inicio (v1)
     preview_search.png         buscar (v1)
@@ -98,12 +104,14 @@ docs/
 
 | Documento | Última revisión | Fuente principal |
 |---|---|---|
-| `casos-de-uso.md` | 2026-11-09 | `src/App.tsx`, `src-tauri/src/` |
-| `requisitos.md` | 2026-11-15 | código + `cargo test` (17 tests) + `tsc` |
-| `arquitectura.md` | 2026-11-09 | `src-tauri/src/`, `src/App.tsx`, `tauri.conf.json` |
-| `manual/` | 2026-11-09 | interfaz real + `tauri.conf.json` |
-| `adr/` | 2026-11-09 | 0009 (migración) + 0010 (cierre) |
-| `desarrollo.md` | 2026-11-09 | `package.json`, `src-tauri/Cargo.toml` |
+| `casos-de-uso.md` | 2026-11-17 | `src/App.tsx`, `src-tauri/src/` |
+| `requisitos.md` | 2026-11-17 | código + `cargo test` (17 tests) + `tsc` |
+| `arquitectura.md` | 2026-11-17 | `src-tauri/src/`, `src/App.tsx`, `tauri.conf.json` |
+| `ipc-contract.md` | 2026-11-17 | `lib.rs`, `catalog.rs`, `downloader.rs`, `library_watcher.rs` |
+| `data-formats.md` | 2026-11-17 | `library_db.rs`, `queue.rs`, `paths.rs`, `localStorage` |
+| `manual/` | 2026-11-17 | interfaz real + `tauri.conf.json` |
+| `adr/` | 2026-11-17 | 0009 (migración) + 0010 (cierre) + 0011 (cola persistente) |
+| `desarrollo.md` | 2026-11-17 | `package.json`, `src-tauri/Cargo.toml` |
 
 La documentación se actualiza **cuando cambia el comportamiento**, no cuando
 cambia una línea. Si un cambio invalida un requisito, actualizá el requisito y su

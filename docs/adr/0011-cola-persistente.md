@@ -20,9 +20,10 @@ vista. La deuda quedó documentada en el ADR 0010. Los usuarios esperan que sus
    que estaban en curso (`en cola`, `descargando`, `convirtiendo audio`) vuelven
    como `interrumpida` (`reconcile_status`) y el frontend las relanza con el
    mismo `id`, formato y carpeta destino, respetando el límite de 2 en
-   paralelo. yt-dlp reinicia cada archivo desde cero: no se continúa a mitad.
+   paralelo. yt-dlp se invoca con `--continue`, así que reutiliza el archivo
+   parcial cuando puede.
 3. **Tolerancia.** Archivo ausente o corrupto → cola vacía, sin romper el
-   arranque. `clear_download_queue` borra el archivo cuando la cola se vacía.
+   arranque. Cada cambio vuelve a escribir la foto con `save_download_queue`.
 4. Las filas terminadas/canceladas/con error quedan como historial hasta que
    el usuario las limpio con **Limpiar terminadas** (que reescribe la foto).
 
@@ -34,8 +35,8 @@ vista. La deuda quedó documentada en el ADR 0010. Los usuarios esperan que sus
 - La persistencia es atómica y acotada; no crece sin control entre sesiones.
 
 ### Negativas / límites
-- La reanudación reinicia el archivo desde cero (yt-dlp no ofrece resume a
-  nivel de nuestro wrapper).
+- La reanudación depende de lo que yt-dlp pueda reutilizar con `--continue`:
+  no hay un control de reanudación fino en nuestro wrapper.
 - Sin historial de 1000 entradas como la v1: solo 100 filas recientes.
 - `file_path` y `output_dir` ahora se guardan por fila; la miniatura no se
   persiste (vuelve en `null` el próximo arranque).
@@ -43,6 +44,6 @@ vista. La deuda quedó documentada en el ADR 0010. Los usuarios esperan que sus
 ## Reflejo en el código
 `src-tauri/src/queue.rs` (nuevo), `src-tauri/src/paths.rs`
 (`queue_file`), `src-tauri/src/lib.rs` (`get_download_queue`,
-`save_download_queue`, `clear_download_queue`), `src/App.tsx`
+`save_download_queue`), `src/App.tsx`
 (`PersistedDownload`, restauración al montar, guardado tras cada cambio,
 reanudación de `interrumpida`, aviso en Cola).

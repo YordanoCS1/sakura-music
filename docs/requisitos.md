@@ -10,8 +10,9 @@ este documento (con fecha y motivo). **No se renumeran.**
 ## Cómo leer la trazabilidad
 
 - **Criterio:** qué tiene que pasar para considerar el requisito cumplido.
-- **Test:** `cargo test` (Rust) o `tsc --noEmit` (tipos). Hoy la suite es **9
-  tests Rust**; el frontend no tiene tests automatizados (deuda conocida).
+- **Test:** `cargo test` (Rust) o `tsc --noEmit` (tipos). Hoy la suite es **17
+  tests Rust** (6 de `downloader`, 4 de `queue`, 4 de `scanner` y 3 de
+  `library_db`); el frontend no tiene tests automatizados (deuda conocida).
 - Si un requisito depende de red o de un binario externo, no se testea en la
   suite: se verifica a mano con `yt-dlp`/`ffmpeg` reales.
 
@@ -46,8 +47,9 @@ tercera espera turno. `cancel_download(job_id)` mata el proceso (árbol completo
 en Windows) y deja la fila en `cancelado`. `cancel_all_downloads` hace lo mismo
 para toda la cola. Al cerrar la app, el evento `Exit` cancela todo.
 
-**Test:** `downloader::tests::extrae_id_de_urls_conocidas` (el mecanismo de
-turnos/cancelación no tiene test de concurrencia: deuda conocida).
+**Test:** `downloader::tests::rechaza_duplicados_activos_y_permite_reintentar_al_terminar`
+(cubre el rechazo de jobs duplicados activos y el reintento una vez terminado;
+el resto de la concurrencia se verifica a mano).
 
 #### RF-04 · Resolver playlists sin descargarlas primero
 
@@ -116,12 +118,12 @@ según firma real (`detect_image_ext`). Nunca se fuerza `.jpg` a un PNG.
 
 **Test:** `scanner::tests::detecta_extension_por_firma`.
 
-#### RF-11 · Explorar con cuatro vistas y filtro por carpeta
+#### RF-11 · Explorar con nuevas vistas y filtro por carpeta
 
-**Criterio:** Biblioteca ofrece Carpetas (con breadcrumbs), Cuadrícula, Tabla y
-Álbumes. El buscador filtra por título/artista/álbum; navegar carpetas con
-breadcrumbs filtra el resto de vistas. La vista y el tema se persisten en
-`localStorage`.
+**Criterio:** Biblioteca ofrece nueve vistas: Carpetas (con breadcrumbs),
+Cuadrícula, Tabla, Álbumes, Pared (mosaico de portadas), CDs, 3D (Tilt), Luz
+(Glow) y Portadas. El buscador filtra por título/artista/álbum; navegar carpetas
+con breadcrumbs filtra el resto de vistas. La vista se persiste en `localStorage`.
 
 **Test:** verificación manual (no hay tests de frontend).
 
@@ -152,14 +154,19 @@ hay errores. Los campos no marcados no se tocan. El título no entra al lote.
 
 **Test:** tipos (`tsc`) + verificación manual del contrato.
 
-#### RF-15 · Buscar metadatos en iTunes y Deezer
+#### RF-15 · Buscar metadatos en iTunes, Deezer y MusicBrainz
 
-**Criterio:** el editor consulta la API real de iTunes (`itunes.apple.com`) o
-de Deezer (`api.deezer.com/search`) según el selector, y aplica carátula HD
-(600x600 en iTunes, `cover_xl/big/medium` en Deezer). La opción "Deezer" ya
-**no** consulta iTunes.
+**Criterio:** el editor consulta la API real de iTunes (`itunes.apple.com`), Deezer
+(`api.deezer.com/search`) o MusicBrainz (`musicbrainz.org`, con portadas de
+`coverartarchive.org`) según el selector, y aplica carátula HD (600x600 en iTunes,
+`cover_xl/big/medium` en Deezer, `front-500` en Cover Art Archive). La opción
+"Deezer" ya **no** consulta iTunes. Las peticiones no las hace el frontend con
+`fetch`: pasan por los comandos `search_catalog_songs`, `search_catalog_albums` y
+`open_catalog_album` de `src-tauri/src/catalog.rs`, que usa `reqwest` con un
+User-Agent propio (Deezer no manda cabeceras CORS y MusicBrainz exige
+identificación). También se puede explorar un álbum y aplicar sus pistas.
 
-**Test:** verificación manual (CSP habilita ambos hosts).
+**Test:** verificación manual (el CSP habilita todos los hosts).
 
 #### RF-16 · Portadas temporales sin acumulación
 
@@ -177,8 +184,9 @@ guardado. La carpeta `covers/` no crece sin control entre sesiones.
 **Criterio:** la app tiene un solo tema visual, **M3 Zen**: superficies claras
 marfil (`--m3-surface`), tarjetas blancas con sombras suaves, acento rosa sakura
 (`--m3-primary`) y sin glassmorphism ni blur. Define las variables semánticas
-`--m3-*` en `App.css` (`[data-theme='m3zen']`) y se persiste en `localStorage`
-(`sakura_theme`). No hay selector de temas: el `ThemeMode` es fijo.
+`--m3-*` en `App.css` (`[data-theme='space']`) y se persiste en `localStorage`
+(`sakura_theme`) con el valor `space`. No hay selector de temas: el `ThemeMode`
+es fijo en `'space'`.
 
 **Test:** `tsc --noEmit` + `npm run build` (verifica que Tailwind genera las
 clases `accent-*` que usan los tokens).
@@ -187,8 +195,9 @@ clases `accent-*` que usan los tokens).
 
 **Criterio:** la navegación principal es una barra superior de pestañas
 (Inicio, Biblioteca, Buscar, Cola, Ajustes) con un indicador deslizante sobre la
-pestaña activa, en lugar del antiguo rail/sidebar. La biblioteca ofrece 5 vistas:
-**Carpetas, Cuadrícula, Lista, Álbumes y Pared**; la vista Pared muestra un mosaico
+pestaña activa, en lugar del antiguo rail/sidebar. La biblioteca ofrece 9 vistas:
+**Carpetas, Cuadrícula, Lista, Álbumes, Pared, CDs, 3D (Tilt), Luz (Glow) y
+Portadas**; la vista Pared muestra un mosaico
 de portadas filtrado por la carpeta seleccionada, con el nombre y artista de cada
 pista.
 
@@ -232,7 +241,8 @@ y pausa lineal. Sin temporales huérfanos tras un éxito.
 **Criterio:** `tauri.conf.json` define CSP estricta (no `null`) y scope
 `["$AUDIO/**", "$APPLOCALDATA/**", "$TEMP/**"]`. Las carpetas elegidas por el
 usuario se autorizan en runtime (`allow_directory`). `connect-src` limita la
-red a iTunes/Deezer + IPC.
+red a `ipc:`, `asset:`, dev (`ws://localhost:1420`), iTunes, Deezer,
+`musicbrainz.org` y `coverartarchive.org`.
 
 **Test:** revisión de `tauri.conf.json`; `npm run build` + `cargo test`
 pasan con la CSP activa.
@@ -289,13 +299,16 @@ enlaza a `docs/`.
 | Apariencia | RF-17 … RF-18 | `tsc` + `npm run build`, manual |
 | Transversales | RNF-01 … RNF-08 | suite completa |
 
+**Total de la suite Rust: 17 tests** (6 de `downloader`, 4 de `queue`, 4 de
+`scanner` y 3 de `library_db`).
+
 ## Requisitos retirados (v1)
 
 | ID v1 | Qué era | Cuándo / por qué |
 |---|---|---|
 | RF-04 (v1) | Saltar duplicados en la cola | Retirado en la v2: hoy cada descarga es un job independiente reintentable |
 | RF-09, RF-10 (v1) | Cola persistente e historial de 1000 entradas | Reemplazados por RF-19 (persistencia acotada a 100) y sin historial separado |
-| RF-12, RF-13 (v1) | Índice SQLite `mtime_ns` + watcher incremental | Retirado: ahora hay caché JSON descartable + escaneo completo |
+| RF-12, RF-13 (v1) | Índice SQLite `mtime_ns` + watcher incremental | Reemplazado: hoy es SQLite `library.sqlite3` (validado por `mtime` + tamaño) con watcher `notify`, no caché JSON con escaneo completo |
 | RF-20, RF-22, RF-23 (v1) | Aplicar álbum, deshacer con manifiestos, letras LRCLIB | Retirados: no hay editor de álbum, ni manifiestos, ni letras |
 | RF-25, RF-26 (v1) | Tema ambiente desde la portada e iconos personalizados | Retirados: no existen en la v2 |
 | RF-28 (v1) | Actualizar herramientas con `pip`/`winget` | Retirado: la v2 solo **detecta** yt-dlp/ffmpeg |

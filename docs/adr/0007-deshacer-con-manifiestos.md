@@ -1,6 +1,6 @@
 # ADR-0007 · Deshacer un lote de tags con manifiestos JSON
 
-- **Estado:** Vigente
+- **Estado:** Retirado en v2: no hay manifiestos ni deshacer
 - **Fecha:** 2026-11-07 (formalizada)
 - **Reflejo en el código:** `sakura/core/tag_history.py`,
   `sakura/ui/widgets/batch_editor.py`, `sakura/ui/pages/library.py`

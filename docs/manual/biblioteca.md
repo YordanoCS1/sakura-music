@@ -34,7 +34,7 @@ escaneo lo reconstruye desde los archivos. No se pierde música ni tags.
 > La música no vive en la carpeta de datos: vive en la carpeta que elegiste
 > como biblioteca.
 
-## Las cuatro vistas
+## Las nueve vistas
 
 | Vista | Ideal para |
 |---|---|
@@ -42,6 +42,11 @@ escaneo lo reconstruye desde los archivos. No se pierde música ni tags.
 | **Cuadrícula** | Tarjetas con portada grande, título y artista |
 | **Tabla** | Ver todo junto: título, artista, álbum, año, duración, tamaño |
 | **Álbumes** | Estante con vinilo 3D: agrupado por álbum, con vista detalle |
+| **Pared** | Mosaico de portadas filtrado por la carpeta elegida |
+| **CDs** | Portadas presentadas como discos |
+| **3D (Tilt)** | Portadas con efecto de inclinación tridimensional |
+| **Luz (Glow)** | Portadas con resplandor ambiental |
+| **Portadas** | Galería de carátulas |
 
 En **Carpetas** ves las subcarpetas como tarjetas; al entrar, las migas muestran
 `Artista / Álbum` y podés volver a cualquier nivel. En las demás vistas, navegar

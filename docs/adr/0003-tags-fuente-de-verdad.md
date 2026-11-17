@@ -1,6 +1,6 @@
 # ADR-0003 · Los tags del archivo son la fuente de verdad
 
-- **Estado:** Vigente
+- **Estado:** Vigente en concepto; implementación v2 en `scanner.rs`
 - **Fecha:** 2026-11-07 (formalizada)
 - **Reflejo en el código:** `sakura/core/library.py`, `sakura/core/metadata.py`,
   `sakura/core/library_index.py`, `sakura/ui/pages/library.py`

@@ -1,6 +1,6 @@
 # ADR-0001 · Reescribir en Python + PySide6 en vez de Electron
 
-- **Estado:** Vigente
+- **Estado:** Reemplazado por 0009 (histórico v1)
 - **Fecha:** 2026-11-07 (formalizada; decisión original de la reescritura)
 - **Reflejo en el código:** `pyproject.toml` (`PySide6>=6.8`), `sakura/app.py`,
   `sakura/ui/`

@@ -49,14 +49,19 @@ Al presionar **Guardar**:
 Como el reproductor carga el audio en memoria, Windows no bloquea el archivo:
 editás aunque esté sonando, sin errores de "acceso denegado".
 
-## Buscar en catálogo (iTunes o Deezer)
+## Buscar en catálogo (iTunes, Deezer o MusicBrainz)
 
 La pestaña **Buscador Catálogo** del editor busca por artista + título y muestra
-resultados con carátula, artista, álbum, año y género.
+resultados con carátula, artista, álbum, año y género. También podés explorar un
+álbum y aplicar sus pistas.
 
-- Cada fuente consulta su **API real** (antes "Deezer" consultaba iTunes):
-  **Apple Music (iTunes)** descarga la carátula en alta definición (600x600)
-  y **Deezer** trae `cover_xl`/`cover_big`/`cover_medium`.
+- Cada fuente consulta su **API real** desde Rust (antes "Deezer" consultaba
+  iTunes): **Apple Music (iTunes)** descarga la carátula en alta definición
+  (600x600), **Deezer** trae `cover_xl`/`cover_big`/`cover_medium` y
+  **MusicBrainz** usa las portadas de **Cover Art Archive** (`front-500`). Las
+  peticiones van por los comandos `search_catalog_songs`,
+  `search_catalog_albums` y `open_catalog_album` de `src-tauri/src/catalog.rs`:
+  Deezer no manda cabeceras CORS y MusicBrainz exige un User-Agent.
 - **Aplicar todo:** rellena los campos de texto e importa la carátula HD.
 - **Solo portada:** descarga solo el arte, sin tocar lo que ya editaste.
 

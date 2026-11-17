@@ -34,7 +34,7 @@ Gestor, reproductor, descargador y etiquetador de música para escritorio, const
 - El lote devuelve `{ updated, errors }`: si 2 de 10 archivos fallan, la app te dice **cuáles** en vez de fingir éxito.
 - Campos: título, artista, artista del álbum, álbum, número de pista, año, género y carátula. Lo que no marcás no se toca.
 - Carátulas: archivo local (JPG/PNG/WebP), pegar con `Ctrl+V` y eliminar. Las temporales `temp_*` se borran al abrir la app y antes de guardar una nueva.
-- Catálogo: búsqueda real en **iTunes** y en **Deezer** (`api.deezer.com/search`) con carátula HD, "Aplicar todo" o "Solo portada".
+- Catálogo: búsqueda real en **iTunes**, **Deezer** (`api.deezer.com/search`) y **MusicBrainz** (con portadas de **Cover Art Archive**), con carátula HD, "Aplicar todo", "Solo portada" y exploración de álbumes. Las peticiones pasan por comandos Tauri en `src-tauri/src/catalog.rs`.
 - Control de cambios por campo con reversión individual y "restablecer valores originales".
 - Diseño premium adaptado al tema claro (superficies blancas, texto legible, foco rosa).
 
@@ -48,10 +48,10 @@ Gestor, reproductor, descargador y etiquetador de música para escritorio, const
 - Timeouts y reintentos de red: `--socket-timeout 30`, `--retries 3`, `--fragment-retries 3`, `--windows-filenames`.
 
 ### 🎨 Interfaz M3 Zen (Material 3 + calma japonesa)
-- **Un único tema:** **M3 Zen** — superficies claras marfil (`#fbf7f4`), tarjetas blancas con sombras suaves, acento **rosa sakura** (`#b5126a`), sin glassmorphism ni blur, tipografía legible (base 14 px). Se guarda en `localStorage`.
+- **Un único tema:** **M3 Zen** — superficies claras marfil (`#fbf7f4`), tarjetas blancas con sombras suaves, acento **rosa sakura** (`#b5126a`), sin glassmorphism ni blur, tipografía legible (base 14 px). Se guarda en `localStorage` con la clave `sakura_theme` y el valor `space` (el id del tema).
 - **Navegación superior:** barra de pestañas con indicador deslizante animado y emblema de vinilo con el kanji 桜.
 - 5 pestañas: Inicio, Biblioteca, Buscar, Cola y Ajustes.
-- **5 vistas de biblioteca:** Carpetas (con breadcrumbs), Cuadrícula, Lista (tabla), Álbumes y **Pared** (mosaico de portadas con el título y artista de cada canción, filtrado por la carpeta seleccionada).
+- **9 vistas de biblioteca:** Carpetas (con breadcrumbs), Cuadrícula, Lista (tabla), Álbumes, **Pared** (mosaico de portadas con el título y artista de cada canción, filtrado por la carpeta seleccionada), **CDs**, **3D (Tilt)**, **Luz (Glow)** y **Portadas**.
 - Opacidad y blur del vidrio, resplandor ambiental, partículas, estilo de reproductor (flotante/fijo) y favoritos persistentes.
 - Datos técnicos reales: versión de `rustc` (inyectada en `build.rs`) y memoria del proceso en Windows (via `windows-sys`), nunca literales de ejemplo.
 
@@ -82,6 +82,7 @@ Gestor, reproductor, descargador y etiquetador de música para escritorio, const
 │   • src-tauri/src/library_watcher.rs notify: library-changed  │
 │   • src-tauri/src/queue.rs          cola de descargas persistente │
 │   • src-tauri/src/paths.rs          carpeta de datos estable  │
+│   • src-tauri/src/catalog.rs        iTunes/Deezer/MusicBrainz │
 │   • src-tauri/src/lib.rs            comandos Tauri + ciclo de │
 │                                     vida + asset scope        │
 └──────────────────────────────┬──────────────────────────────┘
@@ -163,6 +164,7 @@ Sakura_Music/
 ├── src-tauri/                    # Backend Rust
 │   ├── src/
 │   │   ├── lib.rs                # comandos Tauri (17), caché, scope asset, ciclo de vida
+│   │   ├── catalog.rs            # 3 comandos de catálogo (iTunes/Deezer/MusicBrainz)
 │   │   ├── main.rs               # entrada desktop
 │   │   ├── scanner.rs            # escaneo Rayon, tags lofty, escritura atómica, tests
 │   │   ├── downloader.rs         # DownloadManager, yt-dlp, cancelación, tests
@@ -190,8 +192,11 @@ Todo el detalle vivido en `docs/`, en Markdown plano con Mermaid, sin MkDocs:
 - [Requisitos](docs/requisitos.md) — promesas verificables con su criterio.
 - [Casos de uso](docs/casos-de-uso.md) — actores y flujos contra el código real.
 - [Desarrollo](docs/desarrollo.md) — setup, tests y recetas.
+- [Contrato IPC](docs/ipc-contract.md) — los 20 comandos Tauri y los 4 eventos.
+- [Formatos de datos](docs/data-formats.md) — SQLite, cola persistente y preferencias.
 - [Manual de usuario](docs/manual/README.md) — instalación, buscar/descargar, biblioteca, metadatos y resolución de problemas.
 - [ADRs](docs/adr/README.md) — decisiones. Los 0001–0008 quedaron como histórico de la v1; 0009 y posteriores rigen la v2.
+- [Cómo contribuir](CONTRIBUTING.md), [Seguridad](SECURITY.md) y [Changelog](CHANGELOG.md).
 
 > Las capturas en `docs/img/` son de la UI de la v1 (PySide6). Están pendientes de reemplazo por capturas de la app Tauri/React.
 
@@ -199,4 +204,4 @@ Todo el detalle vivido en `docs/`, en Markdown plano con Mermaid, sin MkDocs:
 
 ## 📄 Licencia
 
-Este proyecto está bajo la licencia MIT. Consulta el archivo `LICENSE` para más información (si no existe, el repositorio aún no incluye uno).
+Este proyecto está bajo licencia MIT, tal como se detalla en el archivo `LICENSE`.

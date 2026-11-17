@@ -1,6 +1,6 @@
 # ADR-0002 · Ejecutar yt-dlp y ffmpeg como subprocesos
 
-- **Estado:** Vigente
+- **Estado:** Vigente en concepto; implementación v2 en `downloader.rs`
 - **Fecha:** 2026-11-07 (formalizada)
 - **Reflejo en el código:** `sakura/ui/services/process.py`,
   `sakura/core/tools.py`, `sakura/ui/services/downloader.py`,

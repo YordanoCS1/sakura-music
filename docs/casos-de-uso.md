@@ -12,7 +12,7 @@ regla vive en un módulo Rust o en `src/App.tsx`, se nombra el archivo.
 | **Desarrollador** | Persona | Entender, probar y extender la app sin romper sus garantías. |
 | **YouTube / yt-dlp** | Sistema externo | Resolver búsquedas, playlists y descargas. |
 | **ffmpeg** | Sistema externo | Convertir a FLAC/MP3/M4A/Opus y embeber carátula. |
-| **iTunes / Deezer** | Sistema externo | Proveer fichas y portadas HD. |
+| **iTunes / Deezer / MusicBrainz** | Sistema externo | Proveer fichas y portadas HD (Cover Art Archive para MusicBrainz). |
 | **Sistema de archivos** | Sistema externo | Guardar la biblioteca, descargas, caché y carátulas. |
 
 ## Resumen de casos de uso
@@ -27,7 +27,7 @@ regla vive en un módulo Rust o en `src/App.tsx`, se nombra el archivo.
 | CU-06 | Editar los metadatos de una pista | Usuario | Tags y portada escritos atómicamente |
 | CU-07 | Etiquetar en lote | Usuario | Campos aplicados; errores parciales visibles |
 | CU-08 | Buscar metadatos en el catálogo | Usuario | Campos y carátula HD aplicadas desde iTunes o Deezer |
-| CU-09 | Cambiar la apariencia | Usuario | Tema y universo aplicados al instante y persistidos |
+| CU-09 | Cambiar la apariencia | Usuario | Efectos visuales aplicados y persistidos |
 | CU-10 | Configurar la app | Usuario | Preferencias en `localStorage` |
 | CU-11 | Diagnosticar un fallo | Usuario | Causa legible y acción siguiente (reintentar, instalar herramienta) |
 | CU-12 | Extender la app | Desarrollador | Comando, tema, vista o formato nuevos sin romper tests |
@@ -195,9 +195,9 @@ cada cambio),
 
 **Flujo principal**
 
-1. En **Biblioteca**, el usuario elige vista: Carpetas, Cuadrícula, Tabla o
-   Álbumes (vinilo 3D). Puede buscar por título/artista/álbum y filtrar por
-   carpeta con breadcrumbs.
+1. En **Biblioteca**, el usuario elige entre nueve vistas: Carpetas, Cuadrícula,
+   Tabla, Álbumes, Pared, CDs, 3D (Tilt), Luz (Glow) y Portadas. Puede buscar por
+   título/artista/álbum y filtrar por carpeta con breadcrumbs.
 2. Al hacer clic en una pista, `App.tsx` la carga con `fetch(convertFileSrc(path))`
    como Blob URL en memoria. El handle del sistema se libera de inmediato.
 3. El reproductor inferior ofrece play/pausa, seek, volumen, mute, shuffle y
@@ -264,23 +264,29 @@ Tabla).
 
 ## CU-08 · Buscar metadatos en el catálogo
 
-**Actor:** Usuario. **Sistemas:** iTunes, Deezer.
+**Actor:** Usuario. **Sistemas:** iTunes, Deezer, MusicBrainz, Cover Art Archive.
 
 **Flujo principal**
 
 1. En el editor (o en el lote), el usuario escribe artista + título y elige
-   fuente: **Apple Music (iTunes)** o **Deezer**. Antes, "Deezer" pedía iTunes;
-   hoy cada uno consulta su API.
-2. `searchCatalog` hace `fetch` a `itunes.apple.com/search` o a
-   `api.deezer.com/search` (ambos habilitados en el CSP) y muestra resultados
-   con carátula, artista, álbum, año y género.
+   fuente: **Apple Music (iTunes)**, **Deezer** o **MusicBrainz**. Antes,
+   "Deezer" pedía iTunes; hoy cada uno consulta su API. También puede explorar
+   un álbum y aplicar sus pistas.
+2. El editor invoca `search_catalog_songs` / `search_catalog_albums` (y
+   `open_catalog_album` para abrir un álbum). Esos comandos viven en
+   `src-tauri/src/catalog.rs` y hacen el `fetch` desde Rust con `reqwest` y un
+   User-Agent propio: Deezer no envía cabeceras CORS y MusicBrainz exige
+   identificación, así que el frontend no puede llamarlos directo. Muestran
+   resultados con carátula, artista, álbum, año y género.
 3. **Aplicar todo** rellena campos y prepara la carátula HD (600x600 en iTunes;
    `cover_xl`/`cover_big`/`cover_medium` en Deezer). **Solo portada** deja los
    textos intactos.
 4. La carátula elegida se guarda vía `save_temp_cover` (extensión detectada por
    firma, escritura atómica) y se incrusta al guardar.
 
-**Dónde está:** `src/App.tsx` (`searchCatalog`, `applyCandidate`),
+**Dónde está:** `src/hooks/useMetadataEditor.ts` (`searchCatalog`,
+`applyCandidate`, búsqueda y apertura de álbumes), `src-tauri/src/catalog.rs`
+(`search_catalog_songs`, `search_catalog_albums`, `open_catalog_album`),
 `src-tauri/src/lib.rs` (`save_temp_cover`).
 
 ---
@@ -292,8 +298,8 @@ Tabla).
 **Flujo principal**
 
 1. La app usa **un único tema visual: M3 Zen** (Material 3 con calma japonesa).
-   No hay selector de temas ni de universos: `data-theme='m3zen'` se fija en el
-   contenedor raíz y `ThemeMode`/`ThemeWorld` tienen un solo valor.
+   No hay selector de temas: `data-theme='space'` se fija en el contenedor raíz y
+   `ThemeMode` tiene un solo valor, `'space'`. No existe `ThemeWorld`.
 2. Los valores de superficie (`--m3-surface`, `--m3-primary`, etc.) y los
    `--accent-*` de `App.css` definen la paleta; Tailwind mapea `accent-*` a esas
    variables, así que toda la UI usa la misma identidad.
@@ -301,8 +307,8 @@ Tabla).
    resplandor ambiental, partículas y estilo del reproductor (flotante/fijo).
    Se persisten en `localStorage` (`sakura_*`).
 
-**Dónde está:** `src/types.ts` (`ThemeMode`, `ThemeWorld`), `src/App.tsx`
-(`data-theme`), `src/App.css` (`[data-theme='m3zen']`), `tailwind.config.js`
+**Dónde está:** `src/types.ts` (`ThemeMode`), `src/App.tsx`
+(`data-theme`), `src/App.css` (`[data-theme='space']`), `tailwind.config.js`
 (paleta `accent-*`).
 
 ---
@@ -313,9 +319,9 @@ Tabla).
 
 **Flujo principal**
 
-1. Las preferencias viven en `localStorage` con claves `sakura_*`: tema,
-   universo, vista, estilo de reproductor, opacidad/blur, glow, partículas,
-   carpeta actual y favoritos.
+1. Las preferencias viven en `localStorage` con claves `sakura_*`: tema
+   (`sakura_theme` = `space`), vista, estilo de reproductor, opacidad/blur, glow,
+   partículas, carpeta actual y favoritos.
 2. La carpeta de música por defecto se pide al backend
    (`get_default_music_dir` → `app.path().audio_dir()`), nunca asumiendo
    `USERPROFILE`.
@@ -357,16 +363,17 @@ Ajustes).
 2. Para un **comando** nuevo, agregalo en `src-tauri/src/lib.rs`, registralo en
    `invoke_handler!` y consumilo con `invoke` desde `App.tsx`. Mapeá errores
    como `String`.
-3. Para un **tema** nuevo, agregá `[data-theme='...']` y sus 8 `--accent-*`
-   en `App.css`, el valor en `ThemeMode` (`src/types.ts`) y sus glows en
-   `App.tsx`; agrega también su opción accesible al selector del sidebar.
-4. Para una **vista** nueva, agregá `ViewMode` y una rama en `App.tsx` sin
-   antiparse con las otras tres.
+3. Para un **tema** nuevo, agregá `[data-theme='...']` y sus tokens `--m3-*` en
+   `App.css`, el valor en `ThemeMode` (`src/types.ts`) y sus glows en `App.tsx`
+   (hoy el tema es fijo, `space`, y no hay selector visible).
+4. Para una **vista** nueva, agregá `ViewMode` y una rama en `LibraryTab.tsx` sin
+   antiparse con las otras vistas.
 5. Para un **formato** nuevo, sumá la rama en `run_download` (`downloader.rs`).
-6. Para una **fuente de catálogo**, sumá la rama en `searchCatalog` y
-   habilitá el host en el CSP de `tauri.conf.json`.
+6. Para una **fuente de catálogo**, sumá la rama en los comandos de
+   `src-tauri/src/catalog.rs` y habilitá el host en el `connect-src` del CSP de
+   `tauri.conf.json`.
 7. Actualizá el requisito afectado y, si hay decisión estructural, sumá un ADR.
 
 **Dónde está:** `docs/desarrollo.md`.
 
-**Tests:** `cargo test` (9 Rust) y `node node_modules/typescript/bin/tsc --noEmit`.
+**Tests:** `cargo test` (17 Rust) y `node node_modules/typescript/bin/tsc --noEmit`.

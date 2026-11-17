@@ -25,14 +25,14 @@ La versión real de `rustc` se captura en `src-tauri/build.rs` y se muestra en
 ```text
 Sakura_Music/
 ├── src/                          # Frontend (React 19 + TypeScript)
-│   ├── App.tsx                   # estado raíz: pestañas, player, editor, cola (~1080 líneas)
+│   ├── App.tsx                   # estado raíz: pestañas, player, editor, cola (~1058 líneas)
 │   ├── main.tsx                  # entrada de React
 │   ├── App.css                   # Tailwind + tokens --m3-* / --accent-* del tema M3 Zen
 │   ├── types.ts                  # tipos compartidos (ScannedTrack, ViewMode, …)
 │   ├── components/
 │   │   ├── ZenTopNav.tsx         # navegación superior (pestañas + indicador)
 │   │   ├── HomeTab.tsx
-│   │   ├── LibraryTab.tsx        # vistas de biblioteca (Carpetas/Cuadrícula/Lista/Álbumes/Pared)
+│   │   ├── LibraryTab.tsx        # vistas: Carpetas/Cuadrícula/Lista/Álbumes/Pared/CDs/3D/Luz/Portadas
 │   │   ├── LibraryShowcase.tsx   # vista Pared (mosaico de portadas)
 │   │   ├── LibraryToolbar.tsx    # cabecera y switcher de vistas
 │   │   ├── PlayerBar.tsx         # reproductor + Now Playing inmersivo
@@ -48,7 +48,8 @@ Sakura_Music/
 ├── src-tauri/                    # Backend (Tauri 2 + Rust)
 │   ├── src/
 │   │   ├── main.rs               # callback mínimo para desktop
-│   │   ├── lib.rs                # comandos Tauri (19), caché, scope asset, ciclo de vida
+│   │   ├── lib.rs                # comandos Tauri (17), caché, scope asset, ciclo de vida
+│   │   ├── catalog.rs            # 3 comandos de catálogo (iTunes/Deezer/MusicBrainz)
 │   │   ├── scanner.rs            # walkdir + rayon + lofty, escritura atómica, tests
 │   │   ├── downloader.rs         # DownloadManager, yt-dlp, cancelación, tests
 │   │   ├── library_db.rs         # índice SQLite (rusqlite), tests
@@ -88,18 +89,20 @@ cargo test --manifest-path src-tauri/Cargo.toml scanner
 cargo test --manifest-path src-tauri/Cargo.toml escritura_atomica
 ```
 
-Los tests Rust prueban parsing de `yt-dlp` (`parse_result_line`,
-`parse_progress_line`, `extract_video_id`), detección de extensión de imagen
-por firma, hash FNV-1a, formateo de duración y escritura atómica sin dejar
-temporales. El test de escritura usa `target/test-tmp/` porque el rename
-falla con `%TEMP%` desincronizado del cwd en este Windows.
+Los tests Rust prueban parsing de `yt-dlp` (`parsea_linea_de_busqueda`,
+`parsea_progreso`, `extrae_id_de_urls_conocidas`,
+`progreso_finished_pasa_a_convirtiendo`,
+`rechaza_duplicados_activos_y_permite_reintentar_al_terminar`), detección de
+extensión de imagen por firma, hash FNV-1a, formateo de duración y escritura
+atómica sin dejar temporales. El test de escritura usa `target/test-tmp/`
+porque el rename falla con `%TEMP%` desincronizado del cwd en este Windows.
 
 ## Casos de uso de desarrollo
 
 Todo lo demás se verifica a mano: búsqueda real en YouTube, descarga en los 4
 formatos, playlist completa, edición individual y en lote (incluido el mensaje
-de fallos parciales), iTunes/Deezer, temas y universos, y cancelación/reintento
-de filas.
+de fallos parciales), iTunes/Deezer/MusicBrainz, temas y efectos, y
+cancelación/reintento de filas.
 
 ## Recetas para extender
 
@@ -115,12 +118,10 @@ de filas.
 
 ### Agregar un tema
 
-1. En `src/App.css`, agregá `[data-theme='nuevo']` con los 8 valores
-   `--accent-200…950` en formato `R G B`.
+1. En `src/App.css`, agregá `[data-theme='nuevo']` con sus tokens `--m3-*`.
 2. En `src/types.ts`, sumá `'nuevo'` a `ThemeMode`; en `src/App.tsx`, agrega su
    entrada a `themeGlows` (glow/acento/badge/borde) y valida su persistencia.
-3. En `src/components/AppSidebar.tsx`, añadí una opción accesible al selector.
-4. Si el tema cambia fondos o superficies, define sus estilos en `App.css`.
+3. Si el tema cambia fondos o superficies, define sus estilos en `App.css`.
    Corré `npm run build` para validar tipos y clases Tailwind.
 
 Los cambios limitados a la paleta usan `accent-*`; los temas visuales completos
@@ -145,10 +146,11 @@ requieren estilos de superficie además de los tokens de color.
 
 ### Agregar una fuente de catálogo
 
-1. En `src/App.tsx::searchCatalog`, sumá la rama con su `source` en el tipo
-   `CatalogCandidate` y su `fetch` a la API.
+1. En `src-tauri/src/catalog.rs`, sumá la rama con su `source` en los comandos
+   `search_catalog_songs`, `search_catalog_albums` y `open_catalog_album`, y el
+   `fetch` con `reqwest` (con User-Agent propio) a la API.
 2. Habilitá el host en el CSP (`connect-src`) de `src-tauri/tauri.conf.json`.
-3. Normalizá el carátula a una URL `https:` (la UI la muestra tal cual) y los
+3. Normalizá la carátula a una URL `https:` (la UI la muestra tal cual) y los
    campos a strings vacíos si la API no los trae.
 
 ## Convenciones

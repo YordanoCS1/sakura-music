@@ -1,6 +1,6 @@
 # ADR-0008 · Nada pesado en el hilo de la UI y cierre limpio de hilos
 
-- **Estado:** Vigente
+- **Estado:** Vigente en concepto; en v2 es Rust (`rayon`/hilos) + `cancel_all()` al salir
 - **Fecha:** 2026-11-07 (formalizada)
 - **Reflejo en el código:** `sakura/ui/services/process.py`,
   `sakura/ui/services/downloader.py`, `sakura/ui/services/library.py`,

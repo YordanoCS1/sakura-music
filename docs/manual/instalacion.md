@@ -75,7 +75,7 @@ nuevo. No perdés tags ni audio.
    descargá tu primera canción en el formato que prefieras.
 4. En **Cola** mirá el porcentaje, velocidad y ETA; al terminar, la canción
    aparece sola en Biblioteca.
-5. En **Ajustes** elegí tema y universo.
+5. En **Ajustes** ajustá los efectos visuales.
 
 Los siguientes pasos están en [buscar-y-descargar.md](buscar-y-descargar.md) y
 [biblioteca.md](biblioteca.md).

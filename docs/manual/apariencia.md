@@ -1,8 +1,8 @@
 # Apariencia
 
 Sakura Music 2.0 usa **un único tema visual: M3 Zen**, basado en *Material 3*
-con calma japonesa. No hay selector de temas ni de universos: la app siempre
-arranca con la misma identidad y las preferencias guardadas se respetan.
+con calma japonesa. No hay selector de temas: la app siempre arranca con la
+misma identidad y las preferencias guardadas se respetan.
 
 ## Identidad del tema M3 Zen
 
@@ -24,9 +24,8 @@ Todas viven en `localStorage` y se restauran al reabrir la app:
 
 | Clave | Qué guarda |
 |---|---|
-| `sakura_theme` | Tema visual (hoy siempre `m3zen`) |
-| `sakura_theme_world` | Mundo (hoy siempre `sakura_zen`) |
-| `sakura_view_mode` | Vista de biblioteca activa (`folders`, `grid`, `table`, `albums`, `mosaic`) |
+| `sakura_theme` | Tema visual (hoy siempre `space`) |
+| `sakura_view_mode` | Vista de biblioteca activa (`folders`, `grid`, `table`, `albums`, `mosaic`, `cds`, `tilt`, `glow`, `portadas`) |
 | `sakura_player_style` | Estilo del reproductor (`floating` / `fixed`) |
 | `sakura_glass_opacity` | Opacidad del vidrio |
 | `sakura_glass_blur` | Desenfoque (backdrop blur) |
@@ -42,8 +41,7 @@ En **Ajustes** todavía podés ajustar lo que queda del sistema visual:
 - **Desenfoque (Backdrop Blur)** (0–32 px): cuánto se difumina el fondo.
 - **Resplandor ambiental fluido (Dynamic Glow)**: si está activo, los glows
   siguen los colores de la carátula que suena.
-- **Efectos atmosféricos de partículas**: pétalos de cerezo o chispas según el
-  mundo.
+- **Efectos atmosféricos de partículas**: pétalos de cerezo o chispas.
 
 > Nota: con M3 Zen estas tres opciones (vidrio, blur, resplandor) son de bajo
 > impacto visual, porque las superficies son sólidas y claras. Siguen
@@ -62,7 +60,7 @@ y controles amplios. Clic fuera o el botón × lo cierra.
 
 ## Vistas de biblioteca
 
-En **Biblioteca** cambiás entre cinco vistas, disponibles en el switcher del
+En **Biblioteca** cambiás entre nueve vistas, disponibles en el switcher del
 toolbar:
 
 | Vista | Qué muestra |
@@ -72,6 +70,10 @@ toolbar:
 | **Lista** | Tabla de columnas ordenables |
 | **Álbumes** | Colección agrupada por disco |
 | **Pared** | Mosaico de portadas a escala variable, filtrado por la carpeta seleccionada y con el nombre y artista de cada pista |
+| **CDs** | Portadas presentadas como discos |
+| **3D (Tilt)** | Portadas con efecto de inclinación tridimensional |
+| **Luz (Glow)** | Portadas con resplandor ambiental |
+| **Portadas** | Galería de carátulas |
 
 La vista se persiste en `sakura_view_mode`.
 
@@ -82,7 +84,7 @@ colores entre secciones. Aun así:
 
 | Sí | No |
 |---|---|
-| El layout de cada vista de biblioteca (Carpetas/Cuadrícula/Lista/Álbumes/Pared) | Tu música, tags y portadas |
+| El layout de cada vista de biblioteca (Carpetas/Cuadrícula/Lista/Álbumes/Pared/CDs/3D/Luz/Portadas) | Tu música, tags y portadas |
 | El tamaño/orientación del reproductor (flotante o fijo) | Los atajos y controles |
 | Los efectos de vidrio, glow y partículas (opcionales) | La lógica de descargas o escaneo |
 
@@ -93,6 +95,6 @@ colores entre secciones. Aun así:
 | El botón no cambia de color | Usa un color de estado fijo (rojo/ámbar/verde) | Es intencional: los estados de condición no siguen el tema |
 | La preferencia no se guarda | `localStorage` bloqueado por el WebView | Limpiá los datos del sitio en WebView2 y volvé a elegir |
 | Las partículas no aparecen | Están apagadas en Ajustes | Activá **Efectos atmosféricos de partículas** |
-| Texto poco legible en algún modal | Superficie heredada del tema oscuro | Reportalo: los modales nuevos usan las superficies claras de M3 Zen |
+| Texto poco legible en algún modal | Superficie heredada de estilos viejos | Reportalo: los modales nuevos usan las superficies claras de M3 Zen |
 
 Más en [problemas.md](problemas.md).

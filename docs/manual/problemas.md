@@ -22,9 +22,8 @@ que se parezca al tuyo y seguí la causa probable.
 
    La app también las detecta en la carpeta de datos `bin/` y en winget.
 
-3. **Comprobá el estado en la app:** en **Cola** y en la tarjeta de estado del
-   sidebar ves el motor Tauri, la versión de `rustc` (real, no de ejemplo) y la
-   memoria del proceso.
+3. **Comprobá el estado en la app:** en **Cola** y en **Ajustes** ves el motor
+   Tauri, la versión de `rustc` (real, no de ejemplo) y la memoria del proceso.
 
 ## Arranque
 
@@ -55,9 +54,9 @@ que se parezca al tuyo y seguí la causa probable.
 ### La cola se guarda y se reanuda
 
 Si cerrás la app a mitad de camino, al reabrir la Cola restaura las filas y las
-interrumpidas **se reanudan solas desde cero**. Si el archivo
-`download_queue.json` se corrompe, la app arranca con la cola vacía en vez de
-romperse.
+interrumpidas **se reanudan solas** (yt-dlp se invoca con `--continue`, así que
+reutiliza el archivo parcial cuando puede). Si el archivo `download_queue.json`
+se corrompe, la app arranca con la cola vacía en vez de romperse.
 
 | Síntoma | Qué hacer |
 |---|---|
@@ -101,8 +100,7 @@ No perdés tags ni portadas: todo eso vive en los archivos de audio.
 | Síntoma | Causa probable | Qué hacer |
 |---|---|---|
 | El tema no cambia un color de estado | Los estados (rojo error, verde éxito) no siguen el tema | Es intencional |
-| El tema no se guarda | `localStorage` bloqueado | Limpiá los datos del WebView2 y volvé a elegir |
-| El universo no cambió el color | El universo cambia fondos y partículas; el color lo manda el tema | Cambiá el **Tema visual** del sidebar |
+| El tema no se guarda | `localStorage` bloqueado | Limpiá los datos del WebView2 y volvé a abrir la app |
 
 ## Dónde están los datos
 
@@ -119,7 +117,7 @@ solo perdés caché y carátulas; la app los regenera.
 
 ```text
 WebView2 → localStorage → claves sakura_*:
-  sakura_theme, sakura_theme_world, sakura_view_mode,
+  sakura_theme, sakura_view_mode,
   sakura_current_folder, sakura_favorites, sakura_player_style, ...
 ```
 

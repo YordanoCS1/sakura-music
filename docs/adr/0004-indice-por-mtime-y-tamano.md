@@ -1,6 +1,6 @@
 # ADR-0004 · Índice SQLite descartable validado por `mtime_ns` + tamaño
 
-- **Estado:** Vigente
+- **Estado:** Reemplazado: en v2 hay `library.sqlite3` (SQLite, `mtime` + tamaño) + watcher `notify`
 - **Fecha:** 2026-11-07 (formalizada)
 - **Reflejo en el código:** `sakura/core/library_index.py`,
   `sakura/ui/services/library.py` (`LibraryScanner`, `LibraryDeltaScanner`,

@@ -1,6 +1,6 @@
 # ADR-0006 · Temas como tokens y dimensiones, no como colores sueltos
 
-- **Estado:** Vigente
+- **Estado:** Vigente en concepto; en v2 son variables `--accent-*` + paleta Tailwind
 - **Fecha:** 2026-11-07 (formalizada)
 - **Reflejo en el código:** `sakura/ui/theme/tokens.py`,
   `sakura/ui/theme/palettes.py`, `sakura/ui/theme/qss.py`,

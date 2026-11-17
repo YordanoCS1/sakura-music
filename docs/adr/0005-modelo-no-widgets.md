@@ -1,6 +1,6 @@
 # ADR-0005 · Biblioteca con modelo Qt, no con un widget por fila
 
-- **Estado:** Vigente
+- **Estado:** Reemplazado: en v2 es `App.tsx` (React, monolito)
 - **Fecha:** 2026-11-07 (formalizada)
 - **Reflejo en el código:** `sakura/ui/models/track_model.py`,
   `sakura/ui/models/album_model.py`, `sakura/ui/widgets/library_views.py`,

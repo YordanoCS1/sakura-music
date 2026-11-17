@@ -12,7 +12,7 @@ flowchart LR
     U["Usuario"] --> APP["Sakura Music<br/>Tauri 2 + React 19"]
     APP -->|"busca, enumera, descarga"| YT["YouTube<br/>vía yt-dlp"]
     APP -->|"convierte y mezcla"| FF["ffmpeg"]
-    APP -->|"fichas y portadas"| CAT["iTunes · Deezer"]
+    APP -->|"fichas y portadas"| CAT["iTunes · Deezer · MusicBrainz<br/>+ Cover Art Archive"]
     APP -->|"lee y escribe"| FS["Sistema de archivos<br/>biblioteca + datos"]
     FS -->|"tags, portadas"| AUDIO["Archivos de audio"]
 ```
@@ -29,11 +29,11 @@ flowchart TB
         HOME["home · search · queue<br/>library · settings"]
         PLAYER["player HTML5<br/>asset: + Blob URL"]
         EDITOR["editor proveído<br/>lote {updated,errors}"]
-        THEME["tema vía --accent-*<br/>M3 Zen (claro)"]
+        THEME["tema vía --m3-*<br/>(id: space)"]
     end
 
     subgraph IPC["IPC Tauri"]
-        CMD["invoke(): 19 comandos"]
+        CMD["invoke(): 20 comandos<br/>(17 lib.rs + 3 catalog.rs)"]
         EVT["eventos de progreso y resultados"]
     end
 
@@ -42,14 +42,15 @@ flowchart TB
         DB["library_db.rs<br/>SQLite + índice incremental"]
         WATCH["library_watcher.rs<br/>notify + debounce"]
         DL["downloader.rs<br/>DownloadManager, 2 en paralelo"]
-        PATH["paths.rs<br/>app_local_data_dir, OnceLock"]
+        PATH["paths.rs<br/>.tauri_data, OnceLock"]
         LIB["lib.rs<br/>comandos, caché, scope asset"]
+        CATALOG["catalog.rs<br/>búsqueda en catálogos"]
     end
 
     subgraph EXT["Externos"]
         YTDLP["yt-dlp"]
         FFMPEG["ffmpeg"]
-        NET["HTTP: iTunes, Deezer"]
+        NET["HTTP: iTunes, Deezer, MusicBrainz<br/>+ Cover Art Archive"]
         DISK["Disco"]
     end
 
@@ -57,9 +58,10 @@ flowchart TB
     UI --> EVT
     LIB --> DB
     LIB --> WATCH
+    LIB --> CATALOG
     CORE --> YTDLP
     CORE --> FFMPEG
-    LIB --> NET
+    CATALOG --> NET
     CORE --> DISK
 ```
 
@@ -67,14 +69,15 @@ flowchart TB
 |---|---|---|
 | `src/App.tsx` | Pestañas, reproductor, editor, cola, temas. Lee `localStorage` para preferencias. | Leer tags ni lanzar `yt-dlp` directamente |
 | `lib.rs` | Registrar comandos, inicializar carpeta de datos, autorizar carpetas en el scope `asset:`, cancelar descargas al salir. | Contener lógica de parsing o pesos |
+| `catalog.rs` | Consultar iTunes, Deezer y MusicBrainz (con portadas de Cover Art Archive) vía `reqwest`, con User-Agent propio, y exponer 3 comandos Tauri. | Hacer `fetch` desde el frontend (CORS/User-Agent) ni pintar UI |
 | `scanner.rs` | Enumerar y leer pistas en paralelo, lectura/escritura de tags con `lofty`, carátulas con extensión real. | Conocer React ni `localStorage` |
 | `library_db.rs` | Persistir la biblioteca en SQLite, importar la caché antigua y sincronizar escaneos diferenciales. | Leer tags o conocer React |
 | `library_watcher.rs` | Vigilar recursivamente la carpeta seleccionada y agrupar cambios del sistema de archivos. | Leer tags o modificar la biblioteca directamente |
 | `downloader.rs` | Búsqueda, resolución de playlists, cola con `Mutex` + `Condvar`, cancelación por PID, parsing de progreso. | Pintar UI |
 | `paths.rs` | Única verdad sobre la carpeta de datos (`OnceLock` + fallback a `.tauri_data`). | Duplicar resolución de rutas |
 
-> Deuda conocida: LibraryTab.tsx concentra las vistas de biblioteca (~1265 lineas);
-> App.tsx (~1080 lineas) mantiene el estado y el player. Componentes u hooks nuevos
+> Deuda conocida: LibraryTab.tsx concentra las vistas de biblioteca (~1281 lineas);
+> App.tsx (~1058 lineas) mantiene el estado y el player. Componentes u hooks nuevos
 > grandes deberian vivir en su propio archivo.
 
 ## Modelo de hilos
@@ -148,7 +151,8 @@ rename (el handle abierto bloquea el reemplazo).
 - **CSP estricta** en `tauri.conf.json` (no es `null`): `default-src 'self'`,
   `script-src 'self'`, `style-src` con Google Fonts, `img-src`/`media-src`
   limitados a `asset:`, `data:`, `blob:` y `https:`, `connect-src` solo a
-  `ipc:`, `asset:`, dev (`localhost:1420`) e iTunes/Deezer. `frame-ancestors
+  `ipc:`, `asset:`, dev (`ws://localhost:1420` y `http://localhost:1420`),
+  iTunes, Deezer, `musicbrainz.org` y `coverartarchive.org`. `frame-ancestors
   'none'` y `object-src 'none'`.
 - **Asset scope acotado:** `["$AUDIO/**", "$APPLOCALDATA/**", "$TEMP/**"]`.
   Como el usuario puede elegir cualquier unidad como biblioteca,
@@ -216,24 +220,13 @@ sequenceDiagram
     ALT-->>U: badge, rutas, reintentar si hace falta
 ```
 
-## Secuencia: cambio de tema
-
-```mermaid
-sequenceDiagram
-    autonumber
-    actor U as Usuario
-    participant ALT as App.tsx
-    participant CSS as App.css + tailwind
-    ALT->>ALT: setTheme + localStorage sakura_theme
-    ALT->>ALT: data-theme en el contenedor raíz
-    ALT-->>CSS: --accent-* cambian
-    CSS-->>U: toda la UI recolorea al instante
-```
+## Tema visual
 
 La app usa un único tema, **M3 Zen**, definido con variables semánticas `--m3-*`
-en `App.css` (`[data-theme='m3zen']`). Tailwind mapea `accent-*` a esas variables,
+en `App.css` (`[data-theme='space']`). Tailwind mapea `accent-*` a esas variables,
 así que `from-accent-500` o `text-accent-300` siguen al tema sin duplicar clases.
-No hay universos ni conmutación de paleta.
+El id `space` se fija en el contenedor raíz y se persiste en `localStorage`
+(`sakura_theme`). No hay conmutación de tema ni de paleta.
 
 ## Manejo de errores
 
@@ -256,8 +249,8 @@ No hay universos ni conmutación de paleta.
 |---|---|---|
 | Un comando Tauri | `src-tauri/src/lib.rs` + `App.tsx` (`invoke`) | Registrarlo en `invoke_handler!` y mapear errores como `String` |
 | Un formato de descarga | `src-tauri/src/downloader.rs` (rama `fmt_lower` en `run_download`) | Agregar tests de parsing si cambia el progreso |
-| Un tema nuevo | `src/App.css` (`.app-shell[data-theme='m3zen']`) + tipo `ThemeMode` en `src/types.ts` | Hoy hay un único tema `m3zen`; si se agregan, seguir el patrón de tokens `--m3-*` |
-| Una vista nueva | `src/components/LibraryTab.tsx` (ramas `viewMode`) y `src/components/LibraryShowcase.tsx` | El tipo `ViewMode`, el switcher en `LibraryToolbar.tsx` y las 5 vistas existentes |
-| Una fuente de catálogo | `src/App.tsx` (`searchCatalog`) | Respetar el CSP: solo `itunes.apple.com` y `api.deezer.com` están permitidos |
+| Un tema nuevo | `src/App.css` (`.app-shell[data-theme='space']`) + tipo `ThemeMode` en `src/types.ts` | Hoy hay un único tema, con id `space`; si se agregan, seguir el patrón de tokens `--m3-*` |
+| Una vista nueva | `src/components/LibraryTab.tsx` (ramas `viewMode`) y `src/components/LibraryShowcase.tsx` | El tipo `ViewMode`, el switcher en `LibraryToolbar.tsx` y las 9 vistas existentes |
+| Una fuente de catálogo | `src-tauri/src/catalog.rs` (comandos `search_catalog_songs`, `search_catalog_albums` y `open_catalog_album`) | Respetar el CSP: están permitidos `itunes.apple.com`, `api.deezer.com`, `musicbrainz.org` y `coverartarchive.org` (`ws://localhost:1420` solo en dev) |
 
 Los detalles de cada receta están en [desarrollo.md](desarrollo.md).
