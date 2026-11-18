@@ -74,6 +74,38 @@ test('la app arranca, oculta el splash y navega entre pestañas', async ({ page 
   await expect(page.getByRole('button', { name: 'Salir del mini reproductor' })).toBeVisible();
 });
 
+test('Byobu permite elegir una imagen de inicio', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('sakura_theme', 'byobu');
+    const w = window as unknown as { __TAURI_INTERNALS__: Record<string, unknown> };
+    w.__TAURI_INTERNALS__ = {
+      metadata: { currentWindow: { label: 'main' } },
+      invoke: async () => null,
+      transformCallback: () => 1,
+      unregisterCallback: () => {},
+      convertFileSrc: (p: string) => p,
+    };
+    (
+      window as unknown as { __TAURI_EVENT_PLUGIN_INTERNALS__: unknown }
+    ).__TAURI_EVENT_PLUGIN_INTERNALS__ = { unregisterListener: () => {} };
+  });
+  await page.goto('/');
+  await page.locator('#tab-home').click();
+
+  const png = Buffer.from(
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFAAH/q842iQAAAABJRU5ErkJggg==',
+    'base64',
+  );
+  await page.locator('.byobu-home-input').setInputFiles({
+    name: 'portada.png',
+    mimeType: 'image/png',
+    buffer: png,
+  });
+
+  await expect(page.locator('.byobu-home-panel')).toHaveClass(/tiene-imagen/);
+  await expect(page.locator('.byobu-home-panel')).toHaveCSS('background-image', /data:image\/png/);
+});
+
 test('las carpetas filtran la biblioteca propia de Sumi-e', async ({ page }) => {
   await page.addInitScript(() => {
     localStorage.setItem('sakura_theme', 'sumie');

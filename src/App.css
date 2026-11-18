@@ -5136,3 +5136,51 @@ input[type="range"]:hover::-webkit-slider-thumb {
   color: #8d8377; font: 10px 'JetBrains Mono', monospace; letter-spacing: .1em; cursor: pointer;
 }
 .byobu-home-links button:hover { color: #d24832; }
+
+
+/* ========================================================= */
+/* HOME INTERACTIVO                                           */
+/* ========================================================= */
+.sumie-home-enso { cursor: pointer; background: transparent; transition: transform 500ms ease, box-shadow 500ms ease; }
+.sumie-home-enso:hover {
+  transform: rotate(18deg) scale(1.05);
+  border-right-color: rgba(210,72,50,.75);
+  box-shadow: 0 0 60px rgba(210,72,50,.24);
+}
+.sumie-home-enso span { transition: transform 500ms ease; }
+.sumie-home-enso:hover span { transform: rotate(-18deg); }
+.sumie-home-actions button,
+.byobu-home-actions button,
+.byobu-home-links button { transition: transform 180ms ease, background 180ms ease, color 180ms ease, box-shadow 180ms ease; }
+.sumie-home-actions button:hover,
+.byobu-home-actions button:hover { transform: translateY(-2px); }
+.sumie-home-actions button:first-child:hover,
+.byobu-home-actions button:first-child:hover { box-shadow: 0 8px 20px rgba(210,72,50,.32); }
+.byobu-home-links button:hover { transform: translateX(3px); }
+
+/* Byōbu: imagen elegida por el usuario. */
+.byobu-home-input { display: none; }
+.byobu-home-panel.tiene-imagen { background-size: cover !important; background-position: center !important; }
+.byobu-home-sello { cursor: pointer; transition: transform 180ms ease, box-shadow 180ms ease; }
+.byobu-home-sello:hover { transform: rotate(0deg) scale(1.08); box-shadow: 0 0 20px rgba(210,72,50,.45); }
+.byobu-home-quitar,
+.byobu-home-cambiar {
+  position: absolute; top: 18px; z-index: 2;
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1px solid rgba(236,227,214,.2); border-radius: 2px;
+  background: rgba(10,8,7,.7); color: #a49a8d;
+  font: 9px 'JetBrains Mono', monospace; letter-spacing: .08em;
+  padding: 7px 9px; cursor: pointer; opacity: 0; transition: opacity 180ms ease, color 180ms ease;
+}
+.byobu-home-quitar { right: 16px; }
+.byobu-home-cambiar { left: 78px; }
+.byobu-home-panel:hover .byobu-home-quitar,
+.byobu-home-panel:hover .byobu-home-cambiar,
+.byobu-home-quitar:focus-visible,
+.byobu-home-cambiar:focus-visible { opacity: 1; }
+.byobu-home-quitar:hover,
+.byobu-home-cambiar:hover { color: #d24832; }
+.byobu-home-error {
+  position: absolute; left: 18px; bottom: 16px; z-index: 2;
+  margin: 0; color: #ff9d8a; font: 10px 'JetBrains Mono', monospace;
+}
