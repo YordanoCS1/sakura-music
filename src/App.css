@@ -5032,3 +5032,42 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .byobu-titulo { font-family: 'Cormorant Garamond', 'Yu Mincho', serif; font-size: 19px; color: #ece3d6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .byobu-art { font: 10px 'JetBrains Mono', monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .byobu-dur { font: 10px 'JetBrains Mono', monospace; text-align: right; }
+
+
+/* Byōbu: rail izquierdo delgado y contenido con más aire. */
+.app-shell[data-skin='byobu'] .zen-topnav {
+  flex: 0 0 184px !important;
+  width: 184px !important;
+  padding: 24px 12px !important;
+}
+.app-shell[data-skin='byobu'] .zen-topnav::before {
+  font-size: 150px !important;
+  right: 2px; bottom: 74px;
+}
+.app-shell[data-skin='byobu'] .zen-topnav-brand { padding-bottom: 12px !important; margin-bottom: 6px !important; }
+.app-shell[data-skin='byobu'] .zen-topnav-brand-mark { width: 38px !important; height: 38px !important; }
+.app-shell[data-skin='byobu'] .zen-topnav-brand-copy strong { font-size: 16px !important; }
+.app-shell[data-skin='byobu'] .zen-topnav-tab {
+  height: 36px !important; font-size: 12px !important; padding: 0 8px !important;
+}
+.app-shell[data-skin='byobu'] .zen-topnav-tab::before { font-size: 16px !important; }
+.app-shell[data-skin='byobu'] .player-dock { width: 184px !important; }
+.app-shell[data-skin='byobu'] .npr-shell { padding: 16px 10px !important; }
+.app-shell[data-skin='byobu'] .npr-controls { gap: 14px !important; }
+
+/* Vista propia Byōbu: díptico más distribuido. */
+.app-shell[data-skin='byobu'] .byobu-library-head { margin-bottom: 34px !important; padding-bottom: 24px !important; }
+.app-shell[data-skin='byobu'] .byobu-library-head h1 { font-size: 50px !important; }
+.app-shell[data-skin='byobu'] .byobu-diptico {
+  grid-template-columns: minmax(230px, .62fr) minmax(420px, 1.38fr) !important;
+  gap: 34px !important;
+}
+.app-shell[data-skin='byobu'] .byobu-panel { min-height: 480px !important; padding: 32px !important; }
+.app-shell[data-skin='byobu'] .byobu-portada { width: 130px !important; height: 130px !important; }
+.app-shell[data-skin='byobu'] .byobu-lista button { padding: 16px 12px !important; }
+.app-shell[data-skin='byobu'] .byobu-titulo { font-size: 21px !important; }
+
+
+.app-shell[data-skin='byobu'] .player-dock { width: 232px !important; }
+.app-shell[data-skin='byobu'] .npr-shell { padding: 16px 12px !important; }
+.app-shell[data-skin='byobu'] .npr-controls { gap: 10px !important; }
