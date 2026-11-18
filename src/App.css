@@ -5715,3 +5715,68 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .app-shell[data-skin='sumiink'] .main-scroll-region,
 .app-shell[data-skin='moonlit'] .main-scroll-region,
 .app-shell[data-skin='ledger'] .main-scroll-region { padding-top:28px !important; }
+
+
+/* ========================================================= */
+/* BARRA SUPERIOR PROPIA (reemplaza sidebar + cabecera global) */
+/* ========================================================= */
+.app-shell .app-rail-row.app-rail-column { flex-direction: column !important; }
+
+.theme-nav { display:flex; align-items:center; gap:12px; height:52px; flex:none; padding:0 26px; border-bottom:2px solid var(--tema-linea, rgba(0,0,0,.18)); background:var(--m3-surface-card, #fff); color:var(--tema-texto, #111); font-family:inherit; }
+.theme-nav-glifo { font-size:19px; line-height:1; color:var(--tema-accent, #a8442f); }
+.theme-nav-name { font-size:13px; font-weight:700; letter-spacing:.18em; white-space:nowrap; }
+.theme-nav-tabs { display:flex; align-items:center; gap:2px; margin-left:20px; }
+.theme-nav-tabs button { background:transparent; border:0; padding:7px 13px; cursor:pointer; font-size:11px; font-family:inherit; color:var(--tema-texto-suave, #777); white-space:nowrap; }
+.theme-nav-tabs button.is-active { color:var(--tema-accent, #a8442f); background:var(--tema-accent-soft, transparent); }
+.theme-nav-search { margin-left:auto; display:flex; align-items:center; gap:7px; border:1px solid var(--tema-linea, rgba(0,0,0,.18)); padding:6px 10px; background:rgba(255,255,255,.4); }
+.theme-nav-search input { background:transparent; border:0; outline:0; width:170px; font-family:inherit; font-size:11px; color:inherit; }
+.theme-nav-search input::placeholder { color:var(--tema-texto-suave, #888); }
+.theme-nav-search button { background:transparent; border:0; cursor:pointer; color:inherit; display:grid; place-items:center; padding:0; }
+.theme-nav-count { font:10px 'JetBrains Mono',monospace; color:var(--tema-texto-suave, #777); white-space:nowrap; }
+
+/* SHOJI · papel, madera y sello rojo. */
+.tema-shoji.theme-nav { background:#f6f0e3; border-bottom:2px solid #b9a17d; font-family:'Cormorant Garamond',serif; }
+.tema-shoji .theme-nav-name { font-weight:400; letter-spacing:.24em; font-size:15px; }
+.tema-shoji .theme-nav-tabs button { font-family:'Cormorant Garamond',serif; font-size:14px; border-right:1px solid rgba(90,70,45,.18); }
+.tema-shoji .theme-nav-tabs button.is-active { color:#a8442f; background:rgba(168,68,47,.07); }
+
+/* ORIGAMI · pestañas de papel plegado. */
+.tema-origami.theme-nav { background:#fff8fa; border-bottom:1px solid #f3c9d8; }
+.tema-origami .theme-nav-tabs button { background:#fdf0f4; clip-path:polygon(0 0,100% 0,92% 100%,0 100%); }
+.tema-origami .theme-nav-tabs button.is-active { background:#d9547f; color:#fff; }
+
+/* SWISS · retícula y Helvetica. */
+.tema-swiss.theme-nav { background:#fff; border-bottom:2px solid #111; font-family:'Plus Jakarta Sans',Helvetica,sans-serif; }
+.tema-swiss .theme-nav-glifo { color:#111; }
+.tema-swiss .theme-nav-tabs button { text-transform:uppercase; font-size:10px; letter-spacing:.12em; }
+.tema-swiss .theme-nav-tabs button.is-active { background:#111; color:#fff; }
+.tema-swiss .theme-nav-search { background:#fff; border-color:#111; }
+
+/* SUMI INK · blanco sobre negro. */
+.tema-sumiink.theme-nav { background:#101010; border-bottom:1px solid rgba(232,229,221,.18); font-family:'Cormorant Garamond',serif; }
+.tema-sumiink .theme-nav-name { font-weight:400; letter-spacing:.3em; }
+.tema-sumiink .theme-nav-tabs button { font-family:'Cormorant Garamond',serif; font-size:14px; }
+.tema-sumiink .theme-nav-tabs button.is-active { border-bottom:2px solid #e8e5dd; background:transparent; }
+.tema-sumiink .theme-nav-search { background:rgba(232,229,221,.05); border-color:rgba(232,229,221,.18); }
+
+/* MOONLIT · azul noche y luna. */
+.tema-moonlit.theme-nav { background:#0c1629; border-bottom:1px solid rgba(143,182,232,.24); font-family:'Cormorant Garamond',serif; }
+.tema-moonlit .theme-nav-glifo { text-shadow:0 0 12px rgba(143,182,232,.7); }
+.tema-moonlit .theme-nav-tabs button { font-family:'Cormorant Garamond',serif; font-size:14px; }
+.tema-moonlit .theme-nav-tabs button.is-active { border-bottom:2px solid #8fb6e8; background:transparent; }
+.tema-moonlit .theme-nav-search { background:rgba(143,182,232,.07); border-color:rgba(143,182,232,.24); border-radius:18px; }
+
+/* LEDGER · libro mayor a máquina. */
+.tema-ledger.theme-nav { background:#faf4e6; border-bottom:3px double #33291d; font-family:'IBM Plex Mono','Courier New',monospace; }
+.tema-ledger .theme-nav-tabs button { font-family:'IBM Plex Mono','Courier New',monospace; font-size:10px; text-transform:uppercase; letter-spacing:.04em; }
+.tema-ledger .theme-nav-tabs button.is-active { color:#a33a2a; background:transparent; text-decoration:underline; }
+.tema-ledger .theme-nav-search { background:#fff; border-color:#c9b99a; }
+
+
+/* El buscador de la barra propia no hereda el fondo de los inputs globales. */
+.app-shell .theme-nav-search input {
+  background: transparent !important;
+  border: 0 !important;
+  color: var(--tema-texto) !important;
+}
+.app-shell .theme-nav-search input::placeholder { color: var(--tema-texto-suave) !important; }

@@ -29,6 +29,7 @@ import SearchTab from './components/SearchTab';
 import LibraryTab from './components/LibraryTab';
 import ThemeLibrary from './components/ThemeLibrary';
 import ThemeHome from './components/ThemeHome';
+import ThemeNav from './components/ThemeNav';
 import LibraryToolbar from './components/LibraryToolbar';
 import MetadataModal from './components/MetadataModal';
 import TitleBar from './components/TitleBar';
@@ -72,6 +73,9 @@ export default function App() {
     const guardado = localStorage.getItem('sakura_theme') as ThemeMode | null;
     return guardado && TEMAS_DISPONIBLES.some((t) => t.id === guardado) ? guardado : 'space';
   });
+  // Los temas propios reemplazan el sidebar y la cabecera genérica por su
+  // propia barra superior, igual que en los bosquejos.
+  const esTemaPropio = TEMAS_CON_VISTAS_PROPIAS.includes(theme);
   // Nombre visible del tema activo, compartido por la barra de título y el nav.
   const nombreTema = TEMAS_DISPONIBLES.find((t) => t.id === theme)?.nombre ?? 'M3 Zen';
   const [playerStyle, setPlayerStyle] = useState<PlayerStyle>(() => {
@@ -933,15 +937,29 @@ export default function App() {
       <TitleBar nombreTema={nombreTema} />
 
       {/* Fila principal: nav + contenido */}
-      <div className="app-rail-row flex flex-1 min-h-0 overflow-hidden">
-        {/* Navegación superior (M3 Zen) */}
-        <ZenTopNav
-          activeTab={activeTab}
-          onNavigate={setActiveTab}
-          trackCount={tracks.length}
-          downloads={downloads}
-          nombreTema={nombreTema}
-        />
+      <div
+        className={`app-rail-row flex flex-1 min-h-0 overflow-hidden ${
+          esTemaPropio ? 'app-rail-column' : ''
+        }`}
+      >
+        {esTemaPropio ? (
+          <ThemeNav
+            theme={theme}
+            activeTab={activeTab}
+            onNavigate={setActiveTab}
+            trackCount={tracks.length}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+          />
+        ) : (
+          <ZenTopNav
+            activeTab={activeTab}
+            onNavigate={setActiveTab}
+            trackCount={tracks.length}
+            downloads={downloads}
+            nombreTema={nombreTema}
+          />
+        )}
 
         {/* ========================================================= */}
         {/* ÁREA PRINCIPAL CON VISTA DINÁMICA                        */}
@@ -953,78 +971,80 @@ export default function App() {
           aria-labelledby={`tab-${activeTab}`}
           tabIndex={-1}
         >
-          {/* Barra superior moderna (búsqueda + filtros + contexto) */}
-          <header className="gh-header">
-            <div className="gh-context">
-              <span className="gh-context-dot" />
-              <span className="gh-context-label">
-                {activeTab === 'home'
-                  ? 'Inicio'
-                  : activeTab === 'library'
-                    ? 'Biblioteca'
-                    : activeTab === 'search'
-                      ? 'Buscar'
-                      : activeTab === 'queue'
-                        ? 'Cola'
-                        : 'Ajustes'}
-              </span>
-            </div>
+          {/* Barra superior moderna (sólo en los temas genéricos) */}
+          {!esTemaPropio && (
+            <header className="gh-header">
+              <div className="gh-context">
+                <span className="gh-context-dot" />
+                <span className="gh-context-label">
+                  {activeTab === 'home'
+                    ? 'Inicio'
+                    : activeTab === 'library'
+                      ? 'Biblioteca'
+                      : activeTab === 'search'
+                        ? 'Buscar'
+                        : activeTab === 'queue'
+                          ? 'Cola'
+                          : 'Ajustes'}
+                </span>
+              </div>
 
-            <div className="gh-search">
-              <Search className="gh-search-icon" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Buscar en tu música..."
-                className="gh-search-input"
-              />
-              {searchQuery ? (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="gh-search-clear"
-                  aria-label="Limpiar búsqueda"
-                  title="Limpiar búsqueda"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              ) : (
-                <span className="gh-search-kbd">⌘ K</span>
-              )}
-            </div>
-
-            <div className="gh-filters">
-              <button
-                onClick={() => setFilterChip('all')}
-                aria-pressed={filterChip === 'all'}
-                className={`gh-chip ${filterChip === 'all' ? 'is-active' : ''}`}
-              >
-                <Music2 className="w-3.5 h-3.5" />
-                <span>Todo</span>
-                <span className="gh-chip-num">{tracks.length}</span>
-              </button>
-              <button
-                onClick={() => setFilterChip('flac')}
-                aria-pressed={filterChip === 'flac'}
-                className={`gh-chip ${filterChip === 'flac' ? 'is-active' : ''}`}
-              >
-                <AudioLines className="w-3.5 h-3.5" />
-                <span>FLAC</span>
-              </button>
-              <button
-                onClick={() => setFilterChip('favorites')}
-                aria-pressed={filterChip === 'favorites'}
-                className={`gh-chip ${filterChip === 'favorites' ? 'is-active' : ''}`}
-              >
-                <Heart
-                  className="w-3.5 h-3.5"
-                  fill={filterChip === 'favorites' ? 'currentColor' : 'none'}
+              <div className="gh-search">
+                <Search className="gh-search-icon" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Buscar en tu música..."
+                  className="gh-search-input"
                 />
-                <span>Favoritas</span>
-                <span className="gh-chip-num">{favorites.length}</span>
-              </button>
-            </div>
-          </header>
+                {searchQuery ? (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="gh-search-clear"
+                    aria-label="Limpiar búsqueda"
+                    title="Limpiar búsqueda"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                ) : (
+                  <span className="gh-search-kbd">⌘ K</span>
+                )}
+              </div>
+
+              <div className="gh-filters">
+                <button
+                  onClick={() => setFilterChip('all')}
+                  aria-pressed={filterChip === 'all'}
+                  className={`gh-chip ${filterChip === 'all' ? 'is-active' : ''}`}
+                >
+                  <Music2 className="w-3.5 h-3.5" />
+                  <span>Todo</span>
+                  <span className="gh-chip-num">{tracks.length}</span>
+                </button>
+                <button
+                  onClick={() => setFilterChip('flac')}
+                  aria-pressed={filterChip === 'flac'}
+                  className={`gh-chip ${filterChip === 'flac' ? 'is-active' : ''}`}
+                >
+                  <AudioLines className="w-3.5 h-3.5" />
+                  <span>FLAC</span>
+                </button>
+                <button
+                  onClick={() => setFilterChip('favorites')}
+                  aria-pressed={filterChip === 'favorites'}
+                  className={`gh-chip ${filterChip === 'favorites' ? 'is-active' : ''}`}
+                >
+                  <Heart
+                    className="w-3.5 h-3.5"
+                    fill={filterChip === 'favorites' ? 'currentColor' : 'none'}
+                  />
+                  <span>Favoritas</span>
+                  <span className="gh-chip-num">{favorites.length}</span>
+                </button>
+              </div>
+            </header>
+          )}
 
           {/* Mensaje de escaneo / notificaciones */}
           {scanMessage && (
