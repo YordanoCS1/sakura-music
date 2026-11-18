@@ -213,6 +213,13 @@ export default function ThemeLibrary({
           {tracks.map((track, i) => (
             <li key={track.id} className={activeTrack?.id === track.id ? 'is-active' : ''}>
               <button type="button" className="byobu-fila" onClick={() => onPlayTrack(track)}>
+                <span className="byobu-cover">
+                  {track.cover_url ? (
+                    <img src={getCoverSrc(track.cover_url)} alt="" />
+                  ) : (
+                    <span aria-hidden="true">桜</span>
+                  )}
+                </span>
                 <span className="byobu-num">{String(i + 1).padStart(2, '0')}</span>
                 <span className="byobu-titulo">
                   {track.title}

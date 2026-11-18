@@ -5053,3 +5053,17 @@ input[type="range"]:hover::-webkit-slider-thumb {
   text-align: right; color: #8d8377 !important;
 }
 .byobu-indice .theme-row-actions { padding-right: 20px; }
+
+
+/* Portada en el índice de Byōbu. */
+.byobu-indice .byobu-fila { grid-template-columns: 52px 54px minmax(0, 1fr) 64px !important; }
+.byobu-indice .byobu-cover {
+  width: 48px; height: 48px; border-radius: 2px; overflow: hidden;
+  border: 1px solid rgba(210,72,50,.35);
+  background: linear-gradient(135deg, rgba(210,72,50,.14), rgba(236,227,214,.03));
+  display: grid; place-items: center;
+  color: #d24832; font-family: 'Yu Mincho', serif; font-size: 20px;
+  flex-shrink: 0;
+}
+.byobu-indice .byobu-cover img { width: 100%; height: 100%; object-fit: cover; }
+.byobu-indice li.is-active .byobu-cover { border-color: #d24832; box-shadow: 0 0 14px rgba(210,72,50,.2); }
