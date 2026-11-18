@@ -28,6 +28,7 @@ import PlayerBar from './components/PlayerBar';
 import SearchTab from './components/SearchTab';
 import LibraryTab from './components/LibraryTab';
 import ThemeLibrary from './components/ThemeLibrary';
+import ThemeHome from './components/ThemeHome';
 import LibraryToolbar from './components/LibraryToolbar';
 import MetadataModal from './components/MetadataModal';
 import TitleBar from './components/TitleBar';
@@ -1066,7 +1067,14 @@ export default function App() {
             )}
 
             {/* TAB: INICIO (HOME) */}
-            {activeTab === 'home' && (
+            {activeTab === 'home' && (theme === 'sumie' || theme === 'byobu') && (
+              <ThemeHome
+                theme={theme}
+                trackCount={tracks.length}
+                onNavigate={(tab) => setActiveTab(tab)}
+              />
+            )}
+            {activeTab === 'home' && theme !== 'sumie' && theme !== 'byobu' && (
               <HomeTab trackCount={tracks.length} onNavigate={(tab) => setActiveTab(tab)} />
             )}
 

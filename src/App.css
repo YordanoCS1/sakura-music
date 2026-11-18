@@ -5061,3 +5061,78 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .recorte-acciones button { color: #6b5f54; }
 .recorte-acciones button:hover { color: #b23a2b; }
 .recorte-acciones button.is-fav { color: #b23a2b; }
+
+
+/* ========================================================= */
+/* HOME PROPIO DE SUMI-E                                      */
+/* ========================================================= */
+.sumie-home {
+  min-height: calc(100vh - 210px);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 40px 20px 80px;
+}
+.sumie-home-enso {
+  width: 150px; height: 150px; border-radius: 50%; margin-bottom: 30px;
+  border: 4px solid rgba(210,72,50,.5); border-right-color: transparent;
+  border-bottom-color: rgba(210,72,50,.12);
+  display: grid; place-items: center; transform: rotate(-18deg);
+  box-shadow: 0 0 44px rgba(210,72,50,.1);
+}
+.sumie-home-enso span { transform: rotate(18deg); font-family: 'Yu Mincho', serif; font-size: 46px; color: #d24832; }
+.sumie-home-kicker { margin: 0 0 10px; font: 10px 'JetBrains Mono', monospace; letter-spacing: .32em; text-transform: uppercase; color: #d24832; }
+.sumie-home h1 {
+  margin: 0 0 16px; font-family: 'Cormorant Garamond', 'Yu Mincho', Georgia, serif;
+  font-size: 58px; font-weight: 400; letter-spacing: -.02em; color: #ece3d6;
+}
+.sumie-home-copy { max-width: 430px; margin: 0 0 30px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; line-height: 1.8; color: #a49a8d; }
+.sumie-home-actions, .byobu-home-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.sumie-home-actions button, .byobu-home-actions button {
+  display: inline-flex; align-items: center; gap: 9px;
+  padding: 12px 20px; border-radius: 2px; cursor: pointer;
+  font: 10px 'JetBrains Mono', monospace; letter-spacing: .12em; text-transform: uppercase;
+}
+.sumie-home-actions button:first-child, .byobu-home-actions button:first-child {
+  background: #d24832; border: 1px solid #d24832; color: #fff;
+}
+.sumie-home-actions button:last-child, .byobu-home-actions button:last-child {
+  background: transparent; border: 1px solid rgba(236,227,214,.2); color: #ece3d6;
+}
+.sumie-home-stat { margin: 30px 0 0; font: 10px 'JetBrains Mono', monospace; letter-spacing: .14em; color: #8d8377; }
+
+/* ========================================================= */
+/* HOME PROPIO DE BYŌBU                                       */
+/* ========================================================= */
+.byobu-home { display: grid; grid-template-columns: minmax(260px, .75fr) minmax(400px, 1.25fr); gap: 34px; min-height: calc(100vh - 210px); padding: 20px 4px 70px; }
+.byobu-home-panel {
+  position: relative; overflow: hidden; padding: 32px;
+  border: 1px solid rgba(210,72,50,.38); border-radius: 2px;
+  background: radial-gradient(ellipse at 40% 25%, rgba(210,72,50,.14), transparent 60%), linear-gradient(180deg,#171310,#0e0c0b);
+  display: flex; flex-direction: column; justify-content: space-between;
+}
+.byobu-home-sello {
+  width: 46px; height: 46px; border-radius: 6px; background: #d24832;
+  border: 2px solid rgba(255,245,235,.55); display: grid; place-items: center;
+  font-family: 'Yu Mincho', serif; font-size: 24px; color: #fff5e8; transform: rotate(-4deg);
+  align-self: flex-start; z-index: 1;
+}
+.byobu-home-kanji {
+  position: absolute; right: -10px; bottom: 70px;
+  font-family: 'Yu Mincho', serif; font-size: 250px; line-height: 1;
+  color: rgba(236,227,214,.05); pointer-events: none;
+}
+.byobu-home-panel-copy { display: flex; flex-direction: column; z-index: 1; }
+.byobu-home-panel-copy strong { font-family: 'Cormorant Garamond', 'Yu Mincho', serif; font-size: 30px; font-weight: 400; color: #ece3d6; }
+.byobu-home-panel-copy small { font: 10px 'JetBrains Mono', monospace; letter-spacing: .22em; text-transform: uppercase; color: #8d8377; }
+.byobu-home-stat { display: flex; flex-direction: column; z-index: 1; }
+.byobu-home-stat strong { font-family: 'Cormorant Garamond', serif; font-size: 44px; font-weight: 400; color: #d24832; }
+.byobu-home-stat span { font: 9px 'JetBrains Mono', monospace; letter-spacing: .16em; color: #8d8377; }
+.byobu-home-content { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; }
+.byobu-home-kicker { margin: 0 0 10px; font: 10px 'JetBrains Mono', monospace; letter-spacing: .3em; text-transform: uppercase; color: #d24832; }
+.byobu-home-content h1 { margin: 0 0 16px; font-family: 'Cormorant Garamond', 'Yu Mincho', serif; font-size: 58px; font-weight: 400; letter-spacing: -.02em; color: #ece3d6; }
+.byobu-home-copy { max-width: 460px; margin: 0 0 30px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; line-height: 1.8; color: #a49a8d; }
+.byobu-home-links { display: flex; gap: 18px; margin-top: 28px; }
+.byobu-home-links button {
+  display: inline-flex; align-items: center; gap: 8px; background: transparent; border: none;
+  color: #8d8377; font: 10px 'JetBrains Mono', monospace; letter-spacing: .1em; cursor: pointer;
+}
+.byobu-home-links button:hover { color: #d24832; }
