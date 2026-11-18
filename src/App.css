@@ -6341,3 +6341,30 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .settings-view [class*="bg-white/"] { background:var(--set-panel) !important; border-color:var(--set-linea) !important; }
 .settings-view [class*="border-white/"] { border-color:var(--set-linea) !important; }
 .settings-view button[class*="bg-accent-"] { background:var(--set-accento) !important; color:var(--set-on-accent) !important; border-color:var(--set-accento) !important; }
+
+
+/* ========================================================= */
+/* AJUSTES · refinamiento visual                              */
+/* ========================================================= */
+.settings-hero-barras { display:flex; gap:4px; justify-content:flex-end; margin-top:7px; }
+.settings-hero-barras i { display:block; width:26px; height:5px; border-radius:3px; border:1px solid var(--set-linea); }
+
+.set-theme { flex-direction:column; align-items:stretch; padding:0; overflow:hidden; }
+.set-theme-preview { position:relative; display:block; height:52px; padding:10px 12px; background:var(--pv-bg); border-bottom:1px solid var(--set-linea); }
+.set-theme-preview::before { content:''; position:absolute; left:0; right:0; top:0; height:4px; background:var(--pv-accent); }
+.set-theme-preview i { display:block; height:4px; border-radius:2px; background:var(--pv-soft); margin-bottom:6px; opacity:.55; width:72%; }
+.set-theme-preview i:nth-child(2) { width:52%; opacity:.32; }
+.set-theme-preview i:nth-child(3) { width:64%; opacity:.2; }
+.set-theme-preview b { position:absolute; right:12px; top:13px; color:var(--pv-accent); font-size:20px; font-weight:400; line-height:1; }
+.set-theme-info { display:flex; align-items:center; gap:9px; padding:11px 12px; }
+.set-theme-swatch { width:12px; height:12px; }
+
+.settings-grid > .set-card { position:relative; overflow:hidden; }
+.settings-grid > .set-card::before { position:absolute; right:14px; top:-2px; font-size:42px; font-weight:700; line-height:1; opacity:.05; pointer-events:none; }
+.settings-grid > .set-card:nth-child(1)::before { content:'01'; }
+.settings-grid > .set-card:nth-child(2)::before { content:'02'; }
+.settings-grid > .set-card:nth-child(3)::before { content:'03'; }
+.settings-grid > .set-card:nth-child(4)::before { content:'04'; }
+.settings-grid > .set-card:nth-child(5)::before { content:'05'; }
+.settings-grid > .set-card:nth-child(6)::before { content:'06'; }
+.settings-grid > .set-card:nth-child(7)::before { content:'07'; }

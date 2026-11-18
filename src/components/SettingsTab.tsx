@@ -27,6 +27,21 @@ const SWATCHES: Record<ThemeMode, string> = {
   aizuri: 'bg-sky-400',
 };
 
+const PREVIEWS: Record<ThemeMode, [string, string, string]> = {
+  space: ['#fff7f4', '#f472b6', '#be185d'],
+  sumie: ['#0c0c0c', '#e8e5dd', '#b23a2b'],
+  byobu: ['#1a1210', '#8c3b2e', '#e8dcc8'],
+  shoji: ['#f3ebd9', '#a8442f', '#c9b28a'],
+  origami: ['#fff8fa', '#d9547f', '#f3c9d8'],
+  swiss: ['#ffffff', '#111111', '#f2f2f0'],
+  sumiink: ['#0c0c0c', '#e8e5dd', '#9a968c'],
+  moonlit: ['#0b1324', '#8fb6e8', '#dfe8f7'],
+  ledger: ['#f4eddc', '#a33a2a', '#c9b99a'],
+  yoru: ['#1a1008', '#f59e0b', '#fbbf24'],
+  hanabi: ['#0a0a1a', '#22d3ee', '#d946ef'],
+  aizuri: ['#0b2340', '#38bdf8', '#1e3a8a'],
+};
+
 const GLIFOS: Partial<Record<ThemeMode, string>> = {
   space: '桜',
   sumie: '墨',
@@ -135,6 +150,11 @@ export default function SettingsTab({
         <div className="settings-hero-tema">
           <small>TEMA ACTIVO</small>
           <strong>{nombreTema}</strong>
+          <span className="settings-hero-barras">
+            {PREVIEWS[theme].map((color, i) => (
+              <i key={i} style={{ background: color }} />
+            ))}
+          </span>
         </div>
       </header>
 
@@ -152,6 +172,7 @@ export default function SettingsTab({
           <div className="set-themes">
             {temas.map((opcion) => {
               const activo = opcion.id === theme;
+              const [fondo, acento, suave] = PREVIEWS[opcion.id];
               return (
                 <button
                   key={opcion.id}
@@ -159,17 +180,32 @@ export default function SettingsTab({
                   onClick={() => onSetTheme(opcion.id)}
                   aria-pressed={activo}
                   className={`set-theme ${activo ? 'is-active' : ''}`}
+                  style={
+                    {
+                      '--pv-bg': fondo,
+                      '--pv-accent': acento,
+                      '--pv-soft': suave,
+                    } as React.CSSProperties
+                  }
                 >
-                  <span className={`set-theme-swatch ${SWATCHES[opcion.id]}`} />
-                  <span className="set-theme-copy">
-                    <strong>{opcion.nombre}</strong>
-                    <small>{opcion.descripcion}</small>
+                  <span className="set-theme-preview">
+                    <i />
+                    <i />
+                    <i />
+                    <b>{GLIFOS[opcion.id] ?? '桜'}</b>
                   </span>
-                  {activo && (
-                    <span className="set-theme-check">
-                      <Check className="w-3 h-3" />
+                  <span className="set-theme-info">
+                    <span className={`set-theme-swatch ${SWATCHES[opcion.id]}`} />
+                    <span className="set-theme-copy">
+                      <strong>{opcion.nombre}</strong>
+                      <small>{opcion.descripcion}</small>
                     </span>
-                  )}
+                    {activo && (
+                      <span className="set-theme-check">
+                        <Check className="w-3 h-3" />
+                      </span>
+                    )}
+                  </span>
                 </button>
               );
             })}
