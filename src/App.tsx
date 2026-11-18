@@ -39,7 +39,16 @@ import { useOnlineSearch } from './hooks/useOnlineSearch';
 import { useFolderExplorer } from './hooks/useFolderExplorer';
 import { usePlayer } from './hooks/usePlayer';
 
-const TEMAS_CON_VISTAS_PROPIAS: ThemeMode[] = ['sumie', 'byobu', 'shoji', 'origami', 'swiss'];
+const TEMAS_CON_VISTAS_PROPIAS: ThemeMode[] = [
+  'sumie',
+  'byobu',
+  'shoji',
+  'origami',
+  'swiss',
+  'sumiink',
+  'moonlit',
+  'ledger',
+];
 
 const TEMAS_DISPONIBLES: ThemeOption[] = [
   { id: 'space', nombre: 'M3 Zen', descripcion: 'Marfil y rosa sakura' },
@@ -48,6 +57,9 @@ const TEMAS_DISPONIBLES: ThemeOption[] = [
   { id: 'shoji', nombre: 'Shoji', descripcion: 'Biombo de papel y madera' },
   { id: 'origami', nombre: 'Origami', descripcion: 'Papel plegado rosa' },
   { id: 'swiss', nombre: 'Swiss', descripcion: 'Grid estricto y Helvetica' },
+  { id: 'sumiink', nombre: 'Sumi Ink', descripcion: 'Pincelada blanca sobre negro' },
+  { id: 'moonlit', nombre: 'Moonlit', descripcion: 'Noche azul y luna' },
+  { id: 'ledger', nombre: 'Ledger', descripcion: 'Libro mayor y sellos rojos' },
   { id: 'yoru', nombre: 'Yoru', descripcion: 'Noche cálida y ámbar' },
   { id: 'hanabi', nombre: 'Hanabi', descripcion: 'Neón cian y magenta' },
   { id: 'aizuri', nombre: 'Aizuri', descripcion: 'Índigo teñido y cian' },
@@ -780,6 +792,24 @@ export default function App() {
       glow2: 'bg-neutral-600/20',
       accent: 'from-neutral-800 to-neutral-600',
       badge: 'bg-neutral-800/10 text-neutral-900 border-neutral-700/30',
+    },
+    sumiink: {
+      glow1: 'bg-stone-200/10',
+      glow2: 'bg-black/40',
+      accent: 'from-neutral-200 to-neutral-500',
+      badge: 'bg-neutral-200/10 text-neutral-100 border-neutral-300/30',
+    },
+    moonlit: {
+      glow1: 'bg-blue-300/15',
+      glow2: 'bg-indigo-950/40',
+      accent: 'from-sky-300 to-blue-500',
+      badge: 'bg-sky-300/10 text-sky-100 border-sky-300/30',
+    },
+    ledger: {
+      glow1: 'bg-amber-100/20',
+      glow2: 'bg-stone-500/15',
+      accent: 'from-red-800 to-amber-800',
+      badge: 'bg-red-800/10 text-red-900 border-red-800/30',
     },
     yoru: {
       glow1: 'bg-amber-500/20',

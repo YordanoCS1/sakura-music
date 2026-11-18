@@ -50,7 +50,10 @@ export default function ThemeLibrary({
     theme !== 'byobu' &&
     theme !== 'shoji' &&
     theme !== 'origami' &&
-    theme !== 'swiss'
+    theme !== 'swiss' &&
+    theme !== 'sumiink' &&
+    theme !== 'moonlit' &&
+    theme !== 'ledger'
   ) {
     return null;
   }
@@ -339,6 +342,108 @@ export default function ThemeLibrary({
                 <span className="swiss-final">
                   {acciones(track)}
                   <small>{track.duration_str}</small>
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (theme === 'sumiink') {
+    return (
+      <div className="sumiink-library">
+        {encabezado}
+        {selectorCarpetas}
+        {vistaTracks.length === 0 ? (
+          vacio
+        ) : (
+          <div className="sumiink-lista">
+            {vistaTracks.map((track, i) => (
+              <div
+                key={track.id}
+                className={`sumiink-fila ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+              >
+                <span className="sumiink-n">{String(i + 1).padStart(2, '0')}</span>
+                <button type="button" className="sumiink-t" onClick={() => onPlayTrack(track)}>
+                  {track.title}
+                </button>
+                <span className="sumiink-a">
+                  {track.artist} · {track.album}
+                </span>
+                <span className="sumiink-final">
+                  {acciones(track)}
+                  <small>{track.duration_str}</small>
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (theme === 'moonlit') {
+    return (
+      <div className="moonlit-library">
+        {encabezado}
+        {selectorCarpetas}
+        {vistaTracks.length === 0 ? (
+          vacio
+        ) : (
+          <div className="moonlit-tarjetas">
+            {vistaTracks.map((track) => (
+              <article
+                key={track.id}
+                className={`moonlit-tarj ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+              >
+                <button type="button" className="moonlit-play" onClick={() => onPlayTrack(track)}>
+                  <span className="moonlit-portada">{portadaDe(track)}</span>
+                  <strong>{track.title}</strong>
+                </button>
+                <small>
+                  {track.artist} · {track.album} · {track.duration_str}
+                </small>
+                {acciones(track)}
+              </article>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (theme === 'ledger') {
+    return (
+      <div className="ledger-library">
+        {encabezado}
+        {selectorCarpetas}
+        {vistaTracks.length === 0 ? (
+          vacio
+        ) : (
+          <div className="ledger-mayor">
+            <div className="ledger-fila ledger-cab">
+              <span>Nº</span>
+              <span>TÍTULO</span>
+              <span>ARTISTA</span>
+              <span>ESTADO</span>
+            </div>
+            {vistaTracks.map((track, i) => (
+              <div
+                key={track.id}
+                className={`ledger-fila ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+              >
+                <span className="ledger-num">{String(i + 1).padStart(2, '0')}</span>
+                <button type="button" className="ledger-titulo" onClick={() => onPlayTrack(track)}>
+                  {track.title}
+                </button>
+                <span>
+                  {track.artist} · {track.album}
+                </span>
+                <span className="ledger-final">
+                  <small>REGISTRADA ✓</small>
+                  {acciones(track)}
                 </span>
               </div>
             ))}

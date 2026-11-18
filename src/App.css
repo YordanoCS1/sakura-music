@@ -5444,3 +5444,208 @@ input[type="range"]:hover::-webkit-slider-thumb {
 /* El botón principal de Origami va en blanco sobre rosa; el secundario, al revés. */
 .app-shell[data-skin='origami'] .origami-botones button:first-child { color: #fff !important; }
 .app-shell[data-skin='origami'] .origami-botones button:last-child { color: var(--tema-accent) !important; }
+
+
+/* ========================================================= */
+/* SUMI INK · pincelada blanca sobre negro                    */
+/* ========================================================= */
+.app-shell[data-skin='sumiink'] {
+  --m3-surface:#0c0c0c; --m3-surface-card:#181818; --m3-on-surface:#e8e5dd;
+  --m3-on-surface-muted:#9a968c; --m3-primary:#e8e5dd; --m3-primary-dim:#b8b5ae;
+  --space-text:#e8e5dd; --space-muted:#9a968c; --space-border:rgba(232,229,221,.16);
+  --accent-200:60 60 60; --accent-300:90 90 90; --accent-400:130 130 130;
+  --accent-500:232 229 221; --accent-600:200 197 189; --accent-800:150 147 139;
+  --accent-900:120 117 109; --accent-950:20 20 20;
+  --tema-accent:#e8e5dd; --tema-accent-soft:rgba(232,229,221,.08);
+  --tema-texto:#e8e5dd; --tema-texto-suave:#9a968c; --tema-linea:rgba(232,229,221,.16);
+  background:#0c0c0c !important; color:#e8e5dd !important;
+}
+.app-shell[data-skin='sumiink'] .titlebar,
+.app-shell[data-skin='sumiink'] .zen-topnav,
+.app-shell[data-skin='sumiink'] .npr-shell { background:#101010 !important; border-color:rgba(232,229,221,.15) !important; color:#e8e5dd !important; }
+.app-shell[data-skin='sumiink'] .glass-card { background:#161616 !important; border-color:rgba(232,229,221,.14) !important; box-shadow:none !important; }
+.app-shell[data-skin='sumiink'] .gh-search,
+.app-shell[data-skin='sumiink'] .gh-search-input { background:rgba(232,229,221,.05) !important; color:#e8e5dd !important; }
+.sumiink-library { padding:6px 4px 60px; }
+.sumiink-lista { border-top:1px solid rgba(232,229,221,.22); margin-top:4px; }
+.sumiink-fila { display:grid; grid-template-columns:52px minmax(0,1fr) minmax(120px,.8fr) 160px; align-items:center; padding:15px 8px; border-bottom:1px solid rgba(232,229,221,.13); }
+.sumiink-fila:hover { background:rgba(232,229,221,.05); }
+.sumiink-fila.is-active { background:rgba(232,229,221,.08); }
+.sumiink-n { font:11px 'JetBrains Mono',monospace; color:#9a968c; }
+.sumiink-t { background:transparent; border:0; cursor:pointer; font-family:'Cormorant Garamond',serif; font-size:21px; text-align:left; color:#e8e5dd; padding:0; }
+.sumiink-a { font:10px 'JetBrains Mono',monospace; color:#9a968c; }
+.sumiink-final { display:flex; align-items:center; justify-content:flex-end; gap:10px; }
+.sumiink-final small { font:10px 'JetBrains Mono',monospace; color:#9a968c; }
+.sumiink-home { display:flex; align-items:center; gap:50px; min-height:calc(100vh - 150px); }
+.sumiink-trazo { width:130px; height:340px; flex:none; background:linear-gradient(180deg,transparent,#e8e5dd 18%,#e8e5dd 82%,transparent); border-radius:50% 45% 52% 48%/12% 10% 14% 12%; transform:rotate(6deg); box-shadow:0 0 40px rgba(232,229,221,.1); }
+.sumiink-kicker { font:10px 'JetBrains Mono',monospace; letter-spacing:.3em; color:#9a968c; }
+.sumiink-copy h1 { font-family:'Cormorant Garamond',serif; font-size:64px; font-weight:400; line-height:1; margin:12px 0; }
+.sumiink-copy>p { max-width:400px; line-height:1.9; color:#9a968c; }
+.sumiink-botones { display:flex; gap:10px; margin-top:22px; }
+.sumiink-botones button { border:1px solid #e8e5dd; background:transparent; color:#e8e5dd; padding:10px 16px; cursor:pointer; font-size:11px; }
+.sumiink-botones button:first-child { background:#e8e5dd; color:#0c0c0c; }
+.sumiink-dato { margin-top:22px; font:10px 'JetBrains Mono',monospace; color:#9a968c; }
+
+/* ========================================================= */
+/* MOONLIT · noche azul y luna                                */
+/* ========================================================= */
+.app-shell[data-skin='moonlit'] {
+  --m3-surface:#0b1324; --m3-surface-card:#101c33; --m3-on-surface:#dfe8f7;
+  --m3-on-surface-muted:#7f92b4; --m3-primary:#8fb6e8; --m3-primary-dim:#6a90c4;
+  --space-text:#dfe8f7; --space-muted:#7f92b4; --space-border:rgba(143,182,232,.24);
+  --accent-200:30 50 82; --accent-300:45 72 116; --accent-400:80 120 175;
+  --accent-500:143 182 232; --accent-600:110 150 205; --accent-800:70 105 155;
+  --accent-900:45 70 110; --accent-950:11 19 36;
+  --tema-accent:#8fb6e8; --tema-accent-soft:rgba(143,182,232,.08);
+  --tema-texto:#dfe8f7; --tema-texto-suave:#7f92b4; --tema-linea:rgba(143,182,232,.24);
+  background:radial-gradient(circle at 80% 12%,rgba(143,182,232,.14),transparent 38%),#0b1324 !important;
+  color:#dfe8f7 !important;
+}
+.app-shell[data-skin='moonlit'] .titlebar,
+.app-shell[data-skin='moonlit'] .zen-topnav,
+.app-shell[data-skin='moonlit'] .npr-shell { background:#0c1629 !important; border-color:rgba(143,182,232,.2) !important; color:#dfe8f7 !important; }
+.app-shell[data-skin='moonlit'] .glass-card { background:#101c33 !important; border-color:rgba(143,182,232,.2) !important; box-shadow:none !important; }
+.app-shell[data-skin='moonlit'] .gh-search,
+.app-shell[data-skin='moonlit'] .gh-search-input { background:rgba(143,182,232,.07) !important; color:#dfe8f7 !important; }
+.moonlit-library { padding:6px 4px 60px; }
+.moonlit-tarjetas { display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:24px; margin-top:14px; }
+.moonlit-tarj { position:relative; padding:14px; border:1px solid rgba(143,182,232,.3); background:rgba(143,182,232,.05); box-shadow:0 10px 30px rgba(0,0,0,.3); }
+.moonlit-tarj.is-active { border-color:#8fb6e8; background:rgba(143,182,232,.1); }
+.moonlit-play { display:block; width:100%; background:transparent; border:0; cursor:pointer; color:inherit; text-align:left; padding:0; }
+.moonlit-portada { display:grid; place-items:center; width:100%; height:120px; overflow:hidden; background:rgba(143,182,232,.08); color:#8fb6e8; font-size:26px; }
+.moonlit-portada img { width:100%; height:100%; object-fit:cover; filter:brightness(.85) saturate(.8); }
+.moonlit-play strong { display:block; margin-top:12px; font-family:'Cormorant Garamond',serif; font-size:20px; font-weight:400; }
+.moonlit-tarj>small { display:block; margin-top:5px; font:9px 'JetBrains Mono',monospace; color:#7f92b4; line-height:1.6; }
+.moonlit-tarj .theme-row-actions { position:absolute; right:12px; bottom:12px; }
+.moonlit-home { display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; min-height:calc(100vh - 150px); }
+.moonlit-disco { width:160px; height:160px; border-radius:50%; background:radial-gradient(circle at 38% 35%,#fff,#8fb6e8); box-shadow:0 0 60px rgba(143,182,232,.35); margin-bottom:26px; }
+.moonlit-kicker { font:10px 'JetBrains Mono',monospace; letter-spacing:.3em; color:#8fb6e8; }
+.moonlit-home h1 { font-family:'Cormorant Garamond',serif; font-size:54px; font-weight:400; margin:18px 0 8px; }
+.moonlit-home>p { max-width:390px; line-height:1.9; color:#7f92b4; }
+.moonlit-botones { display:flex; gap:10px; margin-top:22px; }
+.moonlit-botones button { border:1px solid #8fb6e8; background:transparent; color:#8fb6e8; padding:10px 16px; cursor:pointer; font-size:11px; }
+.moonlit-botones button:first-child { background:#8fb6e8; color:#0b1324; }
+.moonlit-dato { margin-top:22px; font:10px 'JetBrains Mono',monospace; color:#7f92b4; }
+
+/* ========================================================= */
+/* LEDGER · libro mayor y sellos                              */
+/* ========================================================= */
+.app-shell[data-skin='ledger'] {
+  --m3-surface:#f4eddc; --m3-surface-card:#faf4e6; --m3-on-surface:#33291d;
+  --m3-on-surface-muted:#6b5c46; --m3-primary:#a33a2a; --m3-primary-dim:#8a2d20;
+  --space-text:#33291d; --space-muted:#6b5c46; --space-border:#c9b99a;
+  --accent-200:238 224 198; --accent-300:220 200 164; --accent-400:180 150 105;
+  --accent-500:163 58 42; --accent-600:138 45 32; --accent-800:100 30 21;
+  --accent-900:76 22 15; --accent-950:44 12 8;
+  --tema-accent:#a33a2a; --tema-accent-soft:rgba(163,58,42,.08);
+  --tema-texto:#33291d; --tema-texto-suave:#6b5c46; --tema-linea:#c9b99a;
+  background:repeating-linear-gradient(0deg,rgba(120,95,55,.04) 0 1px,transparent 1px 26px),#f4eddc !important;
+  color:#33291d !important; font-family:'IBM Plex Mono','Courier New',monospace !important;
+}
+.app-shell[data-skin='ledger'] .titlebar,
+.app-shell[data-skin='ledger'] .zen-topnav,
+.app-shell[data-skin='ledger'] .npr-shell { background:#faf4e6 !important; border-color:#c9b99a !important; color:#33291d !important; }
+.app-shell[data-skin='ledger'] .glass-card { background:#faf4e6 !important; border-color:#c9b99a !important; box-shadow:none !important; }
+.app-shell[data-skin='ledger'] .gh-search,
+.app-shell[data-skin='ledger'] .gh-search-input { background:rgba(255,255,255,.6) !important; color:#33291d !important; }
+.ledger-library { padding:6px 4px 60px; }
+.ledger-mayor { border:1px solid #33291d; margin-top:4px; }
+.ledger-fila { display:grid; grid-template-columns:56px minmax(0,1fr) minmax(120px,.9fr) 190px; align-items:center; border-bottom:1px solid #c9b99a; }
+.ledger-fila:last-child { border:0; }
+.ledger-fila>span,.ledger-fila>button { padding:11px 12px; border-right:1px solid #c9b99a; font:11px 'IBM Plex Mono','Courier New',monospace; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#33291d; }
+.ledger-fila>*:last-child { border:0; }
+.ledger-cab { background:rgba(201,185,154,.3); font-size:9px !important; text-transform:uppercase; letter-spacing:.12em; }
+.ledger-cab>span { color:#6b5c46 !important; }
+.ledger-num { color:#a33a2a !important; }
+.ledger-titulo { background:transparent; cursor:pointer; text-align:left; font-weight:700 !important; font-size:13px !important; }
+.ledger-fila.is-active { background:rgba(163,58,42,.06); }
+.ledger-final { display:flex; align-items:center; justify-content:flex-end; gap:10px; }
+.ledger-final>small { border:0 !important; padding:0 !important; color:#a33a2a !important; font-size:9px !important; letter-spacing:.08em; }
+.ledger-home { display:flex; align-items:center; gap:46px; min-height:calc(100vh - 150px); }
+.ledger-diario { width:min(560px,70%); padding:44px; border:1px solid #33291d; background:#faf4e6; box-shadow:inset 0 0 0 6px #f4eddc,inset 0 0 0 7px #c9b99a; }
+.ledger-kicker { font:10px 'IBM Plex Mono','Courier New',monospace; letter-spacing:.2em; color:#a33a2a; }
+.ledger-diario h1 { font-family:'IBM Plex Mono','Courier New',monospace; font-size:46px; font-weight:700; line-height:1.05; margin:12px 0; }
+.ledger-diario>p { color:#6b5c46; line-height:1.9; font-size:12px; }
+.ledger-diario button { border:1px solid #a33a2a; background:transparent; color:#a33a2a; padding:10px 16px; cursor:pointer; font:11px 'IBM Plex Mono','Courier New',monospace; margin-top:18px; }
+.ledger-timbre { width:70px; height:70px; flex:none; border:3px double #a33a2a; border-radius:50%; display:grid; place-items:center; color:#a33a2a; font-size:24px; transform:rotate(-12deg); }
+
+/* Las vistas propias no muestran el selector genérico de 9 vistas. */
+.app-shell[data-skin='sumiink'] .lt-view-select,
+.app-shell[data-skin='moonlit'] .lt-view-select,
+.app-shell[data-skin='ledger'] .lt-view-select { display:none !important; }
+
+/* Texto de los homes propios con color explícito (herencia del shell). */
+.app-shell[data-skin='sumiink'] .sumiink-home h1,
+.app-shell[data-skin='sumiink'] .sumiink-kicker,
+.app-shell[data-skin='sumiink'] .sumiink-dato,
+.app-shell[data-skin='sumiink'] .sumiink-botones button { color:var(--tema-texto) !important; }
+.app-shell[data-skin='sumiink'] .sumiink-copy>p,
+.app-shell[data-skin='sumiink'] .sumiink-kicker,
+.app-shell[data-skin='sumiink'] .sumiink-dato { color:var(--tema-texto-suave) !important; }
+.app-shell[data-skin='moonlit'] .moonlit-home h1,
+.app-shell[data-skin='moonlit'] .moonlit-kicker,
+.app-shell[data-skin='moonlit'] .moonlit-dato { color:var(--tema-texto) !important; }
+.app-shell[data-skin='moonlit'] .moonlit-home>p,
+.app-shell[data-skin='moonlit'] .moonlit-dato { color:var(--tema-texto-suave) !important; }
+.app-shell[data-skin='ledger'] .ledger-home h1,
+.app-shell[data-skin='ledger'] .ledger-kicker,
+.app-shell[data-skin='ledger'] .ledger-diario button { color:var(--tema-texto) !important; }
+.app-shell[data-skin='ledger'] .ledger-kicker,
+.app-shell[data-skin='ledger'] .ledger-diario button { color:var(--tema-accent) !important; }
+
+
+/* Cabecera y acciones compartidas por Sumi Ink, Moonlit y Ledger. */
+.app-shell[data-skin='sumiink'] .theme-library-head,
+.app-shell[data-skin='moonlit'] .theme-library-head,
+.app-shell[data-skin='ledger'] .theme-library-head { border-bottom-color: var(--tema-linea) !important; }
+.app-shell[data-skin='sumiink'] .theme-library-nav button,
+.app-shell[data-skin='moonlit'] .theme-library-nav button,
+.app-shell[data-skin='ledger'] .theme-library-nav button,
+.app-shell[data-skin='sumiink'] .theme-folders button,
+.app-shell[data-skin='moonlit'] .theme-folders button,
+.app-shell[data-skin='ledger'] .theme-folders button {
+  background: var(--tema-accent-soft) !important;
+  border-color: var(--tema-linea) !important;
+  color: var(--tema-texto-suave) !important;
+}
+.app-shell[data-skin='sumiink'] .theme-library-nav button:hover,
+.app-shell[data-skin='moonlit'] .theme-library-nav button:hover,
+.app-shell[data-skin='ledger'] .theme-library-nav button:hover,
+.app-shell[data-skin='sumiink'] .theme-folders button:hover,
+.app-shell[data-skin='moonlit'] .theme-folders button:hover,
+.app-shell[data-skin='ledger'] .theme-folders button:hover { color: var(--tema-accent) !important; }
+.app-shell[data-skin='sumiink'] .theme-library-nav button.is-active,
+.app-shell[data-skin='moonlit'] .theme-library-nav button.is-active,
+.app-shell[data-skin='ledger'] .theme-library-nav button.is-active {
+  background: var(--tema-accent) !important;
+  border-color: var(--tema-accent) !important;
+  color: var(--tema-texto) !important;
+}
+.app-shell[data-skin='ledger'] .theme-library-nav button.is-active { color: #faf4e6 !important; }
+.app-shell[data-skin='sumiink'] .theme-library-count,
+.app-shell[data-skin='moonlit'] .theme-library-count,
+.app-shell[data-skin='ledger'] .theme-library-count { color: var(--tema-texto-suave) !important; }
+.app-shell[data-skin='sumiink'] .theme-folders-label,
+.app-shell[data-skin='moonlit'] .theme-folders-label,
+.app-shell[data-skin='ledger'] .theme-folders-label,
+.app-shell[data-skin='sumiink'] .theme-folders button small,
+.app-shell[data-skin='moonlit'] .theme-folders button small,
+.app-shell[data-skin='ledger'] .theme-folders button small { color: var(--tema-accent) !important; }
+.app-shell[data-skin='sumiink'] .theme-row-actions button,
+.app-shell[data-skin='moonlit'] .theme-row-actions button,
+.app-shell[data-skin='ledger'] .theme-row-actions button { color: var(--tema-texto-suave) !important; }
+.app-shell[data-skin='sumiink'] .theme-row-actions button:hover,
+.app-shell[data-skin='moonlit'] .theme-row-actions button:hover,
+.app-shell[data-skin='ledger'] .theme-row-actions button:hover,
+.app-shell[data-skin='sumiink'] .theme-row-actions button.is-fav,
+.app-shell[data-skin='moonlit'] .theme-row-actions button.is-fav,
+.app-shell[data-skin='ledger'] .theme-row-actions button.is-fav { color: var(--tema-accent) !important; }
+
+
+/* Contraste del chip activo en los temas de fondo oscuro. */
+.app-shell[data-skin='sumiink'] .theme-library-nav button.is-active { color: #0c0c0c !important; }
+.app-shell[data-skin='moonlit'] .theme-library-nav button.is-active { color: #0b1324 !important; }
+
+
+/* El botón principal de Sumi Ink va en negro sobre la pincelada clara. */
+.app-shell[data-skin='sumiink'] .sumiink-botones button:first-child { color: #0c0c0c !important; }

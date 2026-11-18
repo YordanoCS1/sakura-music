@@ -135,7 +135,18 @@ export interface ToolProgress {
 }
 
 export type ThemeMode =
-  'space' | 'sumie' | 'byobu' | 'shoji' | 'origami' | 'swiss' | 'yoru' | 'hanabi' | 'aizuri';
+  | 'space'
+  | 'sumie'
+  | 'byobu'
+  | 'shoji'
+  | 'origami'
+  | 'swiss'
+  | 'sumiink'
+  | 'moonlit'
+  | 'ledger'
+  | 'yoru'
+  | 'hanabi'
+  | 'aizuri';
 
 export interface ThemeOption {
   id: ThemeMode;

@@ -32,7 +32,10 @@ export default function ThemeHome({
     theme !== 'byobu' &&
     theme !== 'shoji' &&
     theme !== 'origami' &&
-    theme !== 'swiss'
+    theme !== 'swiss' &&
+    theme !== 'sumiink' &&
+    theme !== 'moonlit' &&
+    theme !== 'ledger'
   ) {
     return null;
   }
@@ -178,6 +181,69 @@ export default function ThemeHome({
             Abrir biblioteca →
           </button>
           <p className="swiss-dato">{trackCount} piezas · 100% local</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (theme === 'sumiink') {
+    return (
+      <div className="sumiink-home">
+        <div className="sumiink-trazo" aria-hidden="true" />
+        <div className="sumiink-copy">
+          <p className="sumiink-kicker">SUMI · INK</p>
+          <h1>La tinta lo dice todo</h1>
+          <p>Una sola pincelada basta. Tu música en blanco y negro, sin adornos que la aparten.</p>
+          <div className="sumiink-botones">
+            <button type="button" onClick={() => onNavigate('library')}>
+              Abrir biblioteca
+            </button>
+            <button type="button" onClick={() => onNavigate('search')}>
+              Buscar música
+            </button>
+          </div>
+          <p className="sumiink-dato">{trackCount} piezas · blanco y negro</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (theme === 'moonlit') {
+    return (
+      <div className="moonlit-home">
+        <div className="moonlit-disco" aria-hidden="true" />
+        <p className="moonlit-kicker">MOONLIT · NOCHE</p>
+        <h1>Escucha bajo la luna</h1>
+        <p>Todo en calma, todo azul. Tu música flotando en la noche.</p>
+        <div className="moonlit-botones">
+          <button type="button" onClick={() => onNavigate('library')}>
+            Abrir biblioteca
+          </button>
+          <button type="button" onClick={() => onNavigate('search')}>
+            Buscar música
+          </button>
+        </div>
+        <p className="moonlit-dato">{trackCount} piezas · 100% local</p>
+      </div>
+    );
+  }
+
+  if (theme === 'ledger') {
+    return (
+      <div className="ledger-home">
+        <div className="ledger-diario">
+          <p className="ledger-kicker">LEDGER · REGISTRO</p>
+          <h1>Toda canción queda registrada</h1>
+          <p>
+            Fechas, artistas, álbumes. Un libro mayor de tu música, escrito a máquina y sellado en
+            rojo.
+          </p>
+          <button type="button" onClick={() => onNavigate('library')}>
+            Abrir biblioteca →
+          </button>
+        </div>
+        <div className="ledger-timbre" aria-hidden="true">
+          桜
         </div>
       </div>
     );
