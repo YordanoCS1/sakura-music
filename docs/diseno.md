@@ -1,13 +1,14 @@
 # Sistema de diseño
 
-Sakura Music usa cinco temas: **M3 Zen** (por defecto), Sumi-e, Yoru, Hanabi y Aizuri. Comparten la escala y el layout, y cambian color, tipografía y forma mediante tokens. Este documento es la referencia; la fuente de verdad son `tailwind.config.js` y `App.css`.
+Sakura Music usa seis temas: **M3 Zen** (por defecto), Sumi-e, Byōbu, Yoru, Hanabi y Aizuri. Comparten la escala de tokens; Sumi-e y Byōbu además redefinen la estructura completa. Prototipos de referencia en `docs/prototipos/`. La fuente de verdad son `tailwind.config.js` y `App.css`.
 
 ## Temas disponibles
 
 | Id | Nombre | Personalidad |
 |---|---|---|
 | `space` | M3 Zen | Superficies marfil, acento rosa sakura, redondeado suave |
-| `sumie` | Sumi-e | **Tinta sobre tinta**: lienzo carbón con lavados, rail vertical de kanji, sello hanko bermellón, ensō y marca de agua 墨, tipografía serif clara |
+| `sumie` | Sumi-e | **Pergamino**: nav kanji flotante a la derecha, columna central, dock circular y ensō sobre tinta
+| `byobu` | Byōbu | **Pantalla dividida**: panel izquierdo de tinta con kanji monumental y reproductor, panel editorial a la derecha |
 | `yoru` | Yoru | Noche cálida, grafito y ámbar, sans geométrica |
 | `hanabi` | Hanabi | Azul noche, cian y magenta, monoespacio, esquinas vivas |
 | `aizuri` | Aizuri | Índigo teñido, blanco hueso y cian, serif |

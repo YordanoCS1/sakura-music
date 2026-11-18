@@ -1,14 +1,15 @@
 # Apariencia
 
-Sakura Music 2.0 ofrece **cinco temas visuales**: M3 Zen, Sumi-e, Yoru, Hanabi y
+Sakura Music 2.0 ofrece **seis temas visuales**: M3 Zen, Sumi-e, Byōbu, Yoru, Hanabi y
 Aizuri. Elegí el que quieras en **Ajustes → Diseño Visual**; el cambio es
 inmediato y se recuerda al reabrir la app.
 
-## Los cinco temas
+## Los seis temas
 
 | Tema | Cómo se ve |
 |---|---|
 | **M3 Zen** | Marfil y rosa sakura. El tema clásico de la app. |
+| **Byōbu** | Pantalla dividida: panel de tinta con kanji monumental y reproductor, panel editorial de contenido. |
 | **Sumi-e** | Papel crudo, tinta carbón y bermellón, con tipografía serif. |
 | **Yoru** | Noche cálida, grafito y ámbar. Oscuro pero sin neón. |
 | **Hanabi** | Azul noche con cian y magenta, tipografía monoespacio y esquinas vivas. |

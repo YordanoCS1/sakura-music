@@ -297,7 +297,7 @@ Tabla).
 
 **Flujo principal**
 
-1. La app ofrece cinco temas: **M3 Zen**, Sumi-e, Yoru, Hanabi y Aizuri. En Ajustes
+1. La app ofrece seis temas: **M3 Zen**, Sumi-e, Byōbu, Yoru, Hanabi y Aizuri. En Ajustes
    se elige uno y `data-theme` se fija en el contenedor raíz. El valor se persiste
    en `sakura_theme`; `ThemeMode` reúne los cinco identificadores.
 2. Los valores de superficie (`--m3-surface`, `--m3-primary`, etc.) y los

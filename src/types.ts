@@ -134,7 +134,7 @@ export interface ToolProgress {
   estado: string;
 }
 
-export type ThemeMode = 'space' | 'sumie' | 'yoru' | 'hanabi' | 'aizuri';
+export type ThemeMode = 'space' | 'sumie' | 'byobu' | 'yoru' | 'hanabi' | 'aizuri';
 
 export interface ThemeOption {
   id: ThemeMode;

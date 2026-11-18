@@ -5,6 +5,7 @@ import ToolsPanel from './ToolsPanel';
 const SWATCHES: Record<ThemeMode, string> = {
   space: 'bg-rose-400',
   sumie: 'bg-[#b23a2b]',
+  byobu: 'bg-[#8c3b2e]',
   yoru: 'bg-amber-400',
   hanabi: 'bg-cyan-400',
   aizuri: 'bg-sky-400',

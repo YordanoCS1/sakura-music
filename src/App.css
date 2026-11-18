@@ -4480,3 +4480,158 @@ input[type="range"]:hover::-webkit-slider-thumb {
   right: 6% !important;
   bottom: -66px !important;
 }
+
+
+/* ========================================================= */
+/* SUMI-E · PERGAMINO (estructura final)                      */
+/* Nav kanji flotante a la derecha, columna central, dock      */
+/* circular. Prevalece sobre las versiones anteriores.         */
+/* ========================================================= */
+.app-shell[data-skin='sumie'] .zen-topnav {
+  position: fixed !important;
+  right: 18px !important; top: 50% !important; left: auto !important;
+  transform: translateY(-50%) !important;
+  width: 68px !important; height: auto !important; flex: none !important;
+  flex-direction: column !important; align-items: center !important;
+  padding: 8px !important; gap: 10px !important;
+  background: transparent !important;
+  border: none !important;
+  z-index: 60 !important;
+  overflow: visible !important;
+}
+.app-shell[data-skin='sumie'] .zen-topnav::before {
+  content: ''; position: absolute; left: 50%; top: -14px; transform: translateX(-50%);
+  width: 24px; height: 2px; background: #d24832;
+}
+.app-shell[data-skin='sumie'] .zen-topnav-tabs { flex-direction: column !important; gap: 6px !important; }
+.app-shell[data-skin='sumie'] .zen-topnav-tab {
+  width: 52px !important; height: 52px !important; border-radius: 50% !important;
+  border: 1px solid transparent !important; background: transparent !important;
+  box-shadow: none !important;
+}
+.app-shell[data-skin='sumie'] .zen-topnav-tab.is-active {
+  border-color: rgba(210,72,50,.55) !important;
+  background: rgba(210,72,50,.08) !important;
+  box-shadow: 0 0 18px rgba(210,72,50,.16) !important;
+}
+.app-shell[data-skin='sumie'] .zen-topnav-tab.is-active::after { display: none !important; }
+.app-shell[data-skin='sumie'] main { align-items: center !important; }
+.app-shell[data-skin='sumie'] .gh-header,
+.app-shell[data-skin='sumie'] .main-scroll-region,
+.app-shell[data-skin='sumie'] .library-tab-content {
+  width: min(720px, 68%) !important;
+  margin-left: auto !important; margin-right: auto !important;
+}
+.app-shell[data-skin='sumie'] .player-dock {
+  position: fixed !important; left: 50% !important; right: auto !important;
+  bottom: 18px !important; transform: translateX(-50%) !important;
+  width: auto !important;
+}
+.app-shell[data-skin='sumie'] .npr-shell {
+  width: 156px !important; height: 60px !important; padding: 6px 14px !important;
+  border-radius: 30px !important;
+  border: 1px solid rgba(210,72,50,.45) !important;
+  background: radial-gradient(circle at 50% 50%, #1b1714, #0c0a09) !important;
+}
+.app-shell[data-skin='sumie'] .npr-track,
+.app-shell[data-skin='sumie'] .npr-progress,
+.app-shell[data-skin='sumie'] .npr-right { display: none !important; }
+.app-shell[data-skin='sumie'] .npr-controls { gap: 8px !important; }
+.app-shell[data-skin='sumie'] .npr-ctl,
+.app-shell[data-skin='sumie'] .npr-play { width: 30px !important; height: 30px !important; }
+
+/* ========================================================= */
+/* BYŌBU · PANTALLA DIVIDIDA                                  */
+/* Panel izquierdo de tinta monumental + panel editorial.      */
+/* ========================================================= */
+.app-shell[data-skin='byobu'] {
+  --m3-surface: #0e0c0b; --m3-surface-alt: #161311; --m3-surface-card: #1a1714;
+  --m3-on-surface: #ece3d6; --m3-on-surface-muted: #a49a8d;
+  --m3-primary: #d24832; --m3-primary-dim: #a83322; --m3-outline: rgba(210,72,50,.3);
+  --space-text: #ece3d6; --space-muted: #a49a8d; --space-border: rgba(236,227,214,.1);
+  --accent-200: 250 214 205; --accent-300: 244 176 160; --accent-400: 224 106 82;
+  --accent-500: 210 72 50; --accent-600: 176 51 34; --accent-800: 122 33 22;
+  --accent-900: 96 26 17; --accent-950: 52 14 9;
+  --theme-font-display: 'Cormorant Garamond', 'Yu Mincho', Georgia, serif;
+  background: linear-gradient(180deg, #100e0c, #070605) !important;
+  color: var(--m3-on-surface) !important;
+}
+.app-shell[data-skin='byobu'] .app-rail-row { flex-direction: row !important; }
+.app-shell[data-skin='byobu'] .zen-topnav {
+  position: relative !important; right: auto !important; top: auto !important;
+  transform: none !important;
+  flex: 0 0 38% !important; width: 38% !important; height: 100% !important;
+  flex-direction: column !important; align-items: flex-start !important;
+  justify-content: space-between !important;
+  padding: 36px 34px !important; gap: 10px !important;
+  background: radial-gradient(ellipse at 30% 20%, rgba(210,72,50,.1), transparent 60%), #0e0c0b !important;
+  border-right: 1px solid #d24832 !important; border-bottom: none !important;
+  overflow: hidden !important; z-index: 1 !important;
+}
+.app-shell[data-skin='byobu'] .zen-topnav::before {
+  content: '蔵'; position: absolute; right: 12px; bottom: 90px;
+  font-family: 'Yu Mincho', serif; font-size: 280px; line-height: .8;
+  color: rgba(236,227,214,.045); pointer-events: none;
+}
+.app-shell[data-skin='byobu'] .zen-topnav-brand-copy strong { color: #ece3d6 !important; font-size: 20px !important; }
+.app-shell[data-skin='byobu'] .zen-topnav-brand-copy small { color: #8d8377 !important; }
+.app-shell[data-skin='byobu'] .zen-topnav-tabs {
+  flex-direction: column !important; align-items: flex-start !important; gap: 4px !important; width: 100% !important;
+}
+.app-shell[data-skin='byobu'] .zen-topnav-tab {
+  flex-direction: row !important; justify-content: flex-start !important; gap: 10px !important;
+  width: 100% !important; height: 40px !important; padding: 0 10px !important;
+  border-radius: 2px !important; background: transparent !important; box-shadow: none !important;
+  color: #a49a8d !important;
+}
+.app-shell[data-skin='byobu'] .zen-topnav-tab::before { font-size: 20px !important; color: #a49a8d !important; }
+.app-shell[data-skin='byobu'] .zen-topnav-tab.is-active {
+  background: rgba(210,72,50,.1) !important; box-shadow: inset 2px 0 0 #d24832 !important;
+  color: #ece3d6 !important;
+}
+.app-shell[data-skin='byobu'] .zen-topnav-tab.is-active::before { color: #d24832 !important; }
+.app-shell[data-skin='byobu'] .zen-topnav-tab.is-active::after { display: none !important; }
+.app-shell[data-skin='byobu'] .zen-topnav-meta,
+.app-shell[data-skin='byobu'] .zen-topnav-slider { display: none !important; }
+.app-shell[data-skin='byobu'] main { padding: 40px 50px !important; }
+.app-shell[data-skin='byobu'] .gh-header { background: rgba(16,14,12,.7) !important; border-bottom-color: rgba(236,227,214,.08) !important; }
+.app-shell[data-skin='byobu'] .lt-bar { background: transparent !important; border: none !important; border-bottom: 1px solid rgba(236,227,214,.1) !important; box-shadow: none !important; border-radius: 0 !important; }
+.app-shell[data-skin='byobu'] .lt-heading h2 { color: #ece3d6 !important; font-size: 42px !important; }
+.app-shell[data-skin='byobu'] .lt-heading p { color: #a49a8d !important; }
+.app-shell[data-skin='byobu'] .glass-card { background: rgba(236,227,214,.035) !important; border-color: rgba(236,227,214,.09) !important; box-shadow: none !important; }
+.app-shell[data-skin='byobu'] .empty-state h3,
+.app-shell[data-skin='byobu'] .npr-title { color: #ece3d6 !important; }
+.app-shell[data-skin='byobu'] .empty-state p,
+.app-shell[data-skin='byobu'] .npr-artist { color: #a49a8d !important; }
+.app-shell[data-skin='byobu'] .empty-state button { background: transparent !important; color: #d24832 !important; border-color: #d24832 !important; }
+.app-shell[data-skin='byobu'] .titlebar { background: #0c0a09 !important; border-bottom-color: rgba(236,227,214,.08) !important; }
+.app-shell[data-skin='byobu'] .titlebar-brand-name { color: #ece3d6 !important; }
+.app-shell[data-skin='byobu'] .titlebar-brand-mark,
+.app-shell[data-skin='byobu'] .zen-topnav-brand-mark { background: #d24832 !important; }
+
+
+/* Byōbu: el reproductor vive dentro del panel de tinta. */
+.app-shell[data-skin='byobu'] .player-dock {
+  left: 0 !important; right: auto !important; bottom: 0 !important;
+  width: 38% !important; transform: none !important;
+}
+.app-shell[data-skin='byobu'] .npr-shell {
+  border-radius: 0 !important;
+  border: none !important;
+  border-top: 1px solid rgba(236, 227, 214, 0.1) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 18px 28px !important;
+}
+.app-shell[data-skin='byobu'] .gh-chip.is-active {
+  background: #d24832 !important;
+  box-shadow: none !important;
+  color: #fff !important;
+}
+
+
+/* Byōbu: en el panel de tinta sólo los controles esenciales. */
+.app-shell[data-skin='byobu'] .npr-track,
+.app-shell[data-skin='byobu'] .npr-progress,
+.app-shell[data-skin='byobu'] .npr-right { display: none !important; }
+.app-shell[data-skin='byobu'] .npr-controls { gap: 18px !important; }

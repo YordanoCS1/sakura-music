@@ -8,6 +8,7 @@ test-results/
 playwright-report/
 legacy_python/
 docs/temas/
+docs/prototipos/
 package-lock.json
 src-tauri/Cargo.lock
 

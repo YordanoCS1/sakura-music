@@ -83,8 +83,12 @@ test('el tema se cambia desde Ajustes y persiste al recargar', async ({ page }) 
   await expect(page.locator('.app-shell')).toHaveAttribute('data-skin', 'sumie');
   await expect(sumie).toHaveAttribute('aria-pressed', 'true');
 
+  const byobu = page.getByRole('button', { name: /Byōbu/ });
+  await byobu.click();
+  await expect(page.locator('.app-shell')).toHaveAttribute('data-skin', 'byobu');
+
   await page.reload();
-  await expect(page.locator('.app-shell')).toHaveAttribute('data-skin', 'sumie');
+  await expect(page.locator('.app-shell')).toHaveAttribute('data-skin', 'byobu');
 });
 
 test('el tablist responde al teclado', async ({ page }) => {

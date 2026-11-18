@@ -39,7 +39,8 @@ import { usePlayer } from './hooks/usePlayer';
 
 const TEMAS_DISPONIBLES: ThemeOption[] = [
   { id: 'space', nombre: 'M3 Zen', descripcion: 'Marfil y rosa sakura' },
-  { id: 'sumie', nombre: 'Sumi-e', descripcion: 'Tinta, papel y bermellón' },
+  { id: 'sumie', nombre: 'Sumi-e', descripcion: 'Pergamino flotante y tinta' },
+  { id: 'byobu', nombre: 'Byōbu', descripcion: 'Pantalla dividida de tinta' },
   { id: 'yoru', nombre: 'Yoru', descripcion: 'Noche cálida y ámbar' },
   { id: 'hanabi', nombre: 'Hanabi', descripcion: 'Neón cian y magenta' },
   { id: 'aizuri', nombre: 'Aizuri', descripcion: 'Índigo teñido y cian' },
@@ -746,6 +747,12 @@ export default function App() {
       glow2: 'bg-amber-100/40',
       accent: 'from-red-800 to-rose-700',
       badge: 'bg-red-800/10 text-red-900 border-red-800/30',
+    },
+    byobu: {
+      glow1: 'bg-red-700/20',
+      glow2: 'bg-stone-900/25',
+      accent: 'from-red-700 to-stone-800',
+      badge: 'bg-red-700/15 text-red-100 border-red-600/30',
     },
     yoru: {
       glow1: 'bg-amber-500/20',

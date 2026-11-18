@@ -181,7 +181,7 @@ guardado. La carpeta `covers/` no crece sin control entre sesiones.
 
 #### RF-17 · Temas visuales seleccionables
 
-**Criterio:** la app ofrece cinco temas (M3 Zen, Sumi-e, Yoru, Hanabi y Aizuri)
+**Criterio:** la app ofrece seis temas (M3 Zen, Sumi-e, Byōbu, Yoru, Hanabi y Aizuri)
 seleccionables desde Ajustes. Cada tema define variables semánticas `--m3-*`, `--space-*`,
 `--accent-*` y `--theme-*` bajo su `[data-skin='id']`. El elegido se persiste en
 `localStorage` (`sakura_theme`) y se aplica sin recargar.

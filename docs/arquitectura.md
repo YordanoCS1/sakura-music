@@ -222,7 +222,7 @@ sequenceDiagram
 
 ## Tema visual
 
-La app usa cinco temas, **M3 Zen** (por defecto), Sumi-e, Yoru, Hanabi y Aizuri,
+La app usa seis temas, **M3 Zen** (por defecto), Sumi-e, Byōbu, Yoru, Hanabi y Aizuri,
 definidos con variables semánticas `--m3-*`, `--space-*`, `--accent-*` y `--theme-*`
 en `App.css`. Tailwind mapea `accent-*` a esas variables, así que
 `from-accent-500` o `text-accent-300` siguen al tema sin duplicar clases.
