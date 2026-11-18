@@ -5120,3 +5120,50 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .byobu-lista li .byobu-fila { flex: 1; }
 .byobu-lista li.is-active { background: rgba(210,72,50,.08); border-left: 2px solid #d24832; }
 .byobu-lista li .theme-row-actions { padding-right: 10px; }
+
+
+/* ========================================================= */
+/* SUMI-E · Hojas de washi apiladas de verdad                  */
+/* ========================================================= */
+.sumie-hojas { gap: 28px !important; }
+.hoja-pila { position: relative; }
+.hoja-pila::before,
+.hoja-pila::after {
+  content: ''; position: absolute; pointer-events: none;
+  border: 1px solid rgba(236,227,214,.08);
+  background: rgba(236,227,214,.012);
+}
+.hoja-pila::before { inset: 4px -5px -5px 5px; transform: rotate(-1deg); }
+.hoja-pila::after { inset: 9px -10px -10px 10px; transform: rotate(1deg); }
+
+.hoja-papel {
+  position: relative; z-index: 1; overflow: hidden;
+  min-height: 108px;
+  padding: 20px 26px !important;
+  border: none !important;
+  box-shadow: 6px 8px 0 rgba(236,227,214,.03) !important;
+  background:
+    repeating-linear-gradient(0deg, rgba(236,227,214,.018) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(90deg, rgba(236,227,214,.012) 0 1px, transparent 1px 6px),
+    linear-gradient(135deg, rgba(236,227,214,.13), rgba(236,227,214,.035)) !important;
+  clip-path: polygon(
+    0 1%, 6% 0, 14% 1%, 24% .2%, 35% 1.1%, 48% 0, 60% 1%, 72% .1%, 84% 1.2%, 94% 0, 100% 1%,
+    100% 99%, 92% 100%, 80% 99%, 68% 100%, 56% 99%, 44% 100%, 32% 99%, 20% 100%, 9% 99%, 0 100%
+  );
+}
+.hoja-papel:hover { transform: none !important; box-shadow: 8px 10px 0 rgba(210,72,50,.18) !important; }
+.hoja-papel.is-active { box-shadow: 8px 10px 0 rgba(210,72,50,.2) !important; }
+.hoja-kanji {
+  position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+  writing-mode: vertical-rl; font-family: 'Yu Mincho', serif; font-size: 30px;
+  color: rgba(210,72,50,.12); pointer-events: none;
+}
+.hoja-sello {
+  position: absolute; top: 8px; right: 12px; width: 23px; height: 23px;
+  border-radius: 3px; background: #d24832; color: #fff5e8;
+  display: grid; place-items: center; font-family: 'Yu Mincho', serif; font-size: 12px;
+  transform: rotate(-5deg); z-index: 2;
+}
+.hoja-play { padding: 0 !important; }
+.hoja-texto strong { font-size: 24px !important; }
+.hoja-acciones { margin-left: 12px; }
