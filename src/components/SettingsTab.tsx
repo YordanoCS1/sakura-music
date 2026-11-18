@@ -1,4 +1,14 @@
-import { Palette, Sparkles, Layers, Sliders, Cpu, FolderOpen, Minimize2 } from 'lucide-react';
+import {
+  Palette,
+  Sparkles,
+  Layers,
+  Sliders,
+  Cpu,
+  FolderOpen,
+  Minimize2,
+  Check,
+  Music2,
+} from 'lucide-react';
 import type { AppInfo, PlayerStyle, ThemeMode, ThemeOption } from '../types';
 import ToolsPanel from './ToolsPanel';
 
@@ -15,6 +25,21 @@ const SWATCHES: Record<ThemeMode, string> = {
   yoru: 'bg-amber-400',
   hanabi: 'bg-cyan-400',
   aizuri: 'bg-sky-400',
+};
+
+const GLIFOS: Partial<Record<ThemeMode, string>> = {
+  space: '桜',
+  sumie: '墨',
+  byobu: '屏',
+  shoji: '障',
+  origami: '折',
+  swiss: '＋',
+  sumiink: '墨',
+  moonlit: '月',
+  ledger: '帳',
+  yoru: '夜',
+  hanabi: '花',
+  aizuri: '藍',
 };
 
 interface SettingsTabProps {
@@ -43,6 +68,7 @@ interface SettingsTabProps {
   onClearCache: () => void;
 }
 
+/** Ajustes con identidad visual propia, adaptable a todos los temas. */
 export default function SettingsTab({
   theme,
   temas,
@@ -68,77 +94,62 @@ export default function SettingsTab({
   onSetAmbientParticles,
   onClearCache,
 }: SettingsTabProps) {
+  const nombreTema = temas.find((t) => t.id === theme)?.nombre ?? 'Sakura';
+  const estilos: { id: PlayerStyle; label: string; icono: typeof Sparkles }[] = [
+    { id: 'floating', label: 'Cápsula flotante', icono: Sparkles },
+    { id: 'fixed', label: 'Barra fija', icono: Layers },
+    { id: 'mini', label: 'Mini', icono: Minimize2 },
+  ];
+
+  const Interruptor = ({
+    activo,
+    alCambiar,
+    etiqueta,
+  }: {
+    activo: boolean;
+    alCambiar: () => void;
+    etiqueta: string;
+  }) => (
+    <button
+      type="button"
+      className="set-switch"
+      aria-pressed={activo}
+      aria-label={etiqueta}
+      onClick={alCambiar}
+    >
+      <span />
+    </button>
+  );
+
   return (
-    <div className="w-full max-w-6xl mx-auto space-y-6 mb-24">
-      <div>
-        <h2 className="text-base font-bold text-white mb-1">Ajustes de Sakura Music</h2>
-        <p className="text-xs text-ink-400">
-          Personalización visual, diseño de interfaz y motor nativo
-        </p>
-      </div>
+    <div className="settings-view">
+      <header className="settings-hero">
+        <div className={`settings-hero-mark bg-gradient-to-tr ${accentGradient}`}>
+          {GLIFOS[theme] ?? '桜'}
+        </div>
+        <div className="settings-hero-copy">
+          <p className="settings-hero-kicker">PERSONALIZACIÓN</p>
+          <h2>Ajustes de Sakura Music</h2>
+          <p>Interfaz, efectos y motor nativo en un solo lugar.</p>
+        </div>
+        <div className="settings-hero-tema">
+          <small>TEMA ACTIVO</small>
+          <strong>{nombreTema}</strong>
+        </div>
+      </header>
 
-      <div className="glass-card p-5 rounded-2xl border border-white/10 space-y-3">
-        <div>
-          <h3 className="text-sm font-bold text-white">Carpeta de descargas</h3>
-          <p className="text-xs text-ink-400 mt-1">
-            Las nuevas descargas se guardarán aquí. Si no eliges una carpeta, se usará la biblioteca
-            actual o Música.
-          </p>
-        </div>
-        <div className="rounded-xl bg-black/20 border border-white/5 px-3 py-2">
-          <p className="text-xs text-ink-300 font-mono break-all">
-            {downloadFolder || currentFolder || 'Carpeta Música predeterminada'}
-          </p>
-          {!downloadFolder && (
-            <p className="text-2xs text-ink-500 mt-1">
-              Destino automático (no se fijó una carpeta)
-            </p>
-          )}
-        </div>
-        {downloadFolderError && (
-          <p role="alert" className="text-xs text-rose-300">
-            {downloadFolderError}
-          </p>
-        )}
-        <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={onChooseDownloadFolder}
-            className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-colors ${accentBadge}`}
-          >
-            <FolderOpen className="w-3.5 h-3.5" />
-            Elegir carpeta
-          </button>
-          {downloadFolder && (
-            <button
-              type="button"
-              onClick={onResetDownloadFolder}
-              className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-ink-300 hover:bg-white/10 text-xs font-semibold transition-colors"
-            >
-              Usar destino automático
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* SECCIÓN: APARIENCIA Y ESTILO GLOBAL */}
-      <div className="glass-card p-6 rounded-3xl border border-white/10 space-y-5">
-        <div className="flex items-center gap-3">
-          <div
-            className={`w-9 h-9 rounded-2xl bg-gradient-to-tr ${accentGradient} flex items-center justify-center text-white shadow-lg flex-shrink-0`}
-          >
-            <Palette className="w-4 h-4" />
+      <div className="settings-grid">
+        <section className="set-card set-card-tema">
+          <div className="set-card-head">
+            <span className="set-card-icon">
+              <Palette className="w-4 h-4" />
+            </span>
+            <div>
+              <h3>Diseño visual</h3>
+              <p>Elegí el tema de la aplicación</p>
+            </div>
           </div>
-          <div>
-            <h3 className="text-sm font-bold text-white">Diseño Visual</h3>
-            <p className="text-xs text-ink-400">Elegí el tema visual de la aplicación</p>
-          </div>
-        </div>
-
-        {/* Selector de tema */}
-        <div className="pt-3 border-t border-white/5">
-          <label className="mb-2.5 block text-xs font-semibold text-ink-200">Tema visual:</label>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          <div className="set-themes">
             {temas.map((opcion) => {
               const activo = opcion.id === theme;
               return (
@@ -147,91 +158,68 @@ export default function SettingsTab({
                   type="button"
                   onClick={() => onSetTheme(opcion.id)}
                   aria-pressed={activo}
-                  className={`rounded-2xl border p-3 text-left transition-all ${
-                    activo
-                      ? 'border-accent-500 bg-accent-500/10'
-                      : 'border-white/10 bg-white/5 hover:border-accent-500/40'
-                  }`}
+                  className={`set-theme ${activo ? 'is-active' : ''}`}
                 >
-                  <span className="flex items-center gap-1.5">
-                    <span className={`h-2.5 w-2.5 rounded-full ${SWATCHES[opcion.id]}`} />
-                    <span className="text-xs font-bold text-white">{opcion.nombre}</span>
-                    {activo && <span className="ml-auto text-2xs text-accent-300">Activo</span>}
+                  <span className={`set-theme-swatch ${SWATCHES[opcion.id]}`} />
+                  <span className="set-theme-copy">
+                    <strong>{opcion.nombre}</strong>
+                    <small>{opcion.descripcion}</small>
                   </span>
-                  <span className="mt-1 block text-2xs text-ink-400">{opcion.descripcion}</span>
+                  {activo && (
+                    <span className="set-theme-check">
+                      <Check className="w-3 h-3" />
+                    </span>
+                  )}
                 </button>
               );
             })}
           </div>
-          <p className="mt-2 text-2xs text-ink-500">El cambio se aplica al instante y se guarda.</p>
-        </div>
+          <p className="set-note">El cambio se aplica al instante y se guarda.</p>
+        </section>
 
-        {/* Estilo del Reproductor */}
-        <div className="pt-3 border-t border-white/5">
-          <label className="text-xs font-semibold text-ink-300 block mb-2.5">
-            Diseño del Reproductor:
-          </label>
-          <div className="grid grid-cols-3 gap-2">
-            <button
-              type="button"
-              onClick={() => onSetPlayerStyle('floating')}
-              className={`p-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2 transition-all ${
-                playerStyle === 'floating'
-                  ? `${accentBadge} shadow-md`
-                  : 'bg-white/5 text-ink-400 border-white/10 hover:text-white'
-              }`}
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Cápsula Flotante (Dock)</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => onSetPlayerStyle('fixed')}
-              className={`p-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2 transition-all ${
-                playerStyle === 'fixed'
-                  ? `${accentBadge} shadow-md`
-                  : 'bg-white/5 text-ink-400 border-white/10 hover:text-white'
-              }`}
-            >
-              <Layers className="w-3.5 h-3.5" />
-              <span>Barra Fija</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => onSetPlayerStyle('mini')}
-              className={`p-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2 transition-all ${
-                playerStyle === 'mini'
-                  ? `${accentBadge} shadow-md`
-                  : 'bg-white/5 text-ink-400 border-white/10 hover:text-white'
-              }`}
-              aria-pressed={playerStyle === 'mini'}
-            >
-              <Minimize2 className="w-3.5 h-3.5" />
-              <span>Mini</span>
-            </button>
+        <section className="set-card">
+          <div className="set-card-head">
+            <span className="set-card-icon">
+              <Music2 className="w-4 h-4" />
+            </span>
+            <div>
+              <h3>Reproductor</h3>
+              <p>Cómo se muestra la barra de reproducción</p>
+            </div>
           </div>
-          <p className="mt-2 text-2xs text-ink-500">
+          <div className="set-segmented">
+            {estilos.map(({ id, label, icono: Icono }) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => onSetPlayerStyle(id)}
+                aria-pressed={playerStyle === id}
+                className={playerStyle === id ? 'is-active' : ''}
+              >
+                <Icono className="w-3.5 h-3.5" />
+                <span>{label}</span>
+              </button>
+            ))}
+          </div>
+          <p className="set-note">
             El mini reproductor reduce la ventana y la mantiene siempre encima.
           </p>
-        </div>
+        </section>
 
-        {/* Controles de transparencia y desenfoque */}
-        <div className="pt-3 border-t border-white/5 space-y-4">
-          <div className="flex items-center justify-between">
+        <section className="set-card">
+          <div className="set-card-head">
+            <span className="set-card-icon">
+              <Sliders className="w-4 h-4" />
+            </span>
             <div>
-              <h4 className="text-xs font-semibold text-ink-300">Ajuste de Efectos de Cristal</h4>
-              <p className="text-2xs text-ink-500">
-                Personaliza la opacidad y el desenfoque en tiempo real
-              </p>
+              <h3>Efectos de cristal</h3>
+              <p>Opacidad, desenfoque y atmósfera</p>
             </div>
-            <Sliders className="w-4 h-4 text-ink-500" />
           </div>
-
-          {/* Deslizador de opacidad */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs">
-              <span className="text-ink-400 text-xs">Opacidad del Vidrio:</span>
-              <span className="text-white font-mono text-xs">{glassOpacity}%</span>
+          <div className="set-slider">
+            <div className="set-slider-head">
+              <span>Opacidad del vidrio</span>
+              <b>{glassOpacity}%</b>
             </div>
             <input
               type="range"
@@ -239,15 +227,13 @@ export default function SettingsTab({
               max={95}
               value={glassOpacity}
               onChange={(e) => onSetGlassOpacity(parseInt(e.target.value, 10))}
-              className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer"
+              className="set-range"
             />
           </div>
-
-          {/* Deslizador de desenfoque */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs">
-              <span className="text-ink-400 text-xs">Desenfoque (Backdrop Blur):</span>
-              <span className="text-white font-mono text-xs">{glassBlur}px</span>
+          <div className="set-slider">
+            <div className="set-slider-head">
+              <span>Desenfoque de fondo</span>
+              <b>{glassBlur}px</b>
             </div>
             <input
               type="range"
@@ -255,114 +241,110 @@ export default function SettingsTab({
               max={32}
               value={glassBlur}
               onChange={(e) => onSetGlassBlur(parseInt(e.target.value, 10))}
-              className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer"
+              className="set-range"
             />
           </div>
-
-          {/* Interruptor de resplandor ambiental */}
-          <div className="flex items-center justify-between pt-1">
+          <div className="set-toggle-row">
             <div>
-              <span className="text-xs font-semibold text-ink-300 block">
-                Resplandor Ambiental Fluido (Dynamic Glow)
-              </span>
-              <span className="text-2xs text-ink-500">
+              <strong>Resplandor ambiental</strong>
+              <small>
                 {coverGlowActive
-                  ? 'Sincronizado con los colores de la carátula activa'
-                  : 'Auras de color en las esquinas aceleradas por GPU'}
-              </span>
+                  ? 'Sincronizado con la carátula activa'
+                  : 'Auras de color en las esquinas'}
+              </small>
             </div>
-            <button
-              type="button"
-              onClick={() => onSetAmbientGlow(!ambientGlow)}
-              className={`w-11 h-6 rounded-full transition-colors relative p-0.5 ${
-                ambientGlow ? 'bg-accent-500' : 'bg-white/10'
-              }`}
-            >
-              <div
-                className={`w-5 h-5 rounded-full bg-white transition-transform ${
-                  ambientGlow ? 'translate-x-5' : 'translate-x-0'
-                }`}
-              />
-            </button>
+            <Interruptor
+              activo={ambientGlow}
+              alCambiar={() => onSetAmbientGlow(!ambientGlow)}
+              etiqueta="Resplandor ambiental"
+            />
           </div>
-
-          {/* Interruptor de partículas atmosféricas */}
-          <div className="flex items-center justify-between pt-2 border-t border-white/5">
+          <div className="set-toggle-row">
             <div>
-              <span className="text-xs font-semibold text-ink-300 flex items-center gap-1.5">
-                <span>{'🌸'}</span>
-                <span>Efectos Atmosféricos de Partículas</span>
-              </span>
-              <span className="text-2xs text-ink-500">
-                {'Pétalos suaves de flor de cerezo cayendo con la brisa'}
-              </span>
+              <strong>Pétalos de sakura</strong>
+              <small>Partículas atmosféricas cayendo con la brisa</small>
             </div>
-            <button
-              type="button"
-              onClick={() => onSetAmbientParticles(!ambientParticles)}
-              className={`w-11 h-6 rounded-full transition-colors relative p-0.5 ${
-                ambientParticles ? 'bg-accent-500' : 'bg-white/10'
-              }`}
-            >
-              <div
-                className={`w-5 h-5 rounded-full bg-white transition-transform ${
-                  ambientParticles ? 'translate-x-5' : 'translate-x-0'
-                }`}
-              />
+            <Interruptor
+              activo={ambientParticles}
+              alCambiar={() => onSetAmbientParticles(!ambientParticles)}
+              etiqueta="Partículas atmosféricas"
+            />
+          </div>
+        </section>
+
+        <section className="set-card">
+          <div className="set-card-head">
+            <span className="set-card-icon">
+              <FolderOpen className="w-4 h-4" />
+            </span>
+            <div>
+              <h3>Carpeta de descargas</h3>
+              <p>Destino de las nuevas canciones</p>
+            </div>
+          </div>
+          <div className="set-path">
+            {downloadFolder || currentFolder || 'Carpeta Música predeterminada'}
+          </div>
+          {downloadFolderError && <p className="set-error">{downloadFolderError}</p>}
+          <div className="set-actions">
+            <button type="button" onClick={onChooseDownloadFolder} className={accentBadge}>
+              <FolderOpen className="w-3.5 h-3.5" /> Elegir carpeta
             </button>
+            {downloadFolder && (
+              <button type="button" onClick={onResetDownloadFolder} className="set-btn-secondary">
+                Usar destino automático
+              </button>
+            )}
           </div>
-        </div>
-      </div>
+        </section>
 
-      <ToolsPanel />
+        <section className="set-card">
+          <ToolsPanel />
+        </section>
 
-      {/* Tarjeta de Especificaciones Técnicas */}
-      <div className="glass-card p-5 rounded-2xl border border-white/5 space-y-3">
-        <h3 className="text-xs font-bold text-white flex items-center gap-2">
-          <Cpu className="w-4 h-4 text-accent-400" />
-          <span>Motor Nativo Tauri 2 + Rust</span>
-        </h3>
-
-        <div className="space-y-2 text-xs">
-          <div className="flex justify-between py-1 border-b border-white/5">
-            <span className="text-ink-400">Versión del Compilador:</span>
-            <span className="text-white font-mono">{appInfo?.rust_version ?? 'rustc'}</span>
-          </div>
-          <div className="flex justify-between py-1 border-b border-white/5">
-            <span className="text-ink-400">Consumo de Memoria Base:</span>
-            <span className="text-emerald-400 font-mono font-semibold">
-              {appInfo?.memory_usage ?? '—'}
+        <section className="set-card">
+          <div className="set-card-head">
+            <span className="set-card-icon">
+              <Cpu className="w-4 h-4" />
             </span>
+            <div>
+              <h3>Motor Nativo Tauri 2 + Rust</h3>
+              <p>Rendimiento y escaneo paralelo</p>
+            </div>
           </div>
-          <div className="flex justify-between py-1 border-b border-white/5">
-            <span className="text-ink-400">Escaneo Multihilo:</span>
-            <span className="text-accent-300 font-mono">Rayon Parallel Engine (Activo)</span>
-          </div>
-          <div className="flex justify-between py-1 border-b border-white/5">
-            <span className="text-ink-400">Decodificador de Tags Hi-Res:</span>
-            <span className="text-cyan-300 font-mono">Lofty 0.21 (Lossless FLAC/ALAC/ID3v2)</span>
-          </div>
-          <div className="flex justify-between py-1">
-            <span className="text-ink-400">Carpeta Activa:</span>
-            <span className="text-ink-300 font-mono text-xs truncate max-w-[200px]">
-              {currentFolder ?? 'Ninguna'}
-            </span>
-          </div>
-        </div>
-      </div>
+          <dl className="set-specs">
+            <div>
+              <dt>Compilador</dt>
+              <dd>{appInfo?.rust_version ?? 'rustc'}</dd>
+            </div>
+            <div>
+              <dt>Memoria base</dt>
+              <dd>{appInfo?.memory_usage ?? '—'}</dd>
+            </div>
+            <div>
+              <dt>Escaneo</dt>
+              <dd>Rayon · multihilo</dd>
+            </div>
+            <div>
+              <dt>Etiquetas</dt>
+              <dd>Lofty · FLAC/ALAC/ID3v2</dd>
+            </div>
+            <div>
+              <dt>Carpeta activa</dt>
+              <dd>{currentFolder ?? 'Ninguna'}</dd>
+            </div>
+          </dl>
+        </section>
 
-      {/* Botón para reiniciar caché */}
-      <div className="glass-card p-5 rounded-2xl border border-white/5 flex items-center justify-between">
-        <div>
-          <h4 className="text-xs font-bold text-white">Caché de Biblioteca</h4>
-          <p className="text-xs text-ink-400">Borra los índices locales de canciones y carátulas</p>
-        </div>
-        <button
-          onClick={onClearCache}
-          className="px-3.5 py-1.5 rounded-xl bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 text-xs font-semibold transition-colors"
-        >
-          Limpiar Caché
-        </button>
+        <section className="set-card set-card-cache">
+          <div>
+            <h3>Caché de biblioteca</h3>
+            <p>Borra los índices locales de canciones y carátulas.</p>
+          </div>
+          <button type="button" onClick={onClearCache} className="set-btn-danger">
+            Limpiar caché
+          </button>
+        </section>
       </div>
     </div>
   );
