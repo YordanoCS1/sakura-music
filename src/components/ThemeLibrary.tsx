@@ -132,69 +132,64 @@ export default function ThemeLibrary({
         {tracks.length === 0 ? (
           vacio
         ) : (
-          <div className="sumie-hojas">
-            {tracks.map((track, i) => (
-              <div key={track.id} className="hoja-pila">
-                <div
-                  className={`sumie-hoja hoja-papel ${activeTrack?.id === track.id ? 'is-active' : ''}`}
-                  style={{ rotate: `${i % 2 === 0 ? '-0.35' : '0.35'}deg` }}
+          <div className="sumie-recortes">
+            {tracks.map((track) => (
+              <article
+                key={track.id}
+                className={`sumie-recorte ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+              >
+                <span className="recorte-cinta" aria-hidden="true" />
+                <span className="recorte-cinta recorte-cinta-abajo" aria-hidden="true" />
+                <span className="recorte-sello" aria-hidden="true">
+                  桜
+                </span>
+                <button
+                  type="button"
+                  className="recorte-play"
+                  onClick={() => onPlayTrack(track)}
+                  aria-label={`Reproducir ${track.title}`}
                 >
-                  <span className="hoja-kanji" aria-hidden="true">
-                    墨
+                  <span className="recorte-portada">
+                    {track.cover_url ? (
+                      <img src={getCoverSrc(track.cover_url)} alt="" />
+                    ) : (
+                      <span aria-hidden="true">
+                        {isPlaying && activeTrack?.id === track.id ? 'Ⅱ' : '♪'}
+                      </span>
+                    )}
                   </span>
-                  <span className="hoja-sello" aria-hidden="true">
-                    桜
-                  </span>
+                  <strong>{track.title}</strong>
+                </button>
+                <p className="recorte-meta">
+                  {track.artist}
+                  <br />
+                  {track.album} · {track.format} · {track.duration_str}
+                </p>
+                <div className="theme-row-actions recorte-acciones">
                   <button
                     type="button"
-                    className="sumie-play hoja-play"
-                    onClick={() => onPlayTrack(track)}
-                    aria-label={`Reproducir ${track.title}`}
+                    onClick={(e) => onToggleFavorite(track.id, e)}
+                    aria-label="Favorito"
+                    className={favorites.includes(track.id) ? 'is-fav' : ''}
                   >
-                    <span className="sumie-portada">
-                      {track.cover_url ? (
-                        <img src={getCoverSrc(track.cover_url)} alt="" />
-                      ) : (
-                        <span>{isPlaying && activeTrack?.id === track.id ? 'Ⅱ' : '♪'}</span>
-                      )}
-                    </span>
+                    ♡
                   </button>
-                  <div className="sumie-texto hoja-texto">
-                    <strong>{track.title}</strong>
-                    <small>
-                      {track.artist} · {track.album}
-                    </small>
-                    <em>
-                      {track.format} · {track.year ?? '—'}
-                    </em>
-                  </div>
-                  <span className="sumie-dur">{track.duration_str}</span>
-                  <div className="theme-row-actions hoja-acciones">
-                    <button
-                      type="button"
-                      onClick={(e) => onToggleFavorite(track.id, e)}
-                      aria-label="Favorito"
-                      className={favorites.includes(track.id) ? 'is-fav' : ''}
-                    >
-                      ♡
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => onOpenEdit(track)}
-                      aria-label="Editar metadatos"
-                    >
-                      <Pencil className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => onRequestDelete(track)}
-                      aria-label="Eliminar canción"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => onOpenEdit(track)}
+                    aria-label="Editar metadatos"
+                  >
+                    <Pencil className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onRequestDelete(track)}
+                    aria-label="Eliminar canción"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
                 </div>
-              </div>
+              </article>
             ))}
           </div>
         )}

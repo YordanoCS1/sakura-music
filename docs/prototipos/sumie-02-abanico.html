@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sumi-e · Hojas en abanico</title>
+<style>
+  :root{--rojo:#b23a2b;--papel:#f4ede1;--tinta:#2b211c;--apagado:#6b5f54;
+    --serif:'Yu Mincho','Hiragino Mincho ProN','Cormorant Garamond',Georgia,serif;
+    --mono:'JetBrains Mono',Consolas,monospace}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;padding:46px 42px 90px;color:var(--tinta);font-family:var(--serif);
+    background:radial-gradient(ellipse at 80% 0%,rgba(178,58,43,.1),transparent 55%),linear-gradient(180deg,#100e0c,#070605)}
+  .sello{position:fixed;top:24px;left:30px;width:44px;height:44px;border-radius:6px;background:var(--rojo);
+    border:2px solid rgba(255,245,235,.6);display:grid;place-items:center;color:#fff5e8;font-size:23px;transform:rotate(-4deg);z-index:5}
+  .head{color:#ece3d6;margin:0 0 26px 70px}
+  .head .k{font:10px var(--mono);letter-spacing:.3em;text-transform:uppercase;color:var(--rojo)}
+  .head h1{margin:6px 0;font-size:46px;font-weight:400}
+  .head p{font:10px var(--mono);color:#8d8377;margin:0}
+  .nav{display:flex;gap:8px;margin:18px 0 34px 70px;flex-wrap:wrap}
+  .nav button{background:rgba(236,227,214,.05);border:1px solid rgba(236,227,214,.15);color:#a49a8d;
+    border-radius:2px;padding:7px 11px;font:10px var(--mono);cursor:pointer}
+  .nav button.on{background:var(--rojo);color:#fff;border-color:var(--rojo)}
+  .abanico{display:grid;grid-template-columns:repeat(3,minmax(200px,1fr));gap:30px;max-width:1180px;margin-left:70px}
+  .hoja{position:relative;padding:16px 16px 20px;background:linear-gradient(160deg,#f6f1e8,#e9dfd0);
+    box-shadow:0 18px 36px rgba(0,0,0,.5);cursor:pointer;transition:transform 240ms ease,box-shadow 240ms ease}
+  .hoja:nth-child(3n+1){transform:rotate(-2.2deg)}
+  .hoja:nth-child(3n+2){transform:rotate(1.4deg)}
+  .hoja:nth-child(3n){transform:rotate(-.8deg)}
+  .hoja:hover{transform:rotate(0deg) translateY(-8px);box-shadow:0 26px 50px rgba(0,0,0,.6),0 0 0 2px rgba(178,58,43,.35)}
+  .hoja::before{content:'墨';position:absolute;right:8px;bottom:6px;font-family:var(--serif);font-size:34px;color:rgba(90,60,45,.08)}
+  .tape{position:absolute;top:-9px;left:50%;transform:translateX(-50%) rotate(-3deg);width:64px;height:19px;
+    background:rgba(178,58,43,.55);border:1px solid rgba(120,30,20,.25)}
+  .portada{width:100%;height:150px;object-fit:cover;border:1px solid rgba(90,70,50,.3)}
+  .titulo{margin:14px 0 4px;font-size:26px;line-height:1.05}
+  .meta{font:10px var(--mono);color:var(--apagado);line-height:1.6}
+  .sello-mini{position:absolute;top:12px;right:12px;width:24px;height:24px;border-radius:3px;background:var(--rojo);
+    color:#fff5e8;display:grid;place-items:center;font-size:13px;transform:rotate(5deg)}
+  .acc{position:absolute;bottom:14px;right:14px;display:flex;gap:8px;font-size:12px;color:var(--apagado)}
+  .acc b{color:var(--rojo)}
+</style></head>
+<body>
+<div class="sello">桜</div>
+<header class="head"><p class="k">桜 · Colección</p><h1>Biblioteca</h1><p>8 piezas · Hojas en abanico</p></header>
+<div class="nav"><button class="on">Todas juntas</button><button>◀</button><button>＋ Elegir carpeta</button><button>Álbum 0 · 3</button></div>
+<div class="abanico" id="abanico"></div>
+<script>
+const c="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect width='200' height='200' fill='%23b23a2b'/%3E%3Ccircle cx='100' cy='90' r='48' fill='%23f4efe6' opacity='.65'/%3E%3C/svg%3E";
+document.getElementById('abanico').innerHTML=Array.from({length:8},(_,i)=>
+`<article class="hoja"><span class="tape"></span><span class="sello-mini">桜</span><img class="portada" src="${c}"><h2 class="titulo">Pista ${i}</h2><p class="meta">Artista ${i}<br>Álbum ${i} · FLAC · 3:20</p><span class="acc"><b>♡</b><span>✎</span><span>🗑</span></span></article>`).join('');
+</script></body></html>
