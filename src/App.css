@@ -5868,3 +5868,115 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .ledger-asiento-sello { position:absolute; right:104px; top:8px; font:8px 'IBM Plex Mono','Courier New',monospace; color:#a33a2a; transform:rotate(-6deg); }
 .ledger-asiento .theme-row-actions { position:absolute; right:0; top:6px; }
 .ledger-asiento.is-active { background:rgba(163,58,42,.07); }
+
+
+/* ========================================================= */
+/* HOMES CON ESTRUCTURA ÚNICA POR TEMA                        */
+/* ========================================================= */
+
+/* SHOJI · biombo de cuatro paños con rieles de madera. */
+.shoji-home { display:flex; flex-direction:column; min-height:calc(100vh - 190px); }
+.shoji-riel { height:12px; flex:none; background:linear-gradient(180deg,#b9a17d,#9d845f); box-shadow:0 2px 6px rgba(90,70,45,.25); }
+.shoji-paneles { flex:1; display:grid; grid-template-columns:.7fr 1.2fr 1.2fr .85fr; border-left:6px solid #c9b28a; border-right:6px solid #c9b28a; }
+.shoji-pano { position:relative; padding:38px 26px; border-right:3px solid #c9b28a; display:flex; flex-direction:column; gap:16px; background:rgba(255,252,244,.4); }
+.shoji-pano:last-child { border-right:0; }
+.shoji-pano-kanji { align-items:center; justify-content:center; background:rgba(185,161,125,.12); }
+.shoji-pano-glifo { font-size:116px; line-height:1; color:rgba(90,70,45,.5); }
+.shoji-pano-sello { position:absolute; bottom:28px; width:38px; height:38px; border:2px solid #a8442f; color:#a8442f; display:grid; place-items:center; }
+.shoji-pano-num { font:9px 'JetBrains Mono',monospace; letter-spacing:.24em; color:#a8442f; }
+.shoji-pano h1 { margin:0; font:400 36px/1.15 'Cormorant Garamond',serif; }
+.shoji-pano p { margin:0; font-size:12px; line-height:1.9; color:#6f604a; }
+.shoji-datos { display:flex; gap:24px; margin:8px 0; }
+.shoji-datos div { display:flex; flex-direction:column; }
+.shoji-datos strong { font:400 42px/1 'Cormorant Garamond',serif; color:#a8442f; }
+.shoji-datos small { font:9px 'JetBrains Mono',monospace; color:#6f604a; letter-spacing:.12em; }
+.shoji-pano-cta { justify-content:center; gap:12px; }
+.shoji-pano-cta button { border:1px solid #a8442f; background:transparent; color:#a8442f; padding:12px 14px; cursor:pointer; font-size:11px; }
+.shoji-pano-cta button:first-child { background:#a8442f; color:#fff; }
+
+/* ORIGAMI · grulla de papel y diagrama de plegados. */
+.origami-home { display:grid; grid-template-columns:1fr 1fr; grid-template-rows:auto 1fr; gap:24px 50px; align-items:center; min-height:calc(100vh - 190px); }
+.origami-figura { grid-column:1; grid-row:1/3; position:relative; height:380px; }
+.origami-ala { position:absolute; width:0; height:0; border-style:solid; }
+.origami-ala-uno { left:20px; top:54px; border-width:0 0 200px 200px; border-color:transparent transparent #d9547f transparent; transform:rotate(-8deg); }
+.origami-ala-dos { left:150px; top:96px; border-width:0 200px 180px 0; border-color:transparent #f3c9d8 transparent transparent; transform:rotate(10deg); }
+.origami-cuerpo { position:absolute; left:130px; top:150px; width:120px; height:170px; background:#d9547f; clip-path:polygon(50% 0,100% 100%,0 100%); transform:rotate(4deg); }
+.origami-cola { position:absolute; left:56px; top:238px; width:0; height:0; border-top:60px solid transparent; border-bottom:60px solid transparent; border-right:120px solid #d9547f; transform:rotate(24deg); }
+.origami-pasos { grid-column:2; grid-row:1; display:flex; align-items:center; gap:14px; font:10px 'JetBrains Mono',monospace; letter-spacing:.2em; color:#d9547f; }
+.origami-linea { height:1px; flex:1; background:#f3c9d8; }
+.origami-texto { grid-column:2; grid-row:2; }
+.origami-texto h1 { margin:0 0 20px; font:300 54px/1.08 'Cormorant Garamond',serif; }
+.origami-texto>p { margin:0; color:#8c7180; line-height:1.9; max-width:480px; }
+.origami-acciones { display:flex; gap:10px; margin-top:26px; }
+.origami-acciones button { border:1px solid #d9547f; background:#d9547f; color:#fff; padding:11px 16px; cursor:pointer; font-size:11px; }
+.origami-acciones button:last-child { background:transparent; color:#d9547f; }
+.origami-nota { margin-top:24px; font:10px 'JetBrains Mono',monospace; color:#9c8490; }
+
+/* SWISS · póster tipográfico en retícula. */
+.swiss-home { display:flex; align-items:center; justify-content:center; min-height:calc(100vh - 190px); }
+.swiss-poster { width:100%; max-width:1100px; border:1px solid #111; background:#fff; font-family:'Plus Jakarta Sans',Helvetica,sans-serif; }
+.swiss-poster-cab { display:flex; justify-content:space-between; padding:12px 18px; border-bottom:2px solid #111; font:9px 'Plus Jakarta Sans',sans-serif; letter-spacing:.16em; text-transform:uppercase; }
+.swiss-poster-cuerpo { display:grid; grid-template-columns:1fr 1fr; min-height:300px; }
+.swiss-poster-num { display:grid; place-items:center; border-right:2px solid #111; font-size:200px; font-weight:700; letter-spacing:-.08em; line-height:1; }
+.swiss-poster-tipo { padding:40px; display:flex; flex-direction:column; justify-content:center; }
+.swiss-poster-kicker { font:10px 'Plus Jakarta Sans',sans-serif; letter-spacing:.22em; text-transform:uppercase; }
+.swiss-poster-tipo h1 { margin:20px 0; font-size:58px; line-height:.94; letter-spacing:-.05em; }
+.swiss-poster-tipo p { margin:0; color:#777; line-height:1.6; max-width:380px; }
+.swiss-poster-pie { display:flex; align-items:stretch; border-top:2px solid #111; }
+.swiss-poster-stat { flex:1; padding:16px 18px; border-right:1px solid #111; display:flex; flex-direction:column; }
+.swiss-poster-stat strong { font-size:32px; line-height:1; }
+.swiss-poster-stat span { margin-top:6px; font:9px 'Plus Jakarta Sans',sans-serif; letter-spacing:.16em; }
+.swiss-poster-pie button { border:0; background:#111; color:#fff; padding:0 30px; cursor:pointer; font:10px 'Plus Jakarta Sans',sans-serif; text-transform:uppercase; letter-spacing:.12em; }
+
+/* SUMI INK · pergamino colgante con rodillos. */
+.sumiink-home { display:flex; justify-content:center; min-height:calc(100vh - 190px); padding:10px 0; }
+.sumiink-pergamino { width:min(680px,94%); display:flex; flex-direction:column; }
+.sumiink-rodillo { height:16px; flex:none; background:linear-gradient(180deg,#4a4a4a,#1a1a1a,#4a4a4a); border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.5); }
+.sumiink-hoja { position:relative; flex:1; padding:42px 50px; border-left:1px solid rgba(232,229,221,.18); border-right:1px solid rgba(232,229,221,.18); background:#121212; }
+.sumiink-kanji { position:absolute; right:40px; top:18px; font-size:110px; line-height:1; color:rgba(232,229,221,.06); }
+.sumiink-kicker { font:10px 'JetBrains Mono',monospace; letter-spacing:.3em; color:#9a968c; }
+.sumiink-hoja h1 { margin:16px 0; font:400 54px 'Cormorant Garamond',serif; }
+.sumiink-hoja>p { margin:0; color:#9a968c; line-height:1.9; max-width:440px; }
+.sumiink-pincelada { display:block; width:100%; height:8px; margin:28px 0; background:linear-gradient(90deg,transparent,#e8e5dd 15%,#e8e5dd 85%,transparent); border-radius:4px; opacity:.7; }
+.sumiink-acciones { display:flex; gap:10px; }
+.sumiink-acciones button { border:1px solid #e8e5dd; background:transparent; color:#e8e5dd; padding:10px 16px; cursor:pointer; font-size:11px; }
+.sumiink-acciones button:first-child { background:#e8e5dd; color:#0c0c0c; }
+.sumiink-dato { margin:22px 0 0; font:10px 'JetBrains Mono',monospace; color:#9a968c; }
+
+/* MOONLIT · paisaje nocturno con horizonte y reflejo. */
+.moonlit-home { position:relative; display:flex; align-items:center; min-height:calc(100vh - 190px); overflow:hidden; }
+.moonlit-cielo-fondo { position:absolute; inset:0; pointer-events:none; }
+.moonlit-luna-grande { position:absolute; right:10%; top:8%; width:220px; height:220px; border-radius:50%; background:radial-gradient(circle at 38% 35%,#fff,#8fb6e8); box-shadow:0 0 90px rgba(143,182,232,.4); }
+.moonlit-brillo { position:absolute; width:3px; height:3px; border-radius:50%; background:#dfe8f7; box-shadow:0 0 8px #dfe8f7; }
+.moonlit-brillo.s1 { left:12%; top:18%; } .moonlit-brillo.s2 { left:28%; top:10%; }
+.moonlit-brillo.s3 { left:44%; top:24%; } .moonlit-brillo.s4 { left:66%; top:14%; }
+.moonlit-brillo.s5 { left:80%; top:32%; }
+.moonlit-horizonte { position:absolute; left:0; right:0; bottom:26%; height:1px; background:linear-gradient(90deg,transparent,rgba(143,182,232,.35),transparent); }
+.moonlit-reflejo { position:absolute; right:14%; bottom:8%; width:120px; height:120px; border-radius:50%; background:radial-gradient(ellipse,rgba(143,182,232,.18),transparent 70%); filter:blur(6px); }
+.moonlit-contenido { position:relative; z-index:1; max-width:620px; }
+.moonlit-kicker { margin:0; font:10px 'JetBrains Mono',monospace; letter-spacing:.3em; color:#8fb6e8; }
+.moonlit-contenido h1 { margin:18px 0; font:400 58px 'Cormorant Garamond',serif; }
+.moonlit-contenido>p { margin:0; color:#7f92b4; line-height:1.9; max-width:420px; }
+.moonlit-acciones { display:flex; gap:10px; margin-top:26px; }
+.moonlit-acciones button { border:1px solid #8fb6e8; background:transparent; color:#8fb6e8; padding:11px 16px; cursor:pointer; font-size:11px; }
+.moonlit-acciones button:first-child { background:#8fb6e8; color:#0b1324; }
+.moonlit-dato { margin:24px 0 0; font:10px 'JetBrains Mono',monospace; color:#7f92b4; }
+
+/* LEDGER · libro abierto sobre el escritorio. */
+.ledger-home { display:flex; align-items:center; justify-content:center; min-height:calc(100vh - 190px); }
+.ledger-libro-home { position:relative; display:grid; grid-template-columns:1.2fr .8fr; width:min(1000px,100%); background:#faf4e6; border:1px solid #33291d; box-shadow:14px 16px 0 rgba(163,58,42,.08); }
+.ledger-libro-home::after { content:''; position:absolute; left:60%; top:0; bottom:0; width:16px; background:linear-gradient(90deg,rgba(51,41,29,.15),rgba(51,41,29,.02),rgba(51,41,29,.15)); pointer-events:none; }
+.ledger-pagina-home { position:relative; padding:48px 44px; min-height:420px; }
+.ledger-izq { border-right:1px solid #c9b99a; background:repeating-linear-gradient(0deg,transparent 0 31px,rgba(201,185,154,.35) 31px 32px); }
+.ledger-der { background:repeating-linear-gradient(0deg,transparent 0 31px,rgba(201,185,154,.35) 31px 32px); }
+.ledger-cabecera { font:9px 'IBM Plex Mono','Courier New',monospace; letter-spacing:.2em; color:#a33a2a; text-transform:uppercase; }
+.ledger-pagina-home h1 { margin:20px 0; font:700 44px/1.1 'IBM Plex Mono','Courier New',monospace; color:#33291d; }
+.ledger-pagina-home>p { margin:0; color:#6b5c46; line-height:1.9; font-size:12px; max-width:440px; }
+.ledger-pagina-home button { margin-top:24px; border:1px solid #a33a2a; background:transparent; color:#a33a2a; padding:11px 16px; cursor:pointer; font:11px 'IBM Plex Mono','Courier New',monospace; }
+.ledger-fila-home { display:flex; justify-content:space-between; align-items:baseline; padding:12px 0; border-bottom:1px solid #c9b99a; font:11px 'IBM Plex Mono','Courier New',monospace; color:#6b5c46; }
+.ledger-fila-home strong { font-size:18px; color:#33291d; }
+.ledger-sello-home { position:absolute; right:36px; bottom:36px; width:70px; height:70px; border:3px double #a33a2a; border-radius:50%; display:grid; place-items:center; color:#a33a2a; font-size:24px; transform:rotate(-12deg); }
+
+
+/* El rótulo del libro mayor va en una sola línea. */
+.app-shell[data-skin='ledger'] .ledger-cabecera { white-space: nowrap; }

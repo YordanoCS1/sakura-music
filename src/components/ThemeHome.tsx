@@ -121,28 +121,41 @@ export default function ThemeHome({
   if (theme === 'shoji') {
     return (
       <div className="shoji-home">
-        <div className="shoji-panel">
-          <span className="shoji-glifo">静</span>
-          <h1>El espacio entre las cosas</h1>
-          <p>Una interfaz de papel y madera. Cada canción tiene su lugar detrás de un panel.</p>
-          <button type="button" onClick={() => onNavigate('library')}>
-            Abrir biblioteca →
-          </button>
+        <span className="shoji-riel" aria-hidden="true" />
+        <div className="shoji-paneles">
+          <section className="shoji-pano shoji-pano-kanji">
+            <span className="shoji-pano-glifo">静</span>
+            <span className="shoji-pano-sello">桜</span>
+          </section>
+          <section className="shoji-pano">
+            <span className="shoji-pano-num">01 / BIENVENIDO</span>
+            <h1>El espacio entre las cosas</h1>
+            <p>Una interfaz de papel y madera. Cada canción tiene su lugar detrás de un panel.</p>
+          </section>
+          <section className="shoji-pano">
+            <span className="shoji-pano-num">02 / COLECCIÓN</span>
+            <div className="shoji-datos">
+              <div>
+                <strong>{trackCount}</strong>
+                <small>piezas</small>
+              </div>
+              <div>
+                <strong>100%</strong>
+                <small>local</small>
+              </div>
+            </div>
+            <p>Deslizá los paneles y encontrá tu música sin ruido.</p>
+          </section>
+          <section className="shoji-pano shoji-pano-cta">
+            <button type="button" onClick={() => onNavigate('library')}>
+              Abrir biblioteca →
+            </button>
+            <button type="button" onClick={() => onNavigate('search')}>
+              Buscar música →
+            </button>
+          </section>
         </div>
-        <div className="shoji-panel">
-          <span className="shoji-glifo">桜</span>
-          <h1>Bienvenido</h1>
-          <p>Desliza los paneles, abre la biblioteca y encuentra tu música sin ruido.</p>
-          <p className="shoji-dato">{trackCount} piezas · 100% local</p>
-        </div>
-        <div className="shoji-panel">
-          <span className="shoji-glifo">音</span>
-          <h1>Tu colección</h1>
-          <p>Elige una carpeta y comienza el recorrido.</p>
-          <button type="button" onClick={() => onNavigate('search')}>
-            Buscar música →
-          </button>
-        </div>
+        <span className="shoji-riel" aria-hidden="true" />
       </div>
     );
   }
@@ -150,12 +163,21 @@ export default function ThemeHome({
   if (theme === 'origami') {
     return (
       <div className="origami-home">
-        <div className="origami-triangulo" aria-hidden="true" />
-        <div className="origami-copy">
-          <p className="origami-kicker">ORIGAMI</p>
+        <div className="origami-figura" aria-hidden="true">
+          <span className="origami-ala origami-ala-uno" />
+          <span className="origami-ala origami-ala-dos" />
+          <span className="origami-cuerpo" />
+          <span className="origami-cola" />
+        </div>
+        <div className="origami-pasos">
+          <span>PLEGADO 01 / 04</span>
+          <span className="origami-linea" />
+          <span>ORIGAMI</span>
+        </div>
+        <div className="origami-texto">
           <h1>Todo se pliega hacia la música</h1>
           <p>Una interfaz ligera, de papel doblado. Cada álbum es una figura esperando abrirse.</p>
-          <div className="origami-botones">
+          <div className="origami-acciones">
             <button type="button" onClick={() => onNavigate('library')}>
               Abrir biblioteca
             </button>
@@ -163,7 +185,7 @@ export default function ThemeHome({
               Buscar música
             </button>
           </div>
-          <p className="origami-dato">{trackCount} piezas en la colección</p>
+          <p className="origami-nota">{trackCount} piezas en la colección</p>
         </div>
       </div>
     );
@@ -172,15 +194,36 @@ export default function ThemeHome({
   if (theme === 'swiss') {
     return (
       <div className="swiss-home">
-        <div className="swiss-numero">01</div>
-        <div className="swiss-copy">
-          <p className="swiss-kicker">SWISS · MINIMAL</p>
-          <h1>Música sin ruido</h1>
-          <p>Lo esencial. Cuadrícula, tipografía y tu colección. Nada más, nada menos.</p>
-          <button type="button" onClick={() => onNavigate('library')}>
-            Abrir biblioteca →
-          </button>
-          <p className="swiss-dato">{trackCount} piezas · 100% local</p>
+        <div className="swiss-poster">
+          <div className="swiss-poster-cab">
+            <span>SAKURA / MUSIC LIBRARY</span>
+            <span>NO. 01 — 2026</span>
+          </div>
+          <div className="swiss-poster-cuerpo">
+            <div className="swiss-poster-num">01</div>
+            <div className="swiss-poster-tipo">
+              <span className="swiss-poster-kicker">SWISS · MINIMAL</span>
+              <h1>
+                Música
+                <br />
+                sin ruido
+              </h1>
+              <p>Lo esencial. Cuadrícula, tipografía y tu colección. Nada más, nada menos.</p>
+            </div>
+          </div>
+          <div className="swiss-poster-pie">
+            <div className="swiss-poster-stat">
+              <strong>{trackCount}</strong>
+              <span>PIEZAS</span>
+            </div>
+            <div className="swiss-poster-stat">
+              <strong>100%</strong>
+              <span>LOCAL</span>
+            </div>
+            <button type="button" onClick={() => onNavigate('library')}>
+              Abrir biblioteca →
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -189,20 +232,29 @@ export default function ThemeHome({
   if (theme === 'sumiink') {
     return (
       <div className="sumiink-home">
-        <div className="sumiink-trazo" aria-hidden="true" />
-        <div className="sumiink-copy">
-          <p className="sumiink-kicker">SUMI · INK</p>
-          <h1>La tinta lo dice todo</h1>
-          <p>Una sola pincelada basta. Tu música en blanco y negro, sin adornos que la aparten.</p>
-          <div className="sumiink-botones">
-            <button type="button" onClick={() => onNavigate('library')}>
-              Abrir biblioteca
-            </button>
-            <button type="button" onClick={() => onNavigate('search')}>
-              Buscar música
-            </button>
+        <div className="sumiink-pergamino">
+          <span className="sumiink-rodillo sumiink-rodillo-arriba" aria-hidden="true" />
+          <div className="sumiink-hoja">
+            <span className="sumiink-kanji" aria-hidden="true">
+              墨
+            </span>
+            <span className="sumiink-kicker">SUMI · INK</span>
+            <h1>La tinta lo dice todo</h1>
+            <p>
+              Una sola pincelada basta. Tu música en blanco y negro, sin adornos que la aparten.
+            </p>
+            <span className="sumiink-pincelada" aria-hidden="true" />
+            <div className="sumiink-acciones">
+              <button type="button" onClick={() => onNavigate('library')}>
+                Abrir biblioteca
+              </button>
+              <button type="button" onClick={() => onNavigate('search')}>
+                Buscar música
+              </button>
+            </div>
+            <p className="sumiink-dato">{trackCount} piezas · blanco y negro</p>
           </div>
-          <p className="sumiink-dato">{trackCount} piezas · blanco y negro</p>
+          <span className="sumiink-rodillo sumiink-rodillo-abajo" aria-hidden="true" />
         </div>
       </div>
     );
@@ -211,19 +263,30 @@ export default function ThemeHome({
   if (theme === 'moonlit') {
     return (
       <div className="moonlit-home">
-        <div className="moonlit-disco" aria-hidden="true" />
-        <p className="moonlit-kicker">MOONLIT · NOCHE</p>
-        <h1>Escucha bajo la luna</h1>
-        <p>Todo en calma, todo azul. Tu música flotando en la noche.</p>
-        <div className="moonlit-botones">
-          <button type="button" onClick={() => onNavigate('library')}>
-            Abrir biblioteca
-          </button>
-          <button type="button" onClick={() => onNavigate('search')}>
-            Buscar música
-          </button>
+        <div className="moonlit-cielo-fondo" aria-hidden="true">
+          <span className="moonlit-luna-grande" />
+          <span className="moonlit-brillo s1" />
+          <span className="moonlit-brillo s2" />
+          <span className="moonlit-brillo s3" />
+          <span className="moonlit-brillo s4" />
+          <span className="moonlit-brillo s5" />
+          <span className="moonlit-horizonte" />
+          <span className="moonlit-reflejo" />
         </div>
-        <p className="moonlit-dato">{trackCount} piezas · 100% local</p>
+        <div className="moonlit-contenido">
+          <p className="moonlit-kicker">MOONLIT · NOCHE</p>
+          <h1>Escucha bajo la luna</h1>
+          <p>Todo en calma, todo azul. Tu música flotando en la noche.</p>
+          <div className="moonlit-acciones">
+            <button type="button" onClick={() => onNavigate('library')}>
+              Abrir biblioteca
+            </button>
+            <button type="button" onClick={() => onNavigate('search')}>
+              Buscar música
+            </button>
+          </div>
+          <p className="moonlit-dato">{trackCount} piezas · 100% local</p>
+        </div>
       </div>
     );
   }
@@ -231,19 +294,36 @@ export default function ThemeHome({
   if (theme === 'ledger') {
     return (
       <div className="ledger-home">
-        <div className="ledger-diario">
-          <p className="ledger-kicker">LEDGER · REGISTRO</p>
-          <h1>Toda canción queda registrada</h1>
-          <p>
-            Fechas, artistas, álbumes. Un libro mayor de tu música, escrito a máquina y sellado en
-            rojo.
-          </p>
-          <button type="button" onClick={() => onNavigate('library')}>
-            Abrir biblioteca →
-          </button>
-        </div>
-        <div className="ledger-timbre" aria-hidden="true">
-          桜
+        <div className="ledger-libro-home">
+          <section className="ledger-pagina-home ledger-izq">
+            <span className="ledger-cabecera">LIBRO MAYOR / 01</span>
+            <h1>Toda canción queda registrada</h1>
+            <p>
+              Fechas, artistas, álbumes. Un libro mayor de tu música, escrito a máquina y sellado en
+              rojo.
+            </p>
+            <button type="button" onClick={() => onNavigate('library')}>
+              Abrir biblioteca →
+            </button>
+          </section>
+          <section className="ledger-pagina-home ledger-der">
+            <span className="ledger-cabecera">REGISTRO DE HOY</span>
+            <div className="ledger-fila-home">
+              <span>PIEZAS</span>
+              <strong>{trackCount}</strong>
+            </div>
+            <div className="ledger-fila-home">
+              <span>ESTADO</span>
+              <strong>ACTIVO</strong>
+            </div>
+            <div className="ledger-fila-home">
+              <span>UBICACIÓN</span>
+              <strong>LOCAL</strong>
+            </div>
+            <span className="ledger-sello-home" aria-hidden="true">
+              桜
+            </span>
+          </section>
         </div>
       </div>
     );
