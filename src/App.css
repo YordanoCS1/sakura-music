@@ -4635,3 +4635,99 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .app-shell[data-skin='byobu'] .npr-progress,
 .app-shell[data-skin='byobu'] .npr-right { display: none !important; }
 .app-shell[data-skin='byobu'] .npr-controls { gap: 18px !important; }
+
+
+/* ========================================================= */
+/* SUMI-E · Biblioteca como hojas de washi apiladas            */
+/* Ocupa el ancho disponible; cada tarjeta es una hoja con      */
+/* sello y sombra escalonada.                                   */
+/* ========================================================= */
+.app-shell[data-skin='sumie'] main { align-items: stretch !important; }
+.app-shell[data-skin='sumie'] .gh-header,
+.app-shell[data-skin='sumie'] .main-scroll-region,
+.app-shell[data-skin='sumie'] .library-tab-content {
+  width: auto !important; max-width: none !important;
+  margin-left: 0 !important; margin-right: 0 !important;
+}
+.app-shell[data-skin='sumie'] .gh-header { padding-left: 7% !important; padding-right: 9% !important; }
+.app-shell[data-skin='sumie'] .main-scroll-region { padding-left: 7% !important; padding-right: 9% !important; }
+/* Marca de agua vertical que ocupa el margen izquierdo */
+.app-shell[data-skin='sumie'] .main-scroll-region::before {
+  content: '桜 墨 蔵';
+  position: absolute; left: 14px; top: 20%; writing-mode: vertical-rl;
+  font-family: 'Yu Mincho', serif; font-size: 26px; letter-spacing: .5em;
+  color: rgba(236,227,214,.06); pointer-events: none;
+}
+.app-shell[data-skin='sumie'] .virtualized-grid-item > * {
+  background: rgba(236,227,214,.035) !important;
+  border: 1px solid rgba(236,227,214,.12) !important;
+  border-radius: 2px !important;
+  box-shadow: 7px 7px 0 rgba(236,227,214,.025), 14px 14px 0 rgba(236,227,214,.012) !important;
+  transition: transform 200ms ease, box-shadow 200ms ease !important;
+}
+.app-shell[data-skin='sumie'] .virtualized-grid-item:nth-child(3n) > * { rotate: -1deg; }
+.app-shell[data-skin='sumie'] .virtualized-grid-item:nth-child(3n + 1) > * { rotate: 1deg; }
+.app-shell[data-skin='sumie'] .virtualized-grid-item:hover > * {
+  rotate: 0deg;
+  box-shadow: 10px 10px 0 rgba(210,72,50,.16) !important;
+}
+.app-shell[data-skin='sumie'] .glass-card {
+  background: rgba(236,227,214,.035) !important;
+  border-color: rgba(236,227,214,.1) !important;
+}
+.app-shell[data-skin='sumie'] table thead th {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(210,72,50,.4) !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important; letter-spacing: .14em !important;
+  text-transform: uppercase !important;
+}
+.app-shell[data-skin='sumie'] table tbody tr { border-bottom: 1px solid rgba(236,227,214,.07) !important; }
+.app-shell[data-skin='sumie'] table tbody tr:hover { background: rgba(210,72,50,.08) !important; }
+
+/* ========================================================= */
+/* BYŌBU · Biblioteca como estantería de lomos                 */
+/* Separadores verticales, portadas apiladas y títulos de lado.*/
+/* ========================================================= */
+.app-shell[data-skin='byobu'] .main-scroll-region {
+  position: relative;
+  background-image: repeating-linear-gradient(90deg,
+    transparent 0 118px, rgba(236,227,214,.045) 118px 119px) !important;
+}
+.app-shell[data-skin='byobu'] .virtualized-grid-item > * {
+  background: linear-gradient(180deg, rgba(210,72,50,.1), rgba(236,227,214,.025)) !important;
+  border: 1px solid rgba(236,227,214,.1) !important;
+  border-left: 4px solid #d24832 !important;
+  border-radius: 1px !important;
+  box-shadow: inset 0 -12px 18px rgba(0,0,0,.35) !important;
+  transition: transform 200ms ease !important;
+}
+.app-shell[data-skin='byobu'] .virtualized-grid-item:hover > * {
+  transform: translateY(-4px) !important;
+}
+.app-shell[data-skin='byobu'] .glass-card {
+  background: rgba(20,18,16,.85) !important;
+  border-color: rgba(210,72,50,.2) !important;
+  border-radius: 2px !important;
+}
+.app-shell[data-skin='byobu'] table thead th {
+  color: #d24832 !important;
+  border-bottom: 1px solid rgba(210,72,50,.35) !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  letter-spacing: .12em !important;
+}
+.app-shell[data-skin='byobu'] table tbody tr { border-bottom: 1px solid rgba(236,227,214,.06) !important; }
+.app-shell[data-skin='byobu'] table tbody tr:hover { background: rgba(210,72,50,.08) !important; }
+
+
+/* Sumi-e: ocupar todo el ancho disponible, sin columna estrecha. */
+.app-shell[data-skin='sumie'] main > *,
+.app-shell[data-skin='sumie'] main > * > *,
+.app-shell[data-skin='sumie'] .gh-header,
+.app-shell[data-skin='sumie'] .main-scroll-region,
+.app-shell[data-skin='sumie'] .library-tab-content {
+  width: 100% !important;
+  max-width: none !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
