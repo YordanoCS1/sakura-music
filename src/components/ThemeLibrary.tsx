@@ -202,8 +202,6 @@ export default function ThemeLibrary({
     );
   }
 
-  const protagonista = activeTrack ?? tracks[0] ?? null;
-  const portada = protagonista?.cover_url ? getCoverSrc(protagonista.cover_url) : null;
   return (
     <div className="byobu-library">
       {encabezado}
@@ -211,57 +209,38 @@ export default function ThemeLibrary({
       {tracks.length === 0 ? (
         vacio
       ) : (
-        <div className="byobu-diptico">
-          <aside
-            className="byobu-panel"
-            style={
-              portada
-                ? {
-                    backgroundImage: `linear-gradient(180deg, rgba(10,8,7,.35), rgba(10,8,7,.92)), url("${portada}")`,
-                  }
-                : undefined
-            }
-          >
-            <span className="byobu-kanji" aria-hidden="true">
-              蔵
-            </span>
-            <p className="byobu-label">Pieza actual</p>
-            <h2>{protagonista?.title ?? '—'}</h2>
-            <p className="byobu-artista">{protagonista?.artist ?? '—'}</p>
-            <p className="byobu-meta">
-              {protagonista?.album ?? '—'} · {protagonista?.format ?? '—'} ·{' '}
-              {protagonista?.duration_str ?? '—'}
-            </p>
-          </aside>
-          <ol className="byobu-lista">
-            {tracks.map((track, i) => (
-              <li key={track.id} className={activeTrack?.id === track.id ? 'is-active' : ''}>
-                <button type="button" className="byobu-fila" onClick={() => onPlayTrack(track)}>
-                  <span className="byobu-num">{String(i + 1).padStart(2, '0')}</span>
-                  <span className="byobu-titulo">{track.title}</span>
-                  <span className="byobu-art">{track.artist}</span>
-                  <span className="byobu-dur">{track.duration_str}</span>
+        <ol className="byobu-indice">
+          {tracks.map((track, i) => (
+            <li key={track.id} className={activeTrack?.id === track.id ? 'is-active' : ''}>
+              <button type="button" className="byobu-fila" onClick={() => onPlayTrack(track)}>
+                <span className="byobu-num">{String(i + 1).padStart(2, '0')}</span>
+                <span className="byobu-titulo">
+                  {track.title}
+                  <small>
+                    {track.artist} · {track.album} · {track.format}
+                  </small>
+                </span>
+                <span className="byobu-dur">{track.duration_str}</span>
+              </button>
+              <div className="theme-row-actions">
+                <button
+                  type="button"
+                  onClick={() => onOpenEdit(track)}
+                  aria-label="Editar metadatos"
+                >
+                  <Pencil className="w-3.5 h-3.5" />
                 </button>
-                <div className="theme-row-actions">
-                  <button
-                    type="button"
-                    onClick={() => onOpenEdit(track)}
-                    aria-label="Editar metadatos"
-                  >
-                    <Pencil className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => onRequestDelete(track)}
-                    aria-label="Eliminar canción"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </div>
+                <button
+                  type="button"
+                  onClick={() => onRequestDelete(track)}
+                  aria-label="Eliminar canción"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </li>
+          ))}
+        </ol>
       )}
     </div>
   );

@@ -1653,10 +1653,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
 @media (max-width: 820px) {
 }
 
-
-
-
-
 /* ================================================================== */
 .app-shell[data-theme='m3zen'],[data-theme='forest'],[data-theme='space'] {
   --m3-surface: #fff9f6;
@@ -2227,8 +2223,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
 @media (max-width: 760px) { }
 @media (max-width: 760px) { }
 
-
-
 /* ================================================================== */
 .library-showcase { width: 100%; }
 
@@ -2259,8 +2253,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .show-mos-caption { position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; gap: 1px; padding: 16px 8px 7px; background: linear-gradient(180deg, transparent, rgba(0,0,0,0.72)); color: #fff; text-align: left; }
 .show-mos-caption-title { font-size: var(--font-2xs); font-weight: 700; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .show-mos-caption-artist { font-size: var(--font-2xs); opacity: 0.82; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-
 
 /* ================================================================== */
 .app-shell[data-theme='m3zen'],[data-theme='forest'],[data-theme='space'] .glass-card input[type='text'],
@@ -2349,10 +2341,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
   background: var(--m3-surface-card);
 }
 
-
-
-
-
 /* Animaciones de entrada: se disparan al montar, sin depender de una clase
    que ponga JavaScript, así nunca se quedan en opacity 0. */
 @keyframes sakura-enter {
@@ -2383,8 +2371,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
     animation-delay: 0ms !important;
   }
 }
-
-
 
 /* ========================================================= */
 .titlebar {
@@ -2480,9 +2466,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .app-shell {
   padding-top: 38px;
 }
-
-
-
 
 /* ========================================================= */
 .app-shell[data-theme='space'] {
@@ -2730,8 +2713,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
     linear-gradient(135deg, #2a1158, #1a0b3a 60%, #0a0518);
 }
 
-
-
 /* Hero banner */
 .app-shell .hm-hero {
   border: 1px solid rgba(255,255,255,.08);
@@ -2815,8 +2796,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .app-shell .hm-stat-label { font-size: var(--font-2xs); color: var(--m3-primary); margin-bottom: 4px; }
 .app-shell .hm-stat-val { color: var(--m3-primary); }
 
-
-
 /* Textos más claros y legibles sobre fondo violeta oscuro */
 .app-shell[data-theme='space'] .library-tab-content .text-gray-300,
 .app-shell[data-theme='space'] .library-tab-content .text-gray-400 { color: #c9c2e8; }
@@ -2869,7 +2848,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .app-shell[data-theme='space'] .library-empty-state { background: var(--m3-surface-card); border-color: rgb(var(--accent-400) / 0.35); }
 .app-shell[data-theme='space'] .library-empty-state h3 { color: #ffffff; }
 .app-shell[data-theme='space'] .library-empty-state p { color: #c9c2e8; }
-
 
 /* ========================================================= */
 .nv-text { color: var(--m3-on-surface, #ece6ff); }
@@ -2983,7 +2961,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .nv-glow-card:hover .nv-edit-btn.nv-edit-corner,
 .nv-stack-card:hover .nv-edit-btn.nv-edit-corner { opacity: 1; }
 .nv-edit-btn.nv-edit-corner:hover { background: linear-gradient(135deg, var(--m3-primary, var(--m3-primary)), var(--m3-primary-dim, var(--m3-primary-dim))); color: #fff; }
-
 
 /* ========================================================= */
 .player-dock.npr-dock-floating { left: 14px; right: 14px; bottom: 14px; z-index: 30; }
@@ -3191,7 +3168,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
   .npr-right { display: none; }
 }
 
-
 /* ========================================================= */
 .wb-root { width: 100%; }
 
@@ -3349,7 +3325,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .wb-footer p { font-size: var(--font-2xs); color: var(--m3-primary); margin-top: 2px; }
 .wb-version { margin-left: auto; font-size: 10px; color: var(--m3-primary); font-family: monospace; }
 
-
 /* ========================================================= */
 .lt-dock { padding: 0 0 4px; }
 .lt-bar {
@@ -3491,7 +3466,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
   .lt-selection { flex-direction: column; align-items: flex-start; }
 }
 
-
 /* ========================================================= */
 .gh-header {
   display: flex; align-items: center; gap: 20px;
@@ -3613,13 +3587,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
 @media (prefers-reduced-motion: reduce) {
   :focus-visible { outline-offset: 1px; }
 }
-
-
-/* ========================================================= */
-/* TEMAS ADICIONALES                                          */
-/* Heredan el layout de M3 Zen y sólo cambian color,           */
-/* tipografía y forma. Los valores comunes viven en --theme-*.  */
-/* ========================================================= */
 
 /* --- Sumi-e · tinta, papel y bermellón --- */
 .app-shell[data-skin='sumie'] {
@@ -3869,13 +3836,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .app-shell[data-skin='aizuri'] .npr-artist,
 .app-shell[data-skin='aizuri'] .npr-time { color: var(--theme-dock-ink); }
 
-
-/* ========================================================= */
-/* IDENTIDAD POR TEMA — estructura, no sólo color.            */
-/* Cada bloque keyea por data-skin para no tocar los           */
-/* selectores históricos de data-theme='space'.                */
-/* ========================================================= */
-
 /* --- Sumi-e: composición editorial, regla bermellón, sin sombras --- */
 .app-shell[data-skin='sumie'] .app-rail-row,
 .app-shell[data-skin='aizuri'] .app-rail-row { flex-direction: column; }
@@ -4026,7 +3986,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .app-shell[data-skin='aizuri'] .glass-card { border-radius: 14px; }
 .app-shell[data-skin='aizuri'] .npr-play { background: linear-gradient(135deg, #5ab4d6, #3d92b5); }
 
-
 /* Ajustes finales del tema claro Sumi-e: texto legible y acento bermellón. */
 .app-shell[data-skin='sumie'] .lt-heading h2,
 .app-shell[data-skin='sumie'] .npr-title,
@@ -4043,12 +4002,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
   background: linear-gradient(135deg, #b23a2b, #8e2c20) !important;
   color: #fff !important;
 }
-
-
-/* ========================================================= */
-/* SUMI-E · estudio de tinta                                  */
-/* Papel washi, sellos hanko, trazos de pincel y ensō.         */
-/* ========================================================= */
 
 /* Papel con fibra y lavados de tinta muy diluidos. */
 .app-shell[data-skin='sumie'] {
@@ -4145,7 +4098,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
   font-family: 'Yu Mincho', 'Hiragino Mincho ProN', Georgia, serif !important;
 }
 
-
 /* Últimos retoques Sumi-e: marca y texto del rail legibles. */
 .app-shell[data-skin='sumie'] .zen-topnav-brand-copy strong { color: #1c1a17 !important; }
 .app-shell[data-skin='sumie'] .zen-topnav-brand-copy small { color: #6b6459 !important; }
@@ -4156,11 +4108,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .app-shell[data-skin='sumie'] .zen-topnav-tab { color: #6b6459 !important; }
 .app-shell[data-skin='sumie'] .zen-topnav-tab.is-active { color: #b23a2b !important; }
 
-
-/* ========================================================= */
-/* SUMI-E · EDICIÓN EDITORIAL                                 */
-/* Cormorant Garamond para display, mono para datos,           */
-/* sans sólo para texto de lectura. Jerarquía de museo.        */
 /* ========================================================= */
 .app-shell[data-skin='sumie'] { --theme-font-display: 'Cormorant Garamond', 'Yu Mincho', Georgia, serif; }
 
@@ -4252,11 +4199,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
   font-size: 10px !important;
 }
 
-
-/* ========================================================= */
-/* SUMI-E · RAIL VERTICAL DE TINTA                            */
-/* Sustituye la barra genérica por un rail de kanji,           */
-/* sello hanko arriba y cabecera editorial de gran formato.    */
 /* ========================================================= */
 .app-shell[data-skin='sumie'] .app-rail-row { flex-direction: row !important; }
 .app-shell[data-skin='sumie'] .zen-topnav {
@@ -4349,11 +4291,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
 }
 .app-shell[data-skin='sumie'] .lt-heading::after { width: 72px; height: 3px; }
 
-
-/* ========================================================= */
-/* SUMI-E · TINTA SOBRE TINTA                                 */
-/* Lienzo de tinta oscura, tipografía clara, sello bermellón.  */
-/* Bloque final: prevalece sobre las versiones claras anteriores. */
 /* ========================================================= */
 .app-shell[data-skin='sumie'] {
   --m3-surface: #0e0d0c;
@@ -4481,11 +4418,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
   bottom: -66px !important;
 }
 
-
-/* ========================================================= */
-/* SUMI-E · PERGAMINO (estructura final)                      */
-/* Nav kanji flotante a la derecha, columna central, dock      */
-/* circular. Prevalece sobre las versiones anteriores.         */
 /* ========================================================= */
 .app-shell[data-skin='sumie'] .zen-topnav {
   position: fixed !important;
@@ -4540,9 +4472,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .app-shell[data-skin='sumie'] .npr-ctl,
 .app-shell[data-skin='sumie'] .npr-play { width: 30px !important; height: 30px !important; }
 
-/* ========================================================= */
-/* BYŌBU · PANTALLA DIVIDIDA                                  */
-/* Panel izquierdo de tinta monumental + panel editorial.      */
 /* ========================================================= */
 .app-shell[data-skin='byobu'] {
   --m3-surface: #0e0c0b; --m3-surface-alt: #161311; --m3-surface-card: #1a1714;
@@ -4609,7 +4538,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .app-shell[data-skin='byobu'] .titlebar-brand-mark,
 .app-shell[data-skin='byobu'] .zen-topnav-brand-mark { background: #d24832 !important; }
 
-
 /* Byōbu: el reproductor vive dentro del panel de tinta. */
 .app-shell[data-skin='byobu'] .player-dock {
   left: 0 !important; right: auto !important; bottom: 0 !important;
@@ -4629,18 +4557,12 @@ input[type="range"]:hover::-webkit-slider-thumb {
   color: #fff !important;
 }
 
-
 /* Byōbu: en el panel de tinta sólo los controles esenciales. */
 .app-shell[data-skin='byobu'] .npr-track,
 .app-shell[data-skin='byobu'] .npr-progress,
 .app-shell[data-skin='byobu'] .npr-right { display: none !important; }
 .app-shell[data-skin='byobu'] .npr-controls { gap: 18px !important; }
 
-
-/* ========================================================= */
-/* SUMI-E · Biblioteca como hojas de washi apiladas            */
-/* Ocupa el ancho disponible; cada tarjeta es una hoja con      */
-/* sello y sombra escalonada.                                   */
 /* ========================================================= */
 .app-shell[data-skin='sumie'] main { align-items: stretch !important; }
 .app-shell[data-skin='sumie'] .gh-header,
@@ -4686,9 +4608,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .app-shell[data-skin='sumie'] table tbody tr:hover { background: rgba(210,72,50,.08) !important; }
 
 /* ========================================================= */
-/* BYŌBU · Biblioteca como estantería de lomos                 */
-/* Separadores verticales, portadas apiladas y títulos de lado.*/
-/* ========================================================= */
 .app-shell[data-skin='byobu'] .main-scroll-region {
   position: relative;
   background-image: repeating-linear-gradient(90deg,
@@ -4719,7 +4638,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .app-shell[data-skin='byobu'] table tbody tr { border-bottom: 1px solid rgba(236,227,214,.06) !important; }
 .app-shell[data-skin='byobu'] table tbody tr:hover { background: rgba(210,72,50,.08) !important; }
 
-
 /* Sumi-e: ocupar todo el ancho disponible, sin columna estrecha. */
 .app-shell[data-skin='sumie'] main > *,
 .app-shell[data-skin='sumie'] main > * > *,
@@ -4732,9 +4650,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
   margin-right: 0 !important;
 }
 
-
-/* ========================================================= */
-/* SUMI-E · Hojas washi reales (tarjetas de la biblioteca)     */
 /* ========================================================= */
 .app-shell[data-skin='sumie'] .main-scroll-region .grid > .glass-card {
   background: linear-gradient(135deg, rgba(236,227,214,.1), rgba(236,227,214,.025)) !important;
@@ -4763,8 +4678,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
   border: 1px solid rgba(236,227,214,.14) !important;
 }
 
-/* ========================================================= */
-/* BYŌBU · Díptico editorial: panel de álbum + lista          */
 /* ========================================================= */
 .app-shell[data-skin='byobu'] .main-scroll-region .grid {
   grid-template-columns: minmax(240px, .9fr) minmax(320px, 1.1fr) !important;
@@ -4795,9 +4708,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
   padding: 10px 14px !important;
 }
 
-
-/* ========================================================= */
-/* TABLA · diseño propio por tema (la vista que se usa de verdad) */
 /* ========================================================= */
 .app-shell[data-skin='sumie'] .gh-search,
 .app-shell[data-skin='byobu'] .gh-search {
@@ -4884,7 +4794,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
   background: rgba(210,72,50,.08) !important;
 }
 
-
 /* Anular el fondo morado heredado de la cabecera de tabla. */
 .app-shell[data-skin='sumie'] .library-tab-content thead,
 .app-shell[data-skin='sumie'] .library-tab-content thead tr,
@@ -4894,9 +4803,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
   box-shadow: none !important;
 }
 
-
-/* ========================================================= */
-/* SUMI-E · TABLA = HOJAS DE WASHI APILADAS (intensificado)   */
 /* ========================================================= */
 .app-shell[data-skin='sumie'] .library-tab-content table {
   border-collapse: separate !important;
@@ -4926,8 +4832,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
   font-size: 13px;
 }
 
-/* ========================================================= */
-/* BYŌBU · TABLA = DÍPTICO (panel de álbum + lista)           */
 /* ========================================================= */
 .app-shell[data-skin='byobu'] .library-tab-content {
   position: relative !important;
@@ -4962,18 +4866,8 @@ input[type="range"]:hover::-webkit-slider-thumb {
   border: none !important;
 }
 
-
-/* ========================================================= */
-/* BIBLIOTECA PROPIA DE SUMI-E · hojas de washi                */
 /* ========================================================= */
 .sumie-library { padding: 8px 4px 60px; }
-.sumie-library-head { margin-bottom: 26px; border-bottom: 1px solid rgba(236,227,214,.1); padding-bottom: 18px; }
-.sumie-kicker,
-.byobu-kicker { margin: 0 0 6px; font: 10px 'JetBrains Mono', monospace; letter-spacing: .28em; text-transform: uppercase; color: #d24832; }
-.sumie-library-head h1,
-.byobu-library-head h1 { margin: 0 0 6px; font-family: 'Cormorant Garamond', 'Yu Mincho', Georgia, serif; font-size: 46px; font-weight: 400; letter-spacing: -.02em; color: #ece3d6; }
-.sumie-library-head > span,
-.byobu-library-head > span { font: 10px 'JetBrains Mono', monospace; letter-spacing: .14em; color: #8d8377; }
 .sumie-hojas { display: flex; flex-direction: column; gap: 18px; }
 .sumie-hoja {
   position: relative; display: flex; align-items: center; gap: 18px; width: 100%; text-align: left;
@@ -4985,7 +4879,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
 }
 .sumie-hoja:hover { transform: rotate(0deg) !important; box-shadow: 10px 10px 0 rgba(210,72,50,.2) !important; }
 .sumie-hoja.is-active { border-color: rgba(210,72,50,.6); box-shadow: 8px 8px 0 rgba(210,72,50,.16) !important; }
-.sumie-sello { position: absolute; top: 5px; right: 8px; color: rgba(210,72,50,.6); font-family: 'Yu Mincho', serif; font-size: 15px; }
 .sumie-portada { flex: 0 0 56px; width: 56px; height: 56px; border: 1px solid rgba(236,227,214,.14); border-radius: 2px; display: grid; place-items: center; overflow: hidden; color: #d24832; font-size: 22px; }
 .sumie-portada img { width: 100%; height: 100%; object-fit: cover; }
 .sumie-texto { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
@@ -4993,7 +4886,6 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .sumie-texto small { font: 10px 'JetBrains Mono', monospace; letter-spacing: .08em; color: #a49a8d; }
 .sumie-texto em { font: 10px 'JetBrains Mono', monospace; color: #d24832; font-style: normal; }
 .sumie-dur { margin-left: auto; font: 10px 'JetBrains Mono', monospace; color: #8d8377; }
-.sumie-corazon { color: #8d8377; font-size: 18px; cursor: pointer; }
 .sumie-corazon.is-fav { color: #d24832; }
 .sumie-library .cta,
 .byobu-library .cta { background: transparent; border: 1px solid #d24832; color: #d24832; border-radius: 2px; padding: 12px 20px; font: 10px 'JetBrains Mono', monospace; letter-spacing: .14em; text-transform: uppercase; cursor: pointer; }
@@ -5001,38 +4893,12 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .byobu-library .cta:hover { background: #d24832; color: #fff; }
 
 /* ========================================================= */
-/* BIBLIOTECA PROPIA DE BYŌBU · díptico                       */
-/* ========================================================= */
 .byobu-library { padding: 8px 4px 60px; }
-.byobu-library-head { margin-bottom: 26px; border-bottom: 1px solid rgba(236,227,214,.1); padding-bottom: 18px; }
-.byobu-diptico { display: grid; grid-template-columns: minmax(260px, .8fr) minmax(360px, 1.2fr); gap: 26px; align-items: start; }
-.byobu-panel {
-  position: relative; overflow: hidden; min-height: 440px; padding: 26px;
-  border: 1px solid rgba(210,72,50,.4); border-radius: 2px;
-  background: radial-gradient(circle at 50% 35%, rgba(210,72,50,.15), transparent 60%), linear-gradient(180deg,#171310,#0e0c0b);
-  display: flex; flex-direction: column; justify-content: flex-end; gap: 6px;
-}
-.byobu-kanji { position: absolute; top: -30px; left: 10px; font-family: 'Yu Mincho', serif; font-size: 230px; line-height: 1; color: rgba(236,227,214,.05); pointer-events: none; }
-.byobu-portada { position: relative; width: 110px; height: 110px; margin-bottom: auto; border: 1px solid rgba(210,72,50,.5); border-radius: 2px; display: grid; place-items: center; overflow: hidden; color: #d24832; font-family: 'Yu Mincho', serif; font-size: 42px; }
-.byobu-portada img { width: 100%; height: 100%; object-fit: cover; }
-.byobu-label { margin: 0; font: 9px 'JetBrains Mono', monospace; letter-spacing: .24em; text-transform: uppercase; color: #d24832; }
-.byobu-panel h2 { margin: 0; font-family: 'Cormorant Garamond', 'Yu Mincho', serif; font-size: 30px; font-weight: 400; color: #ece3d6; }
-.byobu-artista { margin: 0; font-size: 15px; color: #a49a8d; }
-.byobu-meta { margin: 0; font: 10px 'JetBrains Mono', monospace; letter-spacing: .06em; color: #8d8377; }
-.byobu-lista { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
-.byobu-lista li { border-bottom: 1px solid rgba(236,227,214,.08); }
-.byobu-lista button {
-  display: grid; grid-template-columns: 34px minmax(0,1fr) minmax(90px,.6fr) 46px; align-items: center; gap: 10px;
-  width: 100%; padding: 11px 8px; background: transparent; border: none; border-left: 2px solid transparent;
-  color: #a49a8d; cursor: pointer; text-align: left;
-}
 .byobu-lista button:hover,
 .byobu-lista button.is-active { background: rgba(210,72,50,.08); border-left-color: #d24832; }
 .byobu-num { font: 10px 'JetBrains Mono', monospace; color: #d24832; }
 .byobu-titulo { font-family: 'Cormorant Garamond', 'Yu Mincho', serif; font-size: 19px; color: #ece3d6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.byobu-art { font: 10px 'JetBrains Mono', monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .byobu-dur { font: 10px 'JetBrains Mono', monospace; text-align: right; }
-
 
 /* Byōbu: rail izquierdo delgado y contenido con más aire. */
 .app-shell[data-skin='byobu'] .zen-topnav {
@@ -5067,11 +4933,9 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .app-shell[data-skin='byobu'] .byobu-lista button { padding: 16px 12px !important; }
 .app-shell[data-skin='byobu'] .byobu-titulo { font-size: 21px !important; }
 
-
 .app-shell[data-skin='byobu'] .player-dock { width: 232px !important; }
 .app-shell[data-skin='byobu'] .npr-shell { padding: 16px 12px !important; }
 .app-shell[data-skin='byobu'] .npr-controls { gap: 10px !important; }
-
 
 /* Cabecera compacta y navegación por carpetas de las vistas propias. */
 .theme-library-head { margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid rgba(236,227,214,.1); }
@@ -5104,26 +4968,10 @@ input[type="range"]:hover::-webkit-slider-thumb {
 
 /* Sumi-e: botón de portada separado de las acciones. */
 .sumie-play { display: flex; align-items: center; gap: 18px; background: transparent; border: none; cursor: pointer; padding: 0; color: inherit; text-align: left; }
-
-/* Byōbu: portada a sangre en todo el panel y filas con acciones. */
-.byobu-panel {
-  background-size: cover !important;
-  background-position: center !important;
-  background-repeat: no-repeat !important;
-}
-.byobu-panel::after {
-  content: ''; position: absolute; inset: 0; pointer-events: none;
-  background: linear-gradient(180deg, transparent 30%, rgba(10,8,7,.9) 100%);
-}
-.byobu-panel > * { position: relative; z-index: 1; }
-.byobu-lista li { display: flex; align-items: center; }
 .byobu-lista li .byobu-fila { flex: 1; }
 .byobu-lista li.is-active { background: rgba(210,72,50,.08); border-left: 2px solid #d24832; }
 .byobu-lista li .theme-row-actions { padding-right: 10px; }
 
-
-/* ========================================================= */
-/* SUMI-E · Hojas de washi apiladas de verdad                  */
 /* ========================================================= */
 .sumie-hojas { gap: 28px !important; }
 .hoja-pila { position: relative; }
@@ -5167,3 +5015,41 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .hoja-play { padding: 0 !important; }
 .hoja-texto strong { font-size: 24px !important; }
 .hoja-acciones { margin-left: 12px; }
+
+/* ========================================================= */
+.byobu-indice { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.byobu-indice li {
+  display: flex; align-items: center;
+  border-bottom: 1px solid rgba(236,227,214,.08);
+  transition: background 200ms ease;
+}
+.byobu-indice li:hover { background: rgba(236,227,214,.025); }
+.byobu-indice li.is-active {
+  border-left: 3px solid #d24832;
+  background: rgba(210,72,50,.06);
+}
+.byobu-indice .byobu-fila {
+  display: grid; grid-template-columns: 62px minmax(0, 1fr) 64px;
+  align-items: center; gap: 18px; flex: 1;
+  padding: 20px 20px !important;
+  background: transparent; border: none; color: inherit; cursor: pointer; text-align: left;
+}
+.byobu-indice .byobu-num {
+  font: 11px 'JetBrains Mono', monospace !important;
+  letter-spacing: .12em; color: #d24832 !important;
+}
+.byobu-indice .byobu-titulo {
+  display: flex; flex-direction: column; gap: 5px;
+  font-family: 'Cormorant Garamond', 'Yu Mincho', serif !important;
+  font-size: 30px !important; font-weight: 400; color: #ece3d6 !important;
+  overflow: visible !important; white-space: normal !important;
+}
+.byobu-indice .byobu-titulo small {
+  font: 10px 'JetBrains Mono', monospace !important;
+  letter-spacing: .08em; color: #8d8377 !important;
+}
+.byobu-indice .byobu-dur {
+  font: 11px 'JetBrains Mono', monospace !important;
+  text-align: right; color: #8d8377 !important;
+}
+.byobu-indice .theme-row-actions { padding-right: 20px; }
