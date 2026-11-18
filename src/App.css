@@ -4794,3 +4794,102 @@ input[type="range"]:hover::-webkit-slider-thumb {
   box-shadow: none !important;
   padding: 10px 14px !important;
 }
+
+
+/* ========================================================= */
+/* TABLA · diseño propio por tema (la vista que se usa de verdad) */
+/* ========================================================= */
+.app-shell[data-skin='sumie'] .gh-search,
+.app-shell[data-skin='byobu'] .gh-search {
+  background: rgba(236,227,214,.04) !important;
+  border-color: rgba(236,227,214,.12) !important;
+}
+.app-shell[data-skin='sumie'] .gh-search-input,
+.app-shell[data-skin='byobu'] .gh-search-input {
+  background: transparent !important;
+  color: #ece3d6 !important;
+}
+.app-shell[data-skin='sumie'] .lt-view-trigger,
+.app-shell[data-skin='byobu'] .lt-view-trigger {
+  background: rgba(236,227,214,.05) !important;
+  border-color: rgba(236,227,214,.12) !important;
+  color: #ece3d6 !important;
+  box-shadow: none !important;
+}
+.app-shell[data-skin='sumie'] .lt-view-trigger.is-open,
+.app-shell[data-skin='byobu'] .lt-view-trigger.is-open {
+  background: #d24832 !important;
+  color: #fff !important;
+}
+
+/* SUMI-e: cada fila es una tira de papel washi con sello. */
+.app-shell[data-skin='sumie'] .library-tab-content table {
+  border-collapse: separate !important;
+  border-spacing: 0 6px !important;
+}
+.app-shell[data-skin='sumie'] .library-tab-content thead th {
+  background: transparent !important;
+  border: none !important;
+  color: #d24832 !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important;
+  letter-spacing: .16em !important;
+  text-transform: uppercase !important;
+}
+.app-shell[data-skin='sumie'] .library-tab-content tbody tr {
+  background: rgba(236,227,214,.04) !important;
+  border-left: 3px solid rgba(210,72,50,.45) !important;
+  box-shadow: 4px 4px 0 rgba(236,227,214,.02) !important;
+}
+.app-shell[data-skin='sumie'] .library-tab-content tbody td {
+  border-bottom: 1px solid rgba(236,227,214,.07) !important;
+  color: #a49a8d !important;
+}
+.app-shell[data-skin='sumie'] .library-tab-content tbody tr td:nth-child(3) {
+  font-family: 'Cormorant Garamond', serif !important;
+  font-size: 17px !important;
+  color: #ece3d6 !important;
+}
+.app-shell[data-skin='sumie'] .library-tab-content tbody tr:hover {
+  background: rgba(210,72,50,.1) !important;
+}
+
+/* BYŌBU: índice editorial con numeración y reglas finas. */
+.app-shell[data-skin='byobu'] .library-tab-content table {
+  border-collapse: collapse !important;
+}
+.app-shell[data-skin='byobu'] .library-tab-content thead th {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(210,72,50,.4) !important;
+  color: #d24832 !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important;
+  letter-spacing: .14em !important;
+  text-transform: uppercase !important;
+}
+.app-shell[data-skin='byobu'] .library-tab-content tbody tr {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(236,227,214,.07) !important;
+}
+.app-shell[data-skin='byobu'] .library-tab-content tbody tr td {
+  border: none !important;
+  color: #a49a8d !important;
+}
+.app-shell[data-skin='byobu'] .library-tab-content tbody tr td:nth-child(3) {
+  font-family: 'Cormorant Garamond', serif !important;
+  font-size: 18px !important;
+  color: #ece3d6 !important;
+}
+.app-shell[data-skin='byobu'] .library-tab-content tbody tr:hover {
+  background: rgba(210,72,50,.08) !important;
+}
+
+
+/* Anular el fondo morado heredado de la cabecera de tabla. */
+.app-shell[data-skin='sumie'] .library-tab-content thead,
+.app-shell[data-skin='sumie'] .library-tab-content thead tr,
+.app-shell[data-skin='byobu'] .library-tab-content thead,
+.app-shell[data-skin='byobu'] .library-tab-content thead tr {
+  background: transparent !important;
+  box-shadow: none !important;
+}
