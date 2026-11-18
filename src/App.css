@@ -4348,3 +4348,135 @@ input[type="range"]:hover::-webkit-slider-thumb {
   letter-spacing: 0.16em !important;
 }
 .app-shell[data-skin='sumie'] .lt-heading::after { width: 72px; height: 3px; }
+
+
+/* ========================================================= */
+/* SUMI-E · TINTA SOBRE TINTA                                 */
+/* Lienzo de tinta oscura, tipografía clara, sello bermellón.  */
+/* Bloque final: prevalece sobre las versiones claras anteriores. */
+/* ========================================================= */
+.app-shell[data-skin='sumie'] {
+  --m3-surface: #0e0d0c;
+  --m3-surface-alt: #161412;
+  --m3-surface-card: #1a1815;
+  --m3-on-surface: #ece3d6;
+  --m3-on-surface-muted: #a49a8d;
+  --m3-primary: #d24832;
+  --m3-primary-dim: #a83322;
+  --m3-outline: rgba(210, 72, 50, 0.32);
+  --m3-shadow: none;
+  --space-bg2: #161412;
+  --space-card: #1a1815;
+  --space-primary: #d24832;
+  --space-text: #ece3d6;
+  --space-muted: #a49a8d;
+  --space-soft: #7d7469;
+  --space-border: rgba(236, 227, 214, 0.1);
+  --accent-200: 250 214 205;
+  --accent-300: 244 176 160;
+  --accent-400: 224 106 82;
+  --accent-500: 210 72 50;
+  --accent-600: 176 51 34;
+  --accent-800: 122 33 22;
+  --accent-900: 96 26 17;
+  --accent-950: 52 14 9;
+  --theme-font-display: 'Cormorant Garamond', 'Yu Mincho', Georgia, serif;
+  background:
+    radial-gradient(ellipse 62% 42% at 12% 6%, rgba(210, 72, 50, 0.09), transparent 70%),
+    radial-gradient(ellipse 55% 48% at 92% 86%, rgba(126, 116, 100, 0.1), transparent 70%),
+    repeating-linear-gradient(0deg, rgba(236, 227, 214, 0.012) 0 1px, transparent 1px 6px),
+    linear-gradient(180deg, #100e0c 0%, #080706 100%) !important;
+  color: var(--m3-on-surface) !important;
+}
+
+/* Chrome: titlebar, rail y dock en tinta. */
+.app-shell[data-skin='sumie'] .titlebar {
+  background: #0c0a09 !important;
+  border-bottom-color: rgba(236, 227, 214, 0.08) !important;
+}
+.app-shell[data-skin='sumie'] .titlebar-brand-name,
+.app-shell[data-skin='sumie'] .zen-topnav-brand-copy strong { color: #ece3d6 !important; }
+.app-shell[data-skin='sumie'] .titlebar-brand-tag {
+  color: #d24832 !important;
+  background: rgba(210, 72, 50, 0.1) !important;
+  border-color: rgba(210, 72, 50, 0.3) !important;
+}
+.app-shell[data-skin='sumie'] .titlebar-btn { color: #a49a8d !important; }
+.app-shell[data-skin='sumie'] .zen-topnav {
+  background: #100e0c !important;
+  border-right-color: rgba(236, 227, 214, 0.09) !important;
+}
+.app-shell[data-skin='sumie'] .zen-topnav-brand {
+  border-bottom-color: rgba(236, 227, 214, 0.09) !important;
+}
+.app-shell[data-skin='sumie'] .zen-topnav-brand-copy small { color: #7d7469 !important; }
+.app-shell[data-skin='sumie'] .zen-topnav-tab::before { color: #a49a8d !important; }
+.app-shell[data-skin='sumie'] .zen-topnav-tab.is-active {
+  background: rgba(210, 72, 50, 0.1) !important;
+  box-shadow: inset 0 0 0 1px rgba(210, 72, 50, 0.45), 0 0 22px rgba(210, 72, 50, 0.14) !important;
+}
+.app-shell[data-skin='sumie'] .zen-topnav-tab.is-active::before { color: #d24832 !important; }
+.app-shell[data-skin='sumie'] .zen-topnav-brand-mark,
+.app-shell[data-skin='sumie'] .titlebar-brand-mark {
+  background: #d24832 !important;
+  border-color: rgba(255, 240, 230, 0.55) !important;
+  box-shadow: 0 0 18px rgba(210, 72, 50, 0.35) !important;
+}
+
+/* Superficies: tinta translúcida, sin sombras. */
+.app-shell[data-skin='sumie'] .glass-card,
+.app-shell[data-skin='sumie'] .lt-bar {
+  background: rgba(236, 227, 214, 0.035) !important;
+  border-color: rgba(236, 227, 214, 0.09) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+.app-shell[data-skin='sumie'] .gh-header { background: rgba(16, 14, 12, 0.7) !important; border-bottom-color: rgba(236, 227, 214, 0.08) !important; }
+.app-shell[data-skin='sumie'] .gh-search { background: rgba(236, 227, 214, 0.04) !important; border-color: rgba(236, 227, 214, 0.1) !important; }
+.app-shell[data-skin='sumie'] .npr-shell {
+  background: #141210 !important;
+  border-color: rgba(236, 227, 214, 0.09) !important;
+  border-top: 1px solid #d24832 !important;
+  box-shadow: 0 -12px 38px rgba(0, 0, 0, 0.5) !important;
+}
+.app-shell[data-skin='sumie'] .npr-play { background: linear-gradient(135deg, #d24832, #a83322) !important; }
+
+/* Tipografía y color del texto. */
+.app-shell[data-skin='sumie'] .lt-heading h2,
+.app-shell[data-skin='sumie'] .empty-state h3,
+.app-shell[data-skin='sumie'] .npr-title,
+.app-shell[data-skin='sumie'] .gh-context-label { color: #ece3d6 !important; }
+.app-shell[data-skin='sumie'] .lt-heading p,
+.app-shell[data-skin='sumie'] .empty-state p,
+.app-shell[data-skin='sumie'] .npr-artist,
+.app-shell[data-skin='sumie'] .gh-search-input { color: #a49a8d !important; }
+
+/* Acentos: sello y trazos bermellón. */
+.app-shell[data-skin='sumie'] .lt-heading::after { background: #d24832 !important; }
+.app-shell[data-skin='sumie'] .gh-chip.is-active,
+.app-shell[data-skin='sumie'] .lt-view-trigger.is-open {
+  background: #d24832 !important;
+  color: #fff !important;
+  border-color: #d24832 !important;
+}
+.app-shell[data-skin='sumie'] .gh-chip:not(.is-active) { border-color: rgba(236, 227, 214, 0.12) !important; color: #a49a8d !important; }
+.app-shell[data-skin='sumie'] .empty-state button {
+  background: transparent !important;
+  color: #d24832 !important;
+  border-color: #d24832 !important;
+}
+.app-shell[data-skin='sumie'] .empty-state button:hover { background: #d24832 !important; color: #fff !important; }
+.app-shell[data-skin='sumie'] .empty-state-mark { color: #d24832 !important; }
+.app-shell[data-skin='sumie'] .empty-state-mark::before {
+  border-color: rgba(210, 72, 50, 0.5) !important;
+  border-right-color: transparent !important;
+  border-bottom-color: rgba(210, 72, 50, 0.14) !important;
+}
+/* Marca de agua: un 墨 enorme y apenas visible en la tinta. */
+.app-shell[data-skin='sumie'] .empty-state::after {
+  content: '墨';
+  color: rgba(236, 227, 214, 0.045) !important;
+  font-size: 230px !important;
+  right: 6% !important;
+  bottom: -66px !important;
+}
