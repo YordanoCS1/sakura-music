@@ -6227,3 +6227,24 @@ input[type="range"]:hover::-webkit-slider-thumb {
 
 /* Posicionamiento elíptico de los astros. */
 .moonlit-astro { transform: translate(var(--x), var(--y)); }
+
+
+/* ========================================================= */
+/* MOONLIT · camino de estrellas (diseño de biblioteca)        */
+/* ========================================================= */
+.moonlit-library { padding:6px 4px 60px; }
+.moonlit-senda { position:relative; margin-top:16px; padding:26px 0 20px; background:radial-gradient(circle at 60px 0,rgba(143,182,232,.1),transparent 220px); }
+.moonlit-senda::before { content:''; position:absolute; left:47px; top:96px; bottom:40px; width:1px; background:linear-gradient(180deg,rgba(143,182,232,.65),rgba(143,182,232,.18)); }
+.moonlit-luna-inicio { position:absolute; left:16px; top:8px; width:64px; height:64px; border-radius:50%; background:radial-gradient(circle at 38% 35%,#fff,#8fb6e8); box-shadow:0 0 42px rgba(143,182,232,.45); display:grid; place-items:center; color:#0b1324; font-size:22px; z-index:1; }
+.moonlit-nodo { position:relative; display:grid; grid-template-columns:66px minmax(0,1fr) 160px; align-items:center; gap:22px; min-height:92px; padding:12px 18px 12px 104px; border-bottom:1px solid rgba(143,182,232,.14); }
+.moonlit-nodo::before { content:''; position:absolute; left:41px; top:50%; width:13px; height:13px; border-radius:50%; background:#6f92c4; border:2px solid #dfe8f7; box-shadow:0 0 12px rgba(143,182,232,.5); transform:translateY(-50%); z-index:1; }
+.moonlit-nodo:hover { background:rgba(143,182,232,.04); }
+.moonlit-nodo.is-active { background:rgba(143,182,232,.08); }
+.moonlit-nodo.is-active::before,
+.moonlit-nodo:hover::before { background:#8fb6e8; box-shadow:0 0 18px rgba(143,182,232,.9); }
+.moonlit-nodo-cover { display:grid; place-items:center; width:66px; height:66px; border-radius:50%; overflow:hidden; border:1px solid rgba(143,182,232,.45); background:rgba(143,182,232,.07); box-shadow:0 0 18px rgba(143,182,232,.15); color:#8fb6e8; font-size:20px; }
+.moonlit-nodo-cover img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+.moonlit-nodo-play { background:transparent; border:0; cursor:pointer; color:inherit; text-align:left; padding:0; min-width:0; }
+.moonlit-nodo-play strong { display:block; font:400 21px 'Cormorant Garamond',serif; color:#dfe8f7; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.moonlit-nodo-play small { display:block; margin-top:5px; font:9px 'JetBrains Mono',monospace; color:#7f92b4; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.moonlit-nodo-acc { display:flex; justify-content:flex-end; }
