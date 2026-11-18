@@ -6368,3 +6368,100 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .settings-grid > .set-card:nth-child(5)::before { content:'05'; }
 .settings-grid > .set-card:nth-child(6)::before { content:'06'; }
 .settings-grid > .set-card:nth-child(7)::before { content:'07'; }
+
+
+/* ========================================================= */
+/* BUSCAR Y COLA · identidad por tema                         */
+/* ========================================================= */
+.buscar-view,
+.cola-view {
+  --bv-texto:var(--tema-texto, #f4f0ff);
+  --bv-suave:var(--tema-texto-suave, #9a8fa8);
+  --bv-accento:var(--tema-accent, #a78bfa);
+  --bv-linea:var(--tema-linea, rgba(255,255,255,.14));
+  --bv-panel:var(--set-panel-base, rgba(255,255,255,.04));
+  --bv-radio:var(--set-radio-base, 18px);
+  --bv-on:var(--set-on-accent-base, #fff);
+  display:block; width:100%; max-width:1180px; margin:0 auto 60px; padding:8px 0 20px;
+  color:var(--bv-texto); font-family:var(--set-font-base, inherit);
+}
+.buscar-hero,
+.cola-hero { display:flex; align-items:center; gap:18px; flex-wrap:wrap; padding:24px 28px; margin-bottom:22px; border:1px solid var(--bv-linea); border-radius:var(--bv-radio); background:var(--bv-panel); }
+.buscar-hero-mark,
+.cola-hero-mark { width:58px; height:58px; flex:none; border-radius:50%; display:grid; place-items:center; font-size:23px; background:var(--bv-accento); color:var(--bv-on); box-shadow:0 6px 20px rgba(0,0,0,.2); }
+.buscar-hero-copy,
+.cola-hero-copy { flex:1; min-width:220px; }
+.buscar-hero-copy p,
+.cola-hero-copy p { margin:0 0 5px; font:9px 'JetBrains Mono',monospace; letter-spacing:.22em; color:var(--bv-accento); }
+.buscar-hero-copy h2,
+.cola-hero-copy h2 { margin:0; font-size:22px; font-weight:700; }
+.buscar-hero-copy span,
+.cola-hero-copy span { display:block; margin-top:6px; font-size:11px; color:var(--bv-suave); }
+.buscar-hero-badges,
+.cola-hero-stats { display:flex; flex-wrap:wrap; gap:7px; }
+.buscar-hero-badges span,
+.cola-hero-stats span { padding:6px 10px; border:1px solid var(--bv-linea); border-radius:20px; font:9px 'JetBrains Mono',monospace; color:var(--bv-suave); }
+.buscar-hero-badges span.is-ok { border-color:var(--bv-accento); color:var(--bv-accento); }
+.buscar-hero-badges span.is-bad { color:var(--bv-suave); }
+.cola-hero-actions { display:flex; gap:8px; }
+.cola-btn-danger,
+.cola-btn-ghost { padding:8px 12px; border-radius:10px; font-size:11px; font-weight:600; cursor:pointer; border:1px solid var(--bv-linea); background:transparent; color:var(--bv-texto); }
+.cola-btn-danger { color:#fb7185; border-color:rgba(251,113,133,.4); }
+
+/* Estampa particular de cada tema en la cabecera. */
+.tema-shoji .buscar-hero,
+.tema-shoji .cola-hero { background-image:repeating-linear-gradient(90deg,rgba(90,70,45,.06) 0 1px,transparent 1px 60px); border-bottom:2px solid #b9a17d; }
+.tema-origami .buscar-hero,
+.tema-origami .cola-hero { clip-path:polygon(0 0,97% 0,100% 8%,100% 100%,0 100%); }
+.tema-swiss .buscar-hero,
+.tema-swiss .cola-hero { border-width:2px; border-radius:0; }
+.tema-sumiink .buscar-hero,
+.tema-sumiink .cola-hero { border-bottom:2px solid rgba(232,229,221,.28); }
+.tema-moonlit .buscar-hero,
+.tema-moonlit .cola-hero { background-image:radial-gradient(circle at 88% 20%,rgba(143,182,232,.14),transparent 45%); }
+.tema-ledger .buscar-hero,
+.tema-ledger .cola-hero { border-bottom:3px double #33291d; background-image:repeating-linear-gradient(0deg,transparent 0 29px,rgba(201,185,154,.3) 29px 30px); }
+
+/* Los componentes internos heredan la paleta del tema. */
+.buscar-view .glass-card,
+.cola-view .glass-card { background:var(--bv-panel) !important; border-color:var(--bv-linea) !important; border-radius:var(--bv-radio) !important; box-shadow:none !important; }
+.buscar-view [class*="text-white"],
+.cola-view [class*="text-white"] { color:var(--bv-texto) !important; }
+.buscar-view [class*="text-ink-"],
+.cola-view [class*="text-ink-"] { color:var(--bv-suave) !important; }
+.buscar-view [class*="text-accent-"],
+.cola-view [class*="text-accent-"],
+.buscar-view [class*="text-emerald-"],
+.cola-view [class*="text-emerald-"],
+.buscar-view [class*="text-cyan-"],
+.cola-view [class*="text-cyan-"],
+.buscar-view [class*="text-amber-"],
+.cola-view [class*="text-amber-"] { color:var(--bv-accento) !important; }
+.buscar-view [class*="bg-white/"],
+.cola-view [class*="bg-white/"],
+.buscar-view [class*="bg-black/"],
+.cola-view [class*="bg-black/"] { background:var(--bv-panel) !important; }
+.buscar-view [class*="border-white/"],
+.cola-view [class*="border-white/"] { border-color:var(--bv-linea) !important; }
+.buscar-view input,
+.buscar-view select,
+.cola-view input,
+.cola-view select { background:var(--bv-panel) !important; border-color:var(--bv-linea) !important; color:var(--bv-texto) !important; border-radius:calc(var(--bv-radio) - 8px) !important; }
+.buscar-view input::placeholder { color:var(--bv-suave) !important; }
+.buscar-view button[class*="bg-accent-"],
+.cola-view button[class*="bg-accent-"] { background:var(--bv-accento) !important; color:var(--bv-on) !important; }
+.buscar-view [class*="from-accent-"],
+.cola-view [class*="from-accent-"] { background:var(--bv-accento) !important; }
+
+
+/* Fondos arbitrarios de Tailwind (bg-[#...]) también siguen el tema. */
+.buscar-view [class*="bg-[#"],
+.cola-view [class*="bg-[#"] { background:var(--bv-panel) !important; }
+
+
+/* Anular la franja técnica heredada del tema space. */
+.buscar-view .glass-card > div:nth-child(2),
+.cola-view .glass-card > div:nth-child(2) {
+  background: var(--bv-panel) !important;
+  color: var(--bv-texto) !important;
+}

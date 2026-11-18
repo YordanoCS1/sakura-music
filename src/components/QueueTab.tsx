@@ -1,8 +1,20 @@
 import { X, RotateCcw } from 'lucide-react';
-import type { DownloadItem } from '../types';
+import type { DownloadItem, ThemeMode } from '../types';
 import EmptyState from './EmptyState';
 
+const GLIFOS: Partial<Record<ThemeMode, string>> = {
+  sumie: '墨',
+  byobu: '屏',
+  shoji: '障',
+  origami: '折',
+  swiss: '＋',
+  sumiink: '墨',
+  moonlit: '月',
+  ledger: '帳',
+};
+
 interface QueueTabProps {
+  theme: ThemeMode;
   downloads: DownloadItem[];
   restoredNotice: string | null;
   onClearNotice: () => void;
@@ -15,6 +27,7 @@ interface QueueTabProps {
 }
 
 export default function QueueTab({
+  theme,
   downloads,
   restoredNotice,
   onClearNotice,
@@ -35,51 +48,39 @@ export default function QueueTab({
   const errorCount = downloads.filter((item) => item.status.includes('error')).length;
 
   return (
-    <div className="w-full max-w-6xl mx-auto space-y-4 mb-24">
-      <div className="flex items-start justify-between flex-wrap gap-3">
-        <div>
-          <h2 className="text-base font-bold text-white">Cola de Descargas</h2>
-          <p className="text-xs text-ink-400">
-            Motor Rust + yt-dlp + ffmpeg · hasta 2 descargas en paralelo
-          </p>
+    <div className={`cola-view tema-${theme}`}>
+      <header className="cola-hero">
+        <div className="cola-hero-mark" aria-hidden="true">
+          {GLIFOS[theme] ?? '桜'}
         </div>
-        <div className="flex items-center gap-1.5 text-2xs">
-          <span className="px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-200">
-            {activeCount} activas
-          </span>
-          <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-200">
-            {completedCount} completadas
-          </span>
-          {errorCount > 0 && (
-            <span className="px-2.5 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-200">
-              {errorCount} con error
-            </span>
-          )}
+        <div className="cola-hero-copy">
+          <p>COLA · MOTOR RUST</p>
+          <h2>Cola de Descargas</h2>
+          <span>Motor Rust + yt-dlp + ffmpeg · hasta 2 descargas en paralelo</span>
+        </div>
+        <div className="cola-hero-stats">
+          <span>{activeCount} activas</span>
+          <span>{completedCount} completadas</span>
+          {errorCount > 0 && <span>{errorCount} con error</span>}
         </div>
         {downloads.length > 0 && (
-          <div className="flex items-center gap-2">
+          <div className="cola-hero-actions">
             {downloads.some(
               (d) =>
                 !d.status.startsWith('completado') &&
                 !d.status.includes('error') &&
                 d.status !== 'cancelado',
             ) && (
-              <button
-                onClick={onCancelAll}
-                className="text-xs text-rose-300 hover:text-white px-3 py-1.5 rounded-xl bg-rose-500/10 border border-rose-500/20 transition-colors"
-              >
+              <button type="button" onClick={onCancelAll} className="cola-btn-danger">
                 Cancelar todo
               </button>
             )}
-            <button
-              onClick={onClearFinished}
-              className="text-xs text-ink-400 hover:text-white px-3 py-1.5 rounded-xl bg-white/5 border border-white/5 transition-colors"
-            >
+            <button type="button" onClick={onClearFinished} className="cola-btn-ghost">
               Limpiar terminadas
             </button>
           </div>
         )}
-      </div>
+      </header>
 
       {/* Aviso de cola restaurada de la sesión anterior */}
       {restoredNotice && (

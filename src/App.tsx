@@ -1160,6 +1160,7 @@ export default function App() {
             {/* TAB: BUSCAR Y DESCARGAR */}
             {activeTab === 'search' && (
               <SearchTab
+                theme={theme}
                 toolsStatus={toolsStatus}
                 onlineQuery={onlineQuery}
                 onlineResults={onlineResults}
@@ -1196,6 +1197,7 @@ export default function App() {
             {/* TAB: COLA DE DESCARGAS */}
             {activeTab === 'queue' && (
               <QueueTab
+                theme={theme}
                 downloads={downloads}
                 restoredNotice={restoredNotice}
                 onClearNotice={() => setRestoredNotice(null)}

@@ -11,9 +11,27 @@ import {
   Square,
   X,
 } from 'lucide-react';
-import type { DownloadItem, DownloaderStatus, OnlineSearchResult, PlaylistInfo } from '../types';
+import type {
+  DownloadItem,
+  DownloaderStatus,
+  OnlineSearchResult,
+  PlaylistInfo,
+  ThemeMode,
+} from '../types';
+
+const GLIFOS: Partial<Record<ThemeMode, string>> = {
+  sumie: '墨',
+  byobu: '屏',
+  shoji: '障',
+  origami: '折',
+  swiss: '＋',
+  sumiink: '墨',
+  moonlit: '月',
+  ledger: '帳',
+};
 
 interface SearchTabProps {
+  theme: ThemeMode;
   toolsStatus: DownloaderStatus | null;
   onlineQuery: string;
   onlineResults: OnlineSearchResult[];
@@ -47,6 +65,7 @@ interface SearchTabProps {
 }
 
 export default function SearchTab({
+  theme,
   toolsStatus,
   onlineQuery,
   onlineResults,
@@ -82,45 +101,27 @@ export default function SearchTab({
   const visibleDownloads = activeDownloads.slice(0, 3);
 
   return (
-    <div className="w-full max-w-6xl mx-auto space-y-6 mb-24">
-      {/* Encabezado y Estado de Herramientas */}
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <div>
-          <h2 className="text-base font-bold text-white mb-1">Buscador y Descargas de Música</h2>
-          <p className="text-xs text-ink-400">
+    <div className={`buscar-view tema-${theme}`}>
+      <header className="buscar-hero">
+        <div className="buscar-hero-mark" aria-hidden="true">
+          {GLIFOS[theme] ?? '桜'}
+        </div>
+        <div className="buscar-hero-copy">
+          <p>BUSCADOR · DESCARGA</p>
+          <h2>Buscador y Descargas de Música</h2>
+          <span>
             Búsqueda instantánea en YouTube o descarga por enlace directo en FLAC / MP3 320k.
-          </p>
+          </span>
         </div>
-
-        {/* Badges de estado de herramientas */}
-        <div className="flex items-center gap-2">
-          <div
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-2xs font-mono border ${
-              toolsStatus?.ytdlp_available
-                ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'
-                : 'bg-rose-500/10 text-rose-300 border-rose-500/30'
-            }`}
-          >
-            <span
-              className={`w-1.5 h-1.5 rounded-full ${toolsStatus?.ytdlp_available ? 'bg-emerald-400 animate-pulse' : 'bg-rose-400'}`}
-            ></span>
-            <span>yt-dlp: {toolsStatus?.ytdlp_available ? 'Listo' : 'No encontrado'}</span>
-          </div>
-
-          <div
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-2xs font-mono border ${
-              toolsStatus?.ffmpeg_available
-                ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'
-                : 'bg-rose-500/10 text-rose-300 border-rose-500/30'
-            }`}
-          >
-            <span
-              className={`w-1.5 h-1.5 rounded-full ${toolsStatus?.ffmpeg_available ? 'bg-emerald-400' : 'bg-rose-400'}`}
-            ></span>
-            <span>ffmpeg: {toolsStatus?.ffmpeg_available ? 'Listo' : 'No encontrado'}</span>
-          </div>
+        <div className="buscar-hero-badges">
+          <span className={toolsStatus?.ytdlp_available ? 'is-ok' : 'is-bad'}>
+            yt-dlp: {toolsStatus?.ytdlp_available ? 'Listo' : 'No encontrado'}
+          </span>
+          <span className={toolsStatus?.ffmpeg_available ? 'is-ok' : 'is-bad'}>
+            ffmpeg: {toolsStatus?.ffmpeg_available ? 'Listo' : 'No encontrado'}
+          </span>
         </div>
-      </div>
+      </header>
 
       {/* Barra de Búsqueda y Opciones */}
       <div className="glass-card p-5 rounded-3xl border border-white/10 space-y-4">
