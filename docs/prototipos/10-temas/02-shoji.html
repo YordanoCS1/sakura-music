@@ -5,39 +5,44 @@
  background-image:repeating-linear-gradient(90deg,rgba(90,70,45,.07) 0 1px,transparent 1px 60px),repeating-linear-gradient(0deg,rgba(90,70,45,.07) 0 1px,transparent 1px 60px)}
 .marco{height:100vh;border:12px solid #c9b28a;display:flex;flex-direction:column}
 .cab{height:52px;display:flex;align-items:center;gap:28px;padding:0 30px;border-bottom:2px solid var(--lista);background:rgba(255,252,244,.7)}
-.cab b{font-weight:400;letter-spacing:.2em;font-size:14px}
-.cab nav{display:flex;gap:0}.cab nav button{background:none;border:0;border-right:1px solid rgba(90,70,45,.2);padding:7px 16px;color:#7a6a52;font-family:inherit;font-size:12px;cursor:pointer}
+.cab b{font-weight:400;letter-spacing:.2em;font-size:14px}.cab nav{display:flex}.cab nav button{background:none;border:0;border-right:1px solid rgba(90,70,45,.2);padding:7px 16px;color:#7a6a52;font-family:inherit;font-size:12px;cursor:pointer}
 .cab nav button.on{color:var(--rojo);background:rgba(168,68,47,.06)}
 .vista{display:none;flex:1;overflow:auto;padding:30px 40px}.vista.on{display:block}
-/* HOME: paneles de papel tipo biombo */
+/* HOME: biombo */
 .biombo{display:grid;grid-template-columns:repeat(3,1fr);height:100%;border:1px solid var(--lista)}
 .panel{padding:36px;border-right:1px solid var(--lista);display:flex;flex-direction:column;justify-content:space-between}
 .panel:last-child{border:0}.panel .glifo{font-size:64px;color:rgba(120,90,60,.18)}
 .panel h2{font-weight:400;font-size:32px;line-height:1.3}.panel p{font-size:12px;line-height:2;color:#6f604a}
 .panel .sello{width:34px;height:34px;border:2px solid var(--rojo);color:var(--rojo);display:grid;place-items:center}
-/* LIBRARY: tabla con líneas de rejilla */
-.titulo{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid var(--lista);padding-bottom:14px;margin-bottom:0}
-.titulo h1{font-size:46px;font-weight:400;margin:4px 0}.titulo small{font-size:10px;letter-spacing:.2em;color:var(--rojo)}
-.filtros{display:flex;gap:0;margin:18px 0 0;flex-wrap:wrap}.filtros span{border:1px solid var(--lista);padding:6px 12px;font-size:11px;margin-right:-1px}
-.tabla{margin-top:22px;border:1px solid var(--lista)}
-.fila{display:grid;grid-template-columns:40px 1fr 1fr 80px 90px;border-bottom:1px solid var(--lista);align-items:center;min-height:54px}
-.fila:last-child{border:0}.fila.cabecera{background:rgba(185,161,125,.18);font-size:10px;letter-spacing:.18em;color:#6b5b45}
-.fila>div{padding:10px 12px;border-right:1px solid var(--lista);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
-.fila>div:last-child{border:0}.fila .t{font-size:17px}.fila:hover{background:rgba(168,68,47,.05)}
-.repro{height:64px;border-top:2px solid var(--lista);display:flex;align-items:center;padding:0 30px;gap:20px;background:rgba(255,252,244,.8)}
+/* LIBRARY DETALLADA */
+.titulo{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid var(--lista);padding-bottom:14px}
+.titulo small{font:10px Georgia;letter-spacing:.24em;color:var(--rojo)}.titulo h1{font-size:42px;font-weight:400;margin:6px 0}
+.barra{display:flex;gap:0;margin:16px 0 0;flex-wrap:wrap;align-items:center}
+.barra span,.barra button{border:1px solid var(--lista);padding:6px 12px;font:10px Georgia;background:transparent;color:#6b5b45;margin-right:-1px;cursor:pointer}
+.barra button.on{background:var(--rojo);color:#fff;border-color:var(--rojo)}
+.buscar{width:100%;max-width:420px;margin:16px 0;padding:9px 12px;border:1px solid var(--lista);background:rgba(255,255,255,.5);font-family:inherit;font-size:13px}
+.tabla{border:1px solid var(--lista);margin-top:4px}
+.fila{display:grid;grid-template-columns:36px 46px 1fr 1fr 92px 80px;align-items:center;border-bottom:1px solid var(--lista);min-height:60px}
+.fila:last-child{border:0}.fila.cabecera{background:rgba(185,161,125,.18);font:10px Georgia;letter-spacing:.14em;color:#6b5b45}
+.fila>div{padding:8px 10px;border-right:1px solid var(--lista);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+.fila>div:last-child{border:0}.fila img{width:38px;height:38px;object-fit:cover}.fila .t{font-size:17px}
+.acc{display:flex;gap:8px;color:#7a6a52;font-size:13px}.acc b{color:var(--rojo)}
+.repro{height:64px;border-top:2px solid var(--lista);display:flex;align-items:center;padding:0 30px;background:rgba(255,252,244,.8)}
 .repro button{margin-left:auto;border:1px solid var(--rojo);background:transparent;color:var(--rojo);width:36px;height:36px;cursor:pointer}
-</style></head><body><div class="marco">
+</style></head><body>
 <div class="cab"><b>障 · SAKURA</b><nav><button class="on" data-v="home">Inicio</button><button data-v="lib">Biblioteca</button><button>Buscar</button><button>Cola</button></nav></div>
 <section class="vista on" id="home"><div class="biombo">
  <div class="panel"><span class="glifo">静</span><h2>El espacio entre las cosas</h2><p>Una interfaz de papel y madera. Cada canción tiene su lugar detrás de un panel.</p><button class="sello">桜</button></div>
  <div class="panel"><span class="glifo">桜</span><h2>Bienvenido</h2><p>Desliza los paneles, abre la biblioteca y encuentra tu música sin ruido.</p><p style="color:#a8442f">100% local</p></div>
- <div class="panel"><span class="glifo">音</span><h2>0 piezas</h2><p>Tu colección espera. Elige una carpeta para comenzar el recorrido.</p><p>→ Abrir biblioteca</p></div>
+ <div class="panel"><span class="glifo">音</span><h2>0 piezas</h2><p>Tu colección espera. Elige una carpeta para comenzar.</p><p>→ Abrir biblioteca</p></div>
 </div></section>
-<section class="vista" id="lib"><div class="titulo"><div><small>01 · COLECCIÓN</small><h1>Biblioteca</h1></div><span>0 piezas</span></div>
-<div class="filtros"><span>Todas juntas</span><span>＋ Elegir carpeta</span><span>papel · 3</span><span>tinta · 3</span></div>
-<div class="tabla"><div class="fila cabecera"><div>#</div><div>TÍTULO</div><div>ARTISTA</div><div>ÁLBUM</div><div>DURACIÓN</div></div><div id="filas"></div></div></section>
+<section class="vista" id="lib"><div class="titulo"><div><small>01 · COLECCIÓN</small><h1>Biblioteca</h1></div><span>8 piezas</span></div>
+<div class="barra"><button class="on">Todas juntas</button><button>◀ Subir</button><button>＋ Elegir carpeta</button><button>papel · 3</button><button>tinta · 3</button></div>
+<input class="buscar" placeholder="Buscar en tu música…">
+<div class="tabla"><div class="fila cabecera"><div>#</div><div></div><div>TÍTULO</div><div>ARTISTA</div><div>ÁLBUM</div><div>TIEMPO</div></div><div id="filas"></div></div></section>
 <div class="repro"><span style="font-size:12px;color:#7a6a52">Sin pista seleccionada</span><button>▶</button></div>
 </div><script>
-document.getElementById('filas').innerHTML=Array.from({length:8},(_,i)=>`<div class="fila"><div>${String(i+1).padStart(2,'0')}</div><div class="t">Pista ${i}</div><div>Artista ${i}</div><div>Álbum ${i}</div><div>3:20</div></div>`).join('');
+const c="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Crect width='80' height='80' fill='%23b9a17d'/%3E%3Ccircle cx='40' cy='36' r='18' fill='%23f3ebd9' opacity='.7'/%3E%3C/svg%3E";
+document.getElementById('filas').innerHTML=Array.from({length:8},(_,i)=>`<div class="fila"><div>${String(i+1).padStart(2,'0')}</div><div><img src="${c}"></div><div class="t">Pista ${i}</div><div>Artista ${i}</div><div>Álbum ${i}</div><div class="acc"><b>♡</b>✎🗑 3:20</div></div>`).join('');
 document.querySelectorAll('.cab nav button[data-v]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.vista').forEach(v=>v.classList.remove('on'));document.getElementById(b.dataset.v).classList.add('on');document.querySelectorAll('.cab nav button').forEach(x=>x.classList.remove('on'));b.classList.add('on')});
 </script></body></html>

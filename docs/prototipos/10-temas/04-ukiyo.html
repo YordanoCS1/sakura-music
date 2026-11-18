@@ -1,0 +1,36 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>04 · Ukiyo</title><style>
+:root{--fondo:#efe4cf;--tinta:#2d2119;--rojo:#c14b32;--azul:#2b5876}
+*{box-sizing:border-box}body{margin:0;height:100vh;overflow:hidden;background:var(--fondo);color:var(--tinta);font-family:Georgia,serif}
+.nube{position:fixed;left:0;right:0;top:0;height:180px;background:linear-gradient(180deg,rgba(193,75,50,.16),transparent);pointer-events:none}
+.cab{position:relative;height:52px;display:flex;align-items:center;gap:22px;padding:0 30px;border-bottom:3px solid var(--rojo)}
+.cab b{font-weight:400;letter-spacing:.2em}.cab button{background:none;border:0;color:#8a6b56;font:11px Georgia;cursor:pointer}
+.cab button.on{color:var(--rojo)}
+.vista{position:relative;display:none;height:calc(100vh - 52px - 72px);overflow:auto;padding:32px 42px}.vista.on{display:block}
+/* HOME: cartel de madera */
+.cartel{min-height:70vh;display:flex;align-items:center;justify-content:center}
+.tablero{width:min(560px,74%);padding:46px;background:#f7edda;border:12px solid var(--rojo);box-shadow:14px 16px 0 rgba(43,88,118,.2)}
+.tablero h1{font-size:54px;font-weight:400;margin:10px 0;line-height:1.05}.tablero p{color:#7b5f4d;line-height:1.9}
+/* LIBRARY: pergaminos colgantes */
+.tit{display:flex;justify-content:space-between;border-bottom:3px solid var(--rojo);padding-bottom:12px;margin-bottom:22px}
+.tit h1{font-size:40px;font-weight:400;margin:6px 0}
+.filtros{display:flex;gap:8px;margin-bottom:22px;flex-wrap:wrap}.filtros button{border:1px solid var(--rojo);background:transparent;color:var(--rojo);padding:6px 12px;font:10px Georgia;cursor:pointer}
+.filtros button.on{background:var(--rojo);color:#fff}
+.rollos{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:22px}
+.rollo{padding:12px;background:#f8efdd;border-top:10px solid var(--azul);border-bottom:10px solid var(--azul)}
+.rollo img{width:100%;height:126px;object-fit:cover;filter:saturate(1.2)}.rollo strong{display:block;margin-top:12px;font-weight:400;font-size:20px}
+.rollo small{font:9px Georgia;color:#8a6b56}.acc{float:right;color:var(--rojo)}
+.repro{position:fixed;bottom:0;left:0;right:0;height:72px;border-top:3px solid var(--rojo);display:flex;align-items:center;padding:0 30px;background:#f7edda}
+.repro button{margin-left:auto;border:0;background:var(--rojo);color:#fff;width:38px;height:38px;cursor:pointer}
+</style></head><body><div class="nube"></div>
+<div class="cab"><b>絵 · SAKURA</b><button class="on" data-v="home">Inicio</button><button data-v="lib">Biblioteca</button><button>Buscar</button><button>Cola</button></div>
+<section class="vista on" id="home"><div class="cartel"><div class="tablero"><p style="font:10px Georgia;letter-spacing:.3em;color:var(--rojo)">UKIYO · EDICIÓN</p><h1>Música de mundo flotante</h1><p>Rojos, azules y papeles. Cada canción es una estampa que merece mirarse dos veces.</p><p style="color:var(--rojo)">Abrir biblioteca →</p></div></div></section>
+<section class="vista" id="lib"><div class="tit"><div><small style="font:10px Georgia;letter-spacing:.2em;color:var(--rojo)">01 · COLECCIÓN</small><h1>Biblioteca</h1></div><span>8 piezas</span></div>
+<div class="filtros"><button class="on">Todas juntas</button><button>◀ Subir</button><button>＋ Elegir carpeta</button><button>estampa · 3</button></div>
+<div class="rollos" id="r"></div></section>
+<div class="repro"><span style="color:#8a6b56;font-size:11px">Sin pista seleccionada</span><button>▶</button></div>
+<script>
+const c="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Crect width='140' height='140' fill='%232b5876'/%3E%3Ccircle cx='70' cy='60' r='34' fill='%23c14b32'/%3E%3C/svg%3E";
+document.getElementById('r').innerHTML=Array.from({length:8},(_,i)=>`<article class="rollo"><img src="${c}"><strong>Pista ${i}</strong><small>Artista ${i} · Álbum ${i}</small><span class="acc">♡ ✎ 🗑</span></article>`).join('');
+document.querySelectorAll('.cab button[data-v]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.vista').forEach(v=>v.classList.remove('on'));document.getElementById(b.dataset.v).classList.add('on');document.querySelectorAll('.cab button').forEach(x=>x.classList.remove('on'));b.classList.add('on')});
+</script></body></html>

@@ -20,16 +20,16 @@
 <div class="grid" id="grid"></div>
 <script>
 const temas=[
- ['01-wabi-sabi','Wabi-sabi','Tierra, barro y ámbar'],
- ['02-shoji','Shoji','Papel y rejilla'],
- ['03-zen','Zen garden','Arena y piedra'],
- ['04-hokusai','Hokusai','Azul y ola'],
- ['05-kintsugi','Kintsugi','Negro y oro'],
- ['06-origami','Origami','Papel plegado'],
- ['07-bambu','Bambú','Verde natural'],
- ['08-deco','Art Deco','Negro y dorado'],
- ['09-neon','Neón Noir','Magenta y violeta'],
- ['10-swiss','Swiss Minimal','Blanco y negro'],
+ ['01-sumi','Sumi Ink','Pincelada blanca sobre negro'],
+ ['02-shoji','Shoji','Biombo y rejilla de madera'],
+ ['03-tatami','Tatami','Esteras y mesa baja'],
+ ['04-ukiyo','Ukiyo','Estampas rojas y azules'],
+ ['05-lacquer','Lacquer','Laca roja y oro'],
+ ['06-origami','Origami','Papel plegado rosa'],
+ ['07-moonlit','Moonlit','Noche azul y luna'],
+ ['08-ledger','Ledger','Libro mayor y sellos'],
+ ['09-circuit','Circuit','Terminal y nodos'],
+ ['10-swiss','Swiss Minimal','Grid y Helvetica'],
 ];
 document.getElementById('grid').innerHTML=temas.map(([archivo,nombre,desc])=>
 `<a class="card" href="${archivo}.html" target="_blank"><div class="vista"><iframe src="${archivo}.html" loading="lazy"></iframe></div><div class="pie"><strong>${nombre}</strong><small>${desc} · ${archivo}.html</small></div></a>`).join('');

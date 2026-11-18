@@ -1,0 +1,36 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>07 · Moonlit</title><style>
+:root{--noche:#0b1324;--luna:#dfe8f7;--azul:#8fb6e8;--tenue:#7f92b4}
+*{box-sizing:border-box}body{margin:0;height:100vh;overflow:hidden;background:var(--noche);color:var(--luna);font-family:Georgia,serif;
+ background-image:radial-gradient(circle at 80% 12%,rgba(143,182,232,.16),transparent 35%)}
+.cab{height:52px;display:flex;align-items:center;gap:22px;padding:0 28px;border-bottom:1px solid rgba(223,232,247,.18)}
+.cab b{font-weight:400;letter-spacing:.2em}.cab button{background:none;border:0;color:var(--tenue);font:10px Georgia;cursor:pointer}
+.cab button.on{color:var(--azul)}
+.vista{display:none;height:calc(100vh - 52px - 72px);overflow:auto;padding:34px 42px}.vista.on{display:block}
+/* HOME: luna y ondas */
+.luna{min-height:70vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.disco{width:160px;height:160px;border-radius:50%;background:radial-gradient(circle at 38% 35%,#fff,var(--azul));box-shadow:0 0 60px rgba(143,182,232,.35)}
+.luna h1{font-size:54px;font-weight:400;margin:28px 0 8px}.luna p{max-width:390px;line-height:1.9;color:var(--tenue)}
+/* LIBRARY: tarjetas flotantes */
+.tit{display:flex;justify-content:space-between;border-bottom:1px solid rgba(223,232,247,.2);padding-bottom:12px;margin-bottom:22px}
+.tit h1{font-size:40px;font-weight:400;margin:6px 0}
+.filtros{display:flex;gap:8px;margin-bottom:22px;flex-wrap:wrap}.filtros button{border:1px solid rgba(223,232,247,.22);background:transparent;color:var(--tenue);padding:6px 12px;font:10px Georgia;cursor:pointer}
+.filtros button.on{background:var(--azul);color:var(--noche)}
+.tarjetas{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:24px}
+.tarj{padding:14px;border:1px solid rgba(143,182,232,.3);background:rgba(143,182,232,.05);box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.tarj img{width:100%;height:120px;object-fit:cover;filter:brightness(.85) saturate(.8)}.tarj strong{display:block;margin-top:12px;font-weight:400;font-size:20px}
+.tarj small{font:9px Georgia;color:var(--tenue)}.acc{float:right;color:var(--azul)}
+.repro{position:fixed;bottom:0;left:0;right:0;height:72px;border-top:1px solid rgba(223,232,247,.18);display:flex;align-items:center;padding:0 28px;background:#080e1b}
+.repro button{margin-left:auto;border:1px solid var(--azul);background:transparent;color:var(--azul);width:38px;height:38px;cursor:pointer}
+</style></head><body>
+<div class="cab"><b>月 · SAKURA</b><button class="on" data-v="home">Inicio</button><button data-v="lib">Biblioteca</button><button>Buscar</button><button>Cola</button></div>
+<section class="vista on" id="home"><div class="luna"><div class="disco"></div><p style="font:10px Georgia;letter-spacing:.3em;color:var(--azul)">MOONLIT · NOCHE</p><h1>Escucha bajo la luna</h1><p>Todo en calma, todo azul. Tu música flotando en la noche.</p><p style="color:var(--azul)">Abrir biblioteca →</p></div></section>
+<section class="vista" id="lib"><div class="tit"><div><small style="font:10px Georgia;letter-spacing:.2em;color:var(--azul)">01 · COLECCIÓN</small><h1>Biblioteca</h1></div><span>8 piezas</span></div>
+<div class="filtros"><button class="on">Todas juntas</button><button>◀ Subir</button><button>＋ Elegir carpeta</button><button>noche · 3</button></div>
+<div class="tarjetas" id="t"></div></section>
+<div class="repro"><span style="color:var(--tenue);font-size:11px">Sin pista seleccionada</span><button>▶</button></div>
+<script>
+const c="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Crect width='140' height='140' fill='%230b1324'/%3E%3Ccircle cx='70' cy='60' r='30' fill='%238fb6e8' opacity='.8'/%3E%3C/svg%3E";
+document.getElementById('t').innerHTML=Array.from({length:8},(_,i)=>`<article class="tarj"><img src="${c}"><strong>Pista ${i}</strong><small>Artista ${i} · Álbum ${i}</small><span class="acc">♡ ✎ 🗑</span></article>`).join('');
+document.querySelectorAll('.cab button[data-v]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.vista').forEach(v=>v.classList.remove('on'));document.getElementById(b.dataset.v).classList.add('on');document.querySelectorAll('.cab button').forEach(x=>x.classList.remove('on'));b.classList.add('on')});
+</script></body></html>

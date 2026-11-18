@@ -1,0 +1,36 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>09 · Circuit</title><style>
+:root{--bg:#080c10;--verde:#5ef2b0;--tenue:#527d6c;--txt:#d8f5e8}
+*{box-sizing:border-box}body{margin:0;height:100vh;overflow:hidden;background:var(--bg);color:var(--txt);font-family:Consolas,monospace;
+ background-image:linear-gradient(rgba(94,242,176,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(94,242,176,.03) 1px,transparent 1px);background-size:28px 28px}
+.cab{height:52px;display:flex;align-items:center;gap:22px;padding:0 28px;border-bottom:1px solid rgba(94,242,176,.28)}
+.cab b{font-weight:400;letter-spacing:.16em;color:var(--verde)}.cab button{background:none;border:0;color:var(--tenue);font:10px Consolas;cursor:pointer}
+.cab button.on{color:var(--verde)}
+.vista{display:none;height:calc(100vh - 52px - 70px);overflow:auto;padding:32px 40px}.vista.on{display:block}
+/* HOME: terminal */
+.terminal{border:1px solid rgba(94,242,176,.35);padding:30px;min-height:60vh;background:rgba(94,242,176,.02)}
+.linea{color:var(--tenue);font-size:12px}.prompt{color:var(--verde)}
+.terminal h1{font-size:52px;font-weight:400;margin:18px 0;color:var(--verde)}
+.terminal p{color:var(--tenue);line-height:1.8}
+/* LIBRARY: nodos */
+.tit{display:flex;justify-content:space-between;border-bottom:1px solid rgba(94,242,176,.3);padding-bottom:12px;margin-bottom:20px}
+.tit h1{font-size:36px;font-weight:400;margin:6px 0}
+.filtros{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}.filtros button{border:1px solid rgba(94,242,176,.3);background:transparent;color:var(--tenue);padding:6px 11px;font:10px Consolas;cursor:pointer}
+.filtros button.on{background:var(--verde);color:var(--bg)}
+.nodos{display:flex;flex-direction:column;gap:6px}
+.nodo{display:grid;grid-template-columns:50px 1fr 1fr 70px;align-items:center;padding:10px 12px;border:1px solid rgba(94,242,176,.16);background:rgba(94,242,176,.025)}
+.nodo:hover{border-color:var(--verde)}.nodo .id{color:var(--verde);font-size:11px}.nodo .t{color:var(--txt);font-size:14px}
+.nodo .a{color:var(--tenue);font-size:10px}.nodo .d{text-align:right;color:var(--verde);font-size:10px}
+.repro{height:70px;border-top:1px solid rgba(94,242,176,.3);display:flex;align-items:center;padding:0 28px}
+.repro button{margin-left:auto;border:1px solid var(--verde);background:transparent;color:var(--verde);width:36px;height:36px;cursor:pointer}
+</style></head><body>
+<div class="cab"><b>⌁ SAKURA</b><button class="on" data-v="home">Inicio</button><button data-v="lib">Biblioteca</button><button>Buscar</button><button>Cola</button></div>
+<section class="vista on" id="home"><div class="terminal"><div class="linea"><span class="prompt">sakura@local</span>:~$ iniciar --modo=circuit</div><h1>&gt; Música en sistema</h1><p>Todo conectado, todo local. Tu biblioteca como una red de nodos esperando activarse.</p><p class="linea">[ OK ] 8 pistas indexadas &nbsp; [ OK ] 100% local</p><p style="color:var(--verde)">$ abrir biblioteca _</p></div></section>
+<section class="vista" id="lib"><div class="tit"><div><small style="font-size:10px;letter-spacing:.2em;color:var(--verde)">SISTEMA · 01</small><h1>Biblioteca</h1></div><span>8 nodos activos</span></div>
+<div class="filtros"><button class="on">Todas juntas</button><button>◀ Subir</button><button>＋ Elegir carpeta</button><button>nodo · 3</button></div>
+<div class="nodos" id="n"></div></section>
+<div class="repro"><span style="color:var(--tenue);font-size:11px">SIN PISTA ACTIVA</span><button>▶</button></div>
+<script>
+document.getElementById('n').innerHTML=Array.from({length:8},(_,i)=>`<div class="nodo"><span class="id">0${i+1}</span><span class="t">pista_${i}.flac</span><span class="a">artista_${i} / album_${i}</span><span class="d">3:20</span></div>`).join('');
+document.querySelectorAll('.cab button[data-v]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.vista').forEach(v=>v.classList.remove('on'));document.getElementById(b.dataset.v).classList.add('on');document.querySelectorAll('.cab button').forEach(x=>x.classList.remove('on'));b.classList.add('on')});
+</script></body></html>

@@ -1,0 +1,36 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>08 · Ledger</title><style>
+:root{--papel:#f4eddc;--tinta:#33291d;--sello:#a33a2a;--linea:#c9b99a}
+*{box-sizing:border-box}body{margin:0;height:100vh;overflow:hidden;background:var(--papel);color:var(--tinta);font-family:"Courier New",monospace}
+.cab{height:52px;display:flex;align-items:center;gap:22px;padding:0 28px;border-bottom:2px solid var(--tinta)}
+.cab b{font-weight:700;letter-spacing:.14em}.cab button{background:none;border:0;color:#7a6a52;font:10px "Courier New",monospace;text-transform:uppercase;cursor:pointer}
+.cab button.on{color:var(--sello);text-decoration:underline}
+.vista{display:none;height:calc(100vh - 52px - 72px);overflow:auto;padding:32px 40px}.vista.on{display:block}
+/* HOME: hoja de libro diario */
+.hoja{min-height:70vh;display:flex;align-items:center;gap:46px}
+.diario{width:min(560px,70%);padding:44px;border:1px solid var(--tinta);background:#faf4e6;box-shadow:inset 0 0 0 6px var(--papel),inset 0 0 0 7px var(--linea)}
+.diario h1{font-size:46px;font-weight:700;line-height:1.05;margin:12px 0}.diario p{color:#6b5c46;line-height:1.9;font-size:12px}
+.timbre{width:70px;height:70px;border:3px double var(--sello);border-radius:50%;display:grid;place-items:center;color:var(--sello);transform:rotate(-12deg)}
+/* LIBRARY: libro mayor con columnas y sellos */
+.tit{display:flex;justify-content:space-between;border-bottom:2px solid var(--tinta);padding-bottom:12px;margin-bottom:18px}
+.tit h1{font-size:34px;text-transform:uppercase;letter-spacing:.06em;margin:6px 0}
+.filtros{display:flex;gap:0;margin-bottom:18px}.filtros button{border:1px solid var(--linea);background:transparent;padding:7px 12px;font:10px "Courier New",monospace;cursor:pointer;margin-right:-1px}
+.filtros button.on{background:var(--sello);color:#fff;border-color:var(--sello)}
+.mayor{border:1px solid var(--tinta)}
+.r{display:grid;grid-template-columns:56px 1fr 1fr 80px;border-bottom:1px solid var(--linea)}
+.r:last-child{border:0}.r>div{padding:11px 12px;border-right:1px solid var(--linea);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.r>div:last-child{border:0}.r.cab{background:rgba(201,185,154,.3);font-size:9px;text-transform:uppercase;letter-spacing:.12em}
+.r .t{font-weight:700;font-size:13px}.r .s{color:var(--sello)}
+.repro{position:fixed;bottom:0;left:0;right:0;height:72px;border-top:2px solid var(--tinta);display:flex;align-items:center;padding:0 28px;background:#faf4e6}
+.repro button{margin-left:auto;border:1px solid var(--sello);background:transparent;color:var(--sello);width:36px;height:36px;cursor:pointer}
+</style></head><body>
+<div class="cab"><b>帳 · SAKURA</b><button class="on" data-v="home">Inicio</button><button data-v="lib">Biblioteca</button><button>Buscar</button><button>Cola</button></div>
+<section class="vista on" id="home"><div class="hoja"><div class="diario"><p style="font-size:10px;letter-spacing:.2em">LEDGER · REGISTRO</p><h1>Toda canción queda registrada</h1><p>Fechas, artistas, álbumes. Un libro mayor de tu música, escrito a máquina y sellado en rojo.</p><p style="color:var(--sello)">Abrir biblioteca →</p></div><div class="timbre">桜</div></div></section>
+<section class="vista" id="lib"><div class="tit"><div><small style="font-size:10px;letter-spacing:.2em;color:var(--sello)">REGISTRO · 01</small><h1>Biblioteca</h1></div><span>8 piezas · 100% local</span></div>
+<div class="filtros"><button class="on">Todas juntas</button><button>◀ Subir</button><button>＋ Elegir carpeta</button><button>registro · 3</button></div>
+<div class="mayor"><div class="r cab"><div>Nº</div><div>TÍTULO</div><div>ARTISTA</div><div>ESTADO</div></div><div id="m"></div></div></section>
+<div class="repro"><span style="color:#7a6a52;font-size:11px">SIN PISTA SELECCIONADA</span><button>▶</button></div>
+<script>
+document.getElementById('m').innerHTML=Array.from({length:8},(_,i)=>`<div class="r"><div>${String(i+1).padStart(2,'0')}</div><div class="t">Pista ${i}</div><div>Artista ${i} · Álbum ${i}</div><div class="s">REGISTRADA ✓</div></div>`).join('');
+document.querySelectorAll('.cab button[data-v]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.vista').forEach(v=>v.classList.remove('on'));document.getElementById(b.dataset.v).classList.add('on');document.querySelectorAll('.cab button').forEach(x=>x.classList.remove('on'));b.classList.add('on')});
+</script></body></html>

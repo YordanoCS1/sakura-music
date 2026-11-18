@@ -2,33 +2,39 @@
 <title>06 · Origami</title><style>
 :root{--fondo:#fdf5f7;--tinta:#402631;--rosa:#d9547f;--suave:#f3c9d8}
 *{box-sizing:border-box}body{margin:0;height:100vh;overflow:hidden;background:var(--fondo);color:var(--tinta);font-family:Georgia,serif}
-.nav{height:52px;display:flex;align-items:center;gap:14px;padding:0 26px}
-.nav b{font-weight:400;letter-spacing:.18em}.nav button{border:0;background:var(--suave);color:var(--tinta);padding:7px 14px;cursor:pointer;font:11px Georgia;
- clip-path:polygon(0 0,100% 0,92% 100%,0 100%)}.nav button.on{background:var(--rosa);color:#fff}
+.nav{height:52px;display:flex;align-items:center;gap:14px;padding:0 26px}.nav b{font-weight:400;letter-spacing:.18em}
+.nav button{border:0;background:var(--suave);color:var(--tinta);padding:7px 14px;cursor:pointer;font:11px Georgia;clip-path:polygon(0 0,100% 0,92% 100%,0 100%)}
+.nav button.on{background:var(--rosa);color:#fff}
 .vista{display:none;height:calc(100vh - 52px - 74px);overflow:auto;padding:34px 42px}.vista.on{display:block}
-/* HOME: figuras plegadas en diagonal */
+/* HOME plegado */
 .pliegues{display:flex;align-items:center;gap:40px;min-height:72vh}
-.triangulo{width:0;height:0;border-left:110px solid var(--rosa);border-top:75px solid transparent;border-bottom:75px solid transparent;filter:drop-shadow(8px 10px 0 rgba(217,84,127,.18))}
-.triangulo.s{width:0;height:0;border-right:90px solid var(--suave);border-left:0;border-top:60px solid transparent;border-bottom:60px solid transparent}
-.pliegues h1{font-size:56px;font-weight:300;line-height:1.05;margin:12px 0}
-.pliegues p{color:#8c7180;line-height:1.9;max-width:380px}
-/* LIBRARY: tarjetas con esquina doblada */
-.papeles{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:24px}
+.triangulo{width:0;height:0;border-left:110px solid var(--rosa);border-top:75px solid transparent;border-bottom:75px solid transparent}
+.pliegues h1{font-size:56px;font-weight:300;line-height:1.05;margin:12px 0}.pliegues p{color:#8c7180;line-height:1.9;max-width:380px}
+/* LIBRARY DETALLADA: hojas con esquina doblada y acciones */
+.cab-sec{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1px solid var(--suave);padding-bottom:14px;margin-bottom:18px}
+.cab-sec h1{font-weight:300;font-size:40px;margin:6px 0}
+.filtros{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+.filtros button{border:1px solid var(--suave);background:transparent;padding:7px 12px;font:10px Georgia;cursor:pointer}
+.filtros button.on{background:var(--rosa);color:#fff;border-color:var(--rosa)}
+.buscar{width:100%;max-width:380px;padding:9px 12px;border:1px solid var(--suave);background:#fff;font-family:inherit;margin-bottom:22px}
+.papeles{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:24px}
 .papel{position:relative;background:#fff;padding:14px;box-shadow:6px 8px 0 rgba(217,84,127,.14)}
-.papel::after{content:'';position:absolute;right:0;bottom:0;border-left:24px solid transparent;border-bottom:24px solid var(--suave)}
-.papel img{width:100%;height:120px;object-fit:cover;clip-path:polygon(0 0,100% 0,100% 78%,78% 100%,0 100%)}
-.papel strong{display:block;margin-top:12px;font-weight:400;font-size:20px}.papel small{font:9px Georgia;color:#9c8490}
+.papel::after{content:'';position:absolute;right:0;bottom:0;border-left:26px solid transparent;border-bottom:26px solid var(--suave)}
+.papel img{width:100%;height:126px;object-fit:cover;clip-path:polygon(0 0,100% 0,100% 80%,80% 100%,0 100%)}
+.papel strong{display:block;margin-top:12px;font-weight:400;font-size:20px}.papel small{font:9px Georgia;color:#9c8490;line-height:1.6;display:block}
+.acc{position:absolute;bottom:10px;right:12px;display:flex;gap:7px;font-size:12px;color:#9c8490}.acc b{color:var(--rosa)}
 .repro{position:fixed;bottom:0;left:0;right:0;height:74px;border-top:1px solid var(--suave);display:flex;align-items:center;padding:0 26px;background:#fff}
 .repro button{margin-left:auto;border:0;background:var(--rosa);color:#fff;width:36px;height:36px;cursor:pointer;clip-path:polygon(50% 0,100% 100%,0 100%)}
 </style></head><body>
 <div class="nav"><b>折 · SAKURA</b><button class="on" data-v="home">Inicio</button><button data-v="lib">Biblioteca</button><button>Buscar</button><button>Cola</button></div>
-<section class="vista on" id="home"><div class="pliegues"><div class="triangulo"></div><div><p style="font:10px Georgia;letter-spacing:.3em;color:var(--rosa)">ORIGAMI</p><h1>Todo se pliega<br>hacia la música</h1><p>Una interfaz ligera, de papel doblado. Cada álbum es una figura esperando abrirse.</p><p style="color:var(--rosa)">Abrir biblioteca →</p></div><div class="triangulo s"></div></div></section>
-<section class="vista" id="lib"><div style="border-bottom:1px solid var(--suave);padding-bottom:14px;margin-bottom:22px"><small style="font:10px Georgia;letter-spacing:.2em;color:var(--rosa)">COLECCIÓN</small><h1 style="font-weight:300;font-size:40px;margin:6px 0">Biblioteca</h1></div>
-<div style="display:flex;gap:8px;margin-bottom:20px"><span style="border:1px solid var(--suave);padding:6px 12px;font:10px Georgia">Todas juntas</span><span style="border:1px solid var(--suave);padding:6px 12px;font:10px Georgia">＋ Elegir carpeta</span></div>
+<section class="vista on" id="home"><div class="pliegues"><div class="triangulo"></div><div><p style="font:10px Georgia;letter-spacing:.3em;color:var(--rosa)">ORIGAMI</p><h1>Todo se pliega<br>hacia la música</h1><p>Una interfaz ligera, de papel doblado. Cada álbum es una figura esperando abrirse.</p><p style="color:var(--rosa)">Abrir biblioteca →</p></div></div></section>
+<section class="vista" id="lib"><div class="cab-sec"><div><small style="font:10px Georgia;letter-spacing:.2em;color:var(--rosa)">COLECCIÓN · 01</small><h1>Biblioteca</h1></div><span>8 piezas</span></div>
+<div class="filtros"><button class="on">Todas juntas</button><button>◀ Subir</button><button>＋ Elegir carpeta</button><button>papel · 3</button><button>tinta · 3</button></div>
+<input class="buscar" placeholder="Buscar en tu música…">
 <div class="papeles" id="p"></div></section>
 <div class="repro"><span style="color:#9c8490;font-size:11px">Sin pista seleccionada</span><button>▶</button></div>
 <script>
 const c="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Crect width='120' height='120' fill='%23d9547f'/%3E%3Cpath d='M0 120 L120 0 V120Z' fill='%23f3c9d8'/%3E%3C/svg%3E";
-document.getElementById('p').innerHTML=Array.from({length:8},(_,i)=>`<article class="papel"><img src="${c}"><strong>Pista ${i}</strong><small>Artista ${i} · Álbum ${i} · 3:20</small></article>`).join('');
+document.getElementById('p').innerHTML=Array.from({length:8},(_,i)=>`<article class="papel"><img src="${c}"><strong>Pista ${i}</strong><small>Artista ${i}<br>Álbum ${i} · FLAC · 3:20</small><span class="acc"><b>♡</b>✎🗑</span></article>`).join('');
 document.querySelectorAll('.nav button[data-v]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.vista').forEach(v=>v.classList.remove('on'));document.getElementById(b.dataset.v).classList.add('on');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('on'));b.classList.add('on')});
 </script></body></html>
