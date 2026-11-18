@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sumi-e · Ensō orbital · todas las pestañas</title>
+<style>
+  :root{--tinta:#0a0908;--papel:#ece3d6;--apagado:#8d8377;--rojo:#d24832;
+    --serif:'Yu Mincho','Hiragino Mincho ProN','Cormorant Garamond',Georgia,serif;
+    --mono:'JetBrains Mono',Consolas,monospace}
+  *{box-sizing:border-box}
+  body{margin:0;height:100vh;overflow:hidden;color:var(--papel);font-family:var(--serif);
+    background:radial-gradient(circle at 50% 48%,rgba(210,72,50,.065),transparent 42%),
+      radial-gradient(ellipse at 15% 85%,rgba(130,120,105,.08),transparent 55%),
+      linear-gradient(180deg,#100e0c,#060505)}
+  .sello{position:absolute;top:30px;left:34px;width:42px;height:42px;border-radius:7px;background:var(--rojo);
+    border:2px solid rgba(255,240,230,.5);display:grid;place-items:center;transform:rotate(-4deg);color:#fff5e8;font-size:23px;z-index:4}
+  .marca{position:absolute;right:3%;top:50%;transform:translateY(-50%);font-size:380px;line-height:1;color:rgba(236,227,214,.022);pointer-events:none}
+  .titulo{position:absolute;top:7%;left:50%;transform:translateX(-50%);text-align:center}
+  .kicker{font:10px var(--mono);letter-spacing:.4em;color:var(--apagado);text-transform:uppercase}
+  .titulo h1{font-size:48px;font-weight:400;margin:8px 0 0;letter-spacing:-.02em}
+  .orbita{position:absolute;left:50%;top:51%;width:560px;height:560px;transform:translate(-50%,-50%)}
+  .orbita button{position:absolute;background:none;border:0;color:var(--apagado);font-family:var(--serif);font-size:23px;cursor:pointer}
+  .orbita button.activo{color:var(--rojo);text-shadow:0 0 18px rgba(210,72,50,.5)}
+  .n1{top:-6px;left:50%;transform:translateX(-50%)}.n2{top:50%;right:-6px;transform:translateY(-50%)}
+  .n3{bottom:-6px;left:50%;transform:translateX(-50%)}.n4{top:50%;left:-6px;transform:translateY(-50%)}
+  .n5{right:30px;bottom:30px}
+  .enso{position:absolute;left:50%;top:51%;transform:translate(-50%,-50%);width:360px;height:360px;border-radius:50%;
+    border:5px solid rgba(210,72,50,.5);border-right-color:transparent;border-bottom-color:rgba(210,72,50,.1);display:grid;place-items:center}
+  .enso::after{content:'';position:absolute;inset:20px;border-radius:50%;border:1px dashed rgba(236,227,214,.07)}
+  .centro{position:absolute;left:50%;top:51%;transform:translate(-50%,-50%);width:300px;height:300px;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;text-align:center;overflow:hidden}
+  .vista{display:none}.vista.activa{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%}
+  .flor{font-size:40px;color:var(--rojo);margin-bottom:10px}
+  .pista{font-size:16px;margin-bottom:4px}
+  .sub{font:9px var(--mono);letter-spacing:.16em;color:var(--apagado)}
+  .boton{margin-top:18px;background:transparent;border:1px solid var(--rojo);color:var(--rojo);border-radius:2px;
+    padding:9px 14px;font:9px var(--mono);letter-spacing:.12em;text-transform:uppercase;cursor:pointer}
+  .mini-lista{width:100%;max-height:210px;overflow:auto;margin-top:8px}
+  .fila{display:flex;justify-content:space-between;padding:7px 2px;border-bottom:1px solid rgba(236,227,214,.08);font-size:12px}
+  .fila small{font:9px var(--mono);color:var(--apagado)}
+  .barra{height:2px;background:rgba(236,227,214,.1);margin-top:4px}.barra i{display:block;height:100%;background:var(--rojo)}
+  .ajuste{display:flex;justify-content:space-between;width:100%;padding:8px 2px;border-bottom:1px solid rgba(236,227,214,.08);font-size:12px}
+  .controles{position:absolute;left:50%;bottom:6%;transform:translateX(-50%);display:flex;gap:24px;align-items:center;color:var(--apagado);font-size:17px}
+  .controles .play{background:var(--rojo);color:#fff;border-radius:50%;width:44px;height:44px;display:grid;place-items:center;font-size:14px}
+  .tiempo{position:absolute;left:50%;bottom:2.5%;transform:translateX(-50%);font:9px var(--mono);letter-spacing:.18em;color:var(--apagado)}
+  .nota{position:absolute;left:34px;bottom:30px;font:10px var(--mono);letter-spacing:.16em;color:var(--apagado)}
+</style></head>
+<body>
+<div class="sello">桜</div><div class="marca" id="marca">墨</div>
+<div class="titulo"><div class="kicker" id="kicker">I · Inicio</div><h1 id="titulo">Sakura</h1></div>
+<nav class="orbita"><button data-v="inicio" class="n1 activo">始</button><button data-v="biblioteca" class="n2">蔵</button>
+  <button data-v="cola" class="n3">列</button><button data-v="buscar" class="n4">探</button><button data-v="ajustes" class="n5">整</button></nav>
+<div class="enso"></div>
+<div class="centro">
+  <section class="vista activa" data-v="inicio"><div class="flor">桜</div><div class="pista">Bienvenido a la tinta</div><div class="sub">ELIGE UN KANJI PARA COMENZAR</div></section>
+  <section class="vista" data-v="biblioteca"><div class="flor">桜</div><div class="pista">Biblioteca vacía</div><div class="sub">0 PIEZAS INDEXADAS</div><button class="boton" data-ir="buscar">Buscar música</button></section>
+  <section class="vista" data-v="buscar"><div class="mini-lista"><div class="fila"><span>夜に駆ける</span><small>5:24</small></div><div class="fila"><span>群青</span><small>4:40</small></div><div class="fila"><span>春節</span><small>3:58</small></div></div><div class="sub">RESULTADOS DE YOUTUBE</div></section>
+  <section class="vista" data-v="cola"><div class="mini-lista"><div class="fila"><div>群青<div class="barra"><i style="width:64%"></i></div></div><small>64%</small></div><div class="fila"><div>春節<div class="barra"><i style="width:20%"></i></div></div><small>20%</small></div></div><div class="sub">2 DESCARGANDO</div></section>
+  <section class="vista" data-v="ajustes"><div style="width:100%"><div class="ajuste"><span>Tema</span><small>Sumi-e</small></div><div class="ajuste"><span>Partículas</span><small>ACTIVAS</small></div><div class="ajuste"><span>Herramientas</span><small>LISTAS</small></div></div></section>
+</div>
+<div class="controles"><span>⟲</span><span>‹</span><span class="play">▶</span><span>›</span><span>⟳</span></div>
+<div class="tiempo">0:00 · 0:00</div><div class="nota" id="nota">0 PIEZAS EN LA COLECCIÓN</div>
+<script>
+const D={inicio:['I · Inicio','Sakura','墨','0 PIEZAS EN LA COLECCIÓN'],biblioteca:['II · Colección','Biblioteca','蔵','BIBLIOTECA · 0 PIEZAS'],
+buscar:['III · Búsqueda','Buscar','探','BÚSQUEDA · YOUTUBE'],cola:['IV · Cola','Descargas','列','COLA · 2 ACTIVAS'],ajustes:['V · Ajustes','Ajustes','整','AJUSTES DEL TEMA']};
+function ir(v){document.querySelectorAll('.vista').forEach(s=>s.classList.toggle('activa',s.dataset.v===v));
+document.querySelectorAll('.orbita button').forEach(b=>b.classList.toggle('activo',b.dataset.v===v));
+document.getElementById('kicker').textContent=D[v][0];document.getElementById('titulo').textContent=D[v][1];
+document.getElementById('marca').textContent=D[v][2];document.getElementById('nota').textContent=D[v][3];}
+document.querySelectorAll('.orbita button').forEach(b=>b.onclick=()=>ir(b.dataset.v));
+document.querySelectorAll('[data-ir]').forEach(b=>b.onclick=()=>ir(b.dataset.ir));
+</script></body></html>

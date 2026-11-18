@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sumi-e · Byōbu dividido · todas las pestañas</title>
+<style>
+  :root{--tinta:#0b0a09;--papel:#ece3d6;--apagado:#8d8377;--rojo:#d24832;
+    --serif:'Yu Mincho','Hiragino Mincho ProN','Cormorant Garamond',Georgia,serif;
+    --mono:'JetBrains Mono',Consolas,monospace}
+  *{box-sizing:border-box}body{margin:0;height:100vh;display:flex;overflow:hidden;background:var(--tinta);color:var(--papel);font-family:var(--serif)}
+  .izq{width:38%;height:100%;position:relative;padding:40px 38px;background:radial-gradient(ellipse at 30% 20%,rgba(210,72,50,.1),transparent 60%),#0e0c0b;
+    border-right:1px solid var(--rojo);display:flex;flex-direction:column;justify-content:space-between}
+  .sello{width:46px;height:46px;border-radius:7px;background:var(--rojo);border:2px solid rgba(255,240,230,.5);display:grid;place-items:center;transform:rotate(-4deg);font-size:24px;color:#fff5e8}
+  .kanji{position:absolute;right:12px;bottom:110px;font-size:300px;line-height:.8;color:rgba(236,227,214,.05);pointer-events:none}
+  .izq h1{font-size:19px;font-weight:400;letter-spacing:.04em;margin:18px 0 6px}
+  .sub{font:10px var(--mono);letter-spacing:.22em;color:var(--apagado);text-transform:uppercase}
+  .stats{font:11px var(--mono);letter-spacing:.12em;color:var(--apagado)}
+  .stats strong{color:var(--rojo);font-size:26px;display:block;font-weight:400}
+  .repro{border-top:1px solid rgba(236,227,214,.1);padding-top:20px}
+  .repro .nombre{font-size:18px;margin-bottom:4px}.repro .artista{font:10px var(--mono);color:var(--apagado);letter-spacing:.12em;margin-bottom:18px}
+  .controles{display:flex;align-items:center;gap:20px;color:var(--apagado);font-size:17px}
+  .play{color:#fff;background:var(--rojo);border-radius:50%;width:44px;height:44px;display:grid;place-items:center;font-size:16px}
+  .der{flex:1;height:100%;padding:44px 52px;overflow:hidden;background:linear-gradient(180deg,#151211,#0d0b0a);position:relative}
+  .cab{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1px solid rgba(236,227,214,.1);padding-bottom:16px}
+  .cab h2{margin:0;font-size:14px;font-weight:400;letter-spacing:.25em;text-transform:uppercase;font-family:var(--mono);color:var(--apagado)}
+  .cab span{font:10px var(--mono);letter-spacing:.18em;color:var(--rojo)}
+  .titulo{font-size:54px;font-weight:400;margin:38px 0 6px;letter-spacing:-.025em}
+  .linea{width:90px;height:3px;background:var(--rojo);margin-bottom:30px}
+  .vista{display:none}.vista.activa{display:block}
+  h3{font-size:28px;font-weight:400;margin:0 0 14px}
+  p{max-width:430px;color:var(--apagado);font-family:sans-serif;font-size:13px;line-height:1.7;margin:0 0 24px}
+  .cta{background:transparent;border:1px solid var(--rojo);color:var(--rojo);border-radius:2px;padding:12px 20px;font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
+  .buscar{width:100%;max-width:520px;background:rgba(236,227,214,.04);border:1px solid rgba(236,227,214,.1);padding:12px 16px;color:var(--papel);font-family:var(--serif);font-size:17px;outline:none;margin-bottom:20px}
+  .fila{display:flex;justify-content:space-between;align-items:center;padding:12px 4px;border-bottom:1px solid rgba(236,227,214,.08);font-size:14px;max-width:620px}
+  .fila small{font:10px var(--mono);color:var(--apagado)}
+  .fila b{font-weight:400;color:var(--rojo)}
+  .barra{height:3px;background:rgba(236,227,214,.1);margin-top:6px}.barra i{display:block;height:100%;background:var(--rojo)}
+  .ajuste{display:flex;justify-content:space-between;max-width:620px;padding:13px 4px;border-bottom:1px solid rgba(236,227,214,.08);font-size:14px}
+  .switch{width:36px;height:20px;border-radius:10px;background:rgba(236,227,214,.12);position:relative}
+  .switch i{position:absolute;right:3px;top:3px;width:14px;height:14px;border-radius:50%;background:var(--rojo)}
+  .marca{position:absolute;right:40px;bottom:-70px;font-size:260px;color:rgba(236,227,214,.035);pointer-events:none}
+  .nav{position:absolute;right:26px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:24px}
+  .nav button{background:none;border:0;color:var(--apagado);font-family:var(--serif);font-size:20px;cursor:pointer}
+  .nav button.activo{color:var(--rojo)}
+</style></head>
+<body>
+<aside class="izq"><div class="sello">桜</div><div class="kanji" id="kanji">蔵</div>
+  <div><h1>Sakura Music</h1><div class="sub">Estudio de tinta</div></div>
+  <div class="stats"><strong id="total">0</strong>PIEZAS EN LA COLECCIÓN</div>
+  <div class="repro"><div class="nombre">Sin pieza seleccionada</div><div class="artista">— · —</div>
+    <div class="controles"><span>⟲</span><span>‹</span><span class="play">▶</span><span>›</span><span>⟳</span></div>
+  </div>
+</aside>
+<section class="der"><div class="cab"><h2 id="indice">Índice · 01</h2><span id="selloTab">蔵 Biblioteca</span></div>
+  <div class="titulo" id="titulo">Biblioteca</div><div class="linea"></div>
+  <div class="vista activa" data-v="inicio"><h3>Bienvenido a la tinta</h3><p>Tu música dispuesta como un byōbu: dos paneles, uno de tinta y otro de contenido. Elige una carpeta para comenzar.</p><button class="cta" data-ir="biblioteca">Abrir biblioteca</button></div>
+  <div class="vista" data-v="biblioteca"><h3>Aún no hay piezas</h3><p>Elige una carpeta y la tinta tomará forma: títulos, artistas, portadas y formatos quedarán indexados en la base local.</p><button class="cta">Escanear carpeta de música</button></div>
+  <div class="vista" data-v="buscar"><input class="buscar" placeholder="Buscar en YouTube…"><div class="fila"><span>夜に駆ける · Yoasobi</span><small>5:24</small></div><div class="fila"><span>群青 · Yoasobi</span><small>4:40</small></div><div class="fila"><span>春節 · Yousui</span><small>3:58</small></div></div>
+  <div class="vista" data-v="cola"><div class="fila"><div>群青 · Yoasobi<div class="barra"><i style="width:64%"></i></div></div><b>64%</b></div><div class="fila"><div>春節 · Yousui<div class="barra"><i style="width:20%"></i></div></div><b>20%</b></div><div class="fila"><span>夜に駆ける · Yoasobi</span><small>EN COLA</small></div></div>
+  <div class="vista" data-v="ajustes"><div class="ajuste"><span>Tema visual</span><small>Sumi-e</small></div><div class="ajuste"><span>Partículas</span><span class="switch"><i></i></span></div><div class="ajuste"><span>Herramientas de descarga</span><small>yt-dlp · FFmpeg</small></div><div class="ajuste"><span>Estilo del reproductor</span><small>Mini</small></div></div>
+  <div class="marca">墨</div>
+  <nav class="nav"><button data-v="inicio" class="activo">始</button><button data-v="biblioteca">蔵</button><button data-v="buscar">探</button><button data-v="cola">列</button><button data-v="ajustes">整</button></nav>
+</section>
+<script>
+const D={inicio:['00 · Inicio','始','Inicio'],biblioteca:['01 · Colección','蔵','Biblioteca'],buscar:['02 · Búsqueda','探','Buscar'],cola:['03 · Cola','列','Descargas'],ajustes:['04 · Ajustes','整','Ajustes']};
+function ir(v){document.querySelectorAll('.vista').forEach(s=>s.classList.toggle('activa',s.dataset.v===v));
+document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('activo',b.dataset.v===v));
+document.getElementById('indice').textContent=D[v][0];document.getElementById('kanji').textContent=D[v][1];
+document.getElementById('selloTab').textContent=D[v][1]+' '+D[v][2];document.getElementById('titulo').textContent=D[v][2];}
+document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>ir(b.dataset.v));
+document.querySelectorAll('[data-ir]').forEach(b=>b.onclick=()=>ir(b.dataset.ir));
+</script></body></html>

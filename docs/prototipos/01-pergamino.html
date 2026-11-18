@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sumi-e · Pergamino flotante · todas las pestañas</title>
+<style>
+  :root{--tinta:#0d0b0a;--papel:#ece3d6;--apagado:#8d8377;--rojo:#d24832;
+    --serif:'Yu Mincho','Hiragino Mincho ProN','Cormorant Garamond',Georgia,serif;
+    --mono:'JetBrains Mono',Consolas,monospace}
+  *{box-sizing:border-box}
+  body{margin:0;height:100vh;overflow:hidden;color:var(--papel);font-family:var(--serif);
+    background:radial-gradient(ellipse 60% 50% at 20% 10%,rgba(210,72,50,.08),transparent 70%),
+      radial-gradient(ellipse 50% 60% at 90% 90%,rgba(140,128,110,.09),transparent 70%),
+      linear-gradient(180deg,#100e0c,#070605)}
+  .marca{position:fixed;left:-30px;top:50%;transform:translateY(-50%);font-size:420px;line-height:1;color:rgba(236,227,214,.028);pointer-events:none}
+  .sello{position:fixed;top:26px;left:28px;width:44px;height:44px;border-radius:7px;background:var(--rojo);
+    border:2px solid rgba(255,240,230,.5);display:grid;place-items:center;font-size:24px;color:#fff5e8;transform:rotate(-4deg);z-index:5}
+  .cabecera{position:absolute;left:50%;top:30px;transform:translateX(-50%);text-align:center}
+  .cabecera .kicker{font:10px var(--mono);letter-spacing:.34em;color:var(--apagado);text-transform:uppercase}
+  .cabecera h1{margin:6px 0 0;font-size:38px;font-weight:400;letter-spacing:-.02em}
+  .scroll{position:absolute;left:50%;top:52%;transform:translate(-50%,-48%);width:min(700px,66vw);height:64vh;
+    padding:40px 56px;background:linear-gradient(180deg,rgba(236,227,214,.055),rgba(236,227,214,.02));
+    border-left:1px solid rgba(236,227,214,.1);border-right:1px solid rgba(236,227,214,.1);
+    clip-path:polygon(0 1.5%,8% 0,19% 1.2%,31% .2%,44% 1.4%,57% 0,70% 1.3%,83% .2%,100% 1.5%,
+      100% 98.5%,88% 100%,75% 98.8%,62% 100%,49% 98.6%,36% 100%,23% 98.7%,11% 100%,0 98.5%);
+    display:flex;flex-direction:column;overflow:hidden}
+  .vista{display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;text-align:center;overflow:hidden}
+  .vista.activa{display:flex}
+  .enso{width:110px;height:110px;border-radius:50%;border:3px solid rgba(210,72,50,.55);
+    border-right-color:transparent;border-bottom-color:rgba(210,72,50,.12);display:grid;place-items:center;
+    transform:rotate(-18deg);margin-bottom:22px}
+  .enso span{transform:rotate(18deg);font-size:30px;color:var(--rojo)}
+  h2{margin:0 0 10px;font-size:30px;font-weight:400;letter-spacing:-.015em}
+  p{margin:0 0 22px;max-width:390px;color:var(--apagado);font-family:sans-serif;font-size:12.5px;line-height:1.7}
+  .cta{background:transparent;color:var(--rojo);border:1px solid var(--rojo);border-radius:2px;padding:11px 20px;
+    font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
+  .cta:hover{background:var(--rojo);color:#fff}
+  .lista{width:100%;text-align:left;overflow:auto;max-height:100%}
+  .fila{display:flex;justify-content:space-between;align-items:center;padding:11px 4px;border-bottom:1px solid rgba(236,227,214,.08);font-size:14px}
+  .fila small{font:10px var(--mono);color:var(--apagado);letter-spacing:.08em}
+  .fila b{font-weight:400;color:var(--rojo)}
+  .barra{height:3px;background:rgba(236,227,214,.1);margin-top:6px}
+  .barra i{display:block;height:100%;background:var(--rojo)}
+  .buscar{width:100%;background:rgba(236,227,214,.05);border:1px solid rgba(236,227,214,.12);
+    border-radius:2px;padding:12px 16px;color:var(--papel);font-family:var(--serif);font-size:17px;outline:none;margin-bottom:16px}
+  .ajuste{width:100%;display:flex;justify-content:space-between;padding:12px 4px;border-bottom:1px solid rgba(236,227,214,.08);font-size:14px}
+  .switch{width:36px;height:20px;border-radius:10px;background:rgba(236,227,214,.12);position:relative}
+  .switch i{position:absolute;right:3px;top:3px;width:14px;height:14px;border-radius:50%;background:var(--rojo)}
+  .nav{position:fixed;right:26px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:20px;
+    color:var(--apagado);font-size:20px;z-index:6}
+  .nav button{background:none;border:0;color:inherit;font-family:var(--serif);font-size:21px;cursor:pointer;padding:4px}
+  .nav button.activo{color:var(--rojo)}
+  .disco{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);width:72px;height:72px;border-radius:50%;
+    border:1px solid rgba(210,72,50,.5);background:radial-gradient(circle,#1c1815 40%,#0d0b0a 41%);
+    display:grid;place-items:center;color:var(--rojo);box-shadow:0 0 34px rgba(210,72,50,.18)}
+  .ctl{position:fixed;bottom:48px;color:var(--apagado);font-size:18px;cursor:pointer;background:none;border:0}
+  .ctl.prev{left:calc(50% - 100px)}.ctl.next{left:calc(50% + 80px)}
+  .tiempo{position:fixed;bottom:8px;left:50%;transform:translateX(-50%);font:9px var(--mono);letter-spacing:.2em;color:var(--apagado)}
+</style></head>
+<body>
+<div class="marca">墨</div><div class="sello">桜</div>
+<div class="cabecera"><div class="kicker" id="kicker">I · Inicio</div><h1 id="titulo">Sakura</h1></div>
+<nav class="nav">
+  <button data-v="inicio" class="activo" title="Inicio">始</button>
+  <button data-v="biblioteca" title="Biblioteca">蔵</button>
+  <button data-v="buscar" title="Buscar">探</button>
+  <button data-v="cola" title="Cola">列</button>
+  <button data-v="ajustes" title="Ajustes">整</button>
+</nav>
+<main class="scroll">
+  <section class="vista activa" data-v="inicio">
+    <div class="enso"><span>桜</span></div><h2>Bienvenido a la tinta</h2>
+    <p>Tu música, dispuesta como un pergamino. Elige una carpeta y comienza a escuchar.</p>
+    <button class="cta" data-ir="biblioteca">Abrir biblioteca</button>
+  </section>
+  <section class="vista" data-v="biblioteca">
+    <div class="enso"><span>桜</span></div><h2>Tu biblioteca aún está vacía</h2>
+    <p>Selecciona una carpeta en tu disco para que el motor en Rust extraiga títulos, artistas, carátulas y formatos.</p>
+    <button class="cta">Escanear carpeta de música</button>
+  </section>
+  <section class="vista" data-v="buscar">
+    <input class="buscar" placeholder="Buscar en YouTube…">
+    <div class="lista">
+      <div class="fila"><span>夜に駆ける · Yoasobi</span><small>5:24</small></div>
+      <div class="fila"><span>群青 · Yoasobi</span><small>4:40</small></div>
+      <div class="fila"><span>春節 · Yousui</span><small>3:58</small></div>
+    </div>
+  </section>
+  <section class="vista" data-v="cola">
+    <div class="lista">
+      <div class="fila"><div>群青 · Yoasobi<div class="barra"><i style="width:64%"></i></div></div><b>64%</b></div>
+      <div class="fila"><div>春節 · Yousui<div class="barra"><i style="width:20%"></i></div></div><b>20%</b></div>
+      <div class="fila"><span>夜に駆ける · Yoasobi</span><small>EN COLA</small></div>
+    </div>
+  </section>
+  <section class="vista" data-v="ajustes">
+    <div class="lista">
+      <div class="ajuste"><span>Tema visual</span><small>Sumi-e</small></div>
+      <div class="ajuste"><span>Partículas</span><span class="switch"><i></i></span></div>
+      <div class="ajuste"><span>Herramientas de descarga</span><small>yt-dlp · FFmpeg</small></div>
+      <div class="ajuste"><span>Estilo del reproductor</span><small>Mini</small></div>
+    </div>
+  </section>
+</main>
+<button class="ctl prev">‹</button><div class="disco">▶</div><button class="ctl next">›</button>
+<div class="tiempo">0:00 · 0:00</div>
+<script>
+const NOMBRES={inicio:['I · Inicio','Sakura'],biblioteca:['II · Colección','Biblioteca'],buscar:['III · Búsqueda','Buscar'],cola:['IV · Cola','Descargas'],ajustes:['V · Ajustes','Ajustes']};
+function ir(v){
+  document.querySelectorAll('.vista').forEach(s=>s.classList.toggle('activa',s.dataset.v===v));
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('activo',b.dataset.v===v));
+  document.getElementById('kicker').textContent=NOMBRES[v][0];
+  document.getElementById('titulo').textContent=NOMBRES[v][1];
+}
+document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>ir(b.dataset.v));
+document.querySelectorAll('[data-ir]').forEach(b=>b.onclick=()=>ir(b.dataset.ir));
+</script></body></html>
