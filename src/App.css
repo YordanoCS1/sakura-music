@@ -6154,3 +6154,24 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .ledger-fila-est { display:flex; align-items:center; justify-content:flex-end; gap:10px; }
 .ledger-fila-est small { font:8px 'IBM Plex Mono','Courier New',monospace; color:#a33a2a; transform:rotate(-4deg); white-space:nowrap; }
 .ledger-sello-final { position:absolute; right:28px; bottom:14px; width:54px; height:54px; border:3px double #a33a2a; border-radius:50%; display:grid; place-items:center; color:#a33a2a; font-size:20px; transform:rotate(-14deg); opacity:.85; }
+
+
+/* ========================================================= */
+/* PORTADAS EN LAS VISTAS PROPIAS                             */
+/* ========================================================= */
+.shoji-slata { grid-template-columns:22px 36px minmax(0,1fr) auto auto !important; }
+.shoji-slata-portada { display:grid; place-items:center; width:32px; height:32px; border:1px solid rgba(90,70,45,.28); background:rgba(255,255,255,.55); color:#a8442f; font-size:14px; overflow:hidden; }
+.shoji-slata-portada img { width:100%; height:100%; object-fit:cover; }
+
+.swiss-modulo { min-height:272px; }
+.swiss-modulo-portada { display:grid; place-items:center; width:100%; height:86px; overflow:hidden; background:#f2f2f0; border:1px solid #111; color:#111; font-size:24px; }
+.swiss-modulo-portada img { width:100%; height:100%; object-fit:cover; filter:grayscale(1); }
+.swiss-modulo.is-active .swiss-modulo-portada { background:#000; border-color:#fff; color:#fff; }
+
+.sumiink-rollo-portada { display:grid; place-items:center; width:62px; height:62px; overflow:hidden; border:1px solid rgba(232,229,221,.3); background:#1a1a1a; color:#e8e5dd; font-size:20px; }
+.sumiink-rollo-portada img { width:100%; height:100%; object-fit:cover; filter:grayscale(1) contrast(1.1); }
+
+.ledger-columnas,
+.ledger-fila { grid-template-columns:64px 44px minmax(0,1.1fr) minmax(0,1.3fr) 200px !important; }
+.ledger-portada { display:grid; place-items:center; width:34px; height:34px; overflow:hidden; border:1px solid #c9b99a; background:#fffdf6; color:#a33a2a; font-size:14px; }
+.ledger-portada img { width:100%; height:100%; object-fit:cover; filter:sepia(.3); }

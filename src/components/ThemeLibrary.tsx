@@ -363,6 +363,7 @@ export default function ThemeLibrary({
                         className={`shoji-slata ${activeTrack?.id === track.id ? 'is-active' : ''}`}
                       >
                         <span className="shoji-slata-num">{String(numero).padStart(2, '0')}</span>
+                        <span className="shoji-slata-portada">{portadaDe(track)}</span>
                         <button type="button" onClick={() => onPlayTrack(track)}>
                           <strong>{track.title}</strong>
                           <small>
@@ -441,6 +442,7 @@ export default function ThemeLibrary({
                 key={track.id}
                 className={`swiss-modulo ${activeTrack?.id === track.id ? 'is-active' : ''}`}
               >
+                <span className="swiss-modulo-portada">{portadaDe(track)}</span>
                 <span className="swiss-modulo-num">{String(i + 1).padStart(2, '0')}</span>
                 <button
                   type="button"
@@ -478,6 +480,7 @@ export default function ThemeLibrary({
                 className={`sumiink-rollo ${activeTrack?.id === track.id ? 'is-active' : ''}`}
               >
                 <span className="sumiink-rollo-barra" aria-hidden="true" />
+                <span className="sumiink-rollo-portada">{portadaDe(track)}</span>
                 <span className="sumiink-rollo-num">{String(i + 1).padStart(2, '0')}</span>
                 <button
                   type="button"
@@ -552,6 +555,7 @@ export default function ThemeLibrary({
               </div>
               <div className="ledger-columnas">
                 <span>Nº</span>
+                <span></span>
                 <span>TÍTULO</span>
                 <span>ARTISTA / ÁLBUM</span>
                 <span>ESTADO</span>
@@ -563,6 +567,7 @@ export default function ThemeLibrary({
                     className={`ledger-fila ${activeTrack?.id === track.id ? 'is-active' : ''}`}
                   >
                     <span className="ledger-num-sello">{String(i + 1).padStart(2, '0')}</span>
+                    <span className="ledger-portada">{portadaDe(track)}</span>
                     <button
                       type="button"
                       className="ledger-fila-tit"
