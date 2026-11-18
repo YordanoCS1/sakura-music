@@ -1,46 +1,37 @@
-<!doctype html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Sakura · Art Deco</title>
-<style>
-:root{--bg:#12100e;--bg-extra:repeating-linear-gradient(45deg,rgba(212,175,55,.03) 0 2px,transparent 2px 16px);--fg:#f0e4c8;--panel:#1b1712;--borde:rgba(212,175,55,.35);--acento:#c9a227;--sobre-acento:#17120a;--apagado:#a99a78;--tarjeta:#211b14;--radio:0px;--gap:18px;--fuente:Georgia,serif;--mono:Courier New,monospace}
-*{box-sizing:border-box}
-body{margin:0;height:100vh;overflow:hidden;background:var(--bg);color:var(--fg);font-family:var(--fuente);
-  background-image:var(--bg-extra)}
-.barra{height:46px;display:flex;align-items:center;gap:18px;padding:0 22px;border-bottom:1px solid var(--borde);background:var(--panel)}
-.marca{display:flex;align-items:center;gap:9px;font-weight:700;letter-spacing:.04em}
-.marca i{font-style:normal;width:26px;height:26px;display:grid;place-items:center;border-radius:var(--radio);background:var(--acento);color:var(--sobre-acento)}
-.tabs{display:flex;gap:6px}
-.tabs button{background:transparent;border:1px solid transparent;color:var(--apagado);padding:7px 13px;border-radius:var(--radio);cursor:pointer;font:11px var(--mono);letter-spacing:.1em}
-.tabs button.on{color:var(--sobre-acento);background:var(--acento)}
-.contenido{height:calc(100vh - 46px - 78px);overflow:auto;padding:34px 42px 60px}
-.cab{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1px solid var(--borde);padding-bottom:18px;margin-bottom:26px}
-.cab small{font:10px var(--mono);letter-spacing:.24em;text-transform:uppercase;color:var(--acento)}
-.cab h1{margin:8px 0 0;font-size:46px;font-weight:400;letter-spacing:-.02em}
-.cab p{margin:6px 0 0;font:10px var(--mono);color:var(--apagado);letter-spacing:.12em}
-.rejilla{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:var(--gap)}
-.tarjeta{position:relative;overflow:hidden;padding:14px;background:var(--tarjeta);border:1px solid var(--borde);border-radius:var(--radio);transition:transform .2s ease,box-shadow .2s ease}
-.tarjeta:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.3)}
-.tarjeta img{width:100%;height:120px;object-fit:cover;border-radius:var(--radio);display:block}
-.tarjeta strong{display:block;margin-top:12px;font-size:20px;font-weight:500}
-.tarjeta small{display:block;margin-top:4px;font:9px var(--mono);color:var(--apagado);line-height:1.6}
-.sello{position:absolute;top:10px;right:10px;width:22px;height:22px;border-radius:var(--radio);background:var(--acento);color:var(--sobre-acento);display:grid;place-items:center;font-size:11px}
-.player{position:fixed;left:0;right:0;bottom:0;height:78px;display:flex;align-items:center;gap:24px;padding:0 24px;background:var(--panel);border-top:1px solid var(--borde)}
-.player .info{flex:1}
-.player .info strong{display:block;font-size:16px}
-.player .info small{font:10px var(--mono);color:var(--apagado)}
-.ctl{display:flex;gap:10px;align-items:center}
-.ctl button{border:none;background:transparent;color:var(--apagado);font-size:16px;cursor:pointer}
-.ctl .play{width:38px;height:38px;border-radius:50%;background:var(--acento);color:var(--sobre-acento)}.tarjeta{border:2px solid var(--borde);outline:1px solid rgba(212,175,55,.2);outline-offset:-5px}.cab h1{text-transform:uppercase;letter-spacing:.14em;font-size:40px}.tabs button{text-transform:uppercase;letter-spacing:.16em}
-</style></head>
-<body>
-<div class="barra"><div class="marca"><i>◈</i> SAKURA</div>
-  <div class="tabs"><button>Inicio</button><button class="on">Biblioteca</button><button>Buscar</button><button>Cola</button><button>Ajustes</button></div></div>
-<div class="contenido"><div class="cab"><div><small>Art Deco</small><h1>Biblioteca</h1><p>8 piezas en tu colección</p></div><button style="background:var(--acento);color:var(--sobre-acento);border:none;padding:10px 16px;border-radius:var(--radio);cursor:pointer">＋ Agregar</button></div>
-  <div class="rejilla" id="r"></div></div>
-<div class="player"><div class="info"><strong>Selecciona una pista</strong><small>Tu música, a tu manera</small></div>
-  <div class="ctl"><button>⟲</button><button>‹</button><button class="play">▶</button><button>›</button><button>⟳</button></div></div>
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>08 · Art Deco</title><style>
+:root{--n:#100e0c;--o:#c9a227;--h:#f0e4c8}
+*{box-sizing:border-box}body{margin:0;height:100vh;overflow:hidden;background:var(--n);color:var(--h);font-family:Georgia,serif;
+ background-image:repeating-linear-gradient(45deg,rgba(201,162,39,.035) 0 2px,transparent 2px 18px)}
+.cab{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 34px;border-bottom:2px solid var(--o)}
+.cab b{font-weight:400;letter-spacing:.3em;color:var(--o)}
+.cab button{background:none;border:1px solid rgba(201,162,39,.3);color:var(--o);padding:6px 14px;font:10px "Courier New",monospace;letter-spacing:.16em;cursor:pointer}
+.vista{display:none;height:calc(100vh - 56px - 76px);overflow:auto;padding:32px 44px}.vista.on{display:block}
+/* HOME: emblema simétrico con rayos */
+.emblema{min-height:70vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.sol{width:180px;height:180px;border:2px solid var(--o);border-radius:50%;display:grid;place-items:center;position:relative}
+.sol::before{content:'';position:absolute;inset:-24px;border:1px solid rgba(201,162,39,.4);border-radius:50%}
+.sol span{font-size:64px;color:var(--o)}
+.emblema h1{font-size:44px;font-weight:400;letter-spacing:.18em;text-transform:uppercase;margin:26px 0 8px}
+.emblema p{max-width:420px;color:#b8a888;letter-spacing:.08em}
+.emblema .boton{border:1px solid var(--o);color:var(--o);padding:10px 18px;font:10px "Courier New",monospace;letter-spacing:.18em;margin-top:16px}
+/* LIBRARY: tabla ornamentada */
+.tit{text-align:center;border-bottom:2px solid var(--o);padding-bottom:14px;margin-bottom:24px}
+.tit small{font:10px "Courier New",monospace;letter-spacing:.3em;color:var(--o)}
+.tit h1{font-size:38px;font-weight:400;letter-spacing:.2em;text-transform:uppercase;margin:8px 0}
+.tabla{border:2px solid var(--o);outline:1px solid rgba(201,162,39,.3);outline-offset:-6px}
+.r{display:grid;grid-template-columns:50px 1fr 1fr 70px;border-bottom:1px solid rgba(201,162,39,.3)}
+.r:last-child{border:0}.r>div{padding:12px 14px;border-right:1px solid rgba(201,162,39,.25);font:11px "Courier New",monospace;letter-spacing:.1em}
+.r>div:last-child{border:0}.r.cab{background:rgba(201,162,39,.12);color:var(--o)}
+.repro{height:76px;border-top:2px solid var(--o);display:flex;align-items:center;padding:0 34px}
+.repro button{margin-left:auto;border:1px solid var(--o);background:transparent;color:var(--o);width:38px;height:38px}
+</style></head><body>
+<div class="cab"><b>◈ SAKURA</b><button data-v="home">Inicio</button><button data-v="lib">Biblioteca</button><button>Buscar</button><button>Cola</button></div>
+<section class="vista on" id="home"><div class="emblema"><div class="sol"><span>桜</span></div><p style="font:10px 'Courier New',monospace;letter-spacing:.4em;color:var(--o)">ART DECO</p><h1>La música es geometría</h1><p>Simetría, orden y brillo. Tu colección dispuesta como una pieza de época.</p><span class="boton">ABRIR BIBLIOTECA →</span></div></section>
+<section class="vista" id="lib"><div class="tit"><small>COLECCIÓN · 01</small><h1>Biblioteca</h1></div>
+<div class="tabla"><div class="r cab"><div>#</div><div>TÍTULO</div><div>ARTISTA</div><div>TIEMPO</div></div><div id="d"></div></div></section>
+<div class="repro"><span style="color:#b8a888;font:11px 'Courier New',monospace">SIN PISTA SELECCIONADA</span><button>▶</button></div>
 <script>
-const c="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Crect width='160' height='160' fill='%23#d4af37'/%3E%3Ccircle cx='80' cy='70' r='36' fill='%23ffffff' opacity='.3'/%3E%3C/svg%3E";
-document.getElementById('r').innerHTML=Array.from({length:8},(_,i)=>
-`<article class="tarjeta"><span class="sello">◈</span><img src="${c}"><strong>Pista ${i}</strong><small>Artista ${i}<br>Álbum ${i} · FLAC · 3:20</small></article>`).join('');
+document.getElementById('d').innerHTML=Array.from({length:8},(_,i)=>`<div class="r"><div>${String(i+1).padStart(2,'0')}</div><div>PISTA ${i}</div><div>ARTISTA ${i}</div><div>3:20</div></div>`).join('');
+document.querySelectorAll('.cab button[data-v]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.vista').forEach(v=>v.classList.remove('on'));document.getElementById(b.dataset.v).classList.add('on');document.querySelectorAll('.cab button').forEach(x=>x.classList.remove('on'));b.classList.add('on')});
 </script></body></html>

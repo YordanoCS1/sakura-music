@@ -1,46 +1,41 @@
-<!doctype html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Sakura · Wabi-sabi</title>
-<style>
-:root{--bg:#201b16;--bg-extra:radial-gradient(circle at 15% 0%,rgba(160,120,70,.12),transparent 55%);--fg:#efe5d4;--panel:#2a231c;--borde:rgba(200,170,120,.22);--acento:#b08a5a;--sobre-acento:#fff7ea;--apagado:#a89a84;--tarjeta:#322920;--radio:3px;--gap:28px;--fuente:Georgia,serif;--mono:Consolas,monospace}
-*{box-sizing:border-box}
-body{margin:0;height:100vh;overflow:hidden;background:var(--bg);color:var(--fg);font-family:var(--fuente);
-  background-image:var(--bg-extra)}
-.barra{height:46px;display:flex;align-items:center;gap:18px;padding:0 22px;border-bottom:1px solid var(--borde);background:var(--panel)}
-.marca{display:flex;align-items:center;gap:9px;font-weight:700;letter-spacing:.04em}
-.marca i{font-style:normal;width:26px;height:26px;display:grid;place-items:center;border-radius:var(--radio);background:var(--acento);color:var(--sobre-acento)}
-.tabs{display:flex;gap:6px}
-.tabs button{background:transparent;border:1px solid transparent;color:var(--apagado);padding:7px 13px;border-radius:var(--radio);cursor:pointer;font:11px var(--mono);letter-spacing:.1em}
-.tabs button.on{color:var(--sobre-acento);background:var(--acento)}
-.contenido{height:calc(100vh - 46px - 78px);overflow:auto;padding:34px 42px 60px}
-.cab{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1px solid var(--borde);padding-bottom:18px;margin-bottom:26px}
-.cab small{font:10px var(--mono);letter-spacing:.24em;text-transform:uppercase;color:var(--acento)}
-.cab h1{margin:8px 0 0;font-size:46px;font-weight:400;letter-spacing:-.02em}
-.cab p{margin:6px 0 0;font:10px var(--mono);color:var(--apagado);letter-spacing:.12em}
-.rejilla{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:var(--gap)}
-.tarjeta{position:relative;overflow:hidden;padding:14px;background:var(--tarjeta);border:1px solid var(--borde);border-radius:var(--radio);transition:transform .2s ease,box-shadow .2s ease}
-.tarjeta:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.3)}
-.tarjeta img{width:100%;height:120px;object-fit:cover;border-radius:var(--radio);display:block}
-.tarjeta strong{display:block;margin-top:12px;font-size:20px;font-weight:500}
-.tarjeta small{display:block;margin-top:4px;font:9px var(--mono);color:var(--apagado);line-height:1.6}
-.sello{position:absolute;top:10px;right:10px;width:22px;height:22px;border-radius:var(--radio);background:var(--acento);color:var(--sobre-acento);display:grid;place-items:center;font-size:11px}
-.player{position:fixed;left:0;right:0;bottom:0;height:78px;display:flex;align-items:center;gap:24px;padding:0 24px;background:var(--panel);border-top:1px solid var(--borde)}
-.player .info{flex:1}
-.player .info strong{display:block;font-size:16px}
-.player .info small{font:10px var(--mono);color:var(--apagado)}
-.ctl{display:flex;gap:10px;align-items:center}
-.ctl button{border:none;background:transparent;color:var(--apagado);font-size:16px;cursor:pointer}
-.ctl .play{width:38px;height:38px;border-radius:50%;background:var(--acento);color:var(--sobre-acento)}.tarjeta:nth-child(3n+1){transform:rotate(-1deg)}.tarjeta:nth-child(3n+2){transform:rotate(1deg)}.cab h1{font-style:italic}.rejilla{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
-</style></head>
-<body>
-<div class="barra"><div class="marca"><i>桜</i> SAKURA</div>
-  <div class="tabs"><button>Inicio</button><button class="on">Biblioteca</button><button>Buscar</button><button>Cola</button><button>Ajustes</button></div></div>
-<div class="contenido"><div class="cab"><div><small>Wabi-sabi</small><h1>Biblioteca</h1><p>8 piezas en tu colección</p></div><button style="background:var(--acento);color:var(--sobre-acento);border:none;padding:10px 16px;border-radius:var(--radio);cursor:pointer">＋ Agregar</button></div>
-  <div class="rejilla" id="r"></div></div>
-<div class="player"><div class="info"><strong>Selecciona una pista</strong><small>Tu música, a tu manera</small></div>
-  <div class="ctl"><button>⟲</button><button>‹</button><button class="play">▶</button><button>›</button><button>⟳</button></div></div>
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>01 · Wabi-sabi</title><style>
+:root{--t:#1d1813;--p:#e9dcc6;--a:#a2794f;--m:#9a8a72}
+*{box-sizing:border-box}body{margin:0;height:100vh;overflow:hidden;background:var(--t);color:var(--p);font-family:Georgia,serif}
+.top{height:48px;display:flex;align-items:center;gap:20px;padding:0 28px;border-bottom:1px solid rgba(220,190,140,.2)}
+.top b{font-weight:400;letter-spacing:.2em;font-size:13px}.top button{background:none;border:0;color:var(--m);font:10px Georgia,serif;letter-spacing:.18em;cursor:pointer;padding:6px}
+.top button.on{color:var(--p);border-bottom:2px solid var(--a)}
+.vista{display:none;height:calc(100vh - 48px - 70px);overflow:auto;padding:36px 46px}.vista.on{display:block}
+/* HOME: panel de papel irregular, descentrado */
+.home{display:flex;gap:50px;align-items:center;height:100%}
+.papel{width:min(520px,48%);padding:50px;background:linear-gradient(150deg,#efe3cd,#d9c8ac);color:#2c231a;
+  clip-path:polygon(0 2%,6% 0,18% 2%,31% 0,45% 2%,60% 0,74% 2%,88% 0,100% 2%,98% 98%,84% 100%,70% 98%,55% 100%,40% 98%,25% 100%,12% 98%,0 100%);
+  box-shadow:14px 18px 0 rgba(162,121,79,.15)}
+.papel h1{font-size:52px;font-weight:400;margin:12px 0;line-height:1.05}
+.papel p{font-size:13px;line-height:1.9;color:#5a4b39}
+.papel button{background:transparent;border:1px solid #8a6644;color:#5a3f24;padding:11px 18px;cursor:pointer;margin-top:14px}
+.vert{writing-mode:vertical-rl;font-size:40px;letter-spacing:.5em;color:rgba(220,190,140,.09)}
+.kaps{font:10px Georgia,serif;letter-spacing:.3em;color:var(--a)}
+/* LIBRARY: collage irregular */
+.carpetas{display:flex;gap:8px;margin:18px 0 26px}.carpetas span{border:1px solid rgba(220,190,140,.25);padding:6px 12px;font:10px Georgia,serif;letter-spacing:.1em}
+.muro{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:34px}
+.pieza{position:relative;padding:13px;background:linear-gradient(140deg,#e8dac1,#cdb998);color:#2c231a;box-shadow:8px 10px 0 rgba(162,121,79,.12)}
+.pieza:nth-child(3n+1){transform:rotate(-1.5deg)}.pieza:nth-child(3n+2){transform:rotate(1.2deg)}
+.pieza img{width:100%;height:126px;object-fit:cover;filter:sepia(.35)}.pieza strong{display:block;margin-top:12px;font-size:21px;font-weight:400}
+.pieza small{font:9px Georgia,serif;letter-spacing:.1em;color:#6b5841}
+.repro{position:fixed;bottom:0;left:0;right:0;height:70px;display:flex;align-items:center;padding:0 28px;gap:20px;background:#15110d;border-top:1px solid rgba(220,190,140,.2)}
+.repro .play{margin-left:auto;width:38px;height:38px;border-radius:50%;background:var(--a);border:0;cursor:pointer}
+</style></head><body>
+<div class="top"><b>桜 · Sakura</b><button class="on" data-v="home">Inicio</button><button data-v="lib">Biblioteca</button><button>Buscar</button><button>Cola</button></div>
+<section class="vista on" id="home"><div class="home">
+ <div class="papel"><div class="kaps">WABI · SABI</div><h1>La belleza imperfecta</h1><p>Tu música reposa aquí, sin prisa. Cada álbum es una pieza de barro cocido, única y algo torcida.</p><button>Entrar a la biblioteca →</button></div>
+ <div class="vert">侘 寂 桜</div></div></section>
+<section class="vista" id="lib"><div class="kaps">COLECCIÓN · IMPERFECTA</div><h1 style="font-weight:400;font-size:42px;margin:10px 0">Biblioteca</h1>
+ <div class="carpetas"><span>Todas juntas</span><span>＋ Elegir carpeta</span><span>barro · 3</span><span>piedra · 3</span></div>
+ <div class="muro" id="m"></div></section>
+<div class="repro"><span style="color:#9a8a72;font:11px Georgia">Sin pista seleccionada</span><button class="play">▶</button></div>
 <script>
-const c="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Crect width='160' height='160' fill='%23#8a6f4e'/%3E%3Ccircle cx='80' cy='70' r='36' fill='%23ffffff' opacity='.3'/%3E%3C/svg%3E";
-document.getElementById('r').innerHTML=Array.from({length:8},(_,i)=>
-`<article class="tarjeta"><span class="sello">桜</span><img src="${c}"><strong>Pista ${i}</strong><small>Artista ${i}<br>Álbum ${i} · FLAC · 3:20</small></article>`).join('');
+const c="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Crect width='120' height='120' fill='%23a2794f'/%3E%3Ccircle cx='60' cy='55' r='27' fill='%23efe3cd' opacity='.6'/%3E%3C/svg%3E";
+document.getElementById('m').innerHTML=Array.from({length:8},(_,i)=>`<article class="pieza"><img src="${c}"><strong>Pista ${i}</strong><small>Artista ${i} · Álbum ${i}</small></article>`).join('');
+document.querySelectorAll('.top button[data-v]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.vista').forEach(v=>v.classList.remove('on'));document.getElementById(b.dataset.v).classList.add('on');document.querySelectorAll('.top button').forEach(x=>x.classList.remove('on'));b.classList.add('on')});
 </script></body></html>

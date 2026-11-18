@@ -1,46 +1,35 @@
-<!doctype html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Sakura · Kintsugi</title>
-<style>
-:root{--bg:#100e0c;--bg-extra:radial-gradient(circle at 50% 0%,rgba(201,162,39,.12),transparent 60%);--fg:#efe6cf;--panel:#17130f;--borde:rgba(201,162,39,.3);--acento:#d4af37;--sobre-acento:#1a140c;--apagado:#a99a78;--tarjeta:#1d1812;--radio:2px;--gap:22px;--fuente:Georgia,serif;--mono:Consolas,monospace}
-*{box-sizing:border-box}
-body{margin:0;height:100vh;overflow:hidden;background:var(--bg);color:var(--fg);font-family:var(--fuente);
-  background-image:var(--bg-extra)}
-.barra{height:46px;display:flex;align-items:center;gap:18px;padding:0 22px;border-bottom:1px solid var(--borde);background:var(--panel)}
-.marca{display:flex;align-items:center;gap:9px;font-weight:700;letter-spacing:.04em}
-.marca i{font-style:normal;width:26px;height:26px;display:grid;place-items:center;border-radius:var(--radio);background:var(--acento);color:var(--sobre-acento)}
-.tabs{display:flex;gap:6px}
-.tabs button{background:transparent;border:1px solid transparent;color:var(--apagado);padding:7px 13px;border-radius:var(--radio);cursor:pointer;font:11px var(--mono);letter-spacing:.1em}
-.tabs button.on{color:var(--sobre-acento);background:var(--acento)}
-.contenido{height:calc(100vh - 46px - 78px);overflow:auto;padding:34px 42px 60px}
-.cab{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1px solid var(--borde);padding-bottom:18px;margin-bottom:26px}
-.cab small{font:10px var(--mono);letter-spacing:.24em;text-transform:uppercase;color:var(--acento)}
-.cab h1{margin:8px 0 0;font-size:46px;font-weight:400;letter-spacing:-.02em}
-.cab p{margin:6px 0 0;font:10px var(--mono);color:var(--apagado);letter-spacing:.12em}
-.rejilla{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:var(--gap)}
-.tarjeta{position:relative;overflow:hidden;padding:14px;background:var(--tarjeta);border:1px solid var(--borde);border-radius:var(--radio);transition:transform .2s ease,box-shadow .2s ease}
-.tarjeta:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.3)}
-.tarjeta img{width:100%;height:120px;object-fit:cover;border-radius:var(--radio);display:block}
-.tarjeta strong{display:block;margin-top:12px;font-size:20px;font-weight:500}
-.tarjeta small{display:block;margin-top:4px;font:9px var(--mono);color:var(--apagado);line-height:1.6}
-.sello{position:absolute;top:10px;right:10px;width:22px;height:22px;border-radius:var(--radio);background:var(--acento);color:var(--sobre-acento);display:grid;place-items:center;font-size:11px}
-.player{position:fixed;left:0;right:0;bottom:0;height:78px;display:flex;align-items:center;gap:24px;padding:0 24px;background:var(--panel);border-top:1px solid var(--borde)}
-.player .info{flex:1}
-.player .info strong{display:block;font-size:16px}
-.player .info small{font:10px var(--mono);color:var(--apagado)}
-.ctl{display:flex;gap:10px;align-items:center}
-.ctl button{border:none;background:transparent;color:var(--apagado);font-size:16px;cursor:pointer}
-.ctl .play{width:38px;height:38px;border-radius:50%;background:var(--acento);color:var(--sobre-acento)}.tarjeta{border-color:rgba(212,175,55,.45)}.tarjeta::after{content:'';position:absolute;inset:0;background:linear-gradient(115deg,transparent 48%,rgba(212,175,55,.35) 49%,transparent 50%);pointer-events:none}.cab h1{color:#f3e7c8}
-</style></head>
-<body>
-<div class="barra"><div class="marca"><i>金</i> SAKURA</div>
-  <div class="tabs"><button>Inicio</button><button class="on">Biblioteca</button><button>Buscar</button><button>Cola</button><button>Ajustes</button></div></div>
-<div class="contenido"><div class="cab"><div><small>Kintsugi</small><h1>Biblioteca</h1><p>8 piezas en tu colección</p></div><button style="background:var(--acento);color:var(--sobre-acento);border:none;padding:10px 16px;border-radius:var(--radio);cursor:pointer">＋ Agregar</button></div>
-  <div class="rejilla" id="r"></div></div>
-<div class="player"><div class="info"><strong>Selecciona una pista</strong><small>Tu música, a tu manera</small></div>
-  <div class="ctl"><button>⟲</button><button>‹</button><button class="play">▶</button><button>›</button><button>⟳</button></div></div>
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>05 · Kintsugi</title><style>
+:root{--negro:#0d0b0a;--ceramica:#1c1815;--oro:#d4af37;--hueso:#ece0c7}
+*{box-sizing:border-box}body{margin:0;height:100vh;overflow:hidden;background:var(--negro);color:var(--hueso);font-family:Georgia,serif}
+.grieta{position:fixed;inset:0;pointer-events:none;opacity:.12;background:linear-gradient(118deg,transparent 46%,var(--oro) 46.3%,transparent 46.6%),linear-gradient(72deg,transparent 70%,var(--oro) 70.2%,transparent 70.5%)}
+.cab{position:relative;height:52px;display:flex;align-items:center;gap:28px;padding:0 30px;border-bottom:1px solid rgba(212,175,55,.3)}
+.cab b{font-weight:400;letter-spacing:.22em;color:var(--oro)}
+.cab button{background:none;border:0;color:#9c8e70;font:10px Georgia;letter-spacing:.16em;cursor:pointer}
+.cab button.on{color:var(--oro)}
+.vista{position:relative;display:none;height:calc(100vh - 52px - 72px);overflow:auto;padding:36px 44px}.vista.on{display:block}
+/* HOME: medallón central con grietas */
+.medallon{min-height:70vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.disco{width:190px;height:190px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#2e2822,#141110);border:1px solid rgba(212,175,55,.5);position:relative;display:grid;place-items:center}
+.disco::before,.disco::after{content:'';position:absolute;inset:0;border-radius:50%;background:linear-gradient(115deg,transparent 47%,var(--oro) 47.5%,transparent 48%),linear-gradient(58deg,transparent 65%,var(--oro) 65.5%,transparent 66%)}
+.disco b{font-size:56px;font-weight:400;color:var(--oro)}
+.medallon h1{font-size:48px;font-weight:400;margin:28px 0 8px}.medallon p{max-width:400px;color:#9c8e70;line-height:1.9}
+/* LIBRARY: filas con costura de oro */
+.t{display:flex;justify-content:space-between;border-bottom:1px solid rgba(212,175,55,.4);padding-bottom:12px;margin-bottom:0}
+.t h1{font-size:38px;font-weight:400;margin:6px 0}.t small{font:10px Georgia;letter-spacing:.2em;color:var(--oro)}
+.lista{margin-top:24px}
+.f{display:grid;grid-template-columns:44px 1fr 1fr 60px;align-items:center;gap:10px;padding:14px 8px;border-bottom:1px solid rgba(212,175,55,.18);position:relative}
+.f::after{content:'';position:absolute;left:0;bottom:-1px;width:26px;height:1px;background:var(--oro)}
+.f .n{font:11px Georgia;color:var(--oro)}.f .tit{font-size:19px}.f .art{font:10px Georgia;color:#9c8e70}.f .d{text-align:right;font:10px Georgia;color:var(--oro)}
+.repro{position:fixed;bottom:0;left:0;right:0;height:72px;border-top:1px solid rgba(212,175,55,.3);display:flex;align-items:center;padding:0 30px;background:#0a0807}
+.repro button{margin-left:auto;width:38px;height:38px;border-radius:50%;border:1px solid var(--oro);background:transparent;color:var(--oro);cursor:pointer}
+</style></head><body><div class="grieta"></div>
+<div class="cab"><b>金 · SAKURA</b><button class="on" data-v="home">Inicio</button><button data-v="lib">Biblioteca</button><button>Buscar</button><button>Cola</button></div>
+<section class="vista on" id="home"><div class="medallon"><div class="disco"><b>金</b></div><p style="font:10px Georgia;letter-spacing:.3em;color:var(--oro)">KINTSUGI</p><h1>Lo roto también brilla</h1><p>Cada pista guarda su historia. Las grietas de oro no se ocultan: se celebran.</p><p style="color:var(--oro)">Abrir biblioteca →</p></div></section>
+<section class="vista" id="lib"><div class="t"><div><small>01 · COLECCIÓN</small><h1>Biblioteca</h1></div><small>Todas juntas · ＋ carpeta</small></div>
+<div class="lista" id="l"></div></section>
+<div class="repro"><span style="color:#9c8e70;font-size:11px">Sin pista seleccionada</span><button>▶</button></div>
 <script>
-const c="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Crect width='160' height='160' fill='%23#c9a227'/%3E%3Ccircle cx='80' cy='70' r='36' fill='%23ffffff' opacity='.3'/%3E%3C/svg%3E";
-document.getElementById('r').innerHTML=Array.from({length:8},(_,i)=>
-`<article class="tarjeta"><span class="sello">金</span><img src="${c}"><strong>Pista ${i}</strong><small>Artista ${i}<br>Álbum ${i} · FLAC · 3:20</small></article>`).join('');
+document.getElementById('l').innerHTML=Array.from({length:8},(_,i)=>`<div class="f"><span class="n">${String(i+1).padStart(2,'0')}</span><span class="tit">Pista ${i}</span><span class="art">Artista ${i} · Álbum ${i}</span><span class="d">3:20</span></div>`).join('');
+document.querySelectorAll('.cab button[data-v]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.vista').forEach(v=>v.classList.remove('on'));document.getElementById(b.dataset.v).classList.add('on');document.querySelectorAll('.cab button').forEach(x=>x.classList.remove('on'));b.classList.add('on')});
 </script></body></html>
