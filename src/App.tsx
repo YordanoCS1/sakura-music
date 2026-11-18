@@ -1039,7 +1039,7 @@ export default function App() {
           {/* ========================================================= */}
           {/* VISTAS DE PESTAÑAS (TABS)                                 */}
           {/* ========================================================= */}
-          {activeTab === 'library' && (
+          {activeTab === 'library' && !TEMAS_CON_VISTAS_PROPIAS.includes(theme) && (
             <LibraryToolbar
               currentFolder={currentFolder}
               isScanning={isScanning}

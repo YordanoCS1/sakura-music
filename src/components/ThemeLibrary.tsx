@@ -63,46 +63,140 @@ export default function ThemeLibrary({
   // propios usamos directamente el resultado del explorador.
   const vistaTracks = currentFolderNav.length > 0 ? folderExplorerData.directTracks : tracks;
 
-  const encabezado = (
-    <header className="theme-library-head">
-      <div className="theme-library-nav">
+  // Navegación por carpetas, compartida en lógica pero con estampa propia.
+  const navCarpetas = (
+    <div className="theme-library-nav">
+      <button
+        type="button"
+        onClick={onShowAll}
+        className={currentFolderNav.length === 0 ? 'is-active' : ''}
+      >
+        Todas juntas
+      </button>
+      <button
+        type="button"
+        onClick={onNavigateUp}
+        disabled={currentFolderNav.length === 0}
+        aria-label="Subir un nivel"
+      >
+        <ChevronLeft className="w-3.5 h-3.5" />
+      </button>
+      <button type="button" onClick={onOpenFolderDialog}>
+        <FolderOpen className="w-3.5 h-3.5" /> Elegir carpeta
+      </button>
+      {currentFolderNav.map((parte, i) => (
         <button
+          key={i}
           type="button"
-          onClick={onShowAll}
-          className={currentFolderNav.length === 0 ? 'is-active' : ''}
+          onClick={() => onNavigateToBreadcrumb(i)}
+          className={i === currentFolderNav.length - 1 ? 'is-active' : ''}
         >
-          Todas juntas
+          {parte}
         </button>
-        <button
-          type="button"
-          onClick={onNavigateUp}
-          disabled={currentFolderNav.length === 0}
-          aria-label="Subir un nivel"
-        >
-          <ChevronLeft className="w-3.5 h-3.5" />
-        </button>
-        <button type="button" onClick={onOpenFolderDialog}>
-          <FolderOpen className="w-3.5 h-3.5" /> Elegir carpeta
-        </button>
-        {currentFolderNav.map((parte, i) => (
-          <button
-            key={i}
-            type="button"
-            onClick={() => onNavigateToBreadcrumb(i)}
-            className={i === currentFolderNav.length - 1 ? 'is-active' : ''}
-          >
-            {parte}
-          </button>
-        ))}
-      </div>
-      <p className="theme-library-count">{vistaTracks.length} piezas en esta vista</p>
-    </header>
+      ))}
+    </div>
   );
 
+  const total = vistaTracks.length;
+  const encabezado = (() => {
+    switch (theme) {
+      case 'shoji':
+        return (
+          <header className="shoji-cabecera">
+            <span className="shoji-cabecera-sello" aria-hidden="true">
+              障
+            </span>
+            <div className="shoji-cabecera-tit">
+              <small>01 · COLECCIÓN</small>
+              <h1>Biblioteca</h1>
+            </div>
+            {navCarpetas}
+            <span className="shoji-cabecera-count">{total} piezas</span>
+          </header>
+        );
+      case 'origami':
+        return (
+          <header className="origami-cabecera">
+            <span className="origami-cabecera-pestana" aria-hidden="true">
+              折
+            </span>
+            <div className="origami-cabecera-tit">
+              <small>COLECCIÓN · 01</small>
+              <h1>Biblioteca</h1>
+            </div>
+            {navCarpetas}
+            <span className="origami-cabecera-count">{total} piezas</span>
+          </header>
+        );
+      case 'swiss':
+        return (
+          <header className="swiss-cabecera">
+            <span className="swiss-cabecera-id">Colección / 01</span>
+            <h1>Biblioteca</h1>
+            {navCarpetas}
+            <span className="swiss-cabecera-count">{total} PIEZAS</span>
+          </header>
+        );
+      case 'sumiink':
+        return (
+          <header className="sumiink-cabecera">
+            <div className="sumiink-cabecera-tit">
+              <small>墨 · COLECCIÓN</small>
+              <h1>Biblioteca</h1>
+            </div>
+            <span className="sumiink-cabecera-trazo" aria-hidden="true" />
+            {navCarpetas}
+            <span className="sumiink-cabecera-count">{total} piezas</span>
+          </header>
+        );
+      case 'moonlit':
+        return (
+          <header className="moonlit-cabecera">
+            <span className="moonlit-cabecera-luna" aria-hidden="true" />
+            <div className="moonlit-cabecera-tit">
+              <small>MOONLIT · COLECCIÓN</small>
+              <h1>Biblioteca</h1>
+            </div>
+            {navCarpetas}
+            <span className="moonlit-cabecera-count">{total} piezas</span>
+          </header>
+        );
+      case 'ledger':
+        return (
+          <header className="ledger-cabecera">
+            <span className="ledger-cabecera-sello" aria-hidden="true">
+              帳
+            </span>
+            <div className="ledger-cabecera-tit">
+              <small>REGISTRO · 01</small>
+              <h1>Biblioteca</h1>
+            </div>
+            {navCarpetas}
+            <span className="ledger-cabecera-count">{total} piezas · 100% local</span>
+          </header>
+        );
+      default:
+        return (
+          <header className="theme-library-head">
+            {navCarpetas}
+            <p className="theme-library-count">{total} piezas en esta vista</p>
+          </header>
+        );
+    }
+  })();
+
+  const etiquetasCarpetas: Partial<Record<ThemeMode, string>> = {
+    shoji: 'Biombos',
+    origami: 'Hojas',
+    swiss: 'Secciones',
+    sumiink: 'Trazos',
+    moonlit: 'Sectores',
+    ledger: 'Registros',
+  };
   const subcarpetas = folderExplorerData.subfolders.slice(0, 12);
   const selectorCarpetas = subcarpetas.length > 0 && (
-    <div className="theme-folders">
-      <span className="theme-folders-label">Carpetas</span>
+    <div className={`theme-folders tema-${theme}`}>
+      <span className="theme-folders-label">{etiquetasCarpetas[theme] ?? 'Carpetas'}</span>
       {subcarpetas.map((carpeta) => (
         <button
           key={carpeta.relativePath}
