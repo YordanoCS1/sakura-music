@@ -27,6 +27,7 @@ import SettingsTab from './components/SettingsTab';
 import PlayerBar from './components/PlayerBar';
 import SearchTab from './components/SearchTab';
 import LibraryTab from './components/LibraryTab';
+import ThemeLibrary from './components/ThemeLibrary';
 import LibraryToolbar from './components/LibraryToolbar';
 import MetadataModal from './components/MetadataModal';
 import TitleBar from './components/TitleBar';
@@ -1004,7 +1005,20 @@ export default function App() {
             className="main-scroll-region flex-1 overflow-y-auto p-6 custom-scroll"
           >
             {/* TAB: BIBLIOTECA */}
-            {activeTab === 'library' && (
+            {activeTab === 'library' && (theme === 'sumie' || theme === 'byobu') && (
+              <ThemeLibrary
+                theme={theme}
+                tracks={tracks}
+                favorites={favorites}
+                activeTrack={activeTrack}
+                isPlaying={isPlaying}
+                getCoverSrc={getCoverSrc}
+                onPlayTrack={handlePlayTrack}
+                onToggleFavorite={toggleFavorite}
+                onOpenFolderDialog={handleOpenFolderDialog}
+              />
+            )}
+            {activeTab === 'library' && theme !== 'sumie' && theme !== 'byobu' && (
               <LibraryTab
                 tracks={tracks}
                 scrollElementRef={libraryScrollRef}

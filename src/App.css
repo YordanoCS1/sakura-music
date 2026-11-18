@@ -4961,3 +4961,74 @@ input[type="range"]:hover::-webkit-slider-thumb {
   background: transparent !important;
   border: none !important;
 }
+
+
+/* ========================================================= */
+/* BIBLIOTECA PROPIA DE SUMI-E · hojas de washi                */
+/* ========================================================= */
+.sumie-library { padding: 8px 4px 60px; }
+.sumie-library-head { margin-bottom: 26px; border-bottom: 1px solid rgba(236,227,214,.1); padding-bottom: 18px; }
+.sumie-kicker,
+.byobu-kicker { margin: 0 0 6px; font: 10px 'JetBrains Mono', monospace; letter-spacing: .28em; text-transform: uppercase; color: #d24832; }
+.sumie-library-head h1,
+.byobu-library-head h1 { margin: 0 0 6px; font-family: 'Cormorant Garamond', 'Yu Mincho', Georgia, serif; font-size: 46px; font-weight: 400; letter-spacing: -.02em; color: #ece3d6; }
+.sumie-library-head > span,
+.byobu-library-head > span { font: 10px 'JetBrains Mono', monospace; letter-spacing: .14em; color: #8d8377; }
+.sumie-hojas { display: flex; flex-direction: column; gap: 18px; }
+.sumie-hoja {
+  position: relative; display: flex; align-items: center; gap: 18px; width: 100%; text-align: left;
+  padding: 16px 20px; cursor: pointer;
+  background: linear-gradient(135deg, rgba(236,227,214,.11), rgba(236,227,214,.03));
+  border: 1px solid rgba(236,227,214,.18); border-radius: 2px;
+  box-shadow: 7px 7px 0 rgba(236,227,214,.05), 14px 14px 0 rgba(236,227,214,.02);
+  color: #ece3d6; transition: transform 200ms ease, box-shadow 200ms ease;
+}
+.sumie-hoja:hover { transform: rotate(0deg) !important; box-shadow: 10px 10px 0 rgba(210,72,50,.2) !important; }
+.sumie-hoja.is-active { border-color: rgba(210,72,50,.6); box-shadow: 8px 8px 0 rgba(210,72,50,.16) !important; }
+.sumie-sello { position: absolute; top: 5px; right: 8px; color: rgba(210,72,50,.6); font-family: 'Yu Mincho', serif; font-size: 15px; }
+.sumie-portada { flex: 0 0 56px; width: 56px; height: 56px; border: 1px solid rgba(236,227,214,.14); border-radius: 2px; display: grid; place-items: center; overflow: hidden; color: #d24832; font-size: 22px; }
+.sumie-portada img { width: 100%; height: 100%; object-fit: cover; }
+.sumie-texto { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.sumie-texto strong { font-family: 'Cormorant Garamond', 'Yu Mincho', serif; font-size: 21px; font-weight: 500; color: #ece3d6; }
+.sumie-texto small { font: 10px 'JetBrains Mono', monospace; letter-spacing: .08em; color: #a49a8d; }
+.sumie-texto em { font: 10px 'JetBrains Mono', monospace; color: #d24832; font-style: normal; }
+.sumie-dur { margin-left: auto; font: 10px 'JetBrains Mono', monospace; color: #8d8377; }
+.sumie-corazon { color: #8d8377; font-size: 18px; cursor: pointer; }
+.sumie-corazon.is-fav { color: #d24832; }
+.sumie-library .cta,
+.byobu-library .cta { background: transparent; border: 1px solid #d24832; color: #d24832; border-radius: 2px; padding: 12px 20px; font: 10px 'JetBrains Mono', monospace; letter-spacing: .14em; text-transform: uppercase; cursor: pointer; }
+.sumie-library .cta:hover,
+.byobu-library .cta:hover { background: #d24832; color: #fff; }
+
+/* ========================================================= */
+/* BIBLIOTECA PROPIA DE BYŌBU · díptico                       */
+/* ========================================================= */
+.byobu-library { padding: 8px 4px 60px; }
+.byobu-library-head { margin-bottom: 26px; border-bottom: 1px solid rgba(236,227,214,.1); padding-bottom: 18px; }
+.byobu-diptico { display: grid; grid-template-columns: minmax(260px, .8fr) minmax(360px, 1.2fr); gap: 26px; align-items: start; }
+.byobu-panel {
+  position: relative; overflow: hidden; min-height: 440px; padding: 26px;
+  border: 1px solid rgba(210,72,50,.4); border-radius: 2px;
+  background: radial-gradient(circle at 50% 35%, rgba(210,72,50,.15), transparent 60%), linear-gradient(180deg,#171310,#0e0c0b);
+  display: flex; flex-direction: column; justify-content: flex-end; gap: 6px;
+}
+.byobu-kanji { position: absolute; top: -30px; left: 10px; font-family: 'Yu Mincho', serif; font-size: 230px; line-height: 1; color: rgba(236,227,214,.05); pointer-events: none; }
+.byobu-portada { position: relative; width: 110px; height: 110px; margin-bottom: auto; border: 1px solid rgba(210,72,50,.5); border-radius: 2px; display: grid; place-items: center; overflow: hidden; color: #d24832; font-family: 'Yu Mincho', serif; font-size: 42px; }
+.byobu-portada img { width: 100%; height: 100%; object-fit: cover; }
+.byobu-label { margin: 0; font: 9px 'JetBrains Mono', monospace; letter-spacing: .24em; text-transform: uppercase; color: #d24832; }
+.byobu-panel h2 { margin: 0; font-family: 'Cormorant Garamond', 'Yu Mincho', serif; font-size: 30px; font-weight: 400; color: #ece3d6; }
+.byobu-artista { margin: 0; font-size: 15px; color: #a49a8d; }
+.byobu-meta { margin: 0; font: 10px 'JetBrains Mono', monospace; letter-spacing: .06em; color: #8d8377; }
+.byobu-lista { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.byobu-lista li { border-bottom: 1px solid rgba(236,227,214,.08); }
+.byobu-lista button {
+  display: grid; grid-template-columns: 34px minmax(0,1fr) minmax(90px,.6fr) 46px; align-items: center; gap: 10px;
+  width: 100%; padding: 11px 8px; background: transparent; border: none; border-left: 2px solid transparent;
+  color: #a49a8d; cursor: pointer; text-align: left;
+}
+.byobu-lista button:hover,
+.byobu-lista button.is-active { background: rgba(210,72,50,.08); border-left-color: #d24832; }
+.byobu-num { font: 10px 'JetBrains Mono', monospace; color: #d24832; }
+.byobu-titulo { font-family: 'Cormorant Garamond', 'Yu Mincho', serif; font-size: 19px; color: #ece3d6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.byobu-art { font: 10px 'JetBrains Mono', monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.byobu-dur { font: 10px 'JetBrains Mono', monospace; text-align: right; }
