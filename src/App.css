@@ -4893,3 +4893,71 @@ input[type="range"]:hover::-webkit-slider-thumb {
   background: transparent !important;
   box-shadow: none !important;
 }
+
+
+/* ========================================================= */
+/* SUMI-E · TABLA = HOJAS DE WASHI APILADAS (intensificado)   */
+/* ========================================================= */
+.app-shell[data-skin='sumie'] .library-tab-content table {
+  border-collapse: separate !important;
+  border-spacing: 0 10px !important;
+}
+.app-shell[data-skin='sumie'] .library-tab-content tbody tr {
+  background: linear-gradient(135deg, rgba(236,227,214,.13), rgba(236,227,214,.03)) !important;
+  border: 1px solid rgba(236,227,214,.18) !important;
+  border-radius: 2px !important;
+  box-shadow: 7px 7px 0 rgba(236,227,214,.05), 14px 14px 0 rgba(236,227,214,.02) !important;
+  rotate: -.4deg;
+}
+.app-shell[data-skin='sumie'] .library-tab-content tbody tr:nth-child(even) { rotate: .4deg; }
+.app-shell[data-skin='sumie'] .library-tab-content tbody tr:hover {
+  rotate: 0deg;
+  box-shadow: 9px 9px 0 rgba(210,72,50,.18) !important;
+}
+.app-shell[data-skin='sumie'] .library-tab-content tbody tr td {
+  background: transparent !important;
+  border: none !important;
+}
+.app-shell[data-skin='sumie'] .library-tab-content tbody tr td:first-child::after {
+  content: '桜';
+  margin-left: 8px;
+  color: rgba(210,72,50,.6);
+  font-family: 'Yu Mincho', serif;
+  font-size: 13px;
+}
+
+/* ========================================================= */
+/* BYŌBU · TABLA = DÍPTICO (panel de álbum + lista)           */
+/* ========================================================= */
+.app-shell[data-skin='byobu'] .library-tab-content {
+  position: relative !important;
+  padding-left: 300px !important;
+}
+.app-shell[data-skin='byobu'] .library-tab-content::before {
+  content: '蔵';
+  position: absolute; left: 0; top: 0; bottom: 0; width: 270px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid rgba(210,72,50,.4) !important;
+  border-radius: 2px !important;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(210,72,50,.14), transparent 60%),
+    linear-gradient(180deg, #171310, #0e0c0b) !important;
+  font-family: 'Yu Mincho', serif;
+  font-size: 175px;
+  color: rgba(236,227,214,.07);
+  text-shadow: 0 0 45px rgba(210,72,50,.16);
+}
+.app-shell[data-skin='byobu'] .library-tab-content table {
+  border-collapse: collapse !important;
+}
+.app-shell[data-skin='byobu'] .library-tab-content tbody tr {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(236,227,214,.08) !important;
+  border-left: none !important;
+  box-shadow: none !important;
+  rotate: none !important;
+}
+.app-shell[data-skin='byobu'] .library-tab-content tbody tr td {
+  background: transparent !important;
+  border: none !important;
+}
