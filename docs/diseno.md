@@ -8,7 +8,8 @@ Sakura Music usa seis temas: **M3 Zen** (por defecto), Sumi-e, Byōbu, Yoru, Han
 |---|---|---|
 | `space` | M3 Zen | Superficies marfil, acento rosa sakura, redondeado suave |
 | `sumie` | Sumi-e | **Pergamino**: nav kanji flotante a la derecha, columna central, dock circular y ensō sobre tinta
-| `byobu` | Byōbu | **Pantalla dividida**: panel izquierdo de tinta con kanji monumental y reproductor, panel editorial a la derecha |
+| `byobu` | Byōbu | **Díptico editorial**: panel izquierdo de álbum con kanji monumental y reproductor, panel derecho con la lista de pistas |
+| — | Biblioteca | Sumi-e: tarjetas como hojas washi apiladas con sello 桜. Byōbu: díptico de panel de álbum + lista. Los otros temas conservan la biblioteca original. |
 | `yoru` | Yoru | Noche cálida, grafito y ámbar, sans geométrica |
 | `hanabi` | Hanabi | Azul noche, cian y magenta, monoespacio, esquinas vivas |
 | `aizuri` | Aizuri | Índigo teñido, blanco hueso y cian, serif |

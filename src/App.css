@@ -4731,3 +4731,66 @@ input[type="range"]:hover::-webkit-slider-thumb {
   margin-left: 0 !important;
   margin-right: 0 !important;
 }
+
+
+/* ========================================================= */
+/* SUMI-E · Hojas washi reales (tarjetas de la biblioteca)     */
+/* ========================================================= */
+.app-shell[data-skin='sumie'] .main-scroll-region .grid > .glass-card {
+  background: linear-gradient(135deg, rgba(236,227,214,.1), rgba(236,227,214,.025)) !important;
+  border: 1px solid rgba(236,227,214,.18) !important;
+  border-radius: 2px !important;
+  box-shadow: 8px 8px 0 rgba(236,227,214,.04), 16px 16px 0 rgba(236,227,214,.018) !important;
+  padding: 16px !important;
+  transition: transform 200ms ease, box-shadow 200ms ease !important;
+}
+.app-shell[data-skin='sumie'] .main-scroll-region .grid > .glass-card:nth-child(3n) { rotate: -1.2deg; }
+.app-shell[data-skin='sumie'] .main-scroll-region .grid > .glass-card:nth-child(3n + 1) { rotate: 1deg; }
+.app-shell[data-skin='sumie'] .main-scroll-region .grid > .glass-card:nth-child(3n + 2) { rotate: -.4deg; }
+.app-shell[data-skin='sumie'] .main-scroll-region .grid > .glass-card:hover {
+  rotate: 0deg;
+  box-shadow: 10px 10px 0 rgba(210,72,50,.18) !important;
+}
+.app-shell[data-skin='sumie'] .main-scroll-region .grid > .glass-card::after {
+  content: '桜';
+  position: absolute; top: 6px; right: 8px;
+  font-family: 'Yu Mincho', serif; font-size: 15px;
+  color: rgba(210,72,50,.55);
+  pointer-events: none;
+}
+.app-shell[data-skin='sumie'] .main-scroll-region .grid > .glass-card > div:nth-child(2) {
+  border-radius: 2px !important;
+  border: 1px solid rgba(236,227,214,.14) !important;
+}
+
+/* ========================================================= */
+/* BYŌBU · Díptico editorial: panel de álbum + lista          */
+/* ========================================================= */
+.app-shell[data-skin='byobu'] .main-scroll-region .grid {
+  grid-template-columns: minmax(240px, .9fr) minmax(320px, 1.1fr) !important;
+  gap: 26px !important;
+  align-content: start !important;
+}
+.app-shell[data-skin='byobu'] .main-scroll-region .grid::before {
+  content: '蔵';
+  grid-row: span 6;
+  min-height: 420px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid rgba(210,72,50,.35) !important;
+  border-radius: 2px !important;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(210,72,50,.12), transparent 60%),
+    linear-gradient(180deg, #171310, #0e0c0b) !important;
+  font-family: 'Yu Mincho', serif;
+  font-size: 190px;
+  color: rgba(236,227,214,.07);
+  text-shadow: 0 0 50px rgba(210,72,50,.15);
+}
+.app-shell[data-skin='byobu'] .main-scroll-region .grid > .glass-card {
+  background: rgba(236,227,214,.035) !important;
+  border: 1px solid rgba(236,227,214,.1) !important;
+  border-left: 2px solid rgba(210,72,50,.6) !important;
+  border-radius: 2px !important;
+  box-shadow: none !important;
+  padding: 10px 14px !important;
+}
