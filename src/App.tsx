@@ -1071,6 +1071,8 @@ export default function App() {
               <ThemeHome
                 theme={theme}
                 trackCount={tracks.length}
+                tracks={tracks}
+                getCoverSrc={getCoverSrc}
                 onNavigate={(tab) => setActiveTab(tab)}
               />
             )}

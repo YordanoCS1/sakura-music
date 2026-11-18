@@ -106,6 +106,52 @@ test('Byobu permite elegir una imagen de inicio', async ({ page }) => {
   await expect(page.locator('.byobu-home-panel')).toHaveCSS('background-image', /data:image\/png/);
 });
 
+test('Byobu permite usar la portada de una canción', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('sakura_theme', 'byobu');
+    const cover =
+      'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="40" height="40"%3E%3Crect width="40" height="40" fill="%23b23a2b"/%3E%3C/svg%3E';
+    const tracks = Array.from({ length: 4 }, (_, i) => ({
+      id: 'p' + i,
+      path: 'p' + i + '.flac',
+      title: 'Pista ' + i,
+      artist: 'Artista ' + i,
+      album: 'Álbum ' + i,
+      album_artist: null,
+      track_number: i,
+      duration: 200,
+      duration_str: '3:20',
+      format: 'FLAC',
+      bitrate_kbps: null,
+      cover_url: cover,
+      year: 2024,
+      genre: 'Jazz',
+      file_size: 12345,
+    }));
+    const w = window as unknown as { __TAURI_INTERNALS__: Record<string, unknown> };
+    w.__TAURI_INTERNALS__ = {
+      metadata: { currentWindow: { label: 'main' } },
+      invoke: async (cmd: string) => (cmd === 'get_cached_library' ? tracks : null),
+      transformCallback: () => 1,
+      unregisterCallback: () => {},
+      convertFileSrc: (p: string) => p,
+    };
+    (
+      window as unknown as { __TAURI_EVENT_PLUGIN_INTERNALS__: unknown }
+    ).__TAURI_EVENT_PLUGIN_INTERNALS__ = { unregisterListener: () => {} };
+  });
+  await page.goto('/');
+  await page.locator('#tab-home').click();
+
+  await expect(page.locator('.byobu-home-portadas button')).toHaveCount(4);
+  await page.locator('.byobu-home-portadas button').first().click();
+  await expect(page.locator('.byobu-home-panel')).toHaveClass(/tiene-imagen/);
+  await expect(page.locator('.byobu-home-panel')).toHaveCSS(
+    'background-image',
+    /data:image\/svg\+xml/,
+  );
+});
+
 test('las carpetas filtran la biblioteca propia de Sumi-e', async ({ page }) => {
   await page.addInitScript(() => {
     localStorage.setItem('sakura_theme', 'sumie');

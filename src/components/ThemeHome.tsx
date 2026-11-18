@@ -1,19 +1,29 @@
 import { useRef, useState, type ChangeEvent } from 'react';
 import { ArrowRight, ImagePlus, Search, DownloadCloud, Settings, X } from 'lucide-react';
-import type { AppTab, ThemeMode } from '../types';
+import type { AppTab, ScannedTrack, ThemeMode } from '../types';
 
 interface ThemeHomeProps {
   theme: ThemeMode;
   trackCount: number;
+  tracks: ScannedTrack[];
+  getCoverSrc: (coverUrl: string | null) => string;
   onNavigate: (tab: AppTab) => void;
 }
 
 const CLAVE_IMAGEN = 'sakura_byobu_home_image';
+const CLAVE_PORTADA = 'sakura_byobu_home_cover';
 const LIMITE_BYTES = 1_500_000;
 
 /** Portada de inicio propia de los temas orientalistas. */
-export default function ThemeHome({ theme, trackCount, onNavigate }: ThemeHomeProps) {
+export default function ThemeHome({
+  theme,
+  trackCount,
+  tracks,
+  getCoverSrc,
+  onNavigate,
+}: ThemeHomeProps) {
   const [imagen, setImagen] = useState<string | null>(() => localStorage.getItem(CLAVE_IMAGEN));
+  const [portada, setPortada] = useState<string | null>(() => localStorage.getItem(CLAVE_PORTADA));
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -36,7 +46,9 @@ export default function ThemeHome({ theme, trackCount, onNavigate }: ThemeHomePr
       const datos = String(lector.result);
       try {
         localStorage.setItem(CLAVE_IMAGEN, datos);
+        localStorage.removeItem(CLAVE_PORTADA);
         setImagen(datos);
+        setPortada(null);
         setError(null);
       } catch {
         setError('No se pudo guardar la imagen (muy grande para este navegador).');
@@ -45,11 +57,25 @@ export default function ThemeHome({ theme, trackCount, onNavigate }: ThemeHomePr
     lector.readAsDataURL(archivo);
   };
 
-  const quitarImagen = () => {
+  const usarPortada = (src: string) => {
+    localStorage.setItem(CLAVE_PORTADA, src);
     localStorage.removeItem(CLAVE_IMAGEN);
+    setPortada(src);
     setImagen(null);
     setError(null);
   };
+
+  const quitarImagen = () => {
+    localStorage.removeItem(CLAVE_IMAGEN);
+    localStorage.removeItem(CLAVE_PORTADA);
+    setImagen(null);
+    setPortada(null);
+    setError(null);
+  };
+
+  const fondo = imagen ?? portada;
+  const cssUrl = (src: string) => `url("${src.replace(/"/g, '%22')}")`;
+  const portadas = tracks.filter((t) => t.cover_url).slice(0, 8);
 
   if (theme === 'sumie') {
     return (
@@ -84,11 +110,11 @@ export default function ThemeHome({ theme, trackCount, onNavigate }: ThemeHomePr
   return (
     <div className="byobu-home">
       <aside
-        className={`byobu-home-panel ${imagen ? 'tiene-imagen' : ''}`}
+        className={`byobu-home-panel ${fondo ? 'tiene-imagen' : ''}`}
         style={
-          imagen
+          fondo
             ? {
-                backgroundImage: `linear-gradient(180deg, rgba(10,8,7,.35), rgba(10,8,7,.93)), url("${imagen}")`,
+                backgroundImage: `linear-gradient(180deg, rgba(10,8,7,.35), rgba(10,8,7,.93)), ${cssUrl(fondo)}`,
               }
             : undefined
         }
@@ -110,7 +136,7 @@ export default function ThemeHome({ theme, trackCount, onNavigate }: ThemeHomePr
         >
           桜
         </button>
-        {imagen && (
+        {fondo && (
           <button
             type="button"
             className="byobu-home-quitar"
@@ -127,6 +153,24 @@ export default function ThemeHome({ theme, trackCount, onNavigate }: ThemeHomePr
         >
           <ImagePlus className="w-3.5 h-3.5" /> Cambiar imagen
         </button>
+        {portadas.length > 0 && (
+          <div className="byobu-home-portadas">
+            <span>Portadas de tu biblioteca</span>
+            <div>
+              {portadas.map((track) => (
+                <button
+                  key={track.id}
+                  type="button"
+                  onClick={() => usarPortada(getCoverSrc(track.cover_url))}
+                  title={`Usar portada de ${track.title}`}
+                  aria-label={`Usar portada de ${track.title}`}
+                >
+                  <img src={getCoverSrc(track.cover_url)} alt="" />
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
         <span className="byobu-home-kanji" aria-hidden="true">
           蔵
         </span>
