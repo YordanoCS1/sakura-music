@@ -74,6 +74,44 @@ test('la app arranca, oculta el splash y navega entre pestañas', async ({ page 
   await expect(page.getByRole('button', { name: 'Salir del mini reproductor' })).toBeVisible();
 });
 
+test('las carpetas filtran la biblioteca propia de Sumi-e', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('sakura_theme', 'sumie');
+    localStorage.setItem('sakura_view_mode', 'folders');
+    const tracks = Array.from({ length: 9 }, (_, i) => ({
+      id: 'p' + i,
+      path: `Album${Math.floor(i / 3)}\\p${i}.flac`,
+      title: 'Pista ' + i,
+      artist: 'Artista ' + i,
+      album: 'Álbum ' + i,
+      album_artist: null,
+      track_number: i,
+      duration: 200,
+      duration_str: '3:20',
+      format: 'FLAC',
+      bitrate_kbps: null,
+      cover_url: null,
+      year: 2024,
+      genre: 'Jazz',
+      file_size: 12345,
+    }));
+    const w = window as unknown as { __TAURI_INTERNALS__: Record<string, unknown> };
+    w.__TAURI_INTERNALS__ = {
+      metadata: { currentWindow: { label: 'main' } },
+      invoke: async (cmd: string) => (cmd === 'get_cached_library' ? tracks : null),
+      transformCallback: () => 1,
+      unregisterCallback: () => {},
+      convertFileSrc: (p: string) => p,
+    };
+  });
+
+  await page.goto('/');
+  await expect(page.locator('.sumie-recorte')).toHaveCount(9);
+
+  await page.getByRole('button', { name: /Album1/ }).click();
+  await expect(page.locator('.sumie-recorte')).toHaveCount(3);
+});
+
 test('el tema se cambia desde Ajustes y persiste al recargar', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('tab', { name: /Ajustes/ }).click();

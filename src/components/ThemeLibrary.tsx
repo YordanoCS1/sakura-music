@@ -47,6 +47,11 @@ export default function ThemeLibrary({
 }: ThemeLibraryProps) {
   if (theme !== 'sumie' && theme !== 'byobu') return null;
 
+  // El hook de carpetas ya calcula las pistas de cada nivel. `filteredTracks`
+  // no filtra por carpeta cuando la vista es "folders", así que en los temas
+  // propios usamos directamente el resultado del explorador.
+  const vistaTracks = currentFolderNav.length > 0 ? folderExplorerData.directTracks : tracks;
+
   const encabezado = (
     <header className="theme-library-head">
       <div className="theme-library-nav">
@@ -79,7 +84,7 @@ export default function ThemeLibrary({
           </button>
         ))}
       </div>
-      <p className="theme-library-count">{tracks.length} piezas en esta vista</p>
+      <p className="theme-library-count">{vistaTracks.length} piezas en esta vista</p>
     </header>
   );
 
@@ -129,11 +134,11 @@ export default function ThemeLibrary({
       <div className="sumie-library">
         {encabezado}
         {selectorCarpetas}
-        {tracks.length === 0 ? (
+        {vistaTracks.length === 0 ? (
           vacio
         ) : (
           <div className="sumie-recortes">
-            {tracks.map((track) => (
+            {vistaTracks.map((track) => (
               <article
                 key={track.id}
                 className={`sumie-recorte ${activeTrack?.id === track.id ? 'is-active' : ''}`}
@@ -201,11 +206,11 @@ export default function ThemeLibrary({
     <div className="byobu-library">
       {encabezado}
       {selectorCarpetas}
-      {tracks.length === 0 ? (
+      {vistaTracks.length === 0 ? (
         vacio
       ) : (
         <ol className="byobu-indice">
-          {tracks.map((track, i) => (
+          {vistaTracks.map((track, i) => (
             <li key={track.id} className={activeTrack?.id === track.id ? 'is-active' : ''}>
               <button type="button" className="byobu-fila" onClick={() => onPlayTrack(track)}>
                 <span className="byobu-cover">
