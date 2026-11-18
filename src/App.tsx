@@ -1008,14 +1008,23 @@ export default function App() {
             {activeTab === 'library' && (theme === 'sumie' || theme === 'byobu') && (
               <ThemeLibrary
                 theme={theme}
-                tracks={tracks}
+                tracks={filteredTracks}
                 favorites={favorites}
                 activeTrack={activeTrack}
                 isPlaying={isPlaying}
                 getCoverSrc={getCoverSrc}
+                currentFolderNav={currentFolderNav}
+                folderExplorerData={folderExplorerData}
                 onPlayTrack={handlePlayTrack}
                 onToggleFavorite={toggleFavorite}
                 onOpenFolderDialog={handleOpenFolderDialog}
+                onScanFolder={scanFolder}
+                onNavigateUp={handleNavigateUp}
+                onNavigateToBreadcrumb={handleNavigateToBreadcrumb}
+                onNavigateIntoFolder={handleNavigateIntoFolder}
+                onShowAll={() => setCurrentFolderNav([])}
+                onOpenEdit={openEditModal}
+                onRequestDelete={(track) => setPendingDeleteTracks([track])}
               />
             )}
             {activeTab === 'library' && theme !== 'sumie' && theme !== 'byobu' && (
