@@ -137,13 +137,13 @@ export default function ThemeLibrary({
               <div key={track.id} className="hoja-pila">
                 <div
                   className={`sumie-hoja hoja-papel ${activeTrack?.id === track.id ? 'is-active' : ''}`}
-                  style={{ rotate: `${i % 2 === 0 ? '-1' : '1'}deg` }}
+                  style={{ rotate: `${i % 2 === 0 ? '-0.35' : '0.35'}deg` }}
                 >
                   <span className="hoja-kanji" aria-hidden="true">
-                    桜
+                    墨
                   </span>
                   <span className="hoja-sello" aria-hidden="true">
-                    印
+                    桜
                   </span>
                   <button
                     type="button"
@@ -217,7 +217,7 @@ export default function ThemeLibrary({
                   {track.cover_url ? (
                     <img src={getCoverSrc(track.cover_url)} alt="" />
                   ) : (
-                    <span aria-hidden="true">桜</span>
+                    <span aria-hidden="true">墨</span>
                   )}
                 </span>
                 <span className="byobu-num">{String(i + 1).padStart(2, '0')}</span>
