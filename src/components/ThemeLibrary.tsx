@@ -504,6 +504,14 @@ export default function ThemeLibrary({
   }
 
   if (theme === 'moonlit') {
+    const porAnillo = 5;
+    const pasoX = 80;
+    const pasoY = 45;
+    const rxInicial = 240;
+    const ryInicial = 95;
+    const anillos = Math.max(1, Math.ceil(vistaTracks.length / porAnillo));
+    const ancho = (rxInicial + (anillos - 1) * pasoX + 70) * 2;
+    const alto = (ryInicial + (anillos - 1) * pasoY + 60) * 2;
     return (
       <div className="moonlit-library">
         {encabezado}
@@ -511,25 +519,48 @@ export default function ThemeLibrary({
         {vistaTracks.length === 0 ? (
           vacio
         ) : (
-          <div className="moonlit-cielo">
-            <div className="moonlit-luna-fondo" aria-hidden="true" />
-            {vistaTracks.map((track, i) => (
-              <article
-                key={track.id}
-                className={`moonlit-estrella ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+          <div className="moonlit-cielo-orbitas" style={{ width: ancho, height: alto }}>
+            {Array.from({ length: anillos }, (_, a) => (
+              <div
+                key={a}
+                className={`moonlit-anillo ${a === 0 ? 'int' : a === 1 ? 'med' : 'ext'}`}
                 style={{
-                  left: `${8 + ((i * 29) % 78)}%`,
-                  top: `${24 + ((i * 71) % 296)}px`,
+                  width: (rxInicial + a * pasoX) * 2,
+                  height: (ryInicial + a * pasoY) * 2,
                 }}
-              >
-                <button type="button" onClick={() => onPlayTrack(track)}>
-                  <span className="moonlit-orbe">{portadaDe(track)}</span>
-                  <strong>{track.title}</strong>
-                </button>
-                <small>{track.artist}</small>
-                <span className="moonlit-estrella-acc">{acciones(track)}</span>
-              </article>
+              />
             ))}
+            <span className="moonlit-brillo s1" aria-hidden="true" />
+            <span className="moonlit-brillo s2" aria-hidden="true" />
+            <span className="moonlit-brillo s3" aria-hidden="true" />
+            <span className="moonlit-brillo s4" aria-hidden="true" />
+            <div className="moonlit-luna-centro" aria-hidden="true">
+              <span>月</span>
+              <small>{vistaTracks.length} PISTAS</small>
+            </div>
+            {vistaTracks.map((track, i) => {
+              const anillo = Math.floor(i / porAnillo);
+              const indiceEnAnillo = i % porAnillo;
+              const enAnillo = Math.min(porAnillo, vistaTracks.length - anillo * porAnillo);
+              const grados = indiceEnAnillo * (360 / enAnillo) + anillo * 18;
+              const rad = (grados * Math.PI) / 180;
+              const x = Math.cos(rad) * (rxInicial + anillo * pasoX);
+              const y = Math.sin(rad) * (ryInicial + anillo * pasoY);
+              return (
+                <article
+                  key={track.id}
+                  className={`moonlit-astro ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+                  style={{ '--x': `${x}px`, '--y': `${y}px` } as CSSProperties}
+                >
+                  <button type="button" onClick={() => onPlayTrack(track)}>
+                    <span className="moonlit-orbe">{portadaDe(track)}</span>
+                    <strong>{track.title}</strong>
+                  </button>
+                  <small>{track.artist}</small>
+                  <span className="moonlit-astro-acc">{acciones(track)}</span>
+                </article>
+              );
+            })}
           </div>
         )}
       </div>

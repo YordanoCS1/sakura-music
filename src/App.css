@@ -6175,3 +6175,55 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .ledger-fila { grid-template-columns:64px 44px minmax(0,1.1fr) minmax(0,1.3fr) 200px !important; }
 .ledger-portada { display:grid; place-items:center; width:34px; height:34px; overflow:hidden; border:1px solid #c9b99a; background:#fffdf6; color:#a33a2a; font-size:14px; }
 .ledger-portada img { width:100%; height:100%; object-fit:cover; filter:sepia(.3); }
+
+
+/* ========================================================= */
+/* MOONLIT · biblioteca orbital (rediseño completo)           */
+/* ========================================================= */
+.moonlit-library { padding:6px 4px 60px; overflow-x:auto; }
+.moonlit-cielo-orbitas { position:relative; width:900px; height:900px; margin:10px auto 30px; border-radius:50%; background:radial-gradient(circle at 50% 50%,rgba(143,182,232,.07),transparent 62%); }
+.moonlit-anillo { position:absolute; left:50%; top:50%; border:1px solid rgba(143,182,232,.16); border-radius:50%; transform:translate(-50%,-50%); pointer-events:none; }
+.moonlit-anillo-int { width:280px; height:280px; }
+.moonlit-anillo-med { width:510px; height:510px; border-style:dashed; opacity:.75; }
+.moonlit-anillo-ext { width:760px; height:760px; opacity:.5; }
+.moonlit-brillo { position:absolute; width:3px; height:3px; border-radius:50%; background:#dfe8f7; box-shadow:0 0 9px #dfe8f7; pointer-events:none; }
+.moonlit-brillo.s1 { left:12%; top:16%; } .moonlit-brillo.s2 { left:82%; top:22%; }
+.moonlit-brillo.s3 { left:20%; top:78%; } .moonlit-brillo.s4 { left:74%; top:84%; }
+.moonlit-luna-centro { position:absolute; left:50%; top:50%; width:120px; height:120px; margin:-60px 0 0 -60px; border-radius:50%; background:radial-gradient(circle at 38% 35%,#fff,#8fb6e8); box-shadow:0 0 70px rgba(143,182,232,.42); display:flex; flex-direction:column; align-items:center; justify-content:center; color:#0b1324; }
+.moonlit-luna-centro span { font-size:28px; line-height:1; }
+.moonlit-luna-centro small { margin-top:5px; font:7px 'JetBrains Mono',monospace; letter-spacing:.08em; }
+.moonlit-astro { position:absolute; left:50%; top:50%; width:118px; margin:-58px 0 0 -59px; text-align:center; transform:rotate(var(--ang)) translateX(var(--rad)) rotate(calc(-1 * var(--ang))); }
+.moonlit-astro button { display:block; width:100%; background:transparent; border:0; cursor:pointer; color:inherit; padding:0; }
+.moonlit-orbe { display:grid; place-items:center; width:64px; height:64px; margin:0 auto 8px; border-radius:50%; border:1px solid rgba(143,182,232,.5); background:rgba(143,182,232,.1); box-shadow:0 0 18px rgba(143,182,232,.2); color:#8fb6e8; font-size:18px; overflow:hidden; transition:box-shadow .25s ease, transform .25s ease; }
+.moonlit-orbe img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+.moonlit-astro strong { display:block; font:400 13px 'Cormorant Garamond',serif; color:#dfe8f7; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.moonlit-astro>small { display:block; margin-top:2px; font:8px 'JetBrains Mono',monospace; color:#7f92b4; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.moonlit-astro-acc { display:flex; justify-content:center; margin-top:4px; opacity:.5; transition:opacity .2s; }
+.moonlit-astro:hover .moonlit-orbe,
+.moonlit-astro.is-active .moonlit-orbe { box-shadow:0 0 26px rgba(143,182,232,.6); transform:scale(1.1); border-color:#8fb6e8; }
+.moonlit-astro:hover .moonlit-astro-acc,
+.moonlit-astro.is-active .moonlit-astro-acc { opacity:1; }
+
+
+/* Ajuste de escala para que el sistema orbital completo quede a la vista. */
+.moonlit-luna-centro { width:86px; height:86px; margin:-43px 0 0 -43px; }
+.moonlit-luna-centro span { font-size:22px; }
+.moonlit-luna-centro small { font-size:6px; }
+.moonlit-astro { width:88px; margin:-42px 0 0 -44px; }
+.moonlit-orbe { width:52px; height:52px; margin-bottom:6px; font-size:15px; }
+.moonlit-astro strong { font-size:12px; }
+.moonlit-astro>small { font-size:7px; }
+
+
+/* Escala final del sistema orbital. */
+.moonlit-luna-centro { width:72px; height:72px; margin:-36px 0 0 -36px; }
+.moonlit-luna-centro span { font-size:19px; }
+.moonlit-luna-centro small { font-size:5px; }
+.moonlit-astro { width:76px; margin:-38px 0 0 -38px; }
+.moonlit-orbe { width:48px; height:48px; margin-bottom:5px; font-size:13px; }
+.moonlit-astro strong { font-size:11px; }
+.moonlit-astro>small { font-size:7px; }
+
+
+/* Posicionamiento elíptico de los astros. */
+.moonlit-astro { transform: translate(var(--x), var(--y)); }
