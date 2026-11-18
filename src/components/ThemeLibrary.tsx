@@ -541,37 +541,49 @@ export default function ThemeLibrary({
         {vistaTracks.length === 0 ? (
           vacio
         ) : (
-          <div className="ledger-libro">
-            <section className="ledger-pagina ledger-pagina-izq">
-              <h2>Índice</h2>
-              {vistaTracks.map((track, i) => (
-                <button
-                  key={track.id}
-                  type="button"
-                  className={`ledger-indice ${activeTrack?.id === track.id ? 'is-active' : ''}`}
-                  onClick={() => onPlayTrack(track)}
-                >
-                  <span>{String(i + 1).padStart(2, '0')}</span>
-                  <span>{track.title}</span>
-                </button>
-              ))}
-            </section>
-            <section className="ledger-pagina ledger-pagina-der">
-              <h2>Asientos</h2>
-              {vistaTracks.map((track) => (
-                <article
-                  key={track.id}
-                  className={`ledger-asiento ${activeTrack?.id === track.id ? 'is-active' : ''}`}
-                >
-                  <strong>{track.title}</strong>
-                  <small>
-                    {track.artist} · {track.album} · {track.duration_str}
-                  </small>
-                  <span className="ledger-asiento-sello">REGISTRADA ✓</span>
-                  {acciones(track)}
-                </article>
-              ))}
-            </section>
+          <div className="ledger-mayor">
+            <div className="ledger-lomo" aria-hidden="true">
+              <span>帳</span>
+            </div>
+            <div className="ledger-hoja">
+              <div className="ledger-hoja-cab">
+                <span>LIBRO MAYOR · FOLIO 01</span>
+                <span>{vistaTracks.length} ASIENTOS</span>
+              </div>
+              <div className="ledger-columnas">
+                <span>Nº</span>
+                <span>TÍTULO</span>
+                <span>ARTISTA / ÁLBUM</span>
+                <span>ESTADO</span>
+              </div>
+              <div className="ledger-asientos">
+                {vistaTracks.map((track, i) => (
+                  <div
+                    key={track.id}
+                    className={`ledger-fila ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+                  >
+                    <span className="ledger-num-sello">{String(i + 1).padStart(2, '0')}</span>
+                    <button
+                      type="button"
+                      className="ledger-fila-tit"
+                      onClick={() => onPlayTrack(track)}
+                    >
+                      {track.title}
+                    </button>
+                    <span className="ledger-fila-art">
+                      {track.artist} · {track.album} · {track.duration_str}
+                    </span>
+                    <span className="ledger-fila-est">
+                      <small>REGISTRADA ✓</small>
+                      {acciones(track)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <span className="ledger-sello-final" aria-hidden="true">
+                桜
+              </span>
+            </div>
           </div>
         )}
       </div>

@@ -6132,3 +6132,25 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .theme-modal [class*="text-ink-1"],
 .theme-modal [class*="text-ink-2"],
 .theme-modal [class*="text-ink-3"] { color: var(--modal-texto) !important; }
+
+
+/* ========================================================= */
+/* LEDGER · libro mayor contable (diseño de biblioteca)       */
+/* ========================================================= */
+.ledger-mayor { position:relative; display:flex; margin-top:8px; border:1px solid #33291d; background:#faf4e6; box-shadow:8px 10px 0 rgba(163,58,42,.1); min-height:420px; }
+.ledger-lomo { width:46px; flex:none; background:linear-gradient(90deg,#43130e,#6e231a 45%,#43130e); border-right:2px solid #d4af7a; box-shadow:inset -6px 0 12px rgba(0,0,0,.3); display:flex; align-items:center; justify-content:center; color:#d4af7a; }
+.ledger-lomo span { border:1px solid rgba(212,175,122,.55); padding:7px 4px; font-size:19px; line-height:1; }
+.ledger-hoja { position:relative; flex:1; min-width:0; padding-bottom:44px; background:repeating-linear-gradient(0deg,transparent 0 39px,rgba(201,185,154,.45) 39px 40px); }
+.ledger-hoja::before { content:''; position:absolute; left:52px; top:0; bottom:0; width:2px; background:rgba(163,58,42,.5); box-shadow:5px 0 0 rgba(163,58,42,.18); pointer-events:none; }
+.ledger-hoja-cab { display:flex; justify-content:space-between; padding:15px 24px 12px 74px; border-bottom:3px double #33291d; font:9px 'IBM Plex Mono','Courier New',monospace; letter-spacing:.18em; text-transform:uppercase; color:#a33a2a; }
+.ledger-columnas,
+.ledger-fila { display:grid; grid-template-columns:64px minmax(0,1.1fr) minmax(0,1.3fr) 200px; align-items:center; column-gap:12px; padding-left:74px; padding-right:24px; }
+.ledger-columnas { padding-top:9px; padding-bottom:9px; border-bottom:1px solid #33291d; font:9px 'IBM Plex Mono','Courier New',monospace; text-transform:uppercase; letter-spacing:.14em; color:#6b5c46; }
+.ledger-fila { min-height:44px; border-bottom:1px solid #c9b99a; font:11px 'IBM Plex Mono','Courier New',monospace; color:#33291d; }
+.ledger-fila.is-active { background:rgba(163,58,42,.07); }
+.ledger-num-sello { display:grid; place-items:center; width:30px; height:30px; border:1px solid #a33a2a; border-radius:50%; color:#a33a2a; font-size:10px; transform:rotate(-8deg); }
+.ledger-fila-tit { background:transparent; border:0; padding:0; text-align:left; cursor:pointer; font:700 13px 'IBM Plex Mono','Courier New',monospace; color:#33291d; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.ledger-fila-art { font:10px 'IBM Plex Mono','Courier New',monospace; color:#6b5c46; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.ledger-fila-est { display:flex; align-items:center; justify-content:flex-end; gap:10px; }
+.ledger-fila-est small { font:8px 'IBM Plex Mono','Courier New',monospace; color:#a33a2a; transform:rotate(-4deg); white-space:nowrap; }
+.ledger-sello-final { position:absolute; right:28px; bottom:14px; width:54px; height:54px; border:3px double #a33a2a; border-radius:50%; display:grid; place-items:center; color:#a33a2a; font-size:20px; transform:rotate(-14deg); opacity:.85; }
