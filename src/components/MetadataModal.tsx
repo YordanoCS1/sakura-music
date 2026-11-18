@@ -27,11 +27,13 @@ import type {
   CatalogCandidate,
   CatalogSource,
   ScannedTrack,
+  ThemeMode,
 } from '../types';
 
 type EditField = 'title' | 'artist' | 'album' | 'album_artist' | 'track_number' | 'year' | 'genre';
 
 interface MetadataModalProps {
+  theme: ThemeMode;
   editingTrack: ScannedTrack;
   editTab: 'tags' | 'catalog';
   editTitle: string;
@@ -87,6 +89,7 @@ interface MetadataModalProps {
 }
 
 export default function MetadataModal({
+  theme,
   editingTrack,
   editTab,
   editTitle,
@@ -144,7 +147,7 @@ export default function MetadataModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-6"
+      className={`theme-modal-backdrop tema-${theme} fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-6`}
       onClick={() => onClose()}
       onPaste={onPaste}
       role="presentation"
@@ -154,7 +157,7 @@ export default function MetadataModal({
         role="dialog"
         aria-modal="true"
         aria-label="Editor de metadatos"
-        className="glass-card rounded-3xl border border-white/10 w-full max-w-4xl shadow-2xl flex flex-col overflow-hidden max-h-[92vh] animate-in fade-in zoom-in-95 duration-base"
+        className={`glass-card theme-modal tema-${theme} rounded-3xl border border-white/10 w-full max-w-4xl shadow-2xl flex flex-col overflow-hidden max-h-[92vh] animate-in fade-in zoom-in-95 duration-base`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Cabecera con pestañas de navegación */}

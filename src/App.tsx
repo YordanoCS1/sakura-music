@@ -1287,6 +1287,7 @@ export default function App() {
           {/* ── MODAL EDITOR DE METADATOS PRO & CATÁLOGO ── */}
           {editingTrack && (
             <MetadataModal
+              theme={theme}
               editingTrack={editingTrack}
               editTab={editTab}
               editTitle={editTitle}
