@@ -5780,3 +5780,91 @@ input[type="range"]:hover::-webkit-slider-thumb {
   color: var(--tema-texto) !important;
 }
 .app-shell .theme-nav-search input::placeholder { color: var(--tema-texto-suave) !important; }
+
+
+/* ========================================================= */
+/* BIBLIOTECAS CON ESTRUCTURA ÚNICA POR TEMA                  */
+/* ========================================================= */
+
+/* SHOJI · biombo corredizo de tres paños con listones. */
+.shoji-biombo { display:grid; grid-template-columns:repeat(3,1fr); border:6px solid #c9b28a; background:#f3ebd9; min-height:440px; }
+.shoji-panel-screen { position:relative; padding:22px 16px; border-right:3px solid #c9b28a; }
+.shoji-panel-screen:last-child { border-right:0; }
+.shoji-panel-kanji { position:absolute; right:8px; top:-8px; font-size:74px; line-height:1; color:rgba(90,70,45,.10); pointer-events:none; }
+.shoji-panel-slats { display:flex; flex-direction:column; gap:7px; margin-top:24px; }
+.shoji-slata { display:grid; grid-template-columns:22px minmax(0,1fr) auto auto; align-items:center; gap:8px; padding:10px 8px; border:1px solid rgba(90,70,45,.24); background:rgba(255,252,244,.72); }
+.shoji-slata-num { font:10px 'JetBrains Mono',monospace; color:#a8442f; }
+.shoji-slata button { background:transparent; border:0; text-align:left; cursor:pointer; color:#2c241a; padding:0; min-width:0; }
+.shoji-slata strong { display:block; font:400 17px 'Cormorant Garamond',serif; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.shoji-slata small { display:block; font:9px 'JetBrains Mono',monospace; color:#6f604a; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.shoji-slata-dur { font:9px 'JetBrains Mono',monospace; color:#8a7b62; }
+.shoji-slata.is-active { border-color:#a8442f; background:rgba(168,68,47,.09); }
+
+/* ORIGAMI · abanico de hojas superpuestas y giradas. */
+.origami-abanico { display:flex; flex-wrap:wrap; align-items:flex-start; padding:36px 12px 60px 30px; }
+.origami-hoja { position:relative; width:210px; height:292px; flex:none; margin-left:-26px; padding:14px; background:#fff; box-shadow:8px 10px 0 rgba(217,84,127,.14); clip-path:polygon(0 0,84% 0,100% 16%,100% 100%,0 100%); transform:translateY(var(--sube)) rotate(var(--giro)); transition:transform .25s ease; }
+.origami-hoja:hover { transform:translateY(calc(var(--sube) - 16px)) rotate(0deg); z-index:5; }
+.origami-hoja.is-active { box-shadow:0 0 0 2px rgba(217,84,127,.5),8px 10px 0 rgba(217,84,127,.14); }
+.origami-hoja-play { display:block; width:100%; background:transparent; border:0; cursor:pointer; color:inherit; text-align:left; padding:0; }
+.origami-hoja-cara { display:grid; place-items:center; width:100%; height:164px; overflow:hidden; background:rgba(217,84,127,.08); color:#d9547f; font-size:28px; }
+.origami-hoja-cara img { width:100%; height:100%; object-fit:cover; }
+.origami-hoja-play strong { display:block; margin-top:12px; font:400 19px 'Cormorant Garamond',serif; }
+.origami-hoja-play small { display:block; margin-top:4px; font:9px 'JetBrains Mono',monospace; color:#9c8490; }
+.origami-hoja-pie { position:absolute; left:14px; right:18px; bottom:16px; display:flex; justify-content:space-between; align-items:center; font:9px 'JetBrains Mono',monospace; color:#9c8490; }
+
+/* SWISS · retícula modular de doce columnas. */
+.swiss-modulos { display:grid; grid-template-columns:repeat(4,1fr); border-top:2px solid #111; border-left:1px solid #111; margin-top:4px; }
+.swiss-modulo { position:relative; min-height:202px; padding:18px; border-right:1px solid #111; border-bottom:1px solid #111; background:#fff; display:flex; flex-direction:column; gap:7px; }
+.swiss-modulo-num { font-size:46px; font-weight:700; line-height:1; letter-spacing:-.07em; }
+.swiss-modulo-tit { margin-top:auto; background:transparent; border:0; padding:0; text-align:left; cursor:pointer; font:700 16px 'Plus Jakarta Sans',sans-serif; color:#111; }
+.swiss-modulo-art { font:10px 'Plus Jakarta Sans',sans-serif; color:#111; text-transform:uppercase; letter-spacing:.08em; }
+.swiss-modulo-alb { font:10px 'Plus Jakarta Sans',sans-serif; color:#777; }
+.swiss-modulo-pie { display:flex; justify-content:space-between; align-items:center; border-top:1px solid #ddd; padding-top:8px; font:10px 'Plus Jakarta Sans',sans-serif; color:#777; }
+.swiss-modulo.is-active { background:#111; }
+.swiss-modulo.is-active .swiss-modulo-num,
+.swiss-modulo.is-active .swiss-modulo-tit,
+.swiss-modulo.is-active .swiss-modulo-art,
+.swiss-modulo.is-active .swiss-modulo-alb,
+.swiss-modulo.is-active .swiss-modulo-pie { color:#fff; }
+.swiss-modulo.is-active .swiss-modulo-pie { border-color:#444; }
+
+/* SUMI INK · rollos colgantes de lectura vertical. */
+.sumiink-rollos { display:flex; gap:14px; overflow-x:auto; padding:18px 4px 40px; min-height:470px; }
+.sumiink-rollo { width:106px; flex:none; display:flex; flex-direction:column; align-items:center; gap:10px; padding:12px 8px; border:1px solid rgba(232,229,221,.2); background:#121212; }
+.sumiink-rollo-barra { width:116px; height:8px; flex:none; background:linear-gradient(90deg,transparent,#e8e5dd,transparent); opacity:.6; }
+.sumiink-rollo-num { font:9px 'JetBrains Mono',monospace; color:#9a968c; }
+.sumiink-rollo-tit { writing-mode:vertical-rl; height:184px; background:transparent; border:0; cursor:pointer; font:400 20px 'Cormorant Garamond',serif; color:#e8e5dd; letter-spacing:.06em; }
+.sumiink-rollo small { writing-mode:vertical-rl; height:72px; overflow:hidden; font:8px 'JetBrains Mono',monospace; color:#9a968c; }
+.sumiink-rollo-dur { margin-top:auto; font:9px 'JetBrains Mono',monospace; color:#9a968c; }
+.sumiink-rollo .theme-row-actions { flex-direction:column; gap:2px; }
+.sumiink-rollo.is-active { border-color:#e8e5dd; background:#1d1d1d; }
+
+/* MOONLIT · constelación de-estrellas sobre el cielo nocturno. */
+.moonlit-cielo { position:relative; min-height:560px; margin-top:10px; overflow:hidden; background:radial-gradient(circle at 86% 16%,rgba(143,182,232,.1),transparent 42%); }
+.moonlit-luna-fondo { position:absolute; right:6%; top:5%; width:180px; height:180px; border-radius:50%; background:radial-gradient(circle at 38% 35%,rgba(255,255,255,.92),rgba(143,182,232,.5)); box-shadow:0 0 80px rgba(143,182,232,.25); pointer-events:none; }
+.moonlit-estrella { position:absolute; width:122px; text-align:center; transform:translateX(-50%); }
+.moonlit-estrella button { display:block; width:100%; background:transparent; border:0; cursor:pointer; color:inherit; padding:0; }
+.moonlit-orbe { display:grid; place-items:center; width:58px; height:58px; margin:0 auto 8px; border-radius:50%; border:1px solid rgba(143,182,232,.4); background:rgba(143,182,232,.08); color:#8fb6e8; font-size:18px; overflow:hidden; transition:box-shadow .25s ease; }
+.moonlit-orbe img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+.moonlit-estrella strong { display:block; font:400 13px 'Cormorant Garamond',serif; color:#dfe8f7; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.moonlit-estrella small { display:block; margin-top:3px; font:8px 'JetBrains Mono',monospace; color:#7f92b4; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.moonlit-estrella-acc { display:flex; justify-content:center; margin-top:5px; }
+.moonlit-estrella:hover .moonlit-orbe,
+.moonlit-estrella.is-active .moonlit-orbe { box-shadow:0 0 22px rgba(143,182,232,.55); border-color:#8fb6e8; }
+
+/* LEDGER · libro abierto con índice a la izquierda y asientos a la derecha. */
+.ledger-libro { position:relative; display:grid; grid-template-columns:1fr 1.25fr; margin-top:8px; background:#faf4e6; border:1px solid #33291d; box-shadow:10px 12px 0 rgba(163,58,42,.08); }
+.ledger-libro::after { content:''; position:absolute; left:44%; top:0; bottom:0; width:14px; background:linear-gradient(90deg,rgba(51,41,29,.14),rgba(51,41,29,.02),rgba(51,41,29,.14)); pointer-events:none; }
+.ledger-pagina { padding:24px 28px; min-height:470px; }
+.ledger-pagina-izq { border-right:1px solid #c9b99a; background:repeating-linear-gradient(0deg,transparent 0 27px,rgba(201,185,154,.4) 27px 28px); }
+.ledger-pagina-der { background:repeating-linear-gradient(0deg,transparent 0 34px,rgba(201,185,154,.35) 34px 35px); }
+.ledger-pagina h2 { margin:0 0 18px; padding-bottom:8px; border-bottom:2px solid #33291d; font:700 11px 'IBM Plex Mono','Courier New',monospace; text-transform:uppercase; letter-spacing:.2em; color:#a33a2a; }
+.ledger-indice { display:grid; grid-template-columns:34px 1fr; gap:10px; width:100%; background:transparent; border:0; border-bottom:1px solid #c9b99a; padding:7px 2px; text-align:left; cursor:pointer; font:11px 'IBM Plex Mono','Courier New',monospace; color:#33291d; }
+.ledger-indice span:first-child { color:#a33a2a; }
+.ledger-indice.is-active { background:rgba(163,58,42,.07); }
+.ledger-asiento { position:relative; padding:8px 96px 8px 0; border-bottom:1px solid #c9b99a; }
+.ledger-asiento strong { display:block; font:700 13px 'IBM Plex Mono','Courier New',monospace; color:#33291d; }
+.ledger-asiento small { display:block; margin-top:3px; font:9px 'IBM Plex Mono','Courier New',monospace; color:#6b5c46; }
+.ledger-asiento-sello { position:absolute; right:104px; top:8px; font:8px 'IBM Plex Mono','Courier New',monospace; color:#a33a2a; transform:rotate(-6deg); }
+.ledger-asiento .theme-row-actions { position:absolute; right:0; top:6px; }
+.ledger-asiento.is-active { background:rgba(163,58,42,.07); }

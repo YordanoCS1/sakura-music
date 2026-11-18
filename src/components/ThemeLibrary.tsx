@@ -1,4 +1,4 @@
-import type { MouseEvent } from 'react';
+import type { CSSProperties, MouseEvent } from 'react';
 import { ChevronLeft, Folder, FolderOpen, Pencil, Trash2 } from 'lucide-react';
 import type { FolderExplorerData, ScannedTrack, ThemeMode } from '../types';
 import EmptyState from './EmptyState';
@@ -334,6 +334,8 @@ export default function ThemeLibrary({
   }
 
   if (theme === 'shoji') {
+    const paneles = Array.from({ length: 3 }, (_, p) => vistaTracks.filter((_, i) => i % 3 === p));
+    const kanjis = ['静', '桜', '音'];
     return (
       <div className="shoji-library">
         {encabezado}
@@ -341,32 +343,34 @@ export default function ThemeLibrary({
         {vistaTracks.length === 0 ? (
           vacio
         ) : (
-          <div className="shoji-tabla">
-            <div className="shoji-fila shoji-cab">
-              <span>#</span>
-              <span></span>
-              <span>TÍTULO</span>
-              <span>ARTISTA</span>
-              <span>ÁLBUM</span>
-              <span>TIEMPO</span>
-            </div>
-            {vistaTracks.map((track, i) => (
-              <div
-                key={track.id}
-                className={`shoji-fila ${activeTrack?.id === track.id ? 'is-active' : ''}`}
-              >
-                <span className="shoji-num">{String(i + 1).padStart(2, '0')}</span>
-                <span className="shoji-portada">{portadaDe(track)}</span>
-                <button type="button" className="shoji-titulo" onClick={() => onPlayTrack(track)}>
-                  {track.title}
-                </button>
-                <span>{track.artist}</span>
-                <span>{track.album}</span>
-                <span className="shoji-final">
-                  {acciones(track)}
-                  <small>{track.duration_str}</small>
+          <div className="shoji-biombo">
+            {paneles.map((grupo, p) => (
+              <section className="shoji-panel-screen" key={p}>
+                <span className="shoji-panel-kanji" aria-hidden="true">
+                  {kanjis[p]}
                 </span>
-              </div>
+                <div className="shoji-panel-slats">
+                  {grupo.map((track) => {
+                    const numero = vistaTracks.indexOf(track) + 1;
+                    return (
+                      <article
+                        key={track.id}
+                        className={`shoji-slata ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+                      >
+                        <span className="shoji-slata-num">{String(numero).padStart(2, '0')}</span>
+                        <button type="button" onClick={() => onPlayTrack(track)}>
+                          <strong>{track.title}</strong>
+                          <small>
+                            {track.artist} · {track.album}
+                          </small>
+                        </button>
+                        <span className="shoji-slata-dur">{track.duration_str}</span>
+                        {acciones(track)}
+                      </article>
+                    );
+                  })}
+                </div>
+              </section>
             ))}
           </div>
         )}
@@ -375,6 +379,7 @@ export default function ThemeLibrary({
   }
 
   if (theme === 'origami') {
+    const mitad = (vistaTracks.length - 1) / 2;
     return (
       <div className="origami-library">
         {encabezado}
@@ -382,20 +387,33 @@ export default function ThemeLibrary({
         {vistaTracks.length === 0 ? (
           vacio
         ) : (
-          <div className="origami-papeles">
-            {vistaTracks.map((track) => (
+          <div className="origami-abanico">
+            {vistaTracks.map((track, i) => (
               <article
                 key={track.id}
-                className={`origami-papel ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+                className={`origami-hoja ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+                style={
+                  {
+                    '--giro': `${(i - mitad) * 1.6}deg`,
+                    '--sube': `${(i % 3) * 16}px`,
+                  } as CSSProperties
+                }
               >
-                <button type="button" className="origami-play" onClick={() => onPlayTrack(track)}>
-                  <span className="origami-portada">{portadaDe(track)}</span>
+                <button
+                  type="button"
+                  className="origami-hoja-play"
+                  onClick={() => onPlayTrack(track)}
+                >
+                  <span className="origami-hoja-cara">{portadaDe(track)}</span>
                   <strong>{track.title}</strong>
+                  <small>
+                    {track.artist} · {track.album}
+                  </small>
                 </button>
-                <small>
-                  {track.artist} · {track.album} · {track.duration_str}
-                </small>
-                {acciones(track)}
+                <div className="origami-hoja-pie">
+                  <span>{track.duration_str}</span>
+                  {acciones(track)}
+                </div>
               </article>
             ))}
           </div>
@@ -412,32 +430,27 @@ export default function ThemeLibrary({
         {vistaTracks.length === 0 ? (
           vacio
         ) : (
-          <div className="swiss-tabla">
-            <div className="swiss-fila swiss-cab">
-              <span>Nº</span>
-              <span></span>
-              <span>TÍTULO</span>
-              <span>ARTISTA</span>
-              <span>ÁLBUM</span>
-              <span>TIEMPO</span>
-            </div>
+          <div className="swiss-modulos">
             {vistaTracks.map((track, i) => (
-              <div
+              <article
                 key={track.id}
-                className={`swiss-fila ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+                className={`swiss-modulo ${activeTrack?.id === track.id ? 'is-active' : ''}`}
               >
-                <span>{String(i + 1).padStart(2, '0')}</span>
-                <span className="swiss-portada">{portadaDe(track)}</span>
-                <button type="button" className="swiss-titulo" onClick={() => onPlayTrack(track)}>
+                <span className="swiss-modulo-num">{String(i + 1).padStart(2, '0')}</span>
+                <button
+                  type="button"
+                  className="swiss-modulo-tit"
+                  onClick={() => onPlayTrack(track)}
+                >
                   {track.title}
                 </button>
-                <span>{track.artist}</span>
-                <span>{track.album}</span>
-                <span className="swiss-final">
+                <span className="swiss-modulo-art">{track.artist}</span>
+                <span className="swiss-modulo-alb">{track.album}</span>
+                <div className="swiss-modulo-pie">
+                  <span>{track.duration_str}</span>
                   {acciones(track)}
-                  <small>{track.duration_str}</small>
-                </span>
-              </div>
+                </div>
+              </article>
             ))}
           </div>
         )}
@@ -453,24 +466,28 @@ export default function ThemeLibrary({
         {vistaTracks.length === 0 ? (
           vacio
         ) : (
-          <div className="sumiink-lista">
+          <div className="sumiink-rollos">
             {vistaTracks.map((track, i) => (
-              <div
+              <article
                 key={track.id}
-                className={`sumiink-fila ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+                className={`sumiink-rollo ${activeTrack?.id === track.id ? 'is-active' : ''}`}
               >
-                <span className="sumiink-n">{String(i + 1).padStart(2, '0')}</span>
-                <button type="button" className="sumiink-t" onClick={() => onPlayTrack(track)}>
+                <span className="sumiink-rollo-barra" aria-hidden="true" />
+                <span className="sumiink-rollo-num">{String(i + 1).padStart(2, '0')}</span>
+                <button
+                  type="button"
+                  className="sumiink-rollo-tit"
+                  onClick={() => onPlayTrack(track)}
+                >
                   {track.title}
                 </button>
-                <span className="sumiink-a">
+                <small>
                   {track.artist} · {track.album}
-                </span>
-                <span className="sumiink-final">
-                  {acciones(track)}
-                  <small>{track.duration_str}</small>
-                </span>
-              </div>
+                </small>
+                <span className="sumiink-rollo-dur">{track.duration_str}</span>
+                {acciones(track)}
+                <span className="sumiink-rollo-barra" aria-hidden="true" />
+              </article>
             ))}
           </div>
         )}
@@ -486,20 +503,23 @@ export default function ThemeLibrary({
         {vistaTracks.length === 0 ? (
           vacio
         ) : (
-          <div className="moonlit-tarjetas">
-            {vistaTracks.map((track) => (
+          <div className="moonlit-cielo">
+            <div className="moonlit-luna-fondo" aria-hidden="true" />
+            {vistaTracks.map((track, i) => (
               <article
                 key={track.id}
-                className={`moonlit-tarj ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+                className={`moonlit-estrella ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+                style={{
+                  left: `${8 + ((i * 29) % 78)}%`,
+                  top: `${24 + ((i * 71) % 296)}px`,
+                }}
               >
-                <button type="button" className="moonlit-play" onClick={() => onPlayTrack(track)}>
-                  <span className="moonlit-portada">{portadaDe(track)}</span>
+                <button type="button" onClick={() => onPlayTrack(track)}>
+                  <span className="moonlit-orbe">{portadaDe(track)}</span>
                   <strong>{track.title}</strong>
                 </button>
-                <small>
-                  {track.artist} · {track.album} · {track.duration_str}
-                </small>
-                {acciones(track)}
+                <small>{track.artist}</small>
+                <span className="moonlit-estrella-acc">{acciones(track)}</span>
               </article>
             ))}
           </div>
@@ -516,31 +536,37 @@ export default function ThemeLibrary({
         {vistaTracks.length === 0 ? (
           vacio
         ) : (
-          <div className="ledger-mayor">
-            <div className="ledger-fila ledger-cab">
-              <span>Nº</span>
-              <span>TÍTULO</span>
-              <span>ARTISTA</span>
-              <span>ESTADO</span>
-            </div>
-            {vistaTracks.map((track, i) => (
-              <div
-                key={track.id}
-                className={`ledger-fila ${activeTrack?.id === track.id ? 'is-active' : ''}`}
-              >
-                <span className="ledger-num">{String(i + 1).padStart(2, '0')}</span>
-                <button type="button" className="ledger-titulo" onClick={() => onPlayTrack(track)}>
-                  {track.title}
+          <div className="ledger-libro">
+            <section className="ledger-pagina ledger-pagina-izq">
+              <h2>Índice</h2>
+              {vistaTracks.map((track, i) => (
+                <button
+                  key={track.id}
+                  type="button"
+                  className={`ledger-indice ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+                  onClick={() => onPlayTrack(track)}
+                >
+                  <span>{String(i + 1).padStart(2, '0')}</span>
+                  <span>{track.title}</span>
                 </button>
-                <span>
-                  {track.artist} · {track.album}
-                </span>
-                <span className="ledger-final">
-                  <small>REGISTRADA ✓</small>
+              ))}
+            </section>
+            <section className="ledger-pagina ledger-pagina-der">
+              <h2>Asientos</h2>
+              {vistaTracks.map((track) => (
+                <article
+                  key={track.id}
+                  className={`ledger-asiento ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+                >
+                  <strong>{track.title}</strong>
+                  <small>
+                    {track.artist} · {track.album} · {track.duration_str}
+                  </small>
+                  <span className="ledger-asiento-sello">REGISTRADA ✓</span>
                   {acciones(track)}
-                </span>
-              </div>
-            ))}
+                </article>
+              ))}
+            </section>
           </div>
         )}
       </div>
