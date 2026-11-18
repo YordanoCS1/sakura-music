@@ -7,6 +7,7 @@ interface ZenTopNavProps {
   onNavigate: (tab: AppTab) => void;
   trackCount: number;
   downloads: DownloadItem[];
+  nombreTema?: string;
 }
 
 const items: { id: AppTab; label: string; icon: typeof Home }[] = [
@@ -22,6 +23,7 @@ export default function ZenTopNav({
   onNavigate,
   trackCount,
   downloads,
+  nombreTema = 'M3 Zen',
 }: ZenTopNavProps) {
   const tabsRef = useRef<HTMLDivElement>(null);
   const btnRefs = useRef<Record<string, HTMLButtonElement | null>>({});
@@ -69,7 +71,7 @@ export default function ZenTopNav({
         </span>
         <div className="zen-topnav-brand-copy">
           <strong>Sakura</strong>
-          <small>M3 · Zen</small>
+          <small>{nombreTema}</small>
         </div>
       </div>
 

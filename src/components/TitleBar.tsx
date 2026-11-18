@@ -2,10 +2,14 @@ import { useEffect, useState } from 'react';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { Maximize2, Minus, Minimize2, X } from 'lucide-react';
 
+interface TitleBarProps {
+  nombreTema?: string;
+}
+
 // Barra de título personalizada de la ventana (la nativa de Windows se ocultó
 // con `decorations: false` en Rust). Toda la barra es zona de arrastre salvo
-// los botones; los pétalos y el fondo la integran con el tema M3 Zen.
-export default function TitleBar() {
+// los botones; los pétalos y el fondo siguen el tema activo.
+export default function TitleBar({ nombreTema = 'M3 Zen' }: TitleBarProps) {
   const [isMax, setIsMax] = useState(false);
 
   useEffect(() => {
@@ -40,7 +44,7 @@ export default function TitleBar() {
           Sakura Music
         </span>
         <span className="titlebar-brand-tag" data-tauri-drag-region>
-          M3 Zen
+          {nombreTema}
         </span>
       </div>
 

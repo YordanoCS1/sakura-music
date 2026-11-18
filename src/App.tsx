@@ -39,10 +39,15 @@ import { useOnlineSearch } from './hooks/useOnlineSearch';
 import { useFolderExplorer } from './hooks/useFolderExplorer';
 import { usePlayer } from './hooks/usePlayer';
 
+const TEMAS_CON_VISTAS_PROPIAS: ThemeMode[] = ['sumie', 'byobu', 'shoji', 'origami', 'swiss'];
+
 const TEMAS_DISPONIBLES: ThemeOption[] = [
   { id: 'space', nombre: 'M3 Zen', descripcion: 'Marfil y rosa sakura' },
   { id: 'sumie', nombre: 'Sumi-e', descripcion: 'Pergamino flotante y tinta' },
   { id: 'byobu', nombre: 'Byōbu', descripcion: 'Pantalla dividida de tinta' },
+  { id: 'shoji', nombre: 'Shoji', descripcion: 'Biombo de papel y madera' },
+  { id: 'origami', nombre: 'Origami', descripcion: 'Papel plegado rosa' },
+  { id: 'swiss', nombre: 'Swiss', descripcion: 'Grid estricto y Helvetica' },
   { id: 'yoru', nombre: 'Yoru', descripcion: 'Noche cálida y ámbar' },
   { id: 'hanabi', nombre: 'Hanabi', descripcion: 'Neón cian y magenta' },
   { id: 'aizuri', nombre: 'Aizuri', descripcion: 'Índigo teñido y cian' },
@@ -55,6 +60,8 @@ export default function App() {
     const guardado = localStorage.getItem('sakura_theme') as ThemeMode | null;
     return guardado && TEMAS_DISPONIBLES.some((t) => t.id === guardado) ? guardado : 'space';
   });
+  // Nombre visible del tema activo, compartido por la barra de título y el nav.
+  const nombreTema = TEMAS_DISPONIBLES.find((t) => t.id === theme)?.nombre ?? 'M3 Zen';
   const [playerStyle, setPlayerStyle] = useState<PlayerStyle>(() => {
     return (localStorage.getItem('sakura_player_style') as PlayerStyle) || 'floating';
   });
@@ -756,6 +763,24 @@ export default function App() {
       accent: 'from-red-700 to-stone-800',
       badge: 'bg-red-700/15 text-red-100 border-red-600/30',
     },
+    shoji: {
+      glow1: 'bg-amber-100/20',
+      glow2: 'bg-stone-500/15',
+      accent: 'from-red-800 to-amber-700',
+      badge: 'bg-red-800/10 text-red-900 border-red-800/30',
+    },
+    origami: {
+      glow1: 'bg-pink-300/25',
+      glow2: 'bg-rose-500/15',
+      accent: 'from-pink-500 to-rose-600',
+      badge: 'bg-pink-500/10 text-pink-700 border-pink-400/30',
+    },
+    swiss: {
+      glow1: 'bg-neutral-300/20',
+      glow2: 'bg-neutral-600/20',
+      accent: 'from-neutral-800 to-neutral-600',
+      badge: 'bg-neutral-800/10 text-neutral-900 border-neutral-700/30',
+    },
     yoru: {
       glow1: 'bg-amber-500/20',
       glow2: 'bg-orange-900/25',
@@ -875,7 +900,7 @@ export default function App() {
       )}
 
       {/* Barra de título personalizada de la ventana (sin decoración nativa) */}
-      <TitleBar />
+      <TitleBar nombreTema={nombreTema} />
 
       {/* Fila principal: nav + contenido */}
       <div className="app-rail-row flex flex-1 min-h-0 overflow-hidden">
@@ -885,6 +910,7 @@ export default function App() {
           onNavigate={setActiveTab}
           trackCount={tracks.length}
           downloads={downloads}
+          nombreTema={nombreTema}
         />
 
         {/* ========================================================= */}
@@ -1006,7 +1032,7 @@ export default function App() {
             className="main-scroll-region flex-1 overflow-y-auto p-6 custom-scroll"
           >
             {/* TAB: BIBLIOTECA */}
-            {activeTab === 'library' && (theme === 'sumie' || theme === 'byobu') && (
+            {activeTab === 'library' && TEMAS_CON_VISTAS_PROPIAS.includes(theme) && (
               <ThemeLibrary
                 theme={theme}
                 tracks={filteredTracks}
@@ -1028,7 +1054,7 @@ export default function App() {
                 onRequestDelete={(track) => setPendingDeleteTracks([track])}
               />
             )}
-            {activeTab === 'library' && theme !== 'sumie' && theme !== 'byobu' && (
+            {activeTab === 'library' && !TEMAS_CON_VISTAS_PROPIAS.includes(theme) && (
               <LibraryTab
                 tracks={tracks}
                 scrollElementRef={libraryScrollRef}
@@ -1067,7 +1093,7 @@ export default function App() {
             )}
 
             {/* TAB: INICIO (HOME) */}
-            {activeTab === 'home' && (theme === 'sumie' || theme === 'byobu') && (
+            {activeTab === 'home' && TEMAS_CON_VISTAS_PROPIAS.includes(theme) && (
               <ThemeHome
                 theme={theme}
                 trackCount={tracks.length}
@@ -1076,7 +1102,7 @@ export default function App() {
                 onNavigate={(tab) => setActiveTab(tab)}
               />
             )}
-            {activeTab === 'home' && theme !== 'sumie' && theme !== 'byobu' && (
+            {activeTab === 'home' && !TEMAS_CON_VISTAS_PROPIAS.includes(theme) && (
               <HomeTab trackCount={tracks.length} onNavigate={(tab) => setActiveTab(tab)} />
             )}
 

@@ -45,7 +45,15 @@ export default function ThemeLibrary({
   onOpenEdit,
   onRequestDelete,
 }: ThemeLibraryProps) {
-  if (theme !== 'sumie' && theme !== 'byobu') return null;
+  if (
+    theme !== 'sumie' &&
+    theme !== 'byobu' &&
+    theme !== 'shoji' &&
+    theme !== 'origami' &&
+    theme !== 'swiss'
+  ) {
+    return null;
+  }
 
   // El hook de carpetas ya calcula las pistas de cada nivel. `filteredTracks`
   // no filtra por carpeta cuando la vista es "folders", así que en los temas
@@ -129,6 +137,32 @@ export default function ThemeLibrary({
     />
   );
 
+  const acciones = (track: ScannedTrack) => (
+    <div className="theme-row-actions">
+      <button
+        type="button"
+        onClick={(e) => onToggleFavorite(track.id, e)}
+        aria-label="Favorito"
+        className={favorites.includes(track.id) ? 'is-fav' : ''}
+      >
+        ♡
+      </button>
+      <button type="button" onClick={() => onOpenEdit(track)} aria-label="Editar metadatos">
+        <Pencil className="w-3.5 h-3.5" />
+      </button>
+      <button type="button" onClick={() => onRequestDelete(track)} aria-label="Eliminar canción">
+        <Trash2 className="w-3.5 h-3.5" />
+      </button>
+    </div>
+  );
+
+  const portadaDe = (track: ScannedTrack) =>
+    track.cover_url ? (
+      <img src={getCoverSrc(track.cover_url)} alt="" />
+    ) : (
+      <span aria-hidden="true">桜</span>
+    );
+
   if (theme === 'sumie') {
     return (
       <div className="sumie-library">
@@ -195,6 +229,118 @@ export default function ThemeLibrary({
                   </button>
                 </div>
               </article>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (theme === 'shoji') {
+    return (
+      <div className="shoji-library">
+        {encabezado}
+        {selectorCarpetas}
+        {vistaTracks.length === 0 ? (
+          vacio
+        ) : (
+          <div className="shoji-tabla">
+            <div className="shoji-fila shoji-cab">
+              <span>#</span>
+              <span></span>
+              <span>TÍTULO</span>
+              <span>ARTISTA</span>
+              <span>ÁLBUM</span>
+              <span>TIEMPO</span>
+            </div>
+            {vistaTracks.map((track, i) => (
+              <div
+                key={track.id}
+                className={`shoji-fila ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+              >
+                <span className="shoji-num">{String(i + 1).padStart(2, '0')}</span>
+                <span className="shoji-portada">{portadaDe(track)}</span>
+                <button type="button" className="shoji-titulo" onClick={() => onPlayTrack(track)}>
+                  {track.title}
+                </button>
+                <span>{track.artist}</span>
+                <span>{track.album}</span>
+                <span className="shoji-final">
+                  {acciones(track)}
+                  <small>{track.duration_str}</small>
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (theme === 'origami') {
+    return (
+      <div className="origami-library">
+        {encabezado}
+        {selectorCarpetas}
+        {vistaTracks.length === 0 ? (
+          vacio
+        ) : (
+          <div className="origami-papeles">
+            {vistaTracks.map((track) => (
+              <article
+                key={track.id}
+                className={`origami-papel ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+              >
+                <button type="button" className="origami-play" onClick={() => onPlayTrack(track)}>
+                  <span className="origami-portada">{portadaDe(track)}</span>
+                  <strong>{track.title}</strong>
+                </button>
+                <small>
+                  {track.artist} · {track.album} · {track.duration_str}
+                </small>
+                {acciones(track)}
+              </article>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (theme === 'swiss') {
+    return (
+      <div className="swiss-library">
+        {encabezado}
+        {selectorCarpetas}
+        {vistaTracks.length === 0 ? (
+          vacio
+        ) : (
+          <div className="swiss-tabla">
+            <div className="swiss-fila swiss-cab">
+              <span>Nº</span>
+              <span></span>
+              <span>TÍTULO</span>
+              <span>ARTISTA</span>
+              <span>ÁLBUM</span>
+              <span>TIEMPO</span>
+            </div>
+            {vistaTracks.map((track, i) => (
+              <div
+                key={track.id}
+                className={`swiss-fila ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+              >
+                <span>{String(i + 1).padStart(2, '0')}</span>
+                <span className="swiss-portada">{portadaDe(track)}</span>
+                <button type="button" className="swiss-titulo" onClick={() => onPlayTrack(track)}>
+                  {track.title}
+                </button>
+                <span>{track.artist}</span>
+                <span>{track.album}</span>
+                <span className="swiss-final">
+                  {acciones(track)}
+                  <small>{track.duration_str}</small>
+                </span>
+              </div>
             ))}
           </div>
         )}

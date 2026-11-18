@@ -27,7 +27,15 @@ export default function ThemeHome({
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  if (theme !== 'sumie' && theme !== 'byobu') return null;
+  if (
+    theme !== 'sumie' &&
+    theme !== 'byobu' &&
+    theme !== 'shoji' &&
+    theme !== 'origami' &&
+    theme !== 'swiss'
+  ) {
+    return null;
+  }
 
   const elegirImagen = (e: ChangeEvent<HTMLInputElement>) => {
     const archivo = e.target.files?.[0];
@@ -103,6 +111,74 @@ export default function ThemeHome({
           </button>
         </div>
         <p className="sumie-home-stat">{trackCount} piezas en la colección · 100% local</p>
+      </div>
+    );
+  }
+
+  if (theme === 'shoji') {
+    return (
+      <div className="shoji-home">
+        <div className="shoji-panel">
+          <span className="shoji-glifo">静</span>
+          <h1>El espacio entre las cosas</h1>
+          <p>Una interfaz de papel y madera. Cada canción tiene su lugar detrás de un panel.</p>
+          <button type="button" onClick={() => onNavigate('library')}>
+            Abrir biblioteca →
+          </button>
+        </div>
+        <div className="shoji-panel">
+          <span className="shoji-glifo">桜</span>
+          <h1>Bienvenido</h1>
+          <p>Desliza los paneles, abre la biblioteca y encuentra tu música sin ruido.</p>
+          <p className="shoji-dato">{trackCount} piezas · 100% local</p>
+        </div>
+        <div className="shoji-panel">
+          <span className="shoji-glifo">音</span>
+          <h1>Tu colección</h1>
+          <p>Elige una carpeta y comienza el recorrido.</p>
+          <button type="button" onClick={() => onNavigate('search')}>
+            Buscar música →
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (theme === 'origami') {
+    return (
+      <div className="origami-home">
+        <div className="origami-triangulo" aria-hidden="true" />
+        <div className="origami-copy">
+          <p className="origami-kicker">ORIGAMI</p>
+          <h1>Todo se pliega hacia la música</h1>
+          <p>Una interfaz ligera, de papel doblado. Cada álbum es una figura esperando abrirse.</p>
+          <div className="origami-botones">
+            <button type="button" onClick={() => onNavigate('library')}>
+              Abrir biblioteca
+            </button>
+            <button type="button" onClick={() => onNavigate('search')}>
+              Buscar música
+            </button>
+          </div>
+          <p className="origami-dato">{trackCount} piezas en la colección</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (theme === 'swiss') {
+    return (
+      <div className="swiss-home">
+        <div className="swiss-numero">01</div>
+        <div className="swiss-copy">
+          <p className="swiss-kicker">SWISS · MINIMAL</p>
+          <h1>Música sin ruido</h1>
+          <p>Lo esencial. Cuadrícula, tipografía y tu colección. Nada más, nada menos.</p>
+          <button type="button" onClick={() => onNavigate('library')}>
+            Abrir biblioteca →
+          </button>
+          <p className="swiss-dato">{trackCount} piezas · 100% local</p>
+        </div>
       </div>
     );
   }

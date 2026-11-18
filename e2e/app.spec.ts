@@ -218,3 +218,34 @@ test('el tablist responde al teclado', async ({ page }) => {
   await expect(page.getByRole('tab', { name: /Buscar/ })).toHaveAttribute('aria-selected', 'true');
   await expect(page.getByRole('tab', { name: /Buscar/ })).toBeFocused();
 });
+
+test('Shoji, Origami y Swiss usan vistas propias sin el selector de 9 vistas', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });
+
+  const temas = [
+    { nombre: 'Shoji', home: '.shoji-home', biblioteca: '.shoji-library' },
+    { nombre: 'Origami', home: '.origami-home', biblioteca: '.origami-library' },
+    { nombre: 'Swiss', home: '.swiss-home', biblioteca: '.swiss-library' },
+  ];
+
+  for (const tema of temas) {
+    await page.getByRole('tab', { name: /Ajustes/ }).click();
+    await page.getByRole('button', { name: new RegExp(tema.nombre) }).click();
+
+    await expect(page.locator('.app-shell')).toHaveAttribute(
+      'data-skin',
+      tema.nombre.toLowerCase(),
+    );
+    await expect(page.locator('.titlebar-brand-tag')).toHaveText(tema.nombre);
+
+    await page.getByRole('tab', { name: /Inicio/ }).click();
+    await expect(page.locator(tema.home)).toBeVisible();
+    await expect(page.locator('.lt-view-select')).toBeHidden();
+
+    await page.getByRole('tab', { name: /Biblioteca/ }).click();
+    await expect(page.locator(tema.biblioteca)).toBeVisible();
+    await expect(page.locator('.lt-view-select')).toBeHidden();
+    await expect(page.getByRole('button', { name: /Todas juntas/ })).toBeVisible();
+  }
+});
