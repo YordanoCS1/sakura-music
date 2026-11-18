@@ -1,9 +1,10 @@
 import { useEffect, useRef } from 'react';
 import { AlertTriangle, Loader2, Music2, Trash2, X } from 'lucide-react';
 import { useFocusTrap } from '../hooks/useFocusTrap';
-import type { ScannedTrack } from '../types';
+import type { ScannedTrack, ThemeMode } from '../types';
 
 interface DeleteTracksDialogProps {
+  theme: ThemeMode;
   tracks: ScannedTrack[];
   isDeleting: boolean;
   onCancel: () => void;
@@ -11,6 +12,7 @@ interface DeleteTracksDialogProps {
 }
 
 export default function DeleteTracksDialog({
+  theme,
   tracks,
   isDeleting,
   onCancel,
@@ -39,7 +41,7 @@ export default function DeleteTracksDialog({
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 p-4 backdrop-blur-md animate-in fade-in duration-fast"
+      className={`theme-modal-backdrop modal-delete tema-${theme} fixed inset-0 z-[100] flex items-center justify-center bg-black/75 p-4 backdrop-blur-md animate-in fade-in duration-fast`}
       role="presentation"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget && !isDeleting) onCancel();
@@ -51,7 +53,7 @@ export default function DeleteTracksDialog({
         aria-modal="true"
         aria-labelledby="delete-tracks-title"
         aria-describedby="delete-tracks-description"
-        className="glass-card w-full max-w-md overflow-hidden rounded-3xl border border-white/10 shadow-2xl animate-in zoom-in-95 duration-base"
+        className={`glass-card theme-modal modal-delete tema-${theme} w-full max-w-md overflow-hidden rounded-3xl border border-white/10 shadow-2xl animate-in zoom-in-95 duration-base`}
         onMouseDown={(event) => event.stopPropagation()}
       >
         <header className="flex items-start gap-4 border-b border-white/10 bg-white/[0.03] px-6 py-5">

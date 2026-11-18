@@ -35,13 +35,18 @@ export function useBatchEditor({
   const [batchCoverPreviewUrl, setBatchCoverPreviewUrl] = useState<string | null>(null);
   const [applyBatchCover, setApplyBatchCover] = useState(false);
   const [batchRemoveCover, setBatchRemoveCover] = useState(false);
+  const [batchTargets, setBatchTargets] = useState<ScannedTrack[]>([]);
   const [isSavingBatch, setIsSavingBatch] = useState(false);
   const [batchFeedback, setBatchFeedback] = useState<string | null>(null);
 
-  const openBatchModal = () => {
-    if (selectedTrackIds.size === 0) return;
-    const selected = tracks.filter((t) => selectedTrackIds.has(t.id));
+  const openBatchModal = (overrides?: ScannedTrack[]) => {
+    // Las vistas propias no tienen selección multiple: pasan las pistas
+    // visibles. Los eventos de React se ignoran con Array.isArray.
+    const selected = Array.isArray(overrides)
+      ? overrides
+      : tracks.filter((t) => selectedTrackIds.has(t.id));
     if (selected.length === 0) return;
+    setBatchTargets(selected);
 
     const first = selected[0];
     const commonArtist = selected.every((t) => t.artist === first.artist) ? first.artist : '';
@@ -100,7 +105,9 @@ export function useBatchEditor({
 
   const handleSaveBatchMetadata = async (e: React.FormEvent) => {
     e.preventDefault();
-    const selectedTracks = tracks.filter((t) => selectedTrackIds.has(t.id));
+    const selectedTracks = batchTargets.length
+      ? batchTargets
+      : tracks.filter((t) => selectedTrackIds.has(t.id));
     if (selectedTracks.length === 0) return;
 
     setIsSavingBatch(true);
@@ -182,6 +189,7 @@ export function useBatchEditor({
     batchFeedback,
     setBatchFeedback,
     openBatchModal,
+    batchTargets,
     pickBatchCoverImage,
     handleSaveBatchMetadata,
   };

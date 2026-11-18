@@ -1,7 +1,9 @@
 import { AlertCircle, ImagePlus, Layers, Loader2, Music2, Save, Trash2, X } from 'lucide-react';
 import { useFocusTrap } from '../hooks/useFocusTrap';
+import type { ThemeMode } from '../types';
 
 interface BatchModalProps {
+  theme: ThemeMode;
   open: boolean;
   selectedCount: number;
   isSaving: boolean;
@@ -40,6 +42,7 @@ interface BatchModalProps {
 }
 
 export default function BatchModal({
+  theme,
   open,
   selectedCount,
   isSaving,
@@ -80,7 +83,7 @@ export default function BatchModal({
   if (!open) return null;
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-6"
+      className={`theme-modal-backdrop modal-batch tema-${theme} fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-6`}
       onClick={() => !isSaving && onClose()}
       role="presentation"
     >
@@ -89,7 +92,7 @@ export default function BatchModal({
         role="dialog"
         aria-modal="true"
         aria-label="Edición en lote"
-        className="glass-card rounded-3xl border border-white/10 w-full max-w-2xl shadow-2xl flex flex-col overflow-hidden max-h-[92vh] animate-in fade-in zoom-in-95 duration-base"
+        className={`glass-card theme-modal modal-batch tema-${theme} rounded-3xl border border-white/10 w-full max-w-2xl shadow-2xl flex flex-col overflow-hidden max-h-[92vh] animate-in fade-in zoom-in-95 duration-base`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Cabecera */}

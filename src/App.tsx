@@ -1102,6 +1102,7 @@ export default function App() {
                 onShowAll={() => setCurrentFolderNav([])}
                 onOpenEdit={openEditModal}
                 onRequestDelete={(track) => setPendingDeleteTracks([track])}
+                onOpenBatch={() => openBatchModal(tracks)}
               />
             )}
             {activeTab === 'library' && !TEMAS_CON_VISTAS_PROPIAS.includes(theme) && (
@@ -1344,6 +1345,7 @@ export default function App() {
           )}
 
           <DeleteTracksDialog
+            theme={theme}
             tracks={pendingDeleteTracks}
             isDeleting={isDeletingTracks}
             onCancel={() => {
@@ -1356,8 +1358,9 @@ export default function App() {
           {/* MODAL: EDITOR DE METADATOS EN LOTE (BATCH EDITOR)         */}
           {/* ========================================================= */}
           <BatchModal
+            theme={theme}
             open={isBatchModalOpen}
-            selectedCount={selectedTrackIds.size}
+            selectedCount={batch.batchTargets.length || selectedTrackIds.size}
             isSaving={isSavingBatch}
             feedback={batchFeedback}
             batchArtist={batchArtist}

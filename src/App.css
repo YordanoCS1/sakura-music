@@ -5997,9 +5997,8 @@ input[type="range"]:hover::-webkit-slider-thumb {
   font-family:var(--modal-font);
   box-shadow:var(--modal-shadow) !important;
 }
-.theme-modal > div:first-child { background:var(--modal-panel) !important; border-bottom:1px solid var(--modal-borde) !important; }
-.theme-modal > div:nth-child(2) { background:rgba(0,0,0,.22) !important; border-bottom:1px solid var(--modal-borde) !important; }
-.theme-modal > div:last-child { background:var(--modal-panel) !important; border-top:1px solid var(--modal-borde) !important; }
+.theme-modal > :first-child { background:var(--modal-panel) !important; border-bottom:1px solid var(--modal-borde) !important; }
+.theme-modal > :last-child { background:var(--modal-panel) !important; border-top:1px solid var(--modal-borde) !important; }
 .theme-modal input,
 .theme-modal textarea,
 .theme-modal select {
@@ -6122,3 +6121,14 @@ input[type="range"]:hover::-webkit-slider-thumb {
 
 /* Los bordes de las secciones siguen siempre el color del tema. */
 .theme-modal div { border-color: var(--modal-borde) !important; }
+
+
+/* Los avisos de eliminación siguen la paleta del tema. */
+.theme-modal [class*="text-amber-"] { color: var(--modal-suave) !important; }
+
+
+/* Cuerpo y textos de los diálogos de eliminación y lote. */
+.theme-modal > :nth-child(2) { background: var(--modal-fondo) !important; }
+.theme-modal [class*="text-ink-1"],
+.theme-modal [class*="text-ink-2"],
+.theme-modal [class*="text-ink-3"] { color: var(--modal-texto) !important; }

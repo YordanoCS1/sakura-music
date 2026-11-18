@@ -1,5 +1,5 @@
 import type { CSSProperties, MouseEvent } from 'react';
-import { ChevronLeft, Folder, FolderOpen, Pencil, Trash2 } from 'lucide-react';
+import { ChevronLeft, Folder, FolderOpen, Layers, Pencil, Trash2 } from 'lucide-react';
 import type { FolderExplorerData, ScannedTrack, ThemeMode } from '../types';
 import EmptyState from './EmptyState';
 
@@ -22,6 +22,7 @@ interface ThemeLibraryProps {
   onShowAll: () => void;
   onOpenEdit: (track: ScannedTrack) => void;
   onRequestDelete: (track: ScannedTrack) => void;
+  onOpenBatch: () => void;
 }
 
 /** Biblioteca propia de los temas orientalistas: no usa las 9 vistas genéricas. */
@@ -44,6 +45,7 @@ export default function ThemeLibrary({
   onShowAll,
   onOpenEdit,
   onRequestDelete,
+  onOpenBatch,
 }: ThemeLibraryProps) {
   if (
     theme !== 'sumie' &&
@@ -83,6 +85,9 @@ export default function ThemeLibrary({
       </button>
       <button type="button" onClick={onOpenFolderDialog}>
         <FolderOpen className="w-3.5 h-3.5" /> Elegir carpeta
+      </button>
+      <button type="button" onClick={onOpenBatch} disabled={vistaTracks.length === 0}>
+        <Layers className="w-3.5 h-3.5" /> Edición en lote
       </button>
       {currentFolderNav.map((parte, i) => (
         <button
