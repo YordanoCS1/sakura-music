@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>10 temas · Sakura Music</title>
+<style>
+  body{margin:0;padding:34px;background:#101010;color:#f0f0f0;font-family:Helvetica,Arial,sans-serif}
+  h1{font-size:32px;font-weight:700;margin:0 0 6px;letter-spacing:-.02em}
+  .sub{color:#999;font-size:13px;margin:0 0 28px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:22px}
+  .card{display:block;text-decoration:none;border:1px solid #333;border-radius:6px;overflow:hidden;background:#171717;transition:transform .2s,border-color .2s}
+  .card:hover{transform:translateY(-4px);border-color:#888}
+  .vista{position:relative;height:230px;overflow:hidden;background:#000}
+  .vista iframe{position:absolute;top:0;left:0;width:1280px;height:720px;border:0;transform:scale(.28);transform-origin:top left;pointer-events:none}
+  .pie{padding:12px 14px}
+  .pie strong{display:block;font-size:15px}
+  .pie small{color:#888;font:11px Consolas,monospace}
+</style></head>
+<body>
+<h1>10 propuestas de tema</h1>
+<p class="sub">Cada tarjeta es un prototipo real. Hacé clic para abrirlo a tamaño completo.</p>
+<div class="grid" id="grid"></div>
+<script>
+const temas=[
+ ['01-wabi-sabi','Wabi-sabi','Tierra, barro y ámbar'],
+ ['02-shoji','Shoji','Papel y rejilla'],
+ ['03-zen','Zen garden','Arena y piedra'],
+ ['04-hokusai','Hokusai','Azul y ola'],
+ ['05-kintsugi','Kintsugi','Negro y oro'],
+ ['06-origami','Origami','Papel plegado'],
+ ['07-bambu','Bambú','Verde natural'],
+ ['08-deco','Art Deco','Negro y dorado'],
+ ['09-neon','Neón Noir','Magenta y violeta'],
+ ['10-swiss','Swiss Minimal','Blanco y negro'],
+];
+document.getElementById('grid').innerHTML=temas.map(([archivo,nombre,desc])=>
+`<a class="card" href="${archivo}.html" target="_blank"><div class="vista"><iframe src="${archivo}.html" loading="lazy"></iframe></div><div class="pie"><strong>${nombre}</strong><small>${desc} · ${archivo}.html</small></div></a>`).join('');
+</script></body></html>
