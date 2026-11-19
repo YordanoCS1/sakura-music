@@ -26,6 +26,8 @@ import HomeTab from './components/HomeTab';
 import SettingsTab from './components/SettingsTab';
 import PlayerBar from './components/PlayerBar';
 import SearchTab from './components/SearchTab';
+import ThemeSearch from './components/ThemeSearch';
+import ThemeQueue from './components/ThemeQueue';
 import LibraryTab from './components/LibraryTab';
 import ThemeLibrary from './components/ThemeLibrary';
 import ThemeHome from './components/ThemeHome';
@@ -1158,7 +1160,42 @@ export default function App() {
             )}
 
             {/* TAB: BUSCAR Y DESCARGAR */}
-            {activeTab === 'search' && (
+            {activeTab === 'search' && esTemaPropio && (
+              <ThemeSearch
+                theme={theme}
+                toolsStatus={toolsStatus}
+                onlineQuery={onlineQuery}
+                onlineResults={onlineResults}
+                isSearchingOnline={isSearchingOnline}
+                onlineSearchError={onlineSearchError}
+                playlistSearchError={playlistSearchError}
+                isResolvingPlaylist={isResolvingPlaylist}
+                playlistInfo={playlistInfo}
+                downloadFormat={downloadFormat}
+                downloads={downloads}
+                createAlbumFolder={createAlbumFolder}
+                selectedPlaylistItems={selectedPlaylistItems}
+                onQueryChange={setOnlineQuery}
+                onSearchSubmit={handleOnlineSearch}
+                onFormatChange={setDownloadFormat}
+                onGoQueue={() => setActiveTab('queue')}
+                onCancelDownload={cancelDownload}
+                onClosePlaylist={() => setPlaylistInfo(null)}
+                onCreateFolderChange={setCreateAlbumFolder}
+                onSelectAllPlaylist={selectAllPlaylistItems}
+                onClearPlaylist={clearAllPlaylistItems}
+                onDownloadSelectedPlaylist={handleDownloadSelectedPlaylist}
+                onTogglePlaylistItem={toggleSelectPlaylistItem}
+                onTriggerDownload={triggerDownload}
+                onSuggestionSearch={(title) => {
+                  setOnlineQuery(title);
+                  invoke<OnlineSearchResult[]>('search_online', { query: title })
+                    .then((res) => setOnlineResults(res))
+                    .catch((err) => console.error(err));
+                }}
+              />
+            )}
+            {activeTab === 'search' && !esTemaPropio && (
               <SearchTab
                 theme={theme}
                 toolsStatus={toolsStatus}
@@ -1195,7 +1232,30 @@ export default function App() {
             )}
 
             {/* TAB: COLA DE DESCARGAS */}
-            {activeTab === 'queue' && (
+            {activeTab === 'queue' && esTemaPropio && (
+              <ThemeQueue
+                theme={theme}
+                downloads={downloads}
+                restoredNotice={restoredNotice}
+                onClearNotice={() => setRestoredNotice(null)}
+                onGoSearch={() => setActiveTab('search')}
+                onGoLibrary={() => setActiveTab('library')}
+                onCancelAll={cancelAllDownloads}
+                onCancel={cancelDownload}
+                onRetry={retryDownload}
+                onClearFinished={() =>
+                  setDownloads((prev) =>
+                    prev.filter(
+                      (d) =>
+                        !d.status.startsWith('completado') &&
+                        !d.status.includes('error') &&
+                        d.status !== 'cancelado',
+                    ),
+                  )
+                }
+              />
+            )}
+            {activeTab === 'queue' && !esTemaPropio && (
               <QueueTab
                 theme={theme}
                 downloads={downloads}

@@ -248,5 +248,10 @@ test('los seis temas propios usan vistas propias sin el selector de 9 vistas', a
     await expect(page.locator('.lt-view-select')).toBeHidden();
     await expect(page.getByRole('button', { name: /Todas juntas/ })).toBeVisible();
     await expect(page.getByRole('button', { name: /Edición en lote/ })).toBeVisible();
+
+    await page.getByRole('tab', { name: /Buscar/ }).click();
+    await expect(page.locator('.tsearch')).toBeVisible();
+    await page.getByRole('tab', { name: /Cola/ }).click();
+    await expect(page.locator('.tqueue')).toBeVisible();
   }
 });

@@ -6465,3 +6465,161 @@ input[type="range"]:hover::-webkit-slider-thumb {
   background: var(--bv-panel) !important;
   color: var(--bv-texto) !important;
 }
+
+
+/* ---- SHOJI: biombo de madera con dos paños ---- */
+.tema-shoji.tsearch, .tema-shoji.tqueue { display:grid; grid-template-columns:1fr 1fr; gap:0; border:6px solid #c9b28a; background-image:repeating-linear-gradient(90deg,rgba(90,70,45,.06) 0 1px,transparent 1px 60px); padding:0; }
+.tema-shoji .tsearch-hero, .tema-shoji .tqueue-hero { grid-column:1/-1; margin:0; border:0; border-bottom:3px solid #c9b28a; border-radius:0; background:rgba(255,252,244,.55); }
+.tema-shoji .tsearch-form-block { grid-column:1; margin:0; padding:24px; border:0; border-right:3px solid #c9b28a; border-radius:0; background:transparent; }
+.tema-shoji .tsearch-resultados { grid-column:2; margin:0; padding:24px; border:0; border-radius:0; background:transparent; }
+.tema-shoji .tsearch-cards { grid-template-columns:1fr; }
+.tema-shoji .tsearch-descargas, .tema-shoji .tsearch-playlist { grid-column:1/-1; margin:0 20px 20px; border-radius:0; }
+.tema-shoji .tqueue-lista, .tema-shoji .tqueue-empty, .tema-shoji .tqueue-actions { grid-column:1/-1; margin:0 20px 20px; border-radius:0; }
+.tema-shoji .tqueue-item { border-bottom:1px solid rgba(90,70,45,.2); }
+
+/* ---- ORIGAMI: hojas plegadas y giradas ---- */
+.tema-origami.tsearch, .tema-origami.tqueue { display:flex; flex-direction:column; gap:26px; }
+.tema-origami .tsearch-hero, .tema-origami .tqueue-hero,
+.tema-origami .tsearch-form-block, .tema-origami .tsearch-resultados,
+.tema-origami .tsearch-descargas, .tema-origami .tsearch-playlist,
+.tema-origami .tqueue-lista, .tema-origami .tqueue-empty { background:#fff; clip-path:polygon(0 0,96% 0,100% 8%,100% 100%,0 100%); }
+.tema-origami .tsearch-cards { grid-template-columns:repeat(3,minmax(0,1fr)); }
+.tema-origami .tsearch-card, .tema-origami .tqueue-item { clip-path:polygon(0 0,94% 0,100% 14%,100% 100%,0 100%); border-radius:0; }
+.tema-origami .tsearch-card:nth-child(odd) { transform:rotate(-1.4deg); }
+.tema-origami .tsearch-card:nth-child(even) { transform:rotate(1.4deg); }
+
+/* ---- SWISS: retícula modular estricta ---- */
+.tema-swiss.tsearch, .tema-swiss.tqueue { display:grid; grid-template-columns:repeat(12,1fr); gap:0; border:2px solid #111; padding:0; }
+.tema-swiss .tsearch-hero, .tema-swiss .tqueue-hero { grid-column:1/-1; margin:0; border:0; border-bottom:2px solid #111; border-radius:0; background:#fff; }
+.tema-swiss .tsearch-form-block { grid-column:1/8; margin:0; border:0; border-right:2px solid #111; border-bottom:2px solid #111; border-radius:0; background:#fff; }
+.tema-swiss .tsearch-resultados { grid-column:8/13; margin:0; border:0; border-bottom:2px solid #111; border-radius:0; background:#fff; }
+.tema-swiss .tsearch-cards { grid-template-columns:1fr; }
+.tema-swiss .tsearch-card { border:0; border-bottom:1px solid #111; border-radius:0; }
+.tema-swiss .tsearch-descargas, .tema-swiss .tsearch-playlist { grid-column:1/-1; margin:0; border:0; border-radius:0; }
+.tema-swiss .tqueue-lista, .tema-swiss .tqueue-empty, .tema-swiss .tqueue-actions { grid-column:1/-1; margin:0; border:0; border-radius:0; }
+.tema-swiss .tqueue-item { grid-template-columns:60px 50px minmax(0,1fr) 100px 70px; border-bottom:1px solid #111; }
+
+/* ---- SUMI INK: rollos verticales ---- */
+.tema-sumiink.tsearch, .tema-sumiink.tqueue { display:flex; flex-direction:column; gap:0; }
+.tema-sumiink .tsearch-hero, .tema-sumiink .tqueue-hero,
+.tema-sumiink .tsearch-form-block, .tema-sumiink .tsearch-resultados,
+.tema-sumiink .tsearch-descargas, .tema-sumiink .tsearch-playlist,
+.tema-sumiink .tqueue-lista, .tema-sumiink .tqueue-empty { border:0; border-bottom:1px solid rgba(232,229,221,.22); border-radius:0; margin:0; background:transparent; }
+.tema-sumiink .tsearch-cards { display:flex; gap:12px; overflow-x:auto; padding-bottom:14px; }
+.tema-sumiink .tsearch-card { flex-direction:column; width:124px; min-height:206px; border-left:3px solid #e8e5dd; border-radius:0; background:#121212; }
+.tema-sumiink .tqueue-item { border-bottom:1px solid rgba(232,229,221,.18); }
+
+/* ---- MOONLIT: orbes lunares ---- */
+.tema-moonlit .tsearch-cards { display:flex; flex-wrap:wrap; gap:18px; }
+.tema-moonlit .tsearch-card { flex-direction:column; width:132px; min-height:150px; text-align:center; border-radius:70px 70px 14px 14px; border-color:rgba(143,182,232,.35); background:rgba(143,182,232,.06); }
+.tema-moonlit .tsearch-card-thumb { width:60px; height:60px; border-radius:50%; box-shadow:0 0 18px rgba(143,182,232,.25); }
+.tema-moonlit .tsearch-card>button { margin:auto; }
+.tema-moonlit .tqueue-item { border:1px solid rgba(143,182,232,.25); border-radius:14px; margin-bottom:8px; background:rgba(143,182,232,.05); }
+
+/* ---- LEDGER: libro mayor de dos páginas ---- */
+.tema-ledger.tsearch, .tema-ledger.tqueue { display:grid; grid-template-columns:1fr 1.2fr; gap:0; border:3px double #33291d; background:#faf4e6; padding:0; }
+.tema-ledger .tsearch-hero, .tema-ledger .tqueue-hero { grid-column:1/-1; margin:0; border:0; border-bottom:3px double #33291d; border-radius:0; }
+.tema-ledger .tsearch-form-block { grid-column:1; margin:0; border:0; border-right:1px solid #c9b99a; border-radius:0; background:repeating-linear-gradient(0deg,transparent 0 31px,rgba(201,185,154,.35) 31px 32px); }
+.tema-ledger .tsearch-resultados { grid-column:2; margin:0; border:0; border-radius:0; background:repeating-linear-gradient(0deg,transparent 0 31px,rgba(201,185,154,.35) 31px 32px); }
+.tema-ledger .tsearch-cards { grid-template-columns:1fr; }
+.tema-ledger .tsearch-card { border:0; border-bottom:1px solid #c9b99a; border-radius:0; background:transparent; }
+.tema-ledger .tsearch-descargas, .tema-ledger .tsearch-playlist { grid-column:1/-1; margin:0 20px 20px; border-radius:0; }
+.tema-ledger .tqueue-lista, .tema-ledger .tqueue-empty, .tema-ledger .tqueue-actions { grid-column:1/-1; margin:0 20px 20px; border-radius:0; }
+.tema-ledger .tqueue-item { border-bottom:1px solid #c9b99a; }
+
+
+/* ========================================================= */
+/* BUSCAR Y COLA · composición única por tema                  */
+/* ========================================================= */
+.tsearch, .tqueue {
+  --tt-texto:var(--tema-texto, #f4f0ff);
+  --tt-suave:var(--tema-texto-suave, #9a8fa8);
+  --tt-accento:var(--tema-accent, #a78bfa);
+  --tt-linea:var(--tema-linea, rgba(255,255,255,.14));
+  --tt-panel:var(--set-panel-base, rgba(255,255,255,.04));
+  --tt-radio:var(--set-radio-base, 18px);
+  --tt-on:var(--set-on-accent-base, #fff);
+  display:block; width:100%; max-width:1180px; margin:0 auto 60px;
+  color:var(--tt-texto); font-family:var(--set-font-base, inherit);
+}
+.tsearch-hero, .tqueue-hero { display:flex; align-items:center; gap:16px; flex-wrap:wrap; padding:22px 24px; margin-bottom:20px; border:1px solid var(--tt-linea); border-radius:var(--tt-radio); background:var(--tt-panel); }
+.tsearch-glifo, .tqueue-glifo { width:54px; height:54px; flex:none; display:grid; place-items:center; border-radius:50%; background:var(--tt-accento); color:var(--tt-on); font-size:22px; }
+.tsearch-hero-copy, .tqueue-hero-copy { flex:1; min-width:200px; }
+.tsearch-hero-copy p, .tqueue-hero-copy p { margin:0 0 4px; font:9px 'JetBrains Mono',monospace; letter-spacing:.22em; color:var(--tt-accento); }
+.tsearch-hero-copy h2, .tqueue-hero-copy h2 { margin:0; font-size:21px; font-weight:700; }
+.tsearch-hero-copy span, .tqueue-hero-copy span { display:block; margin-top:5px; font-size:11px; color:var(--tt-suave); }
+.tsearch-tools, .tqueue-stats { display:flex; flex-wrap:wrap; gap:7px; }
+.tsearch-tools span, .tqueue-stats span { padding:6px 10px; border:1px solid var(--tt-linea); border-radius:20px; font:9px 'JetBrains Mono',monospace; color:var(--tt-suave); }
+.tsearch-tools span.is-ok { color:var(--tt-accento); border-color:var(--tt-accento); }
+
+.tsearch-form-block, .tsearch-descargas, .tsearch-resultados, .tsearch-playlist, .tqueue-lista, .tqueue-empty { border:1px solid var(--tt-linea); border-radius:var(--tt-radio); background:var(--tt-panel); padding:20px; margin-bottom:18px; }
+.tsearch-form label, .tsearch-calidad label { display:block; margin-bottom:7px; font-size:10px; letter-spacing:.06em; color:var(--tt-suave); }
+.tsearch-input-row { display:flex; align-items:center; gap:10px; padding:10px 12px; border:1px solid var(--tt-linea); border-radius:calc(var(--tt-radio) - 6px); }
+.tsearch-input-row input { flex:1; min-width:0; border:0; outline:0; background:transparent; color:var(--tt-texto); font-size:12px; }
+.tsearch-input-row input::placeholder { color:var(--tt-suave); }
+.tsearch-input-row button, .tsearch-playlist-actions button:last-child { border:0; padding:9px 16px; border-radius:10px; background:var(--tt-accento); color:var(--tt-on); cursor:pointer; font-size:11px; font-weight:700; }
+.tsearch-input-row button:disabled { opacity:.5; cursor:default; }
+.tsearch-calidad { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:14px; padding-top:14px; border-top:1px solid var(--tt-linea); }
+.tsearch-calidad label { margin:0; }
+.tsearch-calidad select { padding:8px 10px; border:1px solid var(--tt-linea); border-radius:10px; background:var(--tt-panel); color:var(--tt-texto); font-size:11px; }
+.tsearch-subhead { display:flex; align-items:center; gap:8px; margin-bottom:14px; }
+.tsearch-subhead h3 { margin:0; font-size:12px; font-weight:700; }
+.tsearch-subhead button { margin-left:auto; border:0; background:transparent; color:var(--tt-accento); cursor:pointer; font-size:10px; }
+.tsearch-descargas-lista, .tsearch-cards { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+.tsearch-descarga, .tsearch-card { display:flex; align-items:center; gap:10px; padding:10px; border:1px solid var(--tt-linea); border-radius:calc(var(--tt-radio) - 6px); }
+.tsearch-descarga-thumb, .tsearch-card-thumb, .tsearch-playlist-thumb { width:38px; height:38px; flex:none; display:grid; place-items:center; overflow:hidden; border-radius:8px; background:var(--tt-panel); color:var(--tt-accento); }
+.tsearch-descarga-thumb img, .tsearch-card-thumb img, .tsearch-playlist-thumb img { width:100%; height:100%; object-fit:cover; }
+.tsearch-descarga-info, .tsearch-card-copy { flex:1; min-width:0; }
+.tsearch-descarga-info strong, .tsearch-card-copy strong { display:block; font-size:11px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.tsearch-descarga-info small, .tsearch-card-copy small { display:block; font-size:9px; color:var(--tt-suave); }
+.tsearch-bar, .tqueue-bar { height:4px; margin-top:6px; border-radius:3px; background:var(--tt-linea); overflow:hidden; }
+.tsearch-bar i, .tqueue-bar i { display:block; height:100%; background:var(--tt-accento); }
+.tsearch-descarga>button, .tsearch-card>button, .tsearch-playlist-head>button, .tqueue-item-acc button { border:0; background:transparent; color:var(--tt-suave); cursor:pointer; }
+.tsearch-card-num { font:10px 'JetBrains Mono',monospace; color:var(--tt-accento); }
+.tsearch-error, .tsearch-loading { margin-bottom:18px; padding:12px 16px; border:1px solid var(--tt-linea); border-radius:var(--tt-radio); font-size:11px; color:var(--tt-suave); }
+.tsearch-loading { display:flex; align-items:center; gap:10px; }
+.tsearch-playlist-head { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+.tsearch-playlist-head strong { display:block; font-size:13px; }
+.tsearch-playlist-head small { font-size:10px; color:var(--tt-suave); }
+.tsearch-playlist-head button { margin-left:auto; }
+.tsearch-playlist-folder { display:flex; align-items:center; gap:7px; margin-bottom:12px; font-size:10px; color:var(--tt-suave); }
+.tsearch-playlist-lista { max-height:260px; overflow-y:auto; display:flex; flex-direction:column; gap:4px; }
+.tsearch-playlist-item { display:flex; align-items:center; gap:8px; padding:7px; border:1px solid transparent; border-radius:8px; background:transparent; color:var(--tt-texto); cursor:pointer; font-size:10px; text-align:left; }
+.tsearch-playlist-item.is-selected { border-color:var(--tt-accento); }
+.tsearch-playlist-actions { display:flex; gap:8px; margin-top:12px; }
+.tsearch-playlist-actions button { padding:8px 12px; border:1px solid var(--tt-linea); border-radius:10px; background:transparent; color:var(--tt-texto); cursor:pointer; font-size:10px; }
+.tsearch-playlist-actions button:last-child { display:flex; align-items:center; gap:6px; border:0; }
+
+.tqueue-actions { display:flex; gap:8px; margin-bottom:18px; }
+.tqueue-actions button { padding:8px 12px; border:1px solid var(--tt-linea); border-radius:10px; background:transparent; color:var(--tt-texto); cursor:pointer; font-size:11px; }
+.tqueue-actions .tqueue-danger { color:#fb7185; border-color:rgba(251,113,133,.4); }
+.tqueue-notice { display:flex; justify-content:space-between; gap:12px; padding:12px 16px; margin-bottom:18px; border:1px solid var(--tt-linea); border-radius:var(--tt-radio); font-size:11px; }
+.tqueue-notice button { border:0; background:transparent; color:var(--tt-accento); cursor:pointer; }
+.tqueue-empty { display:flex; flex-direction:column; align-items:center; gap:10px; padding:46px 20px; text-align:center; }
+.tqueue-empty-mark { width:58px; height:58px; display:grid; place-items:center; border-radius:50%; border:1px solid var(--tt-linea); color:var(--tt-accento); font-size:22px; }
+.tqueue-empty h3 { margin:0; font-size:15px; }
+.tqueue-empty p { margin:0; font-size:11px; color:var(--tt-suave); }
+.tqueue-empty button { margin-top:8px; padding:10px 16px; border:0; border-radius:10px; background:var(--tt-accento); color:var(--tt-on); cursor:pointer; font-size:11px; font-weight:700; }
+.tqueue-lista { list-style:none; padding:0; margin:0 0 18px; }
+.tqueue-item { display:grid; grid-template-columns:36px 44px minmax(0,1fr) 100px 70px; align-items:center; gap:12px; padding:12px; border-bottom:1px solid var(--tt-linea); }
+.tqueue-item:last-child { border:0; }
+.tqueue-num { font:10px 'JetBrains Mono',monospace; color:var(--tt-accento); }
+.tqueue-thumb { width:44px; height:44px; display:grid; place-items:center; overflow:hidden; border-radius:8px; background:var(--tt-panel); color:var(--tt-accento); }
+.tqueue-thumb img { width:100%; height:100%; object-fit:cover; }
+.tqueue-info strong { display:block; font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.tqueue-info small { display:block; font-size:9px; color:var(--tt-suave); }
+.tqueue-meta { font:9px 'JetBrains Mono',monospace; color:var(--tt-suave); }
+.tqueue-status { font:9px 'JetBrains Mono',monospace; color:var(--tt-accento); text-align:right; }
+.tqueue-item-acc { display:flex; justify-content:flex-end; gap:4px; }
+
+
+/* Los campos de estas vistas ignoran el fondo oscuro global. */
+.tsearch input, .tsearch select, .tqueue input, .tqueue select {
+  background: transparent !important;
+  color: var(--tt-texto) !important;
+  border-color: transparent !important;
+}
+.tsearch .tsearch-calidad select {
+  background: var(--tt-panel) !important;
+  border: 1px solid var(--tt-linea) !important;
+}
