@@ -10,6 +10,7 @@ export default tseslint.config(
       'node_modules/**',
       'src-tauri/target/**',
       '.tauri_data/**',
+      'src-tauri/.tauri_data/**',
       'legacy_python/**',
     ],
   },

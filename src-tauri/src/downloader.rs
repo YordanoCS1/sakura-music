@@ -10,6 +10,38 @@ use tauri::Emitter;
 
 use crate::paths;
 
+/// Lee la salida de yt-dlp línea por línea sin exigir UTF-8 válido.
+/// En Windows los títulos pueden venir en otra codificación; reemplazamos
+/// los bytes inválidos en lugar de abortar la búsqueda o la playlist.
+struct LineasTolerantes<R: std::io::Read> {
+    reader: BufReader<R>,
+    buffer: Vec<u8>,
+}
+
+impl<R: std::io::Read> LineasTolerantes<R> {
+    fn new(reader: R) -> Self {
+        Self {
+            reader: BufReader::new(reader),
+            buffer: Vec::new(),
+        }
+    }
+}
+
+impl<R: std::io::Read> Iterator for LineasTolerantes<R> {
+    type Item = std::io::Result<String>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.buffer.clear();
+        match self.reader.read_until(b'\n', &mut self.buffer) {
+            Ok(0) => None,
+            Ok(_) => Some(Ok(String::from_utf8_lossy(&self.buffer)
+                .trim_end_matches(['\r', '\n'])
+                .to_string())),
+            Err(error) => Some(Err(error)),
+        }
+    }
+}
+
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct DownloaderStatus {
     pub ytdlp_available: bool,
@@ -418,7 +450,7 @@ pub fn search_youtube(
         .take()
         .ok_or_else(|| "No se pudo leer la salida de búsqueda de yt-dlp".to_string())?;
     let mut results = Vec::new();
-    for line in BufReader::new(stdout).lines() {
+    for line in LineasTolerantes::new(stdout) {
         let line = match line {
             Ok(line) => line,
             Err(error) => {
@@ -500,7 +532,7 @@ pub fn resolve_playlist(
     let mut detected_title = String::new();
     let mut detected_uploader = String::new();
 
-    for line in BufReader::new(stdout).lines() {
+    for line in LineasTolerantes::new(stdout) {
         let line = match line {
             Ok(line) => line,
             Err(error) => {
@@ -856,6 +888,18 @@ fn run_download(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn lee_lineas_con_bytes_no_utf8() {
+        let datos = b"id1|||Canci\xf3n|||Canal|||3:45|||NA\r\nid2|||Otra|||Canal|||2:10|||NA\n";
+        let lineas: Vec<String> = LineasTolerantes::new(&datos[..])
+            .map(|linea| linea.expect("debería leer la línea"))
+            .collect();
+        assert_eq!(lineas.len(), 2);
+        // El byte 0xf3 (ó en Latin-1) se reemplaza, pero no aborta la lectura.
+        assert!(lineas[0].starts_with("id1|||Canci"));
+        assert_eq!(lineas[1], "id2|||Otra|||Canal|||2:10|||NA");
+    }
 
     #[test]
     fn parsea_linea_de_busqueda() {
