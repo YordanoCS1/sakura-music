@@ -6752,3 +6752,114 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .set-json { width:100%; min-height:86px; padding:10px 12px; border:1px solid var(--set-linea); border-radius:calc(var(--set-radio) - 6px); background:var(--set-panel); color:var(--set-texto); font:10px/1.5 'JetBrains Mono',monospace; resize:vertical; outline:none; }
 .set-json::placeholder { color:var(--set-suave); }
 .set-actions button:disabled { opacity:.45; cursor:default; }
+
+
+/* ========================================================= */
+/* TRANSICIONES DE VISTA POR TEMA                             */
+/* ========================================================= */
+#theme-panel { view-transition-name: sakura-panel; }
+
+::view-transition-old(sakura-panel),
+::view-transition-new(sakura-panel) {
+  animation-duration: 420ms;
+  animation-timing-function: cubic-bezier(.22, 1, .36, 1);
+  mix-blend-mode: normal;
+}
+
+/* SHOJI · los paneles se deslizan como un biombo. */
+html[data-theme-transition='shoji']::view-transition-old(sakura-panel) { animation: shoji-salir 380ms ease-in both; }
+html[data-theme-transition='shoji']::view-transition-new(sakura-panel) { animation: shoji-entrar 420ms cubic-bezier(.22,1,.36,1) both; }
+@keyframes shoji-salir { to { transform: translateX(-8%); opacity: 0; } }
+@keyframes shoji-entrar { from { transform: translateX(8%); opacity: 0; } }
+
+/* ORIGAMI · la vista se pliega y se despliega. */
+html[data-theme-transition='origami']::view-transition-old(sakura-panel) { animation: origami-salir 360ms ease-in both; }
+html[data-theme-transition='origami']::view-transition-new(sakura-panel) { animation: origami-entrar 440ms cubic-bezier(.22,1,.36,1) both; }
+@keyframes origami-salir { to { transform: perspective(700px) rotateX(28deg) scale(.94); opacity: 0; transform-origin: top; } }
+@keyframes origami-entrar { from { transform: perspective(700px) rotateX(-28deg) scale(.94); opacity: 0; transform-origin: bottom; } }
+
+/* SWISS · barrido horizontal duro, sin curvas. */
+html[data-theme-transition='swiss']::view-transition-old(sakura-panel) { animation: swiss-salir 240ms steps(4, end) both; }
+html[data-theme-transition='swiss']::view-transition-new(sakura-panel) { animation: swiss-entrar 280ms steps(5, end) both; }
+@keyframes swiss-salir { to { transform: translateX(-100%); } }
+@keyframes swiss-entrar { from { transform: translateX(100%); } }
+
+/* SUMI INK · fundido a tinta desde el centro. */
+html[data-theme-transition='sumiink']::view-transition-old(sakura-panel) { animation: tinta-salir 460ms ease-in both; }
+html[data-theme-transition='sumiink']::view-transition-new(sakura-panel) { animation: tinta-entrar 520ms ease-out both; }
+@keyframes tinta-salir { to { filter: blur(8px) contrast(1.8); opacity: 0; } }
+@keyframes tinta-entrar { from { filter: blur(10px) brightness(.2); opacity: 0; } }
+
+/* MOONLIT · aparece como luna que sube. */
+html[data-theme-transition='moonlit']::view-transition-old(sakura-panel) { animation: luna-salir 400ms ease-in both; }
+html[data-theme-transition='moonlit']::view-transition-new(sakura-panel) { animation: luna-entrar 520ms cubic-bezier(.22,1,.36,1) both; }
+@keyframes luna-salir { to { transform: translateY(6%) scale(.98); opacity: 0; } }
+@keyframes luna-entrar { from { transform: translateY(-8%) scale(.98); opacity: 0; filter: brightness(1.6); } }
+
+/* LEDGER · se pasa la página como un libro. */
+html[data-theme-transition='ledger']::view-transition-old(sakura-panel) { animation: pagina-salir 420ms ease-in-out both; transform-origin: left; }
+html[data-theme-transition='ledger']::view-transition-new(sakura-panel) { animation: pagina-entrar 460ms ease-in-out both; transform-origin: right; }
+@keyframes pagina-salir { to { transform: perspective(900px) rotateY(-32deg); opacity: 0; } }
+@keyframes pagina-entrar { from { transform: perspective(900px) rotateY(32deg); opacity: 0; } }
+
+/* SUMI-E y BYŌBU · desplazamiento suave de pergamino/pantalla. */
+html[data-theme-transition='sumie']::view-transition-old(sakura-panel) { animation: sumie-salir 420ms ease both; }
+html[data-theme-transition='sumie']::view-transition-new(sakura-panel) { animation: sumie-entrar 480ms ease both; }
+@keyframes sumie-salir { to { transform: translateY(-5%) scale(.99); opacity: 0; filter: sepia(1); } }
+@keyframes sumie-entrar { from { transform: translateY(5%) scale(.99); opacity: 0; } }
+html[data-theme-transition='byobu']::view-transition-old(sakura-panel) { animation: byobu-salir 400ms ease both; }
+html[data-theme-transition='byobu']::view-transition-new(sakura-panel) { animation: byobu-entrar 440ms ease both; }
+@keyframes byobu-salir { to { transform: scaleX(.86); opacity: 0; } }
+@keyframes byobu-entrar { from { transform: scaleX(.86); opacity: 0; } }
+
+/* Fallback sin View Transitions: animación de entrada por tema. */
+#theme-panel.panel-enter { animation: panel-fallback 380ms cubic-bezier(.22,1,.36,1) both; }
+html[data-theme-transition='swiss'] #theme-panel.panel-enter { animation: swiss-entrar 280ms steps(5,end) both; }
+html[data-theme-transition='origami'] #theme-panel.panel-enter { animation: origami-entrar 440ms both; }
+html[data-theme-transition='ledger'] #theme-panel.panel-enter { animation: pagina-entrar 460ms both; }
+@keyframes panel-fallback { from { opacity: 0; transform: translateY(8px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  #theme-panel.panel-enter,
+  ::view-transition-old(sakura-panel),
+  ::view-transition-new(sakura-panel) { animation: none !important; }
+}
+
+
+/* ========================================================= */
+/* GENERADOR DE TEMAS INTEGRADO                               */
+/* ========================================================= */
+.tg-backdrop { position:fixed; inset:0; z-index:120; display:flex; align-items:center; justify-content:center; padding:18px; background:rgba(8,6,14,.78); backdrop-filter:blur(10px); view-transition-name:none; }
+.tg-backdrop, .tg-backdrop * { transform:none !important; }
+.tg-dialog { transform:none !important; animation:tg-entrar-opacity 260ms ease both !important; }
+@keyframes tg-entrar-opacity { from { opacity:0; } }
+.tg-dialog { width:min(1000px,100%); max-height:92vh; overflow:auto; background:var(--m3-surface-card,#1d1a28); color:var(--m3-on-surface,#f4f0ff); border:1px solid var(--m3-outline,rgba(255,255,255,.15)); border-radius:20px; box-shadow:0 30px 90px rgba(0,0,0,.5); animation:tg-entrar 260ms cubic-bezier(.22,1,.36,1) both; }
+@keyframes tg-entrar { from { opacity:0; transform:translateY(14px) scale(.98); } }
+.tg-head { display:flex; align-items:center; gap:12px; padding:18px 22px; border-bottom:1px solid var(--m3-outline,rgba(255,255,255,.12)); }
+.tg-head-icon { width:38px; height:38px; display:grid; place-items:center; border-radius:12px; background:var(--m3-primary,#b98cff); color:#fff; flex:none; }
+.tg-head h2 { margin:0; font-size:16px; }
+.tg-head p { margin:3px 0 0; font-size:11px; color:var(--m3-on-surface-muted,#a49bbd); }
+.tg-head>button { margin-left:auto; border:0; background:transparent; color:inherit; cursor:pointer; }
+.tg-cuerpo { display:grid; grid-template-columns:300px 1fr; gap:20px; padding:20px 22px; }
+.tg-controles { display:flex; flex-direction:column; gap:12px; }
+.tg-campo { display:flex; flex-direction:column; gap:5px; font-size:10px; text-transform:uppercase; letter-spacing:.1em; color:var(--m3-on-surface-muted,#a49bbd); }
+.tg-campo input[type=text], .tg-campo select { padding:8px 10px; border:1px solid var(--m3-outline,rgba(255,255,255,.15)); border-radius:9px; background:rgba(0,0,0,.2); color:inherit; font-size:12px; text-transform:none; letter-spacing:0; }
+.tg-campo input[type=color] { width:100%; height:34px; padding:2px; border:1px solid var(--m3-outline,rgba(255,255,255,.15)); border-radius:9px; background:transparent; }
+.tg-campo input[type=range] { width:100%; accent-color:var(--m3-primary,#b98cff); }
+.tg-colores { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+.tg-acciones { display:flex; gap:8px; margin-top:4px; }
+.tg-acciones button { flex:1; display:flex; align-items:center; justify-content:center; gap:6px; padding:9px 10px; border:1px solid var(--m3-outline,rgba(255,255,255,.15)); border-radius:9px; background:transparent; color:inherit; cursor:pointer; font-size:11px; font-weight:600; }
+.tg-acciones .tg-aplicar { background:var(--m3-primary,#b98cff); color:#fff; border-color:transparent; }
+.tg-vista { min-width:0; }
+.tg-preview { --pv-accent:inherit; border:1px solid; overflow:hidden; font-family:inherit; }
+.tg-preview-bar { display:flex; justify-content:space-between; align-items:center; padding:9px 14px; border-bottom:1px solid; }
+.tg-preview-bar b { font-size:10px; letter-spacing:.14em; }
+.tg-preview-bar span { font-size:9px; letter-spacing:.2em; }
+.tg-preview-body { padding:18px; }
+.tg-preview-kicker { font:9px 'JetBrains Mono',monospace; letter-spacing:.2em; }
+.tg-preview h3 { margin:8px 0; font-size:22px; }
+.tg-preview p { margin:0 0 12px; font-size:11px; line-height:1.6; }
+.tg-preview-btn { display:inline-block; padding:8px 12px; border-radius:8px; font-size:10px; }
+.tg-preview-row { display:grid; grid-template-columns:28px 1fr auto; gap:8px; align-items:center; padding:8px 0; border-bottom:1px solid; font-size:11px; }
+.tg-css { margin-top:12px; width:100%; height:200px; padding:10px; border:1px solid var(--m3-outline,rgba(255,255,255,.15)); border-radius:10px; background:rgba(0,0,0,.35); color:inherit; font:10px/1.5 ui-monospace,Consolas,monospace; resize:vertical; }
+@media (max-width:860px) { .tg-cuerpo { grid-template-columns:1fr; } }

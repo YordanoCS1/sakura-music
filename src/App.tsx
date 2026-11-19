@@ -32,6 +32,7 @@ import LibraryTab from './components/LibraryTab';
 import ThemeLibrary from './components/ThemeLibrary';
 import ThemeHome from './components/ThemeHome';
 import ThemeNav from './components/ThemeNav';
+import ThemeGeneratorModal from './components/ThemeGeneratorModal';
 import LibraryToolbar from './components/LibraryToolbar';
 import MetadataModal from './components/MetadataModal';
 import TitleBar from './components/TitleBar';
@@ -42,6 +43,7 @@ import { useOnlineSearch } from './hooks/useOnlineSearch';
 import { useFolderExplorer } from './hooks/useFolderExplorer';
 import { usePlayer } from './hooks/usePlayer';
 import { useRemoteControl } from './hooks/useRemoteControl';
+import { useThemeTransition } from './hooks/useThemeTransition';
 import {
   baseDelTema,
   esTemaPersonalizado,
@@ -78,7 +80,8 @@ const TEMAS_DISPONIBLES: ThemeOption[] = [
 ];
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<AppTab>('library');
+  const [activeTab, setActiveTabRaw] = useState<AppTab>('library');
+  const [generadorAbierto, setGeneradorAbierto] = useState(false);
   const libraryScrollRef = useRef<HTMLDivElement>(null);
   const [customThemes, setCustomThemes] = useState(() => temasPersonalizados());
   const todosLosTemas = [
@@ -127,6 +130,7 @@ export default function App() {
       console.error('No se pudo importar el tema:', error);
     }
   };
+  const setActiveTab = useThemeTransition(temaBase, setActiveTabRaw);
   const [playerStyle, setPlayerStyle] = useState<PlayerStyle>(() => {
     return (localStorage.getItem('sakura_player_style') as PlayerStyle) || 'floating';
   });
@@ -1064,7 +1068,9 @@ export default function App() {
         <main
           className="flex-1 flex flex-col overflow-hidden z-10"
           role="tabpanel"
-          id={`panel-${activeTab}`}
+          id="theme-panel"
+          data-panel={activeTab}
+          data-transition={temaBase}
           aria-labelledby={`tab-${activeTab}`}
           tabIndex={-1}
         >
@@ -1380,6 +1386,7 @@ export default function App() {
                 theme={temaBase}
                 temas={todosLosTemas}
                 onImportarTema={importarTema}
+                onAbrirGenerador={() => setGeneradorAbierto(true)}
                 remoteEnabled={controlRemoto.enabled}
                 remoteIp={controlRemoto.ip}
                 onToggleRemote={controlRemoto.alternar}
@@ -1561,6 +1568,16 @@ export default function App() {
             onSetRemoveCover={setBatchRemoveCover}
           />
         </main>
+
+        <ThemeGeneratorModal
+          abierto={generadorAbierto}
+          onCerrar={() => setGeneradorAbierto(false)}
+          onAplicar={(tema) => {
+            setCustomThemes(guardarTemaPersonalizado(tema));
+            setTheme(tema.id);
+            localStorage.setItem('sakura_theme', tema.id);
+          }}
+        />
       </div>
     </div>
   );

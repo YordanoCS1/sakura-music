@@ -65,6 +65,7 @@ interface SettingsTabProps {
   remoteIp: string;
   onToggleRemote: () => void;
   onImportarTema: (json: string) => void;
+  onAbrirGenerador: () => void;
   onSetTheme: (t: string) => void;
   accentGradient: string;
   accentBadge: string;
@@ -96,6 +97,7 @@ export default function SettingsTab({
   remoteIp,
   onToggleRemote,
   onImportarTema,
+  onAbrirGenerador,
   onSetTheme,
   accentGradient,
   accentBadge,
@@ -364,13 +366,15 @@ export default function SettingsTab({
             spellCheck={false}
           />
           <div className="set-actions">
+            <button type="button" onClick={onAbrirGenerador} className={accentBadge}>
+              <Palette className="w-3.5 h-3.5" /> Abrir generador
+            </button>
             <button
               type="button"
               onClick={() => onImportarTema(jsonTema)}
               disabled={!jsonTema.trim()}
-              className={accentBadge}
             >
-              Aplicar tema
+              Importar JSON
             </button>
           </div>
           <p className="set-note">

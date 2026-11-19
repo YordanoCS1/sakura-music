@@ -6,7 +6,9 @@ Utilidades que acompañan a Sakura Music. Ninguna es necesaria para usar la app.
 
 [`generador-temas.html`](generador-temas.html) es una página standalone: elegí fondo, superficie, texto, acento y radio, y te devuelve el CSS listo para pegar al final de `src/App.css`. Incluye vista previa en vivo y botón de copiar.
 
-**Para cambiar toda la app**, elegí un **arquetipo de diseño** en el generador y copiá el **JSON del tema**. En Sakura andá a **Ajustes → Importar un tema**, pegá el JSON y tocá *Aplicar tema*. El arquetipo define la estructura de Home, biblioteca, barra superior, Buscar y Cola; el CSS define la paleta. Los temas importados se guardan en `localStorage` (`sakura_temas_personalizados`) y se inyectan en runtime, sin tocar el código fuente.
+**Para cambiar toda la app**, entrá a **Ajustes → Importar un tema → Abrir generador** (o copiá el JSON del generador externo y pegalo en *Importar JSON*). El generador integrado tiene vista previa en vivo, selector de arquetipo y botón *Aplicar tema*, todo dentro de la app. El arquetipo define la estructura de Home, biblioteca, barra superior, Buscar y Cola; el CSS define la paleta. Los temas importados se guardan en `localStorage` (`sakura_temas_personalizados`) y se inyectan en runtime, sin tocar el código fuente.
+
+Cada arquetipo también define una **transición de vista** propia al cambiar de pestaña: deslizamiento de paneles en Shoji, plegado en Origami, barrido por pasos en Swiss, fundido a tinta en Sumi Ink, subida de luna en Moonlit y paso de página en Ledger. Se usa la View Transitions API con fallback animado y se respeta `prefers-reduced-motion`.
 
 Arquetipos disponibles: `shoji`, `origami`, `swiss`, `sumiink`, `moonlit`, `ledger`, `sumie` y `byobu`.
 

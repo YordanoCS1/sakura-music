@@ -370,7 +370,7 @@ test('un tema importado cambia la estructura completa de la app', async ({ page 
 
   await page.getByRole('tab', { name: /Ajustes/ }).click();
   await page.locator('.set-json').fill(JSON.stringify(tema));
-  await page.getByRole('button', { name: /Aplicar tema/ }).click();
+  await page.getByRole('button', { name: /Importar JSON/ }).click();
 
   await expect(page.locator('.app-shell')).toHaveAttribute('data-skin', 'mi-tema');
   expect(await page.locator('#sakura-temas-personalizados').textContent()).toContain('ff0066');
@@ -381,4 +381,24 @@ test('un tema importado cambia la estructura completa de la app', async ({ page 
   await expect(page.locator('.swiss-poster')).toBeVisible();
   await page.getByRole('tab', { name: /Biblioteca/ }).click();
   await expect(page.locator('.swiss-cabecera')).toBeVisible();
+});
+
+test('el generador integrado aplica un tema con su arquetipo', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });
+  await page.getByRole('tab', { name: /Ajustes/ }).click();
+  await page.getByRole('button', { name: /Abrir generador/ }).click();
+  const dialog = page.getByRole('dialog', { name: 'Generador de temas' });
+  await expect(dialog).toBeVisible();
+
+  await dialog.getByLabel('Arquetipo de diseño').selectOption('origami');
+  await dialog.getByRole('button', { name: /Aplicar tema/ }).click();
+  await expect(dialog).toHaveCount(0);
+  await expect(page.locator('.app-shell')).toHaveAttribute('data-skin', 'mi-tema');
+
+  await page.getByRole('tab', { name: /Inicio/ }).click();
+  await expect(page.locator('.origami-figura')).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.dataset['themeTransition'])).toBe(
+    'origami',
+  );
 });
