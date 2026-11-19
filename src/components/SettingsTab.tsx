@@ -267,21 +267,49 @@ export default function SettingsTab(props: SettingsTabProps) {
   const contenido: Record<Seccion, React.ReactNode> = {
     tema: (
       <>
-        <div
+        <section
           className="set-hero-preview"
           style={{ '--pv-bg': bg, '--pv-accent': acento, '--pv-text': suave } as CSSProperties}
         >
-          <div className="set-hero-fig">{GLIFOS[theme] ?? '桜'}</div>
-          <div>
-            <span className="set-hero-kicker">TEMA ACTIVO</span>
+          <div className="set-hero-info">
+            <span className="set-hero-kicker">TEMA ACTIVO · VISTA PREVIA</span>
             <strong>{nombreTema}</strong>
+            <span className="set-hero-desc">{temas.find((t) => t.id === theme)?.descripcion}</span>
             <span className="set-hero-barras">
               {[bg, acento, suave].map((c, i) => (
                 <i key={i} style={{ background: c }} />
               ))}
             </span>
           </div>
-        </div>
+          <div className="set-hero-mock" aria-hidden="true">
+            <div className="set-mock-bar">
+              <span className="set-mock-glifo">{GLIFOS[theme] ?? '桜'}</span>
+              <span className="set-mock-brand">SAKURA</span>
+              <span className="set-mock-dots">
+                <i />
+                <i />
+                <i />
+              </span>
+            </div>
+            <div className="set-mock-body">
+              <div className="set-mock-side">
+                <i />
+                <i />
+                <i />
+                <i />
+              </div>
+              <div className="set-mock-main">
+                <span className="set-mock-line lg" />
+                <span className="set-mock-line md" />
+                <div className="set-mock-cards">
+                  <i />
+                  <i />
+                  <i />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
         <Tarjeta
           n="01"
           titulo="Biblioteca de temas"

@@ -6798,3 +6798,51 @@ html[data-theme-transition='kawaii'] #theme-panel.panel-enter { animation: t-kaw
 .kawaii-nube-amiga small { display:block; font-size:9px; color:rgba(255,255,255,.9); margin-top:4px; }
 .kawaii-acc { display:flex; justify-content:center; margin-top:10px; }
 .kawaii-nube-amiga.is-active { box-shadow:0 0 0 3px #ff9ec4,0 12px 24px rgba(0,0,0,.06); }
+
+
+/* ========================================================= */
+/* APARIENCIA · hero con vista previa y grid de temas          */
+/* ========================================================= */
+.set-hero-preview { grid-column:1/-1; display:grid; grid-template-columns:220px 1fr; gap:24px; align-items:center; padding:22px 26px; border:1px solid var(--pv-accent); border-radius:var(--set-radio); background:var(--pv-bg); }
+.set-hero-info { display:flex; flex-direction:column; gap:6px; }
+.set-hero-kicker { font:9px 'JetBrains Mono',monospace; letter-spacing:.16em; color:var(--pv-accent); }
+.set-hero-info strong { font-size:26px; color:var(--pv-text); line-height:1.1; }
+.set-hero-desc { font-size:10px; color:var(--pv-text); opacity:.75; }
+.set-hero-barras { display:flex; gap:5px; margin-top:8px; }
+.set-hero-barras i { width:34px; height:5px; border-radius:3px; border:1px solid var(--pv-text); opacity:.7; }
+
+/* Mini captura de la app con el tema aplicado */
+.set-hero-mock { height:150px; border:1px solid var(--pv-accent); border-radius:10px; background:var(--pv-surface, var(--pv-bg)); overflow:hidden; box-shadow:0 12px 30px rgba(0,0,0,.12); }
+.set-mock-bar { height:26px; display:flex; align-items:center; gap:8px; padding:0 10px; background:var(--pv-accent); }
+.set-mock-glifo { font-size:12px; color:var(--pv-bg); line-height:1; }
+.set-mock-brand { font:700 8px 'Plus Jakarta Sans',sans-serif; letter-spacing:.16em; color:var(--pv-bg); }
+.set-mock-dots { margin-left:auto; display:flex; gap:3px; }
+.set-mock-dots i { width:5px; height:5px; border-radius:50%; background:var(--pv-bg); opacity:.6; }
+.set-mock-body { display:grid; grid-template-columns:52px 1fr; height:calc(100% - 26px); }
+.set-mock-side { display:flex; flex-direction:column; gap:6px; padding:10px 8px; border-right:1px solid var(--pv-accent); opacity:.5; }
+.set-mock-side i { height:6px; border-radius:3px; background:var(--pv-accent); }
+.set-mock-side i:first-child { height:14px; }
+.set-mock-main { padding:12px; display:flex; flex-direction:column; gap:6px; }
+.set-mock-line { height:6px; border-radius:3px; background:var(--pv-text); opacity:.45; }
+.set-mock-line.lg { width:55%; height:10px; }
+.set-mock-line.md { width:35%; }
+.set-mock-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-top:6px; }
+.set-mock-cards i { height:44px; border-radius:6px; background:var(--pv-accent); opacity:.25; }
+.set-mock-cards i:nth-child(2) { opacity:.4; }
+.set-mock-cards i:nth-child(3) { opacity:.55; }
+
+/* Grid de temas: tarjetas más grandes y con mejor jerarquía */
+.set-themes { grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+.set-theme { transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease; }
+.set-theme:hover { transform:translateY(-3px); }
+.set-theme-preview { height:68px; }
+.set-theme-preview i { height:5px; }
+.set-theme-preview b { font-size:24px; top:16px; }
+.set-theme-info { padding:12px; gap:10px; }
+.set-theme-copy strong { font-size:12px; }
+.set-theme-copy small { font-size:9px; line-height:1.4; }
+
+@media (max-width:1100px) {
+  .set-hero-preview { grid-template-columns:1fr; }
+  .set-hero-mock { max-width:380px; }
+}
