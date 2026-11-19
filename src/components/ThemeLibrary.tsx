@@ -722,7 +722,7 @@ export default function ThemeLibrary({
                 className={`ghost-espiritu ${activeTrack?.id === track.id ? 'is-active' : ''}`}
               >
                 <button type="button" onClick={() => onPlayTrack(track)}>
-                  <span className="ghost-cara">☻</span>
+                  <span className="ghost-cara">{portadaDe(track)}</span>
                   <strong>{track.title}</strong>
                   <small>
                     {track.artist} · {track.album}
@@ -751,6 +751,7 @@ export default function ThemeLibrary({
                 key={track.id}
                 className={`samurai-lama ${activeTrack?.id === track.id ? 'is-active' : ''}`}
               >
+                <span className="samurai-portada">{portadaDe(track)}</span>
                 <span className="samurai-num">{String(i + 1).padStart(2, '0')}</span>
                 <button type="button" onClick={() => onPlayTrack(track)}>
                   <strong>{track.title}</strong>
@@ -787,7 +788,7 @@ export default function ThemeLibrary({
                 }
               >
                 <button type="button" onClick={() => onPlayTrack(track)}>
-                  <span className="kawaii-cara">(◕‿◕)</span>
+                  <span className="kawaii-cara">{portadaDe(track)}</span>
                   <strong>{track.title}</strong>
                   <small>
                     {track.artist} · {track.album}

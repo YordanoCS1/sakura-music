@@ -7015,3 +7015,63 @@ html[data-theme-transition='kawaii'] #theme-panel.panel-enter { animation: t-kaw
 .app-shell[data-skin='ghost'] { --set-panel-base:#101a24; --set-radio-base:18px; --set-font-base:Georgia,serif; }
 .app-shell[data-skin='samurai'] { --set-panel-base:#241c17; --set-radio-base:2px; --set-font-base:Georgia,serif; }
 .app-shell[data-skin='kawaii'] { --set-panel-base:#fff; --set-radio-base:24px; --set-font-base:system-ui; }
+
+
+/* ===== Portadas en Fantasmas ===== */
+.ghost-espiritu .ghost-cara { display:grid; place-items:center; width:64px; height:64px; margin:0 auto 10px; border-radius:50%; overflow:hidden; border:1px solid rgba(103,232,249,.5); box-shadow:0 0 18px rgba(103,232,249,.3); font-size:0; }
+.ghost-espiritu .ghost-cara img { width:100%; height:100%; object-fit:cover; border-radius:50%; filter:saturate(.7) brightness(.9); }
+
+/* ===== Portadas en Samurái ===== */
+.samurai-lama { grid-template-columns:52px 46px minmax(0,1fr) auto !important; }
+.samurai-portada { width:46px; height:46px; overflow:hidden; border:2px solid #c9a961; display:grid; place-items:center; background:#241c17; color:#b7352a; font-size:14px; }
+.samurai-portada img { width:100%; height:100%; object-fit:cover; }
+
+/* ===== Portadas en Kawaii ===== */
+.kawaii-amigo .kawaii-cara { display:grid; place-items:center; width:70px; height:70px; margin:0 auto 10px; border-radius:50%; overflow:hidden; border:3px solid rgba(255,255,255,.7); background:rgba(255,255,255,.35); box-shadow:0 6px 16px rgba(0,0,0,.08); font-size:0; }
+.kawaii-amigo .kawaii-cara img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+
+
+/* ========================================================= */
+/* EDITOR DE METADATOS · 4 temas nuevos                        */
+/* ========================================================= */
+/* Shōnen · viñeta de manga con borde grueso */
+.theme-modal.tema-shonen {
+  --modal-fondo:#fff6e8; --modal-panel:#fff; --modal-borde:#1c1c1c;
+  --modal-texto:#1c1c1c; --modal-suave:#8a6a45; --modal-accento:#ff6b1a; --modal-on-accent:#fff;
+  --modal-radio:4px; --modal-input:#fff; --modal-cover-radio:0px;
+  --modal-font:system-ui; --modal-shadow:6px 6px 0 rgba(255,107,26,.35);
+  border-width:4px !important;
+}
+.theme-modal-backdrop.tema-shonen { background:rgba(60,30,5,.6) !important; }
+
+/* Fantasmas · vidrio azul translúcido */
+.theme-modal.tema-ghost {
+  --modal-fondo:#0d1a26; --modal-panel:rgba(16,26,36,.75); --modal-borde:rgba(103,232,249,.35);
+  --modal-texto:#dff1f5; --modal-suave:#7a9ba8; --modal-accento:#67e8f9; --modal-on-accent:#0a1018;
+  --modal-radio:18px; --modal-input:rgba(103,232,249,.07); --modal-cover-radio:50%;
+  --modal-font:Georgia,serif; --modal-shadow:0 0 60px rgba(103,232,249,.25);
+  backdrop-filter:blur(14px);
+}
+.theme-modal.tema-ghost [class*="aspect-square"] { box-shadow:0 0 24px rgba(103,232,249,.25) !important; }
+.theme-modal-backdrop.tema-ghost { background:rgba(4,10,16,.82) !important; }
+
+/* Samurái · lacado rojo y oro */
+.theme-modal.tema-samurai {
+  --modal-fondo:#1a1512; --modal-panel:#241c17; --modal-borde:rgba(201,169,97,.35);
+  --modal-texto:#efe6d6; --modal-suave:#9e8f7c; --modal-accento:#c9a961; --modal-on-accent:#1a1512;
+  --modal-radio:2px; --modal-input:#1f1813; --modal-cover-radio:0px;
+  --modal-font:Georgia,serif; --modal-shadow:8px 10px 0 rgba(183,53,42,.2);
+  border-top:5px solid #b7352a !important;
+}
+.theme-modal.tema-samurai [class*="aspect-square"] { border:2px solid #c9a961 !important; }
+.theme-modal-backdrop.tema-samurai { background:rgba(20,8,6,.8) !important; }
+
+/* Kawaii · pastel redondeado */
+.theme-modal.tema-kawaii {
+  --modal-fondo:#fff7fb; --modal-panel:#fff; --modal-borde:rgba(255,158,196,.5);
+  --modal-texto:#7a4a6a; --modal-suave:#b98ca3; --modal-accento:#ff9ec4; --modal-on-accent:#fff;
+  --modal-radio:24px; --modal-input:#fff; --modal-cover-radio:50%;
+  --modal-font:system-ui; --modal-shadow:0 18px 50px rgba(255,158,196,.35);
+}
+.theme-modal.tema-kawaii [class*="aspect-square"] { border:3px solid #fff !important; box-shadow:0 8px 18px rgba(158,224,200,.4) !important; }
+.theme-modal-backdrop.tema-kawaii { background:rgba(120,60,90,.45) !important; }
