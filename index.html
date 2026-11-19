@@ -155,6 +155,46 @@
       html[data-splash='ghost'] .splash-vinyl { border-radius:50% 50% 0 0; height:140px; animation:sakura-flotar 3s ease-in-out infinite; }
       html[data-splash='moonlit'] .splash-vinyl { box-shadow:0 0 50px var(--sp-glow),inset 0 0 30px var(--sp-glow); }
 
+      /* ---- Figuras propias por tema (sin el 桜 genérico) ---- */
+      .splash-label::after { font-family:"Hiragino Kaku Gothic","Yu Gothic","Meiryo",sans-serif; line-height:1; }
+      html[data-splash='space'] .splash-label::after { content:"桜"; }
+      html[data-splash='sumie'] .splash-label::after,
+      html[data-splash='sumiink'] .splash-label::after { content:"墨"; font-family:Georgia,serif; font-size:36px; }
+      html[data-splash='byobu'] .splash-label::after { content:"屏"; font-family:Georgia,serif; font-size:32px; }
+      html[data-splash='shoji'] .splash-label::after { content:"障"; font-family:Georgia,serif; font-size:32px; }
+      html[data-splash='origami'] .splash-label::after { content:"折"; font-family:Georgia,serif; font-size:32px; }
+      html[data-splash='swiss'] .splash-label::after { content:"+"; font-family:"Plus Jakarta Sans",sans-serif; font-weight:800; font-size:46px; }
+      html[data-splash='moonlit'] .splash-label::after { content:"☾"; font-family:Georgia,serif; font-size:40px; }
+      html[data-splash='ledger'] .splash-label::after { content:"帳"; font-family:"IBM Plex Mono",Consolas,monospace; font-size:30px; }
+      html[data-splash='shonen'] .splash-label::after { content:"⚡"; font-size:38px; }
+      html[data-splash='samurai'] .splash-label::after { content:"侍"; font-family:Georgia,serif; font-size:36px; }
+      html[data-splash='kawaii'] .splash-label::after { content:"(◕‿◕)"; font-family:system-ui,sans-serif; font-size:16px; }
+      html[data-splash='ghost'] .splash-label::after { content:"☻"; font-family:Georgia,serif; font-size:38px; }
+      html[data-splash='yoru'] .splash-label::after { content:"夜"; font-family:Georgia,serif; font-size:34px; }
+      html[data-splash='hanabi'] .splash-label::after { content:"✺"; font-size:40px; }
+      html[data-splash='aizuri'] .splash-label::after { content:"藍"; font-family:Georgia,serif; font-size:34px; }
+      html[data-splash='custom'] .splash-label::after { content:"◆"; font-size:30px; }
+
+      /* Kawaii: cara sonriente sobre círculo rosa */
+      html[data-splash='kawaii'] .splash-vinyl { background:#9ee0c8; }
+      html[data-splash='kawaii'] .splash-label { background:transparent; box-shadow:none; color:#7a4a6a; }
+      /* Fantasmas: figura con forma de fantasma, sin anillos */
+      html[data-splash='ghost'] .splash-vinyl::before,
+      html[data-splash='ghost'] .splash-vinyl::after { display:none; }
+      /* Shōnen: cuadrado con rayos, sin anillos */
+      html[data-splash='shonen'] .splash-vinyl::before,
+      html[data-splash='shonen'] .splash-vinyl::after { display:none; }
+      html[data-splash='shonen'] .splash-label { background:linear-gradient(135deg,#ff6b1a,#ffb800); color:#1c1c1c; }
+
+      /* Las figuras con orientación no deben girar: se ven de cabeza. */
+      html[data-splash='shonen'] .splash-vinyl,
+      html[data-splash='shonen'] .splash-label,
+      html[data-splash='kawaii'] .splash-label,
+      html[data-splash='ghost'] .splash-label,
+      html[data-splash='moonlit'] .splash-label,
+      html[data-splash='swiss'] .splash-label,
+      html[data-splash='hanabi'] .splash-label { animation: none; }
+
       @keyframes sakura-spin { to { transform: rotate(360deg); } }
       @keyframes sakura-counter { to { transform: rotate(-360deg); } }
       @keyframes sakura-fill { to { width: 100%; } }
@@ -176,7 +216,7 @@
   <body class="antialiased overflow-hidden select-none">
     <div id="sakura-splash" role="status" aria-label="Cargando Sakura Music">
       <div class="splash-vinyl">
-        <div class="splash-label" aria-hidden="true">桜</div>
+        <div class="splash-label" aria-hidden="true"></div>
       </div>
       <div class="splash-word" aria-hidden="true">Sakura</div>
       <div class="splash-bar" aria-hidden="true"><i></i></div>
