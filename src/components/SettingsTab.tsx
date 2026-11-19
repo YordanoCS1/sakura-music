@@ -9,6 +9,7 @@ import {
   Minimize2,
   Check,
   Music2,
+  Trash2,
 } from 'lucide-react';
 import type { AppInfo, PlayerStyle, ThemeOption } from '../types';
 import ToolsPanel from './ToolsPanel';
@@ -66,6 +67,8 @@ interface SettingsTabProps {
   onToggleRemote: () => void;
   onImportarTema: (json: string) => void;
   onAbrirGenerador: () => void;
+  onBorrarTema: (id: string) => void;
+  temasPersonalizadosIds: string[];
   onSetTheme: (t: string) => void;
   accentGradient: string;
   accentBadge: string;
@@ -98,6 +101,8 @@ export default function SettingsTab({
   onToggleRemote,
   onImportarTema,
   onAbrirGenerador,
+  onBorrarTema,
+  temasPersonalizadosIds,
   onSetTheme,
   accentGradient,
   accentBadge,
@@ -184,43 +189,56 @@ export default function SettingsTab({
           <div className="set-themes">
             {temas.map((opcion) => {
               const activo = opcion.id === theme;
+              const personalizado = temasPersonalizadosIds.includes(opcion.id);
               const [fondo, acento, suave] = PREVIEWS[opcion.id] ?? PREVIEWS.space!;
               return (
-                <button
-                  key={opcion.id}
-                  type="button"
-                  onClick={() => onSetTheme(opcion.id)}
-                  aria-pressed={activo}
-                  className={`set-theme ${activo ? 'is-active' : ''}`}
-                  style={
-                    {
-                      '--pv-bg': fondo,
-                      '--pv-accent': acento,
-                      '--pv-soft': suave,
-                    } as React.CSSProperties
-                  }
-                >
-                  <span className="set-theme-preview">
-                    <i />
-                    <i />
-                    <i />
-                    <b>{GLIFOS[opcion.id] ?? '桜'}</b>
-                  </span>
-                  <span className="set-theme-info">
-                    <span
-                      className={`set-theme-swatch ${SWATCHES[opcion.id] ?? 'bg-neutral-400'}`}
-                    />
-                    <span className="set-theme-copy">
-                      <strong>{opcion.nombre}</strong>
-                      <small>{opcion.descripcion}</small>
+                <div key={opcion.id} className="set-theme-wrap">
+                  <button
+                    type="button"
+                    onClick={() => onSetTheme(opcion.id)}
+                    aria-pressed={activo}
+                    className={`set-theme ${activo ? 'is-active' : ''}`}
+                    style={
+                      {
+                        '--pv-bg': fondo,
+                        '--pv-accent': acento,
+                        '--pv-soft': suave,
+                      } as React.CSSProperties
+                    }
+                  >
+                    <span className="set-theme-preview">
+                      <i />
+                      <i />
+                      <i />
+                      <b>{GLIFOS[opcion.id] ?? '桜'}</b>
                     </span>
-                    {activo && (
-                      <span className="set-theme-check">
-                        <Check className="w-3 h-3" />
+                    <span className="set-theme-info">
+                      <span
+                        className={`set-theme-swatch ${SWATCHES[opcion.id] ?? 'bg-neutral-400'}`}
+                      />
+                      <span className="set-theme-copy">
+                        <strong>{opcion.nombre}</strong>
+                        <small>{opcion.descripcion}</small>
                       </span>
-                    )}
-                  </span>
-                </button>
+                      {activo && (
+                        <span className="set-theme-check">
+                          <Check className="w-3 h-3" />
+                        </span>
+                      )}
+                    </span>
+                  </button>
+                  {personalizado && (
+                    <button
+                      type="button"
+                      className="set-theme-delete"
+                      onClick={() => onBorrarTema(opcion.id)}
+                      aria-label={`Borrar tema ${opcion.nombre}`}
+                      title={`Borrar ${opcion.nombre}`}
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                  )}
+                </div>
               );
             })}
           </div>

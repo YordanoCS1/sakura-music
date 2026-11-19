@@ -46,6 +46,7 @@ import { useRemoteControl } from './hooks/useRemoteControl';
 import { useThemeTransition } from './hooks/useThemeTransition';
 import {
   baseDelTema,
+  borrarTemaPersonalizado,
   esTemaPersonalizado,
   guardarTemaPersonalizado,
   inyectarEstilos,
@@ -128,6 +129,13 @@ export default function App() {
       localStorage.setItem('sakura_theme', tema.id);
     } catch (error) {
       console.error('No se pudo importar el tema:', error);
+    }
+  };
+  const borrarTema = (id: string) => {
+    setCustomThemes(borrarTemaPersonalizado(id));
+    if (theme === id) {
+      setTheme('space');
+      localStorage.setItem('sakura_theme', 'space');
     }
   };
   const setActiveTab = useThemeTransition(temaBase, setActiveTabRaw);
@@ -1387,6 +1395,8 @@ export default function App() {
                 temas={todosLosTemas}
                 onImportarTema={importarTema}
                 onAbrirGenerador={() => setGeneradorAbierto(true)}
+                onBorrarTema={borrarTema}
+                temasPersonalizadosIds={customThemes.map((tema) => tema.id)}
                 remoteEnabled={controlRemoto.enabled}
                 remoteIp={controlRemoto.ip}
                 onToggleRemote={controlRemoto.alternar}

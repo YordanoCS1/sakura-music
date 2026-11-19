@@ -56,6 +56,12 @@ export function guardarTemaPersonalizado(tema: TemaPersonalizado): TemaPersonali
   return lista;
 }
 
+export function borrarTemaPersonalizado(id: string): TemaPersonalizado[] {
+  const lista = temasPersonalizados().filter((tema) => tema.id !== id);
+  localStorage.setItem(CLAVE, JSON.stringify(lista));
+  return lista;
+}
+
 export function baseDelTema(id: string, temas = temasPersonalizados()): ThemeMode {
   return temas.find((tema) => tema.id === id)?.base ?? (id as ThemeMode);
 }

@@ -402,3 +402,26 @@ test('el generador integrado aplica un tema con su arquetipo', async ({ page }) 
     'origami',
   );
 });
+
+test('se pueden borrar temas personalizados', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });
+
+  // Importamos un tema para que aparezca en el selector.
+  const tema = {
+    id: 'temporal',
+    nombre: 'Tema Temporal',
+    descripcion: 'Para borrar',
+    base: 'shoji',
+    css: ".app-shell[data-skin='temporal']{--tema-accent:#123456 !important;}",
+  };
+  await page.getByRole('tab', { name: /Ajustes/ }).click();
+  await page.locator('.set-json').fill(JSON.stringify(tema));
+  await page.getByRole('button', { name: /Importar JSON/ }).click();
+  await expect(page.locator('.app-shell')).toHaveAttribute('data-skin', 'temporal');
+
+  // El tema activo se puede borrar y vuelve al tema base.
+  await page.getByRole('button', { name: 'Borrar tema Tema Temporal' }).click();
+  await expect(page.locator('.app-shell')).not.toHaveAttribute('data-skin');
+  await expect(page.getByRole('button', { name: /Tema Temporal/ })).toHaveCount(0);
+});
