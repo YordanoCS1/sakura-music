@@ -6647,3 +6647,52 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .swiss-modulo.is-active .swiss-modulo-alb { color:#aaa !important; }
 .swiss-modulo.is-active .swiss-modulo-pie { background:#111; border-color:#444; color:#fff; }
 .swiss-modulo.is-active .swiss-modulo-portada { background:#111 !important; }
+
+
+/* ========================================================= */
+/* SWISS · ritmo editorial: destacado + módulos compactos      */
+/* ========================================================= */
+.swiss-modulos { grid-template-columns:repeat(5,minmax(0,1fr)) !important; }
+.swiss-modulo-visual { aspect-ratio:4/3; }
+
+/* Primera pista: módulo doble con la portada al lado del texto. */
+.swiss-modulo:first-child {
+  grid-column:span 2;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  grid-template-rows:1fr auto;
+}
+.swiss-modulo:first-child .swiss-modulo-visual {
+  grid-column:1;
+  grid-row:1/3;
+  aspect-ratio:auto;
+  height:100%;
+  border-bottom:0;
+  border-right:1px solid #111;
+}
+.swiss-modulo:first-child .swiss-modulo-info {
+  grid-column:2;
+  grid-row:1;
+  justify-content:center;
+  padding:20px 16px;
+}
+.swiss-modulo:first-child .swiss-modulo-tit { font-size:21px !important; }
+.swiss-modulo:first-child .swiss-modulo-pie {
+  grid-column:2;
+  grid-row:2;
+  padding:10px 16px;
+}
+.swiss-modulo:first-child .swiss-modulo-portada>span { font-size:54px !important; }
+
+@media (max-width: 1100px) {
+  .swiss-modulos { grid-template-columns:repeat(3,minmax(0,1fr)) !important; }
+  .swiss-modulo:first-child { grid-column:span 3; grid-template-columns:1fr 1fr; }
+}
+
+
+/* El destacado debe vencer al display:flex !important de la regla base. */
+.swiss-modulo:first-child {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  grid-template-rows: 1fr auto !important;
+}
