@@ -500,34 +500,31 @@ export default function ThemeLibrary({
         {vistaTracks.length === 0 ? (
           vacio
         ) : (
-          <div className="swiss-grid">
-            <div className="swiss-grid-cab">
-              <span>TRACKLIST</span>
-              <span>{vistaTracks.length} PIEZAS</span>
-            </div>
+          <div className="swiss-posters">
             {vistaTracks.map((track, i) => (
               <article
                 key={track.id}
-                className={`swiss-track ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+                className={`swiss-poster ${activeTrack?.id === track.id ? 'is-active' : ''}`}
               >
-                <div className="swiss-track-cover">{portadaDe(track)}</div>
-                <div className="swiss-track-main">
-                  <span className="swiss-track-index">{String(i + 1).padStart(2, '0')}</span>
-                  <div className="swiss-track-copy">
-                    <button
-                      type="button"
-                      className="swiss-track-title"
-                      onClick={() => onPlayTrack(track)}
-                    >
-                      {track.title}
-                    </button>
-                    <span className="swiss-track-meta">
-                      {track.artist} <i>/</i> {track.album}
-                    </span>
+                <button
+                  type="button"
+                  className="swiss-poster-btn"
+                  onClick={() => onPlayTrack(track)}
+                >
+                  <div className="swiss-poster-img">
+                    <span className="swiss-poster-num">{String(i + 1).padStart(2, '0')}</span>
+                    {portadaDe(track)}
                   </div>
-                </div>
-                <div className="swiss-track-time">
-                  <span>{track.duration_str}</span>
+                  <div className="swiss-poster-info">
+                    <span className="swiss-poster-tag">TRK {String(i + 1).padStart(2, '0')}</span>
+                    <strong>{track.title}</strong>
+                    <small>{track.artist}</small>
+                  </div>
+                </button>
+                <div className="swiss-poster-foot">
+                  <span>
+                    {track.album} · {track.duration_str}
+                  </span>
                   {acciones(track)}
                 </div>
               </article>

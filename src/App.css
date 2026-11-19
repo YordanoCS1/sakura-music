@@ -6983,3 +6983,35 @@ html[data-theme-transition='kawaii'] #theme-panel.panel-enter { animation: t-kaw
 .swiss-track.is-active .swiss-track-cover { border-color:#fff; }
 .swiss-track.is-active .theme-row-actions button { color:#aaa; }
 .swiss-track.is-active .theme-row-actions button:hover { color:#fff; background:#333; }
+
+
+/* ========================================================= */
+/* SWISS · grilla de pósters tipográficos                      */
+/* ========================================================= */
+.swiss-posters { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:18px; margin-top:8px; }
+.swiss-poster { display:flex; flex-direction:column; background:#fff; border:1px solid #111; transition:transform .16s ease, box-shadow .16s ease; }
+.swiss-poster:hover { transform:translateY(-4px); box-shadow:8px 8px 0 rgba(0,0,0,.12); }
+.swiss-poster-btn { display:block; width:100%; text-align:left; background:transparent; border:0; padding:0; cursor:pointer; color:#111; }
+
+.swiss-poster-img { position:relative; aspect-ratio:4/3; overflow:hidden; background:#f2f2f0; border-bottom:1px solid #111; }
+.swiss-poster-img img { width:100%; height:100%; object-fit:cover; display:block; filter:none !important; }
+.swiss-poster-img>span:not(.swiss-poster-num) { display:grid; place-items:center; width:100%; height:100%; font-size:70px; color:#111; }
+/* Número gigante superpuesto a la portada */
+.swiss-poster-num { position:absolute; right:8px; bottom:-12px; z-index:2; font:700 84px/1 'Plus Jakarta Sans',sans-serif; letter-spacing:-.09em; color:#fff; mix-blend-mode:difference; pointer-events:none; }
+
+.swiss-poster-info { display:flex; flex-direction:column; gap:6px; padding:14px 14px 12px; }
+.swiss-poster-tag { font:9px 'JetBrains Mono',monospace; letter-spacing:.16em; color:#777; }
+.swiss-poster-info strong { font:700 17px/1.15 'Plus Jakarta Sans',sans-serif; text-transform:uppercase; letter-spacing:-.02em; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.swiss-poster-info small { font:11px 'Plus Jakarta Sans',sans-serif; color:#777; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+.swiss-poster-foot { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:auto; padding:10px 14px; border-top:1px solid #ddd; font:10px 'Plus Jakarta Sans',sans-serif; color:#777; }
+.swiss-poster-foot .theme-row-actions { gap:2px; }
+.swiss-poster-foot .theme-row-actions button { width:22px; height:22px; color:#999; }
+.swiss-poster-foot .theme-row-actions button:hover { color:#111; background:#f2f2f0; }
+
+.swiss-poster.is-active { background:#111; border-color:#111; }
+.swiss-poster.is-active .swiss-poster-info strong,
+.swiss-poster.is-active .swiss-poster-tag,
+.swiss-poster.is-active .swiss-poster-info small { color:#fff; }
+.swiss-poster.is-active .swiss-poster-foot { border-color:#444; color:#aaa; }
+.swiss-poster.is-active .theme-row-actions button { color:#aaa; }
