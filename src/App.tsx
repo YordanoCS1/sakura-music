@@ -731,6 +731,38 @@ export default function App() {
 
   // (handlers del lote viven en useBatchEditor.ts)
 
+  // Búsqueda full-text en SQLite. El hook del explorador sigue aplicando el
+  // filtro en memoria como respaldo si FTS no está disponible o no encuentra
+  // coincidencias (p. ej. búsquedas por substring).
+  const [resultadosFts, setResultadosFts] = useState<ScannedTrack[] | null>(null);
+  useEffect(() => {
+    const consulta = searchQuery.trim();
+    if (!consulta) {
+      setResultadosFts(null);
+      return;
+    }
+    let cancelada = false;
+    const temporizador = setTimeout(() => {
+      invoke<ScannedTrack[]>('search_library_fts', { query: consulta, limit: 300 })
+        .then((resultados) => {
+          if (!cancelada) setResultadosFts(resultados);
+        })
+        .catch((error) => {
+          console.error('Búsqueda FTS no disponible, se usa el filtro local:', error);
+          if (!cancelada) setResultadosFts(null);
+        });
+    }, 120);
+    return () => {
+      cancelada = true;
+      clearTimeout(temporizador);
+    };
+  }, [searchQuery]);
+  const usoFts = resultadosFts !== null && resultadosFts.length > 0;
+  const tracksParaExplorador = usoFts ? resultadosFts! : tracks;
+  // FTS ya aplicó la consulta (incluso normalizando acentos), así que el
+  // explorador no debe volver a filtrar por texto o descartaría coincidencias.
+  const consultaParaExplorador = usoFts ? '' : searchQuery;
+
   // Base común de carpetas para el Explorador
   // Explorador, filtrado y álbumes. Vive en useFolderExplorer.ts;
   // Se destructura con los nombres de siempre para no modificar quienes lo consumen.
@@ -751,9 +783,9 @@ export default function App() {
     handlePlayAlbum,
     handleSelectAlbumTracks,
   } = useFolderExplorer({
-    tracks,
+    tracks: tracksParaExplorador,
     currentFolder,
-    searchQuery,
+    searchQuery: consultaParaExplorador,
     filterChip,
     favorites,
     viewMode,

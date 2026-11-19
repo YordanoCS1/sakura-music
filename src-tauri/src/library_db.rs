@@ -74,10 +74,30 @@ fn create_schema(connection: &Connection) -> Result<(), String> {
                  key TEXT PRIMARY KEY NOT NULL,
                  value TEXT NOT NULL
              );
-             CREATE TABLE IF NOT EXISTS app_meta (
+              CREATE TABLE IF NOT EXISTS app_meta (
                  key TEXT PRIMARY KEY NOT NULL,
                  value TEXT NOT NULL
-             );",
+             );
+             CREATE VIRTUAL TABLE IF NOT EXISTS library_fts USING fts5(
+                 title, artist, album,
+                 content='library_tracks',
+                 content_rowid='rowid',
+                 tokenize='unicode61 remove_diacritics 2'
+             );
+             CREATE TRIGGER IF NOT EXISTS library_fts_ai AFTER INSERT ON library_tracks BEGIN
+                 INSERT INTO library_fts(rowid, title, artist, album)
+                 VALUES (new.rowid, new.title, new.artist, new.album);
+             END;
+             CREATE TRIGGER IF NOT EXISTS library_fts_ad AFTER DELETE ON library_tracks BEGIN
+                 INSERT INTO library_fts(library_fts, rowid, title, artist, album)
+                 VALUES ('delete', old.rowid, old.title, old.artist, old.album);
+             END;
+             CREATE TRIGGER IF NOT EXISTS library_fts_au AFTER UPDATE ON library_tracks BEGIN
+                 INSERT INTO library_fts(library_fts, rowid, title, artist, album)
+                 VALUES ('delete', old.rowid, old.title, old.artist, old.album);
+                 INSERT INTO library_fts(rowid, title, artist, album)
+                 VALUES (new.rowid, new.title, new.artist, new.album);
+             END;",
         )
         .map_err(|error| format!("No se pudo inicializar SQLite: {}", error))
 }
@@ -213,7 +233,21 @@ fn insert_legacy_cache(connection: &mut Connection) -> Result<(), String> {
 
 pub fn initialize() -> Result<(), String> {
     let mut connection = open_connection()?;
+    let tenia_fts: bool = connection
+        .query_row(
+            "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'library_fts'",
+            [],
+            |_| Ok(true),
+        )
+        .optional()
+        .map_err(|error| format!("No se pudo verificar el indice de busqueda: {}", error))?
+        .unwrap_or(false);
     create_schema(&connection)?;
+    if !tenia_fts {
+        connection
+            .execute("INSERT INTO library_fts(library_fts) VALUES('rebuild')", [])
+            .map_err(|error| format!("No se pudo construir el indice de busqueda: {}", error))?;
+    }
     insert_legacy_cache(&mut connection)
 }
 
@@ -232,6 +266,57 @@ fn read_tracks(connection: &Connection) -> Result<Vec<ScanEntry>, String> {
         .map_err(|error| format!("No se pudo consultar la biblioteca: {}", error))?;
     rows.collect::<Result<Vec<_>, _>>()
         .map_err(|error| format!("No se pudo leer la biblioteca: {}", error))
+}
+
+/// Convierte la consulta del usuario en una expresión MATCH de FTS5.
+/// Cada palabra se busca como prefijo y entre comillas: así un guion o un
+/// acento no rompen la consulta y "guren" encuentra "Gurenge".
+fn consulta_fts(query: &str) -> String {
+    query
+        .split_whitespace()
+        .map(|palabra| {
+            palabra
+                .chars()
+                .filter(|c| c.is_alphanumeric())
+                .collect::<String>()
+        })
+        .filter(|palabra| !palabra.is_empty())
+        .map(|palabra| format!("\"{palabra}\"*"))
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
+/// Búsqueda full-text sobre título, artista y álbum usando el índice FTS5.
+pub fn search_tracks_on(
+    connection: &Connection,
+    query: &str,
+    limit: usize,
+) -> Result<Vec<ScannedTrack>, String> {
+    let expresion = consulta_fts(query);
+    if expresion.is_empty() {
+        return Ok(Vec::new());
+    }
+    let sql = "SELECT t.* FROM library_tracks t
+               JOIN library_fts ON library_fts.rowid = t.rowid
+               WHERE library_fts MATCH ?1
+               ORDER BY bm25(library_fts, 2.0, 1.5, 1.0), t.title COLLATE NOCASE
+               LIMIT ?2";
+    let mut sentencia = connection
+        .prepare(sql)
+        .map_err(|error| format!("No se pudo preparar la búsqueda: {}", error))?;
+    let filas = sentencia
+        .query_map(params![expresion, limit as i64], |row| {
+            read_entry(row).map(|entrada| entrada.track)
+        })
+        .map_err(|error| format!("No se pudo buscar en la biblioteca: {}", error))?;
+    filas
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|error| format!("No se pudo leer la búsqueda: {}", error))
+}
+
+pub fn search_tracks(query: &str, limit: usize) -> Result<Vec<ScannedTrack>, String> {
+    let connection = open_connection()?;
+    search_tracks_on(&connection, query, limit)
 }
 
 pub fn sync_scan(root: &Path, entries: &[ScanEntry]) -> Result<(), String> {
@@ -424,6 +509,90 @@ mod tests {
             },
             modified_ns: 456,
         }
+    }
+
+    fn track_con(path: &str, title: &str, artist: &str, album: &str) -> ScanEntry {
+        let mut entrada = track(path, title);
+        entrada.track.artist = artist.to_string();
+        entrada.track.album = album.to_string();
+        entrada
+    }
+
+    #[test]
+    fn busqueda_fts_encuentra_por_titulo_artista_y_album() {
+        let connection = Connection::open_in_memory().unwrap();
+        create_schema(&connection).unwrap();
+        let entradas = [
+            track_con(r"C:\M\a.flac", "Gurenge", "LiSA", "Demon Slayer"),
+            track_con(r"C:\M\b.flac", "Idol", "YOASOBI", "Oshi no Ko"),
+            track_con(r"C:\M\c.flac", "Otra", "Artista", "Álbum"),
+        ];
+        for entrada in &entradas {
+            upsert_on(&connection, entrada).unwrap();
+        }
+
+        assert_eq!(search_tracks_on(&connection, "guren", 10).unwrap().len(), 1);
+        assert_eq!(
+            search_tracks_on(&connection, "yoasobi", 10).unwrap().len(),
+            1
+        );
+        assert_eq!(search_tracks_on(&connection, "oshi", 10).unwrap().len(), 1);
+        assert!(search_tracks_on(&connection, "", 10).unwrap().is_empty());
+    }
+
+    #[test]
+    fn busqueda_fts_ignora_acentos_y_caracteres_especiales() {
+        let connection = Connection::open_in_memory().unwrap();
+        create_schema(&connection).unwrap();
+        upsert_on(
+            &connection,
+            &track_con(r"C:\M\a.flac", "Canción", "Artista", "Álbum"),
+        )
+        .unwrap();
+
+        assert_eq!(
+            search_tracks_on(&connection, "cancion", 10).unwrap().len(),
+            1
+        );
+        assert_eq!(
+            search_tracks_on(&connection, "can-ción!", 10)
+                .unwrap()
+                .len(),
+            1
+        );
+    }
+
+    #[test]
+    fn busqueda_fts_se_actualiza_al_modificar_y_borrar() {
+        let connection = Connection::open_in_memory().unwrap();
+        create_schema(&connection).unwrap();
+        let mut entrada = track_con(r"C:\M\a.flac", "Antes", "Artista", "Álbum");
+        upsert_on(&connection, &entrada).unwrap();
+        assert_eq!(search_tracks_on(&connection, "antes", 10).unwrap().len(), 1);
+
+        entrada.track.title = "Después".to_string();
+        upsert_on(&connection, &entrada).unwrap();
+        assert!(
+            search_tracks_on(&connection, "antes", 10)
+                .unwrap()
+                .is_empty()
+        );
+        assert_eq!(
+            search_tracks_on(&connection, "despues", 10).unwrap().len(),
+            1
+        );
+
+        connection
+            .execute(
+                "DELETE FROM library_tracks WHERE path = ?1",
+                [&entrada.track.path],
+            )
+            .unwrap();
+        assert!(
+            search_tracks_on(&connection, "despues", 10)
+                .unwrap()
+                .is_empty()
+        );
     }
 
     #[test]

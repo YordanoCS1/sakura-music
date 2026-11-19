@@ -14,6 +14,7 @@ test.beforeEach(async ({ page }) => {
         ffmpeg_path: null,
       },
       get_cached_library: [],
+      search_library_fts: [],
       get_app_info: {
         engine: 'Tauri 2.0 + Rust Engine',
         rust_version: 'rustc (e2e)',
@@ -254,4 +255,99 @@ test('los seis temas propios usan vistas propias sin el selector de 9 vistas', a
     await page.getByRole('tab', { name: /Cola/ }).click();
     await expect(page.locator('.tqueue')).toBeVisible();
   }
+});
+
+test('la búsqueda filtra usando el índice FTS del backend', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('sakura_theme', 'shoji');
+    const tracks = [
+      {
+        id: 't0',
+        path: 'M\\a.flac',
+        title: 'Otra',
+        artist: 'Artista',
+        album: 'Álbum',
+        album_artist: null,
+        track_number: 1,
+        duration: 200,
+        duration_str: '3:20',
+        format: 'FLAC',
+        bitrate_kbps: null,
+        cover_url: null,
+        year: 2024,
+        genre: 'Jazz',
+        file_size: 1000,
+      },
+      {
+        id: 't1',
+        path: 'M\\b.flac',
+        title: 'Gurenge',
+        artist: 'LiSA',
+        album: 'Demon Slayer',
+        album_artist: null,
+        track_number: 2,
+        duration: 200,
+        duration_str: '3:20',
+        format: 'FLAC',
+        bitrate_kbps: null,
+        cover_url: null,
+        year: 2024,
+        genre: 'Jazz',
+        file_size: 1000,
+      },
+      {
+        id: 't2',
+        path: 'M\\c.flac',
+        title: 'Idol',
+        artist: 'YOASOBI',
+        album: 'Oshi no Ko',
+        album_artist: null,
+        track_number: 3,
+        duration: 200,
+        duration_str: '3:20',
+        format: 'FLAC',
+        bitrate_kbps: null,
+        cover_url: null,
+        year: 2024,
+        genre: 'Jazz',
+        file_size: 1000,
+      },
+    ];
+    const encontrados = [tracks[1]];
+    const respuestas: Record<string, unknown> = {
+      check_downloader_tools: {
+        ytdlp_available: false,
+        ffmpeg_available: false,
+        ytdlp_path: null,
+        ffmpeg_path: null,
+      },
+      get_cached_library: tracks,
+      get_app_info: {
+        engine: 'Tauri 2.0 + Rust Engine',
+        rust_version: 'rustc (e2e)',
+        memory_usage: '—',
+        tracks_loaded: tracks.length,
+      },
+      get_default_music_dir: null,
+      get_download_queue: [],
+      tools_status: [],
+    };
+    const w = window as unknown as { __TAURI_INTERNALS__: Record<string, unknown> };
+    w.__TAURI_INTERNALS__ = {
+      metadata: { currentWindow: { label: 'main' } },
+      invoke: async (cmd: string) =>
+        cmd === 'search_library_fts' ? encontrados : (respuestas[cmd] ?? null),
+      transformCallback: () => 1,
+      unregisterCallback: () => {},
+      convertFileSrc: (ruta: string) => ruta,
+    };
+  });
+
+  await page.goto('/');
+  await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });
+  await expect(page.locator('.shoji-slata')).toHaveCount(3);
+
+  await page.getByPlaceholder('Buscar en tu música...').fill('guren');
+  await expect(page.locator('.shoji-slata')).toHaveCount(1);
+  await expect(page.locator('.shoji-slata')).toContainText('Gurenge');
 });

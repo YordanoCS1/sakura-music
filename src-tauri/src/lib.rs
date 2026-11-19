@@ -199,6 +199,13 @@ fn get_cached_library(app: tauri::AppHandle) -> Result<Vec<ScannedTrack>, String
     Ok(tracks)
 }
 
+/// Búsqueda full-text (FTS5) sobre título, artista y álbum.
+#[tauri::command]
+fn search_library_fts(query: String, limit: Option<usize>) -> Result<Vec<ScannedTrack>, String> {
+    let tracks = library_db::search_tracks(&query, limit.unwrap_or(300))?;
+    Ok(tracks)
+}
+
 #[tauri::command]
 fn clear_library_cache() -> Result<bool, String> {
     library_db::clear()?;
@@ -426,6 +433,7 @@ pub fn run() {
             get_app_info,
             get_default_music_dir,
             get_cached_library,
+            search_library_fts,
             clear_library_cache,
             delete_library_track,
             scan_library,
