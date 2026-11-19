@@ -6,6 +6,10 @@ Utilidades que acompañan a Sakura Music. Ninguna es necesaria para usar la app.
 
 [`generador-temas.html`](generador-temas.html) es una página standalone: elegí fondo, superficie, texto, acento y radio, y te devuelve el CSS listo para pegar al final de `src/App.css`. Incluye vista previa en vivo y botón de copiar.
 
+**Para cambiar toda la app**, elegí un **arquetipo de diseño** en el generador y copiá el **JSON del tema**. En Sakura andá a **Ajustes → Importar un tema**, pegá el JSON y tocá *Aplicar tema*. El arquetipo define la estructura de Home, biblioteca, barra superior, Buscar y Cola; el CSS define la paleta. Los temas importados se guardan en `localStorage` (`sakura_temas_personalizados`) y se inyectan en runtime, sin tocar el código fuente.
+
+Arquetipos disponibles: `shoji`, `origami`, `swiss`, `sumiink`, `moonlit`, `ledger`, `sumie` y `byobu`.
+
 También se puede generar desde el CLI:
 
 ```powershell

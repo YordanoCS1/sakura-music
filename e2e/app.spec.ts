@@ -355,3 +355,30 @@ test('la búsqueda filtra usando el índice FTS del backend', async ({ page }) =
   await expect(page.locator('.shoji-slata')).toHaveCount(1);
   await expect(page.locator('.shoji-slata')).toContainText('Gurenge');
 });
+
+test('un tema importado cambia la estructura completa de la app', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });
+
+  const tema = {
+    id: 'mi-tema',
+    nombre: 'Mi Tema',
+    descripcion: 'Generado en el probador',
+    base: 'swiss',
+    css: ".app-shell[data-skin='mi-tema']{--tema-accent:#ff0066 !important;}",
+  };
+
+  await page.getByRole('tab', { name: /Ajustes/ }).click();
+  await page.locator('.set-json').fill(JSON.stringify(tema));
+  await page.getByRole('button', { name: /Aplicar tema/ }).click();
+
+  await expect(page.locator('.app-shell')).toHaveAttribute('data-skin', 'mi-tema');
+  expect(await page.locator('#sakura-temas-personalizados').textContent()).toContain('ff0066');
+  await expect(page.getByRole('tab', { name: /Mi Tema/ })).toHaveCount(0);
+
+  // El arquetipo swiss define la estructura de Home y biblioteca.
+  await page.getByRole('tab', { name: /Inicio/ }).click();
+  await expect(page.locator('.swiss-poster')).toBeVisible();
+  await page.getByRole('tab', { name: /Biblioteca/ }).click();
+  await expect(page.locator('.swiss-cabecera')).toBeVisible();
+});

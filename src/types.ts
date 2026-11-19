@@ -150,7 +150,7 @@ export type ThemeMode =
   | 'aizuri';
 
 export interface ThemeOption {
-  id: ThemeMode;
+  id: string;
   nombre: string;
   descripcion: string;
 }

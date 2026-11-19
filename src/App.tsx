@@ -42,6 +42,14 @@ import { useOnlineSearch } from './hooks/useOnlineSearch';
 import { useFolderExplorer } from './hooks/useFolderExplorer';
 import { usePlayer } from './hooks/usePlayer';
 import { useRemoteControl } from './hooks/useRemoteControl';
+import {
+  baseDelTema,
+  esTemaPersonalizado,
+  guardarTemaPersonalizado,
+  inyectarEstilos,
+  temasPersonalizados,
+  type TemaPersonalizado,
+} from './themes/customThemes';
 
 const TEMAS_CON_VISTAS_PROPIAS: ThemeMode[] = [
   'sumie',
@@ -72,15 +80,53 @@ const TEMAS_DISPONIBLES: ThemeOption[] = [
 export default function App() {
   const [activeTab, setActiveTab] = useState<AppTab>('library');
   const libraryScrollRef = useRef<HTMLDivElement>(null);
-  const [theme, setTheme] = useState<ThemeMode>(() => {
-    const guardado = localStorage.getItem('sakura_theme') as ThemeMode | null;
-    return guardado && TEMAS_DISPONIBLES.some((t) => t.id === guardado) ? guardado : 'space';
+  const [customThemes, setCustomThemes] = useState(() => temasPersonalizados());
+  const todosLosTemas = [
+    ...TEMAS_DISPONIBLES,
+    ...customThemes.map((tema) => ({
+      id: tema.id,
+      nombre: tema.nombre,
+      descripcion: `Basado en ${tema.base}`,
+    })),
+  ];
+  const [theme, setTheme] = useState<string>(() => {
+    const guardado = localStorage.getItem('sakura_theme');
+    const conocidos = [
+      ...TEMAS_DISPONIBLES.map((t) => t.id),
+      ...temasPersonalizados().map((t) => t.id),
+    ];
+    return guardado && conocidos.includes(guardado) ? guardado : 'space';
   });
-  // Los temas propios reemplazan el sidebar y la cabecera genérica por su
-  // propia barra superior, igual que en los bosquejos.
-  const esTemaPropio = TEMAS_CON_VISTAS_PROPIAS.includes(theme);
-  // Nombre visible del tema activo, compartido por la barra de título y el nav.
-  const nombreTema = TEMAS_DISPONIBLES.find((t) => t.id === theme)?.nombre ?? 'M3 Zen';
+
+  // Los temas importados eligen un arquetipo estructural; el CSS se inyecta
+  // en runtime y la UI se renderiza con los componentes de ese arquetipo.
+  const temaBase = baseDelTema(theme, customThemes) as ThemeMode;
+  const esTemaPropio =
+    TEMAS_CON_VISTAS_PROPIAS.includes(temaBase) || esTemaPersonalizado(theme, customThemes);
+  const nombreTema = todosLosTemas.find((t) => t.id === theme)?.nombre ?? 'M3 Zen';
+
+  useEffect(() => inyectarEstilos(customThemes), [customThemes]);
+
+  const importarTema = (json: string) => {
+    try {
+      const dato: unknown = JSON.parse(json);
+      if (!dato || typeof dato !== 'object') throw new Error('JSON inválido');
+      const tema = dato as TemaPersonalizado;
+      if (
+        typeof tema.id !== 'string' ||
+        typeof tema.nombre !== 'string' ||
+        typeof tema.base !== 'string' ||
+        typeof tema.css !== 'string'
+      ) {
+        throw new Error('Faltan campos del tema');
+      }
+      setCustomThemes(guardarTemaPersonalizado(tema));
+      setTheme(tema.id);
+      localStorage.setItem('sakura_theme', tema.id);
+    } catch (error) {
+      console.error('No se pudo importar el tema:', error);
+    }
+  };
   const [playerStyle, setPlayerStyle] = useState<PlayerStyle>(() => {
     return (localStorage.getItem('sakura_player_style') as PlayerStyle) || 'floating';
   });
@@ -141,7 +187,7 @@ export default function App() {
     localStorage.setItem('sakura_theme', theme);
   }, [theme]);
 
-  const handleSetTheme = (siguiente: ThemeMode) => {
+  const handleSetTheme = (siguiente: string) => {
     setTheme(siguiente);
     localStorage.setItem('sakura_theme', siguiente);
   };
@@ -809,7 +855,7 @@ export default function App() {
 
   // Colores de acento del tema activo, usados en glows y badges del player.
   const themeGlows: Record<
-    ThemeMode,
+    string,
     { glow1: string; glow2: string; accent: string; badge: string }
   > = {
     space: {
@@ -886,7 +932,7 @@ export default function App() {
     },
   };
 
-  const currentTheme = themeGlows[theme];
+  const currentTheme = themeGlows[theme] ?? themeGlows[temaBase] ?? themeGlows.space;
   const worldStyle = {
     bgClass: 'bg-[#fbf7f4]',
     ambientGlow1: currentTheme.glow1,
@@ -995,7 +1041,7 @@ export default function App() {
       >
         {esTemaPropio ? (
           <ThemeNav
-            theme={theme}
+            theme={temaBase}
             activeTab={activeTab}
             onNavigate={setActiveTab}
             trackCount={tracks.length}
@@ -1110,7 +1156,7 @@ export default function App() {
           {/* ========================================================= */}
           {/* VISTAS DE PESTAÑAS (TABS)                                 */}
           {/* ========================================================= */}
-          {activeTab === 'library' && !TEMAS_CON_VISTAS_PROPIAS.includes(theme) && (
+          {activeTab === 'library' && !TEMAS_CON_VISTAS_PROPIAS.includes(temaBase) && (
             <LibraryToolbar
               currentFolder={currentFolder}
               isScanning={isScanning}
@@ -1133,9 +1179,9 @@ export default function App() {
             className="main-scroll-region flex-1 overflow-y-auto p-6 custom-scroll"
           >
             {/* TAB: BIBLIOTECA */}
-            {activeTab === 'library' && TEMAS_CON_VISTAS_PROPIAS.includes(theme) && (
+            {activeTab === 'library' && TEMAS_CON_VISTAS_PROPIAS.includes(temaBase) && (
               <ThemeLibrary
-                theme={theme}
+                theme={temaBase}
                 tracks={filteredTracks}
                 favorites={favorites}
                 activeTrack={activeTrack}
@@ -1156,7 +1202,7 @@ export default function App() {
                 onOpenBatch={() => openBatchModal(tracks)}
               />
             )}
-            {activeTab === 'library' && !TEMAS_CON_VISTAS_PROPIAS.includes(theme) && (
+            {activeTab === 'library' && !TEMAS_CON_VISTAS_PROPIAS.includes(temaBase) && (
               <LibraryTab
                 tracks={tracks}
                 scrollElementRef={libraryScrollRef}
@@ -1195,23 +1241,23 @@ export default function App() {
             )}
 
             {/* TAB: INICIO (HOME) */}
-            {activeTab === 'home' && TEMAS_CON_VISTAS_PROPIAS.includes(theme) && (
+            {activeTab === 'home' && TEMAS_CON_VISTAS_PROPIAS.includes(temaBase) && (
               <ThemeHome
-                theme={theme}
+                theme={temaBase}
                 trackCount={tracks.length}
                 tracks={tracks}
                 getCoverSrc={getCoverSrc}
                 onNavigate={(tab) => setActiveTab(tab)}
               />
             )}
-            {activeTab === 'home' && !TEMAS_CON_VISTAS_PROPIAS.includes(theme) && (
+            {activeTab === 'home' && !TEMAS_CON_VISTAS_PROPIAS.includes(temaBase) && (
               <HomeTab trackCount={tracks.length} onNavigate={(tab) => setActiveTab(tab)} />
             )}
 
             {/* TAB: BUSCAR Y DESCARGAR */}
             {activeTab === 'search' && esTemaPropio && (
               <ThemeSearch
-                theme={theme}
+                theme={temaBase}
                 toolsStatus={toolsStatus}
                 onlineQuery={onlineQuery}
                 onlineResults={onlineResults}
@@ -1246,7 +1292,7 @@ export default function App() {
             )}
             {activeTab === 'search' && !esTemaPropio && (
               <SearchTab
-                theme={theme}
+                theme={temaBase}
                 toolsStatus={toolsStatus}
                 onlineQuery={onlineQuery}
                 onlineResults={onlineResults}
@@ -1283,7 +1329,7 @@ export default function App() {
             {/* TAB: COLA DE DESCARGAS */}
             {activeTab === 'queue' && esTemaPropio && (
               <ThemeQueue
-                theme={theme}
+                theme={temaBase}
                 downloads={downloads}
                 restoredNotice={restoredNotice}
                 onClearNotice={() => setRestoredNotice(null)}
@@ -1306,7 +1352,7 @@ export default function App() {
             )}
             {activeTab === 'queue' && !esTemaPropio && (
               <QueueTab
-                theme={theme}
+                theme={temaBase}
                 downloads={downloads}
                 restoredNotice={restoredNotice}
                 onClearNotice={() => setRestoredNotice(null)}
@@ -1331,8 +1377,9 @@ export default function App() {
             {/* TAB: AJUSTES */}
             {activeTab === 'settings' && (
               <SettingsTab
-                theme={theme}
-                temas={TEMAS_DISPONIBLES}
+                theme={temaBase}
+                temas={todosLosTemas}
+                onImportarTema={importarTema}
                 remoteEnabled={controlRemoto.enabled}
                 remoteIp={controlRemoto.ip}
                 onToggleRemote={controlRemoto.alternar}
@@ -1402,7 +1449,7 @@ export default function App() {
           {/* ── MODAL EDITOR DE METADATOS PRO & CATÁLOGO ── */}
           {editingTrack && (
             <MetadataModal
-              theme={theme}
+              theme={temaBase}
               editingTrack={editingTrack}
               editTab={editTab}
               editTitle={editTitle}
@@ -1463,7 +1510,7 @@ export default function App() {
           )}
 
           <DeleteTracksDialog
-            theme={theme}
+            theme={temaBase}
             tracks={pendingDeleteTracks}
             isDeleting={isDeletingTracks}
             onCancel={() => {
@@ -1476,7 +1523,7 @@ export default function App() {
           {/* MODAL: EDITOR DE METADATOS EN LOTE (BATCH EDITOR)         */}
           {/* ========================================================= */}
           <BatchModal
-            theme={theme}
+            theme={temaBase}
             open={isBatchModalOpen}
             selectedCount={batch.batchTargets.length || selectedTrackIds.size}
             isSaving={isSavingBatch}

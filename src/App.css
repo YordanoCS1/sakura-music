@@ -6746,3 +6746,9 @@ input[type="range"]:hover::-webkit-slider-thumb {
 @media (max-width:1100px) {
   .swiss-modulos { grid-template-columns:repeat(3,minmax(0,1fr)) !important; }
 }
+
+
+/* Importador de temas en Ajustes. */
+.set-json { width:100%; min-height:86px; padding:10px 12px; border:1px solid var(--set-linea); border-radius:calc(var(--set-radio) - 6px); background:var(--set-panel); color:var(--set-texto); font:10px/1.5 'JetBrains Mono',monospace; resize:vertical; outline:none; }
+.set-json::placeholder { color:var(--set-suave); }
+.set-actions button:disabled { opacity:.45; cursor:default; }

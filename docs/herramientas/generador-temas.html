@@ -258,6 +258,18 @@
           <div><label for="line">Borde</label><input id="line" type="color" value="#d9d2e8" /></div>
         </div>
 
+        <label for="base">Arquetipo de diseño (cambia toda la app)</label>
+        <select id="base">
+          <option value="shoji">Shoji — biombo de papel y madera</option>
+          <option value="origami">Origami — hojas plegadas</option>
+          <option value="swiss">Swiss — retícula estricta</option>
+          <option value="sumiink">Sumi Ink — rollos sobre negro</option>
+          <option value="moonlit">Moonlit — noche y orbes</option>
+          <option value="ledger">Ledger — libro mayor</option>
+          <option value="sumie">Sumi-e — pergamino flotante</option>
+          <option value="byobu">Byōbu — pantalla dividida</option>
+        </select>
+
         <label for="radio">Radio (px)</label>
         <input id="radio" type="number" value="14" min="0" max="32" />
 
@@ -312,6 +324,11 @@
         </div>
         <h2 style="margin-top: 18px">CSS generado</h2>
         <textarea id="css" spellcheck="false"></textarea>
+        <div class="botones">
+          <button class="primary" id="copiar-json">Copiar JSON del tema</button>
+          <span class="nota">Pegalo en Ajustes → Importar un tema</span>
+        </div>
+        <textarea id="json" spellcheck="false" style="height: 150px"></textarea>
       </section>
     </main>
     <script>
@@ -430,22 +447,46 @@ ${accentVars}
         p.querySelector('.pv-titulo').textContent = $('id').value || 'Mi tema';
       }
 
-      ['bg', 'surface', 'text', 'muted', 'accent', 'line', 'radio', 'font', 'id'].forEach((id) => {
-        $(id).addEventListener('input', () => {
-          actualizarPreview();
-          $('css').value = generarCSS();
-        });
-      });
+      function generarJSON() {
+        return JSON.stringify(
+          {
+            id: idSeguro($('id').value),
+            nombre: $('id').value.trim() || 'Mi tema',
+            descripcion: `Arquetipo ${$('base').value} · generado con el Generador de temas`,
+            base: $('base').value,
+            css: generarCSS(),
+          },
+          null,
+          2,
+        );
+      }
+
+      ['bg', 'surface', 'text', 'muted', 'accent', 'line', 'radio', 'font', 'id', 'base'].forEach(
+        (id) => {
+          $(id).addEventListener('input', () => {
+            actualizarPreview();
+            $('css').value = generarCSS();
+            $('json').value = generarJSON();
+          });
+        },
+      );
       $('generar').addEventListener('click', () => {
         $('css').value = generarCSS();
+        $('json').value = generarJSON();
       });
       $('copiar').addEventListener('click', async () => {
         await navigator.clipboard.writeText($('css').value);
         $('copiar').textContent = '✓ Copiado';
         setTimeout(() => ($('copiar').textContent = 'Copiar'), 1400);
       });
+      $('copiar-json').addEventListener('click', async () => {
+        await navigator.clipboard.writeText($('json').value);
+        $('copiar-json').textContent = '✓ Copiado';
+        setTimeout(() => ($('copiar-json').textContent = 'Copiar JSON del tema'), 1400);
+      });
       actualizarPreview();
       $('css').value = generarCSS();
+      $('json').value = generarJSON();
     </script>
   </body>
 </html>

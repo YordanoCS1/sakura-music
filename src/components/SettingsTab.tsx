@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   Palette,
   Sparkles,
@@ -9,10 +10,10 @@ import {
   Check,
   Music2,
 } from 'lucide-react';
-import type { AppInfo, PlayerStyle, ThemeMode, ThemeOption } from '../types';
+import type { AppInfo, PlayerStyle, ThemeOption } from '../types';
 import ToolsPanel from './ToolsPanel';
 
-const SWATCHES: Record<ThemeMode, string> = {
+const SWATCHES: Partial<Record<string, string>> = {
   space: 'bg-rose-400',
   sumie: 'bg-[#b23a2b]',
   byobu: 'bg-[#8c3b2e]',
@@ -27,7 +28,7 @@ const SWATCHES: Record<ThemeMode, string> = {
   aizuri: 'bg-sky-400',
 };
 
-const PREVIEWS: Record<ThemeMode, [string, string, string]> = {
+const PREVIEWS: Partial<Record<string, [string, string, string]>> = {
   space: ['#fff7f4', '#f472b6', '#be185d'],
   sumie: ['#0c0c0c', '#e8e5dd', '#b23a2b'],
   byobu: ['#1a1210', '#8c3b2e', '#e8dcc8'],
@@ -42,7 +43,7 @@ const PREVIEWS: Record<ThemeMode, [string, string, string]> = {
   aizuri: ['#0b2340', '#38bdf8', '#1e3a8a'],
 };
 
-const GLIFOS: Partial<Record<ThemeMode, string>> = {
+const GLIFOS: Partial<Record<string, string>> = {
   space: '桜',
   sumie: '墨',
   byobu: '屏',
@@ -58,12 +59,13 @@ const GLIFOS: Partial<Record<ThemeMode, string>> = {
 };
 
 interface SettingsTabProps {
-  theme: ThemeMode;
+  theme: string;
   temas: ThemeOption[];
   remoteEnabled: boolean;
   remoteIp: string;
   onToggleRemote: () => void;
-  onSetTheme: (t: ThemeMode) => void;
+  onImportarTema: (json: string) => void;
+  onSetTheme: (t: string) => void;
   accentGradient: string;
   accentBadge: string;
   coverGlowActive: boolean;
@@ -93,6 +95,7 @@ export default function SettingsTab({
   remoteEnabled,
   remoteIp,
   onToggleRemote,
+  onImportarTema,
   onSetTheme,
   accentGradient,
   accentBadge,
@@ -116,6 +119,7 @@ export default function SettingsTab({
   onClearCache,
 }: SettingsTabProps) {
   const nombreTema = temas.find((t) => t.id === theme)?.nombre ?? 'Sakura';
+  const [jsonTema, setJsonTema] = useState('');
   const estilos: { id: PlayerStyle; label: string; icono: typeof Sparkles }[] = [
     { id: 'floating', label: 'Cápsula flotante', icono: Sparkles },
     { id: 'fixed', label: 'Barra fija', icono: Layers },
@@ -157,7 +161,7 @@ export default function SettingsTab({
           <small>TEMA ACTIVO</small>
           <strong>{nombreTema}</strong>
           <span className="settings-hero-barras">
-            {PREVIEWS[theme].map((color, i) => (
+            {(PREVIEWS[theme] ?? PREVIEWS.space!).map((color, i) => (
               <i key={i} style={{ background: color }} />
             ))}
           </span>
@@ -178,7 +182,7 @@ export default function SettingsTab({
           <div className="set-themes">
             {temas.map((opcion) => {
               const activo = opcion.id === theme;
-              const [fondo, acento, suave] = PREVIEWS[opcion.id];
+              const [fondo, acento, suave] = PREVIEWS[opcion.id] ?? PREVIEWS.space!;
               return (
                 <button
                   key={opcion.id}
@@ -201,7 +205,9 @@ export default function SettingsTab({
                     <b>{GLIFOS[opcion.id] ?? '桜'}</b>
                   </span>
                   <span className="set-theme-info">
-                    <span className={`set-theme-swatch ${SWATCHES[opcion.id]}`} />
+                    <span
+                      className={`set-theme-swatch ${SWATCHES[opcion.id] ?? 'bg-neutral-400'}`}
+                    />
                     <span className="set-theme-copy">
                       <strong>{opcion.nombre}</strong>
                       <small>{opcion.descripcion}</small>
@@ -338,6 +344,39 @@ export default function SettingsTab({
               </button>
             )}
           </div>
+        </section>
+
+        <section className="set-card set-card-tema">
+          <div className="set-card-head">
+            <span className="set-card-icon">
+              <Palette className="w-4 h-4" />
+            </span>
+            <div>
+              <h3>Importar un tema</h3>
+              <p>Cambiá la estructura completa con un tema del generador</p>
+            </div>
+          </div>
+          <textarea
+            className="set-json"
+            value={jsonTema}
+            onChange={(e) => setJsonTema(e.target.value)}
+            placeholder="Pegá acá el JSON del generador de temas"
+            spellCheck={false}
+          />
+          <div className="set-actions">
+            <button
+              type="button"
+              onClick={() => onImportarTema(jsonTema)}
+              disabled={!jsonTema.trim()}
+              className={accentBadge}
+            >
+              Aplicar tema
+            </button>
+          </div>
+          <p className="set-note">
+            Generalo en <code>docs/herramientas/generador-temas.html</code> y elegí el arquetipo que
+            quieras para Home y biblioteca.
+          </p>
         </section>
 
         <section className="set-card">
