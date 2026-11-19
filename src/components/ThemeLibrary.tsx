@@ -500,36 +500,33 @@ export default function ThemeLibrary({
         {vistaTracks.length === 0 ? (
           vacio
         ) : (
-          <div className="swiss-modulos">
+          <div className="swiss-grid">
+            <div className="swiss-grid-cab">
+              <span>TRACKLIST</span>
+              <span>{vistaTracks.length} PIEZAS</span>
+            </div>
             {vistaTracks.map((track, i) => (
               <article
                 key={track.id}
-                className={`swiss-modulo ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+                className={`swiss-track ${activeTrack?.id === track.id ? 'is-active' : ''}`}
               >
-                <div className="swiss-modulo-visual">
-                  <span className="swiss-modulo-portada">{portadaDe(track)}</span>
-                  <span className="swiss-modulo-num">{String(i + 1).padStart(2, '0')}</span>
-                  <button
-                    type="button"
-                    className="swiss-modulo-play"
-                    onClick={() => onPlayTrack(track)}
-                    aria-label={`Reproducir ${track.title}`}
-                  >
-                    ▶
-                  </button>
+                <div className="swiss-track-cover">{portadaDe(track)}</div>
+                <div className="swiss-track-main">
+                  <span className="swiss-track-index">{String(i + 1).padStart(2, '0')}</span>
+                  <div className="swiss-track-copy">
+                    <button
+                      type="button"
+                      className="swiss-track-title"
+                      onClick={() => onPlayTrack(track)}
+                    >
+                      {track.title}
+                    </button>
+                    <span className="swiss-track-meta">
+                      {track.artist} <i>/</i> {track.album}
+                    </span>
+                  </div>
                 </div>
-                <div className="swiss-modulo-info">
-                  <button
-                    type="button"
-                    className="swiss-modulo-tit"
-                    onClick={() => onPlayTrack(track)}
-                  >
-                    {track.title}
-                  </button>
-                  <span className="swiss-modulo-art">{track.artist}</span>
-                  <span className="swiss-modulo-alb">{track.album}</span>
-                </div>
-                <div className="swiss-modulo-pie">
+                <div className="swiss-track-time">
                   <span>{track.duration_str}</span>
                   {acciones(track)}
                 </div>
