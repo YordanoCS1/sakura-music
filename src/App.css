@@ -6623,3 +6623,27 @@ input[type="range"]:hover::-webkit-slider-thumb {
   background: var(--tt-panel) !important;
   border: 1px solid var(--tt-linea) !important;
 }
+
+
+/* ========================================================= */
+/* SWISS · módulos con portada protagonista a color            */
+/* ========================================================= */
+.swiss-modulos { grid-template-columns:repeat(4,minmax(0,1fr)) !important; border-top:2px solid #111 !important; }
+.swiss-modulo { display:flex !important; flex-direction:column; gap:0 !important; min-height:0 !important; padding:0 !important; background:#fff; }
+.swiss-modulo-visual { position:relative; width:100%; aspect-ratio:4/3; overflow:hidden; background:#f2f2f0; border-bottom:1px solid #111; }
+.swiss-modulo-portada { display:block !important; width:100% !important; height:100% !important; border:0 !important; background:#f2f2f0 !important; color:#111 !important; font-size:0 !important; }
+.swiss-modulo-portada img { display:block; width:100%; height:100%; object-fit:cover; filter:none !important; }
+.swiss-modulo-portada>span { display:grid !important; place-items:center; width:100%; height:100%; font-family:'Cormorant Garamond',serif !important; font-size:86px !important; color:#111 !important; background:#f2f2f0 !important; }
+.swiss-modulo-num { position:absolute; left:0; top:0; z-index:2; margin:0 !important; padding:6px 10px !important; background:#111; color:#fff; font:700 13px 'Plus Jakarta Sans',sans-serif !important; letter-spacing:.1em; border:0 !important; }
+.swiss-modulo-play { position:absolute; right:12px; bottom:12px; z-index:2; width:40px; height:40px; border:0; border-radius:50%; background:#fff; color:#111; display:grid; place-items:center; cursor:pointer; font-size:12px; opacity:0; transform:translateY(6px); transition:opacity .2s ease, transform .2s ease; box-shadow:0 4px 14px rgba(0,0,0,.2); }
+.swiss-modulo:hover .swiss-modulo-play,
+.swiss-modulo.is-active .swiss-modulo-play { opacity:1; transform:none; }
+.swiss-modulo-info { display:flex; flex-direction:column; gap:4px; padding:14px 14px 10px; }
+.swiss-modulo-tit { margin:0 !important; padding:0 !important; border:0 !important; text-align:left; cursor:pointer; background:transparent; font:700 17px/1.1 'Plus Jakarta Sans',sans-serif !important; text-transform:uppercase; letter-spacing:-.02em; color:inherit !important; }
+.swiss-modulo-art { font:10px 'Plus Jakarta Sans',sans-serif !important; text-transform:uppercase; letter-spacing:.1em; color:inherit !important; }
+.swiss-modulo-alb { font:10px 'Plus Jakarta Sans',sans-serif !important; color:#777 !important; }
+.swiss-modulo-pie { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:auto; padding:10px 14px; border-top:1px solid #ddd; font:10px 'Plus Jakarta Sans',sans-serif; color:#777; }
+.swiss-modulo.is-active .swiss-modulo-info { background:#111; color:#fff; }
+.swiss-modulo.is-active .swiss-modulo-alb { color:#aaa !important; }
+.swiss-modulo.is-active .swiss-modulo-pie { background:#111; border-color:#444; color:#fff; }
+.swiss-modulo.is-active .swiss-modulo-portada { background:#111 !important; }

@@ -442,17 +442,29 @@ export default function ThemeLibrary({
                 key={track.id}
                 className={`swiss-modulo ${activeTrack?.id === track.id ? 'is-active' : ''}`}
               >
-                <span className="swiss-modulo-portada">{portadaDe(track)}</span>
-                <span className="swiss-modulo-num">{String(i + 1).padStart(2, '0')}</span>
-                <button
-                  type="button"
-                  className="swiss-modulo-tit"
-                  onClick={() => onPlayTrack(track)}
-                >
-                  {track.title}
-                </button>
-                <span className="swiss-modulo-art">{track.artist}</span>
-                <span className="swiss-modulo-alb">{track.album}</span>
+                <div className="swiss-modulo-visual">
+                  <span className="swiss-modulo-portada">{portadaDe(track)}</span>
+                  <span className="swiss-modulo-num">{String(i + 1).padStart(2, '0')}</span>
+                  <button
+                    type="button"
+                    className="swiss-modulo-play"
+                    onClick={() => onPlayTrack(track)}
+                    aria-label={`Reproducir ${track.title}`}
+                  >
+                    ▶
+                  </button>
+                </div>
+                <div className="swiss-modulo-info">
+                  <button
+                    type="button"
+                    className="swiss-modulo-tit"
+                    onClick={() => onPlayTrack(track)}
+                  >
+                    {track.title}
+                  </button>
+                  <span className="swiss-modulo-art">{track.artist}</span>
+                  <span className="swiss-modulo-alb">{track.album}</span>
+                </div>
                 <div className="swiss-modulo-pie">
                   <span>{track.duration_str}</span>
                   {acciones(track)}
