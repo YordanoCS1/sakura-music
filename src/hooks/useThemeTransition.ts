@@ -1,39 +1,39 @@
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import type { AppTab, ThemeMode } from '../types';
 
 type SetTab = (tab: AppTab) => void;
 
 /**
- * Devuelve un setter de pestañas que dispara una transición visual acorde al
- * tema activo. Usa la View Transitions API cuando está disponible y cae a una
- * animación CSS simple en navegadores que no la soportan.
+ * Cambia de pestaña aplicando una animación ligera al panel. Se anima el
+ * elemento real (no un snapshot de toda la página como View Transitions),
+ * usando sólo transform/opacity para que el navegador lo haga en el GPU.
  */
 export function useThemeTransition(tema: ThemeMode, setTab: SetTab): SetTab {
+  const animando = useRef(false);
+
   return useCallback(
     (tab: AppTab) => {
-      const documento = document;
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const panel = document.getElementById('theme-panel');
 
-      if (reduceMotion) {
+      document.documentElement.dataset['themeTransition'] = tema;
+
+      if (reduceMotion || !panel || animando.current) {
         setTab(tab);
         return;
       }
 
-      documento.documentElement.dataset['themeTransition'] = tema;
-
-      if (typeof documento.startViewTransition === 'function') {
-        documento.startViewTransition(() => setTab(tab));
-        return;
-      }
-
-      const panel = document.getElementById('theme-panel');
-      if (panel) {
-        panel.classList.remove('panel-enter');
-        // Forzar reflow para reiniciar la animación de entrada.
-        void panel.offsetWidth;
-        panel.classList.add('panel-enter');
-      }
+      animando.current = true;
+      // Reiniciamos la animación aunque la pestaña no cambie.
+      panel.classList.remove('panel-enter');
+      void panel.offsetWidth;
+      panel.classList.add('panel-enter');
       setTab(tab);
+
+      window.setTimeout(() => {
+        panel.classList.remove('panel-enter');
+        animando.current = false;
+      }, 240);
     },
     [tema, setTab],
   );

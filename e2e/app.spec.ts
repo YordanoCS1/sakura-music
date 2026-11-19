@@ -401,6 +401,10 @@ test('el generador integrado aplica un tema con su arquetipo', async ({ page }) 
   expect(await page.evaluate(() => document.documentElement.dataset['themeTransition'])).toBe(
     'origami',
   );
+  const duracion = await page
+    .locator('#theme-panel')
+    .evaluate((el) => getComputedStyle(el).animationDuration);
+  expect(duracion).toBe('0.21s');
 });
 
 test('se pueden borrar temas personalizados', async ({ page }) => {

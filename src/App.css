@@ -6755,76 +6755,47 @@ input[type="range"]:hover::-webkit-slider-thumb {
 
 
 /* ========================================================= */
-/* TRANSICIONES DE VISTA POR TEMA                             */
+/* TRANSICIONES LIGERAS POR TEMA (sólo GPU: transform/opacity) */
 /* ========================================================= */
-#theme-panel { view-transition-name: sakura-panel; }
+#theme-panel.panel-enter { will-change: transform, opacity; }
 
-::view-transition-old(sakura-panel),
-::view-transition-new(sakura-panel) {
-  animation-duration: 420ms;
-  animation-timing-function: cubic-bezier(.22, 1, .36, 1);
-  mix-blend-mode: normal;
-}
+/* SHOJI · deslizamiento lateral corto. */
+html[data-theme-transition='shoji'] #theme-panel.panel-enter { animation: t-shoji 200ms cubic-bezier(.2,.8,.3,1) both; }
+@keyframes t-shoji { from { opacity:0; transform:translateX(18px); } }
 
-/* SHOJI · los paneles se deslizan como un biombo. */
-html[data-theme-transition='shoji']::view-transition-old(sakura-panel) { animation: shoji-salir 380ms ease-in both; }
-html[data-theme-transition='shoji']::view-transition-new(sakura-panel) { animation: shoji-entrar 420ms cubic-bezier(.22,1,.36,1) both; }
-@keyframes shoji-salir { to { transform: translateX(-8%); opacity: 0; } }
-@keyframes shoji-entrar { from { transform: translateX(8%); opacity: 0; } }
+/* ORIGAMI · plegado diagonal simple, sin perspectiva 3D. */
+html[data-theme-transition='origami'] #theme-panel.panel-enter { animation: t-origami 210ms cubic-bezier(.2,.8,.3,1) both; }
+@keyframes t-origami { from { opacity:0; transform:translateY(-10px) skewY(1.2deg); } }
 
-/* ORIGAMI · la vista se pliega y se despliega. */
-html[data-theme-transition='origami']::view-transition-old(sakura-panel) { animation: origami-salir 360ms ease-in both; }
-html[data-theme-transition='origami']::view-transition-new(sakura-panel) { animation: origami-entrar 440ms cubic-bezier(.22,1,.36,1) both; }
-@keyframes origami-salir { to { transform: perspective(700px) rotateX(28deg) scale(.94); opacity: 0; transform-origin: top; } }
-@keyframes origami-entrar { from { transform: perspective(700px) rotateX(-28deg) scale(.94); opacity: 0; transform-origin: bottom; } }
+/* SWISS · barrido seco en dos pasos. */
+html[data-theme-transition='swiss'] #theme-panel.panel-enter { animation: t-swiss 170ms steps(3,end) both; }
+@keyframes t-swiss { from { opacity:0; transform:translateX(24px); } }
 
-/* SWISS · barrido horizontal duro, sin curvas. */
-html[data-theme-transition='swiss']::view-transition-old(sakura-panel) { animation: swiss-salir 240ms steps(4, end) both; }
-html[data-theme-transition='swiss']::view-transition-new(sakura-panel) { animation: swiss-entrar 280ms steps(5, end) both; }
-@keyframes swiss-salir { to { transform: translateX(-100%); } }
-@keyframes swiss-entrar { from { transform: translateX(100%); } }
+/* SUMI INK · fundido limpio, sin blur. */
+html[data-theme-transition='sumiink'] #theme-panel.panel-enter { animation: t-sumi 200ms ease-out both; }
+@keyframes t-sumi { from { opacity:0; transform:scale(.995); } }
 
-/* SUMI INK · fundido a tinta desde el centro. */
-html[data-theme-transition='sumiink']::view-transition-old(sakura-panel) { animation: tinta-salir 460ms ease-in both; }
-html[data-theme-transition='sumiink']::view-transition-new(sakura-panel) { animation: tinta-entrar 520ms ease-out both; }
-@keyframes tinta-salir { to { filter: blur(8px) contrast(1.8); opacity: 0; } }
-@keyframes tinta-entrar { from { filter: blur(10px) brightness(.2); opacity: 0; } }
+/* MOONLIT · subida suave. */
+html[data-theme-transition='moonlit'] #theme-panel.panel-enter { animation: t-moonlit 220ms cubic-bezier(.2,.8,.3,1) both; }
+@keyframes t-moonlit { from { opacity:0; transform:translateY(12px); } }
 
-/* MOONLIT · aparece como luna que sube. */
-html[data-theme-transition='moonlit']::view-transition-old(sakura-panel) { animation: luna-salir 400ms ease-in both; }
-html[data-theme-transition='moonlit']::view-transition-new(sakura-panel) { animation: luna-entrar 520ms cubic-bezier(.22,1,.36,1) both; }
-@keyframes luna-salir { to { transform: translateY(6%) scale(.98); opacity: 0; } }
-@keyframes luna-entrar { from { transform: translateY(-8%) scale(.98); opacity: 0; filter: brightness(1.6); } }
+/* LEDGER · giro 2D corto, sin perspective. */
+html[data-theme-transition='ledger'] #theme-panel.panel-enter { animation: t-ledger 200ms ease-out both; transform-origin:left; }
+@keyframes t-ledger { from { opacity:0; transform:scaleX(.97); } }
 
-/* LEDGER · se pasa la página como un libro. */
-html[data-theme-transition='ledger']::view-transition-old(sakura-panel) { animation: pagina-salir 420ms ease-in-out both; transform-origin: left; }
-html[data-theme-transition='ledger']::view-transition-new(sakura-panel) { animation: pagina-entrar 460ms ease-in-out both; transform-origin: right; }
-@keyframes pagina-salir { to { transform: perspective(900px) rotateY(-32deg); opacity: 0; } }
-@keyframes pagina-entrar { from { transform: perspective(900px) rotateY(32deg); opacity: 0; } }
+/* SUMI-E y BYŌBU · desplazamiento vertical / horizontal. */
+html[data-theme-transition='sumie'] #theme-panel.panel-enter { animation: t-sumie 200ms ease-out both; }
+@keyframes t-sumie { from { opacity:0; transform:translateY(8px); } }
+html[data-theme-transition='byobu'] #theme-panel.panel-enter { animation: t-byobu 200ms ease-out both; }
+@keyframes t-byobu { from { opacity:0; transform:scaleX(.98); } }
 
-/* SUMI-E y BYŌBU · desplazamiento suave de pergamino/pantalla. */
-html[data-theme-transition='sumie']::view-transition-old(sakura-panel) { animation: sumie-salir 420ms ease both; }
-html[data-theme-transition='sumie']::view-transition-new(sakura-panel) { animation: sumie-entrar 480ms ease both; }
-@keyframes sumie-salir { to { transform: translateY(-5%) scale(.99); opacity: 0; filter: sepia(1); } }
-@keyframes sumie-entrar { from { transform: translateY(5%) scale(.99); opacity: 0; } }
-html[data-theme-transition='byobu']::view-transition-old(sakura-panel) { animation: byobu-salir 400ms ease both; }
-html[data-theme-transition='byobu']::view-transition-new(sakura-panel) { animation: byobu-entrar 440ms ease both; }
-@keyframes byobu-salir { to { transform: scaleX(.86); opacity: 0; } }
-@keyframes byobu-entrar { from { transform: scaleX(.86); opacity: 0; } }
-
-/* Fallback sin View Transitions: animación de entrada por tema. */
-#theme-panel.panel-enter { animation: panel-fallback 380ms cubic-bezier(.22,1,.36,1) both; }
-html[data-theme-transition='swiss'] #theme-panel.panel-enter { animation: swiss-entrar 280ms steps(5,end) both; }
-html[data-theme-transition='origami'] #theme-panel.panel-enter { animation: origami-entrar 440ms both; }
-html[data-theme-transition='ledger'] #theme-panel.panel-enter { animation: pagina-entrar 460ms both; }
-@keyframes panel-fallback { from { opacity: 0; transform: translateY(8px); } }
+/* Genérico para el resto de temas. */
+#theme-panel.panel-enter { animation: t-generica 180ms ease-out both; }
+@keyframes t-generica { from { opacity:0; transform:translateY(6px); } }
 
 @media (prefers-reduced-motion: reduce) {
-  #theme-panel.panel-enter,
-  ::view-transition-old(sakura-panel),
-  ::view-transition-new(sakura-panel) { animation: none !important; }
+  #theme-panel.panel-enter { animation: none !important; }
 }
-
 
 /* ========================================================= */
 /* GENERADOR DE TEMAS INTEGRADO                               */
