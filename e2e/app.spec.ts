@@ -413,6 +413,16 @@ test('el generador integrado aplica un tema con su arquetipo', async ({ page }) 
   expect(duracion).toBe('0.21s');
 });
 
+test('el splash de arranque adopta el tema guardado', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('sakura_theme', 'shonen'));
+  await page.goto('/');
+  await expect(page.locator('#sakura-splash')).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.getAttribute('data-splash'))).toBe(
+    'shonen',
+  );
+  await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });
+});
+
 test('la transición de Swiss es rápida y continua', async ({ page }) => {
   await page.addInitScript(() => {
     localStorage.setItem('sakura_theme', 'swiss');
