@@ -9,6 +9,14 @@ edition = "2024"
 name = "sakura_desktop_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
+[[bin]]
+name = "sakura-desktop"
+path = "src/main.rs"
+
+[[bin]]
+name = "sakura-cli"
+path = "src/bin/sakura-cli.rs"
+
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
 

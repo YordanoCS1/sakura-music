@@ -1,0 +1,117 @@
+import { useEffect, useState } from 'react';
+import { invoke } from '@tauri-apps/api/core';
+import { listen } from '@tauri-apps/api/event';
+import type { ScannedTrack } from '../types';
+
+type RemoteCommand =
+  | { action: 'play_pause' }
+  | { action: 'pause' }
+  | { action: 'next' }
+  | { action: 'previous' }
+  | { action: 'play_track'; track: ScannedTrack }
+  | { action: 'set_volume'; value: number }
+  | { action: 'seek'; seconds: number };
+
+interface UseRemoteControlDeps {
+  audioRef: React.RefObject<HTMLAudioElement | null>;
+  activeTrack: ScannedTrack | null;
+  isPlaying: boolean;
+  duration: number;
+  togglePlay: () => void;
+  handlePlayTrack: (track: ScannedTrack) => void;
+  handleNextTrack: (automatico?: boolean) => void;
+  handlePreviousTrack: () => void;
+  handleVolumeChange: (valor: number) => void;
+}
+
+/** Puente entre el servidor HTTP de Rust y el reproductor de React. */
+export function useRemoteControl({
+  audioRef,
+  activeTrack,
+  isPlaying,
+  duration,
+  togglePlay,
+  handlePlayTrack,
+  handleNextTrack,
+  handlePreviousTrack,
+  handleVolumeChange,
+}: UseRemoteControlDeps) {
+  const [enabled, setEnabled] = useState(false);
+  const [ip, setIp] = useState('127.0.0.1');
+
+  useEffect(() => {
+    invoke<boolean>('remote_is_enabled')
+      .then(setEnabled)
+      .catch(() => undefined);
+    invoke<string>('remote_local_ip')
+      .then(setIp)
+      .catch(() => undefined);
+  }, []);
+
+  useEffect(() => {
+    let cancelar: (() => void) | undefined;
+    listen<RemoteCommand>('remote-command', ({ payload }) => {
+      switch (payload.action) {
+        case 'play_pause':
+          togglePlay();
+          break;
+        case 'pause':
+          if (isPlaying) togglePlay();
+          break;
+        case 'next':
+          handleNextTrack();
+          break;
+        case 'previous':
+          handlePreviousTrack();
+          break;
+        case 'play_track':
+          handlePlayTrack(payload.track);
+          break;
+        case 'set_volume':
+          handleVolumeChange(Math.min(1, Math.max(0, payload.value)));
+          break;
+        case 'seek':
+          if (audioRef.current) audioRef.current.currentTime = payload.seconds;
+          break;
+      }
+    })
+      .then((fn) => {
+        cancelar = fn;
+      })
+      .catch(() => undefined);
+    return () => cancelar?.();
+  }, [
+    audioRef,
+    isPlaying,
+    togglePlay,
+    handlePlayTrack,
+    handleNextTrack,
+    handlePreviousTrack,
+    handleVolumeChange,
+  ]);
+
+  // Publica el estado del reproductor para que el celular vea la canción actual.
+  useEffect(() => {
+    const temporizador = setInterval(() => {
+      invoke('remote_update_state', {
+        title: activeTrack?.title ?? '',
+        artist: activeTrack?.artist ?? '',
+        playing: isPlaying,
+        position: audioRef.current?.currentTime ?? 0,
+        duration: duration || 0,
+      }).catch(() => undefined);
+    }, 1000);
+    return () => clearInterval(temporizador);
+  }, [activeTrack, isPlaying, duration, audioRef]);
+
+  const alternar = async () => {
+    try {
+      const nuevo = await invoke<boolean>('remote_set_enabled', { activo: !enabled });
+      setEnabled(nuevo);
+    } catch {
+      // El backend no está disponible (por ejemplo, en tests).
+    }
+  };
+
+  return { enabled, ip, alternar };
+}

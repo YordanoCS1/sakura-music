@@ -4,15 +4,16 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use tauri::{Manager, State};
 
-mod catalog;
-mod downloader;
-mod library_db;
-mod library_watcher;
-mod logging;
-mod paths;
-mod queue;
-mod scanner;
-mod tools;
+pub mod catalog;
+pub mod downloader;
+pub mod library_db;
+pub mod library_watcher;
+pub mod logging;
+pub mod paths;
+pub mod queue;
+pub mod remote;
+pub mod scanner;
+pub mod tools;
 use downloader::{DownloadManager, DownloaderStatus, OnlineSearchResult};
 use queue::PersistedDownload;
 use scanner::{BatchUpdateResult, ScannedTrack};
@@ -204,6 +205,38 @@ fn get_cached_library(app: tauri::AppHandle) -> Result<Vec<ScannedTrack>, String
 fn search_library_fts(query: String, limit: Option<usize>) -> Result<Vec<ScannedTrack>, String> {
     let tracks = library_db::search_tracks(&query, limit.unwrap_or(300))?;
     Ok(tracks)
+}
+
+/// Comandos del control remoto local.
+#[tauri::command]
+fn remote_set_enabled(activo: bool) -> bool {
+    remote::remote()
+        .activo
+        .store(activo, std::sync::atomic::Ordering::Relaxed);
+    activo
+}
+
+#[tauri::command]
+fn remote_is_enabled() -> bool {
+    remote::remote()
+        .activo
+        .load(std::sync::atomic::Ordering::Relaxed)
+}
+
+#[tauri::command]
+fn remote_local_ip() -> String {
+    remote::ip_local()
+}
+
+#[tauri::command]
+fn remote_update_state(title: String, artist: String, playing: bool, position: f64, duration: f64) {
+    *remote::remote().estado.lock() = remote::RemoteState {
+        title,
+        artist,
+        playing,
+        position,
+        duration,
+    };
 }
 
 #[tauri::command]
@@ -409,6 +442,9 @@ pub fn run() {
             let _ = std::fs::create_dir_all(&data_dir);
             paths::init(data_dir.clone());
             library_db::initialize().map_err(std::io::Error::other)?;
+            if let Err(error) = remote::iniciar(handle.clone()) {
+                crate::logging::warn("remote", &format!("Control remoto no disponible: {error}"));
+            }
             cleanup_temp_covers();
             let covers_dir = paths::covers_dir();
             app.asset_protocol_scope()
@@ -434,6 +470,10 @@ pub fn run() {
             get_default_music_dir,
             get_cached_library,
             search_library_fts,
+            remote_set_enabled,
+            remote_is_enabled,
+            remote_local_ip,
+            remote_update_state,
             clear_library_cache,
             delete_library_track,
             scan_library,

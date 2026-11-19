@@ -41,6 +41,7 @@ import { useDownloadQueue } from './hooks/useDownloadQueue';
 import { useOnlineSearch } from './hooks/useOnlineSearch';
 import { useFolderExplorer } from './hooks/useFolderExplorer';
 import { usePlayer } from './hooks/usePlayer';
+import { useRemoteControl } from './hooks/useRemoteControl';
 
 const TEMAS_CON_VISTAS_PROPIAS: ThemeMode[] = [
   'sumie',
@@ -227,6 +228,18 @@ export default function App() {
     activeTrack,
     setActiveTrack,
     playbackQueueRef,
+  });
+
+  const controlRemoto = useRemoteControl({
+    audioRef,
+    activeTrack,
+    isPlaying,
+    duration,
+    togglePlay,
+    handlePlayTrack,
+    handleNextTrack,
+    handlePreviousTrack,
+    handleVolumeChange,
   });
 
   // Estado del motor de descargas
@@ -1320,6 +1333,9 @@ export default function App() {
               <SettingsTab
                 theme={theme}
                 temas={TEMAS_DISPONIBLES}
+                remoteEnabled={controlRemoto.enabled}
+                remoteIp={controlRemoto.ip}
+                onToggleRemote={controlRemoto.alternar}
                 onSetTheme={handleSetTheme}
                 accentGradient={worldStyle.accentGradient}
                 accentBadge={worldStyle.accentBadge}

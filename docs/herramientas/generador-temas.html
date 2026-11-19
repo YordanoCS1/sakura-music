@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Generador de temas · Sakura Music</title>
+    <style>
+      :root {
+        --ui-bg: #14121b;
+        --ui-panel: #1d1a28;
+        --ui-line: #322d43;
+        --ui-text: #eee9f7;
+        --ui-muted: #a49bbd;
+        --ui-accent: #b98cff;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--ui-bg);
+        color: var(--ui-text);
+        font:
+          13px/1.5 system-ui,
+          sans-serif;
+      }
+      header {
+        padding: 18px 24px;
+        border-bottom: 1px solid var(--ui-line);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      header b {
+        font-size: 16px;
+        letter-spacing: 0.04em;
+      }
+      header span {
+        color: var(--ui-muted);
+        font-size: 11px;
+      }
+      main {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 20px;
+        padding: 20px;
+        max-width: 1500px;
+        margin: 0 auto;
+      }
+      .panel {
+        background: var(--ui-panel);
+        border: 1px solid var(--ui-line);
+        border-radius: 12px;
+        padding: 16px;
+      }
+      .panel h2 {
+        margin: 0 0 14px;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--ui-accent);
+      }
+      label {
+        display: block;
+        margin: 10px 0 4px;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--ui-muted);
+      }
+      input[type='text'],
+      select,
+      input[type='number'] {
+        width: 100%;
+        padding: 8px 10px;
+        background: var(--ui-bg);
+        border: 1px solid var(--ui-line);
+        border-radius: 8px;
+        color: var(--ui-text);
+        font: 12px system-ui;
+      }
+      input[type='color'] {
+        width: 100%;
+        height: 34px;
+        padding: 2px;
+        background: var(--ui-bg);
+        border: 1px solid var(--ui-line);
+        border-radius: 8px;
+      }
+      .grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .botones {
+        display: flex;
+        gap: 8px;
+        margin-top: 16px;
+        flex-wrap: wrap;
+      }
+      button {
+        padding: 9px 12px;
+        border: 1px solid var(--ui-line);
+        border-radius: 8px;
+        background: var(--ui-bg);
+        color: var(--ui-text);
+        cursor: pointer;
+        font-size: 11px;
+      }
+      button.primary {
+        background: var(--ui-accent);
+        color: #14121b;
+        border-color: var(--ui-accent);
+        font-weight: 700;
+      }
+      .preview {
+        --pv-bg: #fff;
+        --pv-surface: #f7f5fb;
+        --pv-text: #221a33;
+        --pv-muted: #7d7191;
+        --pv-accent: #8b5cf6;
+        --pv-line: rgba(0, 0, 0, 0.12);
+        --pv-radio: 12px;
+        --pv-font: system-ui;
+        background: var(--pv-bg);
+        color: var(--pv-text);
+        font-family: var(--pv-font);
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid var(--pv-line);
+      }
+      .pv-bar {
+        height: 38px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0 14px;
+        background: var(--pv-surface);
+        border-bottom: 1px solid var(--pv-line);
+      }
+      .pv-bar b {
+        font-size: 11px;
+        letter-spacing: 0.14em;
+      }
+      .pv-bar i {
+        margin-left: auto;
+        font-style: normal;
+        font-size: 9px;
+        color: var(--pv-muted);
+      }
+      .pv-nav {
+        display: flex;
+        gap: 4px;
+        padding: 10px 14px;
+        background: var(--pv-surface);
+        border-bottom: 1px solid var(--pv-line);
+      }
+      .pv-nav span {
+        padding: 5px 10px;
+        border-radius: var(--pv-radio);
+        font-size: 10px;
+        color: var(--pv-muted);
+      }
+      .pv-nav span.on {
+        background: var(--pv-accent);
+        color: #fff;
+      }
+      .pv-body {
+        padding: 18px;
+      }
+      .pv-tit {
+        font-size: 24px;
+        margin: 0 0 14px;
+      }
+      .pv-sub {
+        font-size: 9px;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        color: var(--pv-accent);
+        margin-bottom: 6px;
+      }
+      .pv-row {
+        display: grid;
+        grid-template-columns: 28px 1fr 60px;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 0;
+        border-bottom: 1px solid var(--pv-line);
+        font-size: 11px;
+      }
+      .pv-row .n {
+        color: var(--pv-accent);
+        font-weight: 700;
+      }
+      .pv-row .d {
+        text-align: right;
+        color: var(--pv-muted);
+      }
+      .pv-btn {
+        display: inline-block;
+        margin-top: 14px;
+        padding: 9px 14px;
+        border-radius: var(--pv-radio);
+        background: var(--pv-accent);
+        color: #fff;
+        font-size: 11px;
+      }
+      textarea {
+        width: 100%;
+        height: 340px;
+        background: #0e0c14;
+        color: #cfc6e6;
+        border: 1px solid var(--ui-line);
+        border-radius: 10px;
+        padding: 12px;
+        font:
+          11px/1.5 ui-monospace,
+          Consolas,
+          monospace;
+        resize: vertical;
+      }
+      .nota {
+        color: var(--ui-muted);
+        font-size: 11px;
+        margin-top: 8px;
+      }
+      @media (max-width: 900px) {
+        main {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <b>🎨 Generador de temas</b
+      ><span>Sakura Music · genera CSS compatible con el sistema de temas existente</span>
+    </header>
+    <main>
+      <section class="panel">
+        <h2>Configuración</h2>
+        <label for="id">ID del tema</label>
+        <input id="id" type="text" value="mic tema" />
+
+        <div class="grid2">
+          <div><label for="bg">Fondo</label><input id="bg" type="color" value="#f4f1fa" /></div>
+          <div>
+            <label for="surface">Superficie</label
+            ><input id="surface" type="color" value="#ffffff" />
+          </div>
+          <div><label for="text">Texto</label><input id="text" type="color" value="#241c38" /></div>
+          <div>
+            <label for="muted">Texto suave</label><input id="muted" type="color" value="#7d7191" />
+          </div>
+          <div>
+            <label for="accent">Acento</label><input id="accent" type="color" value="#8b5cf6" />
+          </div>
+          <div><label for="line">Borde</label><input id="line" type="color" value="#d9d2e8" /></div>
+        </div>
+
+        <label for="radio">Radio (px)</label>
+        <input id="radio" type="number" value="14" min="0" max="32" />
+
+        <label for="font">Tipografía</label>
+        <select id="font">
+          <option value="inherit">System / heredada</option>
+          <option value="'Cormorant Garamond',serif">Cormorant Garamond</option>
+          <option value="'Plus Jakarta Sans',sans-serif">Plus Jakarta Sans</option>
+          <option value="'IBM Plex Mono',monospace">IBM Plex Mono</option>
+        </select>
+
+        <div class="botones">
+          <button class="primary" id="generar">Generar CSS</button>
+          <button id="copiar">Copiar</button>
+        </div>
+        <p class="nota">
+          Elegí colores, generá y pegá el CSS al final de <code>src/App.css</code>. Después agregá
+          el ID en <code>ThemeMode</code>, <code>TEMAS_DISPONIBLES</code> y los swatches.
+        </p>
+      </section>
+
+      <section class="panel">
+        <h2>Vista previa</h2>
+        <div class="preview" id="preview">
+          <div class="pv-bar">
+            <b>障 SAKURA</b><span class="pv-titulo">Mi tema</span
+            ><i>BUSCAR · BIBLIOTECA · AJUSTES</i>
+          </div>
+          <div class="pv-nav">
+            <span class="on">Inicio</span><span>Biblioteca</span><span>Buscar</span
+            ><span>Cola</span>
+          </div>
+          <div class="pv-body">
+            <p class="pv-sub">NUEVO TEMA</p>
+            <h1 class="pv-tit">Tu música, a tu manera</h1>
+            <p style="color: var(--pv-muted); font-size: 11px">
+              Una interfaz construida con tu paleta.
+            </p>
+            <span class="pv-btn">Abrir biblioteca →</span>
+            <div style="margin-top: 20px">
+              <div class="pv-row">
+                <span class="n">01</span><span>Pista de ejemplo</span><span class="d">3:20</span>
+              </div>
+              <div class="pv-row">
+                <span class="n">02</span><span>Otra canción</span><span class="d">4:02</span>
+              </div>
+              <div class="pv-row">
+                <span class="n">03</span><span>Tercera pista</span><span class="d">2:58</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <h2 style="margin-top: 18px">CSS generado</h2>
+        <textarea id="css" spellcheck="false"></textarea>
+      </section>
+    </main>
+    <script>
+      const $ = (id) => document.getElementById(id);
+
+      function mezclar(hex, objetivo, peso) {
+        const a = hex
+          .replace('#', '')
+          .match(/../g)
+          .map((h) => parseInt(h, 16));
+        const b = objetivo.match(/../g).map((h) => parseInt(h, 16));
+        return (
+          '#' +
+          a
+            .map((v, i) =>
+              Math.round(v * (1 - peso) + b[i] * peso)
+                .toString(16)
+                .padStart(2, '0'),
+            )
+            .join('')
+        );
+      }
+      function rgba(hex, alpha) {
+        const c = hex
+          .replace('#', '')
+          .match(/../g)
+          .map((h) => parseInt(h, 16));
+        return `rgba(${c[0]}, ${c[1]}, ${c[2]}, ${alpha})`;
+      }
+      function idSeguro(s) {
+        return (
+          s
+            .trim()
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-|-$/g, '') || 'nuevo-tema'
+        );
+      }
+
+      function generarCSS() {
+        const id = idSeguro($('id').value);
+        const bg = $('bg').value,
+          surface = $('surface').value,
+          text = $('text').value;
+        const muted = $('muted').value,
+          accent = $('accent').value,
+          line = $('line').value;
+        const radio = $('radio').value,
+          font = $('font').value;
+        const claro =
+          (parseInt(bg.slice(1, 3), 16) +
+            parseInt(bg.slice(3, 5), 16) +
+            parseInt(bg.slice(5, 7), 16)) /
+            3 >
+          128;
+        const onAccent = claro ? '#ffffff' : '#0b0b12';
+        const escala = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) =>
+          mezclar(accent.replace('#', ''), claro ? 'ffffff' : '000000', i / 12),
+        );
+        const nombres = ['200', '300', '400', '500', '600', '700', '800', '900', '950'];
+        const accentVars = escala
+          .slice(1)
+          .map(
+            (c, i) =>
+              `  --accent-${nombres[i]}: ${parseInt(c.slice(1, 3), 16)} ${parseInt(c.slice(3, 5), 16)} ${parseInt(c.slice(5, 7), 16)};`,
+          )
+          .join('\n');
+
+        return `
+/* ========================================================= */
+/* TEMA: ${id} (generado con el Generador de temas)          */
+/* ========================================================= */
+.app-shell[data-skin='${id}'] {
+  --m3-surface:${bg}; --m3-surface-card:${surface}; --m3-on-surface:${text};
+  --m3-on-surface-muted:${muted}; --m3-primary:${accent}; --m3-primary-dim:${mezclar(accent.replace('#', ''), claro ? 'ffffff' : '000000', 0.25)};
+  --space-text:${text}; --space-muted:${muted}; --space-border:${line};
+${accentVars}
+  --tema-accent:${accent}; --tema-accent-soft:${rgba(accent, 0.09)};
+  --tema-texto:${text}; --tema-texto-suave:${muted}; --tema-linea:${line};
+  background:${bg} !important; color:${text} !important;
+}
+.app-shell[data-skin='${id}'] .titlebar,
+.app-shell[data-skin='${id}'] .zen-topnav,
+.app-shell[data-skin='${id}'] .npr-shell { background:${surface} !important; border-color:${line} !important; color:${text} !important; }
+.app-shell[data-skin='${id}'] .glass-card { background:${surface} !important; border-color:${line} !important; box-shadow:none !important; border-radius:${radio}px !important; }
+.app-shell[data-skin='${id}'] .gh-search,
+.app-shell[data-skin='${id}'] .gh-search-input { background:${rgba(accent, 0.05)} !important; color:${text} !important; }
+.app-shell[data-skin='${id}'] .theme-library-nav button,
+.app-shell[data-skin='${id}'] .theme-folders button { border-color:${line} !important; color:${muted} !important; }
+.app-shell[data-skin='${id}'] .theme-library-nav button.is-active { background:${accent} !important; color:${onAccent} !important; border-color:${accent} !important; }
+.app-shell[data-skin='${id}'] .theme-row-actions button:hover,
+.app-shell[data-skin='${id}'] .theme-row-actions button.is-fav { color:${accent} !important; }
+.app-shell[data-skin='${id}'] .lt-view-select { display:none !important; }
+
+/* Variables que usan Ajustes, Buscar y Cola */
+.app-shell[data-skin='${id}'] {
+  --set-panel-base:${surface}; --set-radio-base:${radio}px;
+  --set-font-base:${font}; --set-on-accent-base:${onAccent};
+}
+
+/* Tipografía del tema (opcional) */
+.app-shell[data-skin='${id}'] { font-family:${font}; }
+`.trim();
+      }
+
+      function actualizarPreview() {
+        const p = $('preview');
+        p.style.setProperty('--pv-bg', $('bg').value);
+        p.style.setProperty('--pv-surface', $('surface').value);
+        p.style.setProperty('--pv-text', $('text').value);
+        p.style.setProperty('--pv-muted', $('muted').value);
+        p.style.setProperty('--pv-accent', $('accent').value);
+        p.style.setProperty('--pv-line', $('line').value);
+        p.style.setProperty('--pv-radio', $('radio').value + 'px');
+        p.style.setProperty('--pv-font', $('font').value);
+        p.querySelector('.pv-titulo').textContent = $('id').value || 'Mi tema';
+      }
+
+      ['bg', 'surface', 'text', 'muted', 'accent', 'line', 'radio', 'font', 'id'].forEach((id) => {
+        $(id).addEventListener('input', () => {
+          actualizarPreview();
+          $('css').value = generarCSS();
+        });
+      });
+      $('generar').addEventListener('click', () => {
+        $('css').value = generarCSS();
+      });
+      $('copiar').addEventListener('click', async () => {
+        await navigator.clipboard.writeText($('css').value);
+        $('copiar').textContent = '✓ Copiado';
+        setTimeout(() => ($('copiar').textContent = 'Copiar'), 1400);
+      });
+      actualizarPreview();
+      $('css').value = generarCSS();
+    </script>
+  </body>
+</html>

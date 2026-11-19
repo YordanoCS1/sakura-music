@@ -60,6 +60,9 @@ const GLIFOS: Partial<Record<ThemeMode, string>> = {
 interface SettingsTabProps {
   theme: ThemeMode;
   temas: ThemeOption[];
+  remoteEnabled: boolean;
+  remoteIp: string;
+  onToggleRemote: () => void;
   onSetTheme: (t: ThemeMode) => void;
   accentGradient: string;
   accentBadge: string;
@@ -87,6 +90,9 @@ interface SettingsTabProps {
 export default function SettingsTab({
   theme,
   temas,
+  remoteEnabled,
+  remoteIp,
+  onToggleRemote,
   onSetTheme,
   accentGradient,
   accentBadge,
@@ -332,6 +338,42 @@ export default function SettingsTab({
               </button>
             )}
           </div>
+        </section>
+
+        <section className="set-card">
+          <div className="set-card-head">
+            <span className="set-card-icon">
+              <Sparkles className="w-4 h-4" />
+            </span>
+            <div>
+              <h3>Control remoto</h3>
+              <p>Manejá la reproducción desde el celular en la misma Wi-Fi</p>
+            </div>
+          </div>
+          <div className="set-toggle-row">
+            <div>
+              <strong>Servidor local</strong>
+              <small>
+                {remoteEnabled
+                  ? `Activo en http://${remoteIp}:17342`
+                  : 'Desactivado · abrí la IP desde otro dispositivo'}
+              </small>
+            </div>
+            <button
+              type="button"
+              className="set-switch"
+              aria-pressed={remoteEnabled}
+              aria-label="Activar control remoto"
+              onClick={onToggleRemote}
+            >
+              <span />
+            </button>
+          </div>
+          {remoteEnabled && (
+            <p className="set-note">
+              Entrá a <b>http://{remoteIp}:17342</b> desde el celular conectado a la misma red.
+            </p>
+          )}
         </section>
 
         <section className="set-card">

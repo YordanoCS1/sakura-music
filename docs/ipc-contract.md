@@ -1,6 +1,6 @@
 # Contrato IPC (frontend ↔ Rust)
 
-Toda la comunicación entre React y el núcleo Rust pasa por `invoke()` y por eventos de Tauri. Este documento es la lista canonical de los **22 comandos** y los **4 eventos**. Si agregás uno, actualizá este archivo en el mismo commit.
+Toda la comunicación entre React y el núcleo Rust pasa por `invoke()` y por eventos de Tauri. Este documento es la lista canonical de los **27 comandos** y los **6 eventos**. Si agregás uno, actualizá este archivo en el mismo commit.
 
 Los tipos (`ScannedTrack`, `PersistedDownload`, etc.) están en [`src/types.ts`](../src/types.ts) y su contrato Rust en los módulos indicados. Los formatos persistidos están en [data-formats.md](data-formats.md).
 
@@ -23,6 +23,9 @@ Los tipos (`ScannedTrack`, `PersistedDownload`, etc.) están en [`src/types.ts`]
 | `scan_library` | `folder_path: string` | `ScannedTrack[]` | `lib.rs` |
 | `clear_library_cache` | — | `boolean` | `lib.rs` |
 | `delete_library_track` | `path: string` | `boolean` | `lib.rs` |
+| `search_library_fts` | `query: string`, `limit?: number` | `ScannedTrack[]` | `lib.rs` |
+
+`search_library_fts` usa el índice FTS5 de SQLite (título, artista y álbum, sin acentos) y es la búsqueda principal de la biblioteca; si falla, el frontend cae al filtro local.
 
 `scan_library` registra el vigilante de la carpeta, autoriza el scope del protocolo `asset:` y reutiliza las filas de SQLite cuyo `mtime` y tamaño no cambiaron. `delete_library_track` valida que la ruta canónica quede dentro de la biblioteca activa antes de borrar.
 
@@ -76,14 +79,29 @@ sobrescribe un binario que ya esté en el PATH.
 | `playlist-item` | `{ request_id, title, uploader, item: OnlineSearchResult }` | Cada pista resuelta al abrir una playlist con `--flat-playlist`. |
 | `download-progress` | `{ id, progress, speed, eta, status, file_path? }` | Progreso de una descarga en curso (porcentaje, velocidad, ETA y ruta final). |
 | `tools-download-progress` | `{ tool, descargado, total, estado }` | Bytes descargados al instalar yt-dlp o FFmpeg; `estado` es `descargando` o `listo`. |
+| `remote-command` | `{ action, ... }` | Orden del servidor HTTP local: `play_pause`, `pause`, `next`, `previous`, `play_track`, `set_volume`, `seek`. |
 
 El frontend filtra `library-changed` comparando la ruta con la carpeta activa, para no recargar si cambia otra biblioteca. Los eventos de búsqueda se descartan si su `request_id` no corresponde a la petición vigente.
 
 ## Registro de comandos
 
-Los 22 comandos están registrados en el `invoke_handler` de `lib.rs` (19 definidos ahí y 3 en `catalog.rs`). Si agregás uno nuevo:
+Los 27 comandos están registrados en el `invoke_handler` de `lib.rs` (24 definidos ahí y 3 en `catalog.rs`). Si agregás uno nuevo:
 
 1. Definilo con `#[tauri::command]` y devolvé `Result<_, String>` cuando pueda fallar.
 2. Registralo en `generate_handler!`.
 3. Agregalo a esta tabla y su tipo a `src/types.ts`.
 4. Si abre una nueva API externa, sumá el host a `connect-src` en `tauri.conf.json`.
+
+
+## Control remoto local
+
+El módulo `remote.rs` levanta un servidor HTTP en el puerto **17342** al iniciar la app. El frontend usa cuatro comandos para administrarlo:
+
+| Comando | Parámetros | Devuelve |
+|---|---|---|
+| `remote_set_enabled` | `activo: boolean` | `boolean` |
+| `remote_is_enabled` | — | `boolean` |
+| `remote_local_ip` | — | `string` |
+| `remote_update_state` | `title`, `artist`, `playing`, `position`, `duration` | — |
+
+El servidor sirve una página de control en `/`, expone `/api/status` y `/api/search?q=`, y envía las acciones al frontend con el evento `remote-command`. Sólo responde cuando el flag está activo (Ajustes → Control remoto).

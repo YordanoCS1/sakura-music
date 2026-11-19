@@ -42,6 +42,8 @@ test.beforeEach(async ({ page }) => {
       get_default_music_dir: null,
       get_download_queue: [],
       tools_status: [],
+      remote_is_enabled: false,
+      remote_local_ip: '127.0.0.1',
     };
     const w = window as unknown as {
       __TAURI_INTERNALS__: Record<string, unknown>;

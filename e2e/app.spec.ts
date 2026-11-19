@@ -15,6 +15,10 @@ test.beforeEach(async ({ page }) => {
       },
       get_cached_library: [],
       search_library_fts: [],
+      remote_is_enabled: false,
+      remote_local_ip: '127.0.0.1',
+      remote_set_enabled: true,
+      remote_update_state: null,
       get_app_info: {
         engine: 'Tauri 2.0 + Rust Engine',
         rust_version: 'rustc (e2e)',

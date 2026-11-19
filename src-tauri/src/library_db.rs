@@ -314,6 +314,16 @@ pub fn search_tracks_on(
         .map_err(|error| format!("No se pudo leer la búsqueda: {}", error))
 }
 
+/// Busca una pista por ID (usado por el control remoto).
+pub fn track_by_id(id: &str) -> Result<Option<ScannedTrack>, String> {
+    let connection = open_connection()?;
+    let sql = format!("SELECT {TRACK_COLUMNS} FROM library_tracks WHERE id = ?1");
+    connection
+        .query_row(&sql, params![id], |row| read_entry(row).map(|e| e.track))
+        .optional()
+        .map_err(|error| format!("No se pudo buscar la pista: {}", error))
+}
+
 pub fn search_tracks(query: &str, limit: usize) -> Result<Vec<ScannedTrack>, String> {
     let connection = open_connection()?;
     search_tracks_on(&connection, query, limit)
@@ -467,6 +477,47 @@ fn delete_track_on(connection: &Connection, path: &str) -> Result<(), String> {
     Ok(())
 }
 
+/// Importa un conjunto de pistas ya escaneadas (usado por el CLI).
+pub fn import_tracks(tracks: &[ScannedTrack]) -> Result<usize, String> {
+    let mut connection = open_connection()?;
+    let transaccion = connection
+        .transaction()
+        .map_err(|error| format!("No se pudo iniciar la importación: {}", error))?;
+    for track in tracks {
+        upsert_on(
+            &transaccion,
+            &ScanEntry {
+                track: track.clone(),
+                modified_ns: 0,
+            },
+        )
+        .map_err(|error| format!("No se pudo importar una pista: {}", error))?;
+    }
+    transaccion
+        .commit()
+        .map_err(|error| format!("No se pudo confirmar la importación: {}", error))?;
+    Ok(tracks.len())
+}
+
+/// Chequea la integridad de la base y reconstruye el índice de búsqueda.
+pub fn doctor() -> Result<String, String> {
+    let connection = open_connection()?;
+    let estado: String = connection
+        .query_row("PRAGMA integrity_check", [], |fila| fila.get(0))
+        .map_err(|error| format!("No se pudo verificar la base: {}", error))?;
+    connection
+        .execute("INSERT INTO library_fts(library_fts) VALUES('rebuild')", [])
+        .map_err(|error| format!("No se pudo reconstruir el índice: {}", error))?;
+    let total: i64 = connection
+        .query_row("SELECT COUNT(*) FROM library_tracks", [], |fila| {
+            fila.get(0)
+        })
+        .map_err(|error| format!("No se pudo contar las pistas: {}", error))?;
+    Ok(format!(
+        "integrity={estado} · pistas={total} · índice FTS reconstruido"
+    ))
+}
+
 pub fn delete_track(path: &str) -> Result<(), String> {
     let connection = open_connection()?;
     delete_track_on(&connection, path)
@@ -608,7 +659,12 @@ mod tests {
         )
         .unwrap();
 
-        sync_scan_on(&mut connection, Path::new(r"C:\Music"), &[first.clone()]).unwrap();
+        sync_scan_on(
+            &mut connection,
+            Path::new(r"C:\Music"),
+            std::slice::from_ref(&first),
+        )
+        .unwrap();
         let cached = read_tracks(&connection).unwrap();
 
         assert_eq!(cached.len(), 1);

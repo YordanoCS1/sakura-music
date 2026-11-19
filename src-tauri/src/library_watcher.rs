@@ -15,6 +15,14 @@ pub struct LibraryWatcher {
     state: Mutex<Option<WatcherState>>,
 }
 
+impl Default for LibraryWatcher {
+    fn default() -> Self {
+        Self {
+            state: Mutex::new(None),
+        }
+    }
+}
+
 impl LibraryWatcher {
     pub fn new() -> Self {
         Self {
