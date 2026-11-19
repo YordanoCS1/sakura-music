@@ -4,6 +4,7 @@ version = "2.0.0"
 description = "Gestor, reproductor, descargador y etiquetador de música para escritorio"
 authors = ["Sakura Music"]
 edition = "2024"
+default-run = "sakura-desktop"
 
 [lib]
 name = "sakura_desktop_lib"
