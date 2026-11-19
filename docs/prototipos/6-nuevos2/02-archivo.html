@@ -1,0 +1,30 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>02 · Archivo</title><style>
+
+:root{--fon:#efe9db;--pan:#faf5e7;--tinta:#3b3224;--sello:#8c2f2a;--linea:#c8bda2;--suave:#7c705b}
+*{box-sizing:border-box}body{margin:0;background:var(--fon);color:var(--tinta);font:14px Georgia,serif}
+.nav{height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;background:var(--pan);border-bottom:4px double var(--tinta)}
+.nav b{letter-spacing:.18em;color:var(--sello)}.nav button{background:none;border:0;color:var(--suave);font:11px Georgia;cursor:pointer;padding:7px 13px}.nav button.on{color:var(--sello);text-decoration:underline}
+.vista{display:none;height:calc(100vh - 48px);overflow:auto;padding:26px}.vista.on{display:block}
+.home{display:flex;align-items:center;gap:48px;min-height:68vh}
+.sello{width:190px;height:190px;border:4px double var(--sello);border-radius:50%;display:grid;place-items:center;font-size:52px;color:var(--sello);transform:rotate(-12deg);flex:none;box-shadow:inset 0 0 0 8px var(--fon)}
+.copy h1{font-size:46px;font-weight:400;margin:8px 0}.copy p{max-width:340px;line-height:1.9;color:var(--suave)}
+.btn{display:inline-block;border:1px solid var(--sello);color:var(--sello);padding:10px 16px;margin-top:16px;font-size:11px}
+.tit{display:flex;justify-content:space-between;border-bottom:4px double var(--tinta);padding-bottom:10px;margin-bottom:16px}.tit h1{font-size:32px;margin:0;font-weight:400}
+.exp{display:grid;grid-template-columns:38px 1fr 1fr 70px;align-items:center;padding:10px 8px;border-bottom:1px solid var(--linea)}.exp strong{font-size:15px}.exp span{font-size:11px;color:var(--suave)}.exp span:first-child{color:var(--sello);font-weight:700}
+.exp:nth-child(odd){background:rgba(255,255,255,.4)}
+
+</style></head><body>
+<div class="nav"><b>▤ Archivo</b><nav><button class="on" data-v="home">Inicio</button><button data-v="lib">Biblioteca</button><button>Buscar</button><button>Cola</button></nav></div>
+<section class="vista on" id="home">
+<div class="home"><div class="sello">▤</div><div class="copy"><p>ARCHIVO · DOCUMENTO 01</p><h1>Toda canción, archivada</h1><p>Un registro ordenado de tu música. Latin, sellos y papeles amarillentos.</p><span class="btn">Abrir biblioteca →</span></div></div></section>
+<section class="vista" id="lib">
+<div class="tit"><div><small>REGISTRO · 01</small><h1>Biblioteca</h1></div><span>8 ASIENTOS</span></div><div class="exp"><span>Nº</span><span>TÍTULO</span><span>ARTISTA / ÁLBUM</span><span>TIEMPO</span></div><div class="f"><span>01</span><strong>Pista 0</strong><span>Artista 0 · Álbum 0</span><span>3:20</span></div><div class="f"><span>02</span><strong>Pista 1</strong><span>Artista 1 · Álbum 1</span><span>3:20</span></div><div class="f"><span>03</span><strong>Pista 2</strong><span>Artista 2 · Álbum 2</span><span>3:20</span></div><div class="f"><span>04</span><strong>Pista 3</strong><span>Artista 3 · Álbum 3</span><span>3:20</span></div><div class="f"><span>05</span><strong>Pista 4</strong><span>Artista 4 · Álbum 4</span><span>3:20</span></div><div class="f"><span>06</span><strong>Pista 5</strong><span>Artista 5 · Álbum 5</span><span>3:20</span></div><div class="f"><span>07</span><strong>Pista 6</strong><span>Artista 6 · Álbum 6</span><span>3:20</span></div><div class="f"><span>08</span><strong>Pista 7</strong><span>Artista 7 · Álbum 7</span><span>3:20</span></div></section>
+<script>
+document.querySelectorAll('.nav button[data-v]').forEach(b=>b.onclick=()=>{
+ document.querySelectorAll('.vista').forEach(v=>v.classList.remove('on'));
+ document.getElementById(b.dataset.v).classList.add('on');
+ document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('on'));
+ b.classList.add('on');
+});
+</script></body></html>

@@ -1,0 +1,34 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>03 · Acuario</title><style>
+
+*{box-sizing:border-box}body{margin:0;font:14px system-ui;min-height:100vh}
+.nav{height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 20px}
+.nav b{font-size:13px;letter-spacing:.1em}
+.nav button{background:none;border:0;font:11px system-ui;cursor:pointer;padding:6px 12px}
+.vista{display:none;height:calc(100vh - 46px);overflow:auto;padding:24px}
+.vista.on{display:block}
+
+:root{--fon:#061c2c;--pan:#0b2f47;--agua:#38bdf8;--claro:#bae6fd;--tenue:#7aa7c7}
+body{background:linear-gradient(180deg,#093653,#061c2c);color:var(--claro);font-family:Georgia,serif}
+.nav{background:rgba(6,28,44,.8);border-bottom:1px solid var(--agua)}.nav b{color:var(--claro)}.nav button{color:var(--tenue)}.nav button.on{color:var(--agua)}
+.home{display:flex;align-items:center;gap:50px;min-height:68vh;position:relative}
+.burbuja{width:170px;height:170px;border-radius:50%;border:2px solid rgba(186,230,253,.5);display:grid;place-items:center;font-size:60px;color:var(--agua);background:radial-gradient(circle at 35% 30%,rgba(56,189,248,.35),transparent);box-shadow:0 0 50px rgba(56,189,248,.3);flex:none}
+.copy h1{font-size:46px;font-weight:400;margin:8px 0}.copy p{max-width:340px;line-height:1.9;color:var(--tenue)}
+.btn{display:inline-block;border:1px solid var(--agua);color:var(--agua);padding:10px 16px;margin-top:16px;font-size:11px}
+.tit{display:flex;justify-content:space-between;border-bottom:1px solid var(--agua);padding-bottom:10px;margin-bottom:14px}.tit h1{font-size:30px;margin:0;font-weight:400}
+.ola{display:flex;align-items:center;gap:14px;padding:12px;margin-bottom:8px;border:1px solid rgba(56,189,248,.25);border-radius:30px;background:rgba(56,189,248,.05)}
+.ola i{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--agua),#0ea5e9);display:block;flex:none}
+.ola strong{font-size:14px}.ola small{display:block;color:var(--tenue);font-size:10px;margin-top:3px}
+
+</style></head><body>
+<div class="nav"><b>≈ Acuario</b><nav><button class="on" data-v="home">Inicio</button><button data-v="lib">Biblioteca</button><button>Buscar</button><button>Cola</button></nav></div>
+<section class="vista on" id="home"><div class="home"><div class="burbuja">≈</div><div class="copy"><p>ACUARIO · MÚSICA SUMERGIDA</p><h1>Bajo la superficie</h1><p>Un océano de sonido. Cada pista flota en su propia corriente.</p><span class="btn">Abrir biblioteca →</span></div></div></section>
+<section class="vista" id="lib"><div class="tit"><div><small>PROFUNDIDAD · 01</small><h1>Biblioteca</h1></div><span>8 PIEZAS</span></div><div class="ola"><i></i><div><strong>Pista 0</strong><small>Artista 0 · Álbum 0 · 3:20</small></div></div><div class="ola"><i></i><div><strong>Pista 1</strong><small>Artista 1 · Álbum 1 · 3:20</small></div></div><div class="ola"><i></i><div><strong>Pista 2</strong><small>Artista 2 · Álbum 2 · 3:20</small></div></div><div class="ola"><i></i><div><strong>Pista 3</strong><small>Artista 3 · Álbum 3 · 3:20</small></div></div><div class="ola"><i></i><div><strong>Pista 4</strong><small>Artista 4 · Álbum 4 · 3:20</small></div></div><div class="ola"><i></i><div><strong>Pista 5</strong><small>Artista 5 · Álbum 5 · 3:20</small></div></div><div class="ola"><i></i><div><strong>Pista 6</strong><small>Artista 6 · Álbum 6 · 3:20</small></div></div><div class="ola"><i></i><div><strong>Pista 7</strong><small>Artista 7 · Álbum 7 · 3:20</small></div></div></section>
+<script>
+document.querySelectorAll('.nav button[data-v]').forEach(b=>b.onclick=()=>{
+ document.querySelectorAll('.vista').forEach(v=>v.classList.remove('on'));
+ document.getElementById(b.dataset.v).classList.add('on');
+ document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('on'));
+ b.classList.add('on');
+});
+</script></body></html>

@@ -1,0 +1,30 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>01 · Wuxia</title><style>
+*{box-sizing:border-box}body{margin:0;font:14px system-ui;min-height:100vh}
+.nav{height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 20px}
+.nav b{font-size:13px;letter-spacing:.1em}
+.nav button{background:none;border:0;font:11px system-ui;cursor:pointer;padding:6px 12px}
+.vista{display:none;height:calc(100vh - 46px);overflow:auto;padding:24px}
+.vista.on{display:block}
+
+:root{--fon:#efe7d5;--pan:#faf5e8;--tinta:#2b2620;--rojo:#a8322a;--bambu:#6f8a4a;--suave:#7a6b54}
+body{background:var(--fon);color:var(--tinta);font-family:Georgia,serif}
+.nav{background:var(--pan);border-bottom:3px solid var(--rojo)}.nav b{color:var(--rojo);letter-spacing:.24em}.nav button{color:var(--suave)}
+.home{display:flex;align-items:center;gap:50px;min-height:68vh}
+.espada{width:150px;height:280px;border:3px solid var(--tinta);border-radius:80px 80px 6px 6px;display:grid;place-items:center;font-size:60px;color:var(--rojo);flex:none}
+.copy h1{font-size:48px;font-weight:400}.copy p{max-width:340px;line-height:1.9;color:var(--suave)}
+.btn{display:inline-block;border:1px solid var(--rojo);color:var(--rojo);padding:10px 16px;margin-top:16px;font-size:11px}
+.tit{display:flex;justify-content:space-between;border-bottom:3px solid var(--rojo);padding-bottom:10px;margin-bottom:20px}.tit h1{font-size:30px;margin:0;font-weight:400}
+.pergaminos{display:flex;gap:10px;overflow-x:auto;padding-bottom:16px}
+.perg{width:92px;flex:none;display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px 6px;border:2px solid var(--bambu);border-top:10px solid var(--rojo);background:var(--pan)}
+.perg span{writing-mode:vertical-rl;height:130px;font-size:15px;color:var(--tinta);letter-spacing:.1em}
+.perg small{font-size:8px;color:var(--suave)}
+</style></head><body>
+<div class="nav"><b>劍 Wuxia</b><nav><button class="on" data-v="home">Inicio</button><button data-v="lib">Biblioteca</button><button>Buscar</button><button>Cola</button></nav></div>
+<section class="vista on" id="home"><div class="home"><div class="espada">劍</div><div class="copy"><p>劍 · WUXIA LEYENDA</p><h1>El arte de la espada</h1><p>Hojas de bambú, tinta y honor. Cada pista es un duelo.</p><span class="btn">Abrir biblioteca →</span></div></div></section><section class="vista" id="lib"><div class="tit"><div><small>卷一 · COLECCIÓN</small><h1>Biblioteca</h1></div><span>8 PIEZAS</span></div>
+<div class="pergaminos"><div class="perg"><span>Pista 0</span><small>書 01</small></div><div class="perg"><span>Pista 1</span><small>書 02</small></div><div class="perg"><span>Pista 2</span><small>書 03</small></div><div class="perg"><span>Pista 3</span><small>書 04</small></div><div class="perg"><span>Pista 4</span><small>書 05</small></div><div class="perg"><span>Pista 5</span><small>書 06</small></div><div class="perg"><span>Pista 6</span><small>書 07</small></div><div class="perg"><span>Pista 7</span><small>書 08</small></div></div></section>
+<script>document.querySelectorAll('.nav button[data-v]').forEach(b=>b.onclick=()=>{
+ document.querySelectorAll('.vista').forEach(v=>v.classList.remove('on'));
+ document.getElementById(b.dataset.v).classList.add('on');
+ document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('on')); b.classList.add('on');});
+</script></body></html>

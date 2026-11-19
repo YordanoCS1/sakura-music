@@ -1,0 +1,28 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>13 · Acción</title><style>
+*{box-sizing:border-box}body{margin:0;font:14px system-ui;min-height:100vh}
+.nav{height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 20px}
+.nav b{font-size:13px;letter-spacing:.1em}
+.nav button{background:none;border:0;font:11px system-ui;cursor:pointer;padding:6px 12px}
+.vista{display:none;height:calc(100vh - 46px);overflow:auto;padding:24px}
+.vista.on{display:block}
+
+:root{--fon:#fff3e0;--pan:#fff;--tinta:#3a2410;--naranja:#ff7a1a;--amarillo:#ffd23f;--rojo:#e63c2a;--suave:#9a6b45}
+body{background:var(--fon);color:var(--tinta);font-family:system-ui;font-weight:800}
+.nav{background:#fff;border-bottom:5px solid var(--naranja)}.nav b{color:var(--naranja);font-style:italic}
+.home{display:flex;flex-direction:column;justify-content:center;min-height:68vh;transform:rotate(-2deg)}
+.boom{font-size:90px;color:var(--rojo);text-shadow:6px 6px 0 var(--amarillo);letter-spacing:-.05em}
+.copy h1{font-size:44px;font-style:italic}.copy p{max-width:430px;line-height:1.6}
+.btn{display:inline-block;background:var(--rojo);color:#fff;padding:11px 18px;margin-top:16px;font-style:italic}
+.tit{background:var(--tinta);color:#fff;padding:10px;display:flex;justify-content:space-between}.tit h1{font-size:24px;margin:0;font-style:italic}
+.estallidos{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.est{border:4px solid var(--tinta);padding:12px;text-align:center;clip-path:polygon(50% 0,100% 30%,85% 100%,15% 100%,0 30%);background:var(--amarillo)}
+.est b{font-size:16px;font-style:italic}.est small{display:block;font-size:9px}
+</style></head><body>
+<div class="nav"><b>💥 Acción</b><nav><button class="on" data-v="home">Inicio</button><button data-v="lib">Biblioteca</button><button>Buscar</button><button>Cola</button></nav></div>
+<section class="vista on" id="home"><div class="home"><div class="boom">💥 BOOM!</div><div class="copy"><p>爆 · ACCIÓN</p><h1>¡Música explosiva!</h1><p>Energía desbordante y diversión sin límites.</p><span class="btn">Abrir biblioteca →</span></div></div></section><section class="vista" id="lib"><div class="tit"><span>EXPLOSIONES / 01</span><span>8 PIEZAS</span></div><div class="estallidos"><div class="est"><b>Pista 0</b><small>爆 01</small></div><div class="est"><b>Pista 1</b><small>爆 02</small></div><div class="est"><b>Pista 2</b><small>爆 03</small></div><div class="est"><b>Pista 3</b><small>爆 04</small></div><div class="est"><b>Pista 4</b><small>爆 05</small></div><div class="est"><b>Pista 5</b><small>爆 06</small></div><div class="est"><b>Pista 6</b><small>爆 07</small></div><div class="est"><b>Pista 7</b><small>爆 08</small></div></div></section>
+<script>document.querySelectorAll('.nav button[data-v]').forEach(b=>b.onclick=()=>{
+ document.querySelectorAll('.vista').forEach(v=>v.classList.remove('on'));
+ document.getElementById(b.dataset.v).classList.add('on');
+ document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('on')); b.classList.add('on');});
+</script></body></html>

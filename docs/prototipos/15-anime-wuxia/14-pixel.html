@@ -1,0 +1,29 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>14 · Pixel</title><style>
+*{box-sizing:border-box}body{margin:0;font:14px system-ui;min-height:100vh}
+.nav{height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 20px}
+.nav b{font-size:13px;letter-spacing:.1em}
+.nav button{background:none;border:0;font:11px system-ui;cursor:pointer;padding:6px 12px}
+.vista{display:none;height:calc(100vh - 46px);overflow:auto;padding:24px}
+.vista.on{display:block}
+
+:root{--fon:#0d0b1a;--pan:#1a1533;--tinta:#e8e0ff;--neon:#8b5cf6;--cian:#22d3ee;--suave:#8a7fb8}
+body{background:var(--fon);color:var(--tinta);font-family:'Courier New',monospace}
+.nav{background:#0a0818;border-bottom:3px solid var(--neon)}.nav b{color:var(--cian)}
+.home{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:68vh}
+.sprite{font-size:56px;color:var(--cian);text-shadow:4px 4px var(--neon)}
+.copy h1{font-size:30px;text-transform:uppercase}.copy p{color:var(--suave);max-width:400px;line-height:1.7}
+.btn{display:inline-block;border:2px solid var(--cian);color:var(--cian);padding:10px 16px;margin-top:16px;font-size:11px;box-shadow:4px 4px 0 var(--neon)}
+.tit{background:var(--neon);color:#fff;padding:10px;display:flex;justify-content:space-between}.tit h1{font-size:20px;margin:0}
+.inventario{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.slot{aspect-ratio:1;border:2px solid var(--neon);background:var(--pan);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.slot .px{width:40px;height:40px;background:repeating-linear-gradient(90deg,var(--cian) 0 5px,transparent 5px 10px);margin-bottom:6px}
+.slot b{font-size:10px}.slot small{font-size:8px;color:var(--suave)}
+</style></head><body>
+<div class="nav"><b>▚ Pixel</b><nav><button class="on" data-v="home">Inicio</button><button data-v="lib">Biblioteca</button><button>Buscar</button><button>Cola</button></nav></div>
+<section class="vista on" id="home"><div class="home"><div class="sprite">▚▞▚▞</div><div class="copy"><p>PIXEL · MUNDO 8-BITS</p><h1>Press start</h1><p>Cada pista es un nivel.</p><span class="btn">Abrir biblioteca →</span></div></div></section><section class="vista" id="lib"><div class="tit"><span>JUGADOR 1 · INVENTARIO</span><span>8 SLOTS</span></div><div class="inventario"><div class="slot"><span class="px"></span><b>Pista 0</b><small>01</small></div><div class="slot"><span class="px"></span><b>Pista 1</b><small>02</small></div><div class="slot"><span class="px"></span><b>Pista 2</b><small>03</small></div><div class="slot"><span class="px"></span><b>Pista 3</b><small>04</small></div><div class="slot"><span class="px"></span><b>Pista 4</b><small>05</small></div><div class="slot"><span class="px"></span><b>Pista 5</b><small>06</small></div><div class="slot"><span class="px"></span><b>Pista 6</b><small>07</small></div><div class="slot"><span class="px"></span><b>Pista 7</b><small>08</small></div></div></section>
+<script>document.querySelectorAll('.nav button[data-v]').forEach(b=>b.onclick=()=>{
+ document.querySelectorAll('.vista').forEach(v=>v.classList.remove('on'));
+ document.getElementById(b.dataset.v).classList.add('on');
+ document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('on')); b.classList.add('on');});
+</script></body></html>

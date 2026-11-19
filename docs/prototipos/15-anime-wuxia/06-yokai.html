@@ -1,0 +1,28 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>06 · Yōkai</title><style>
+*{box-sizing:border-box}body{margin:0;font:14px system-ui;min-height:100vh}
+.nav{height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 20px}
+.nav b{font-size:13px;letter-spacing:.1em}
+.nav button{background:none;border:0;font:11px system-ui;cursor:pointer;padding:6px 12px}
+.vista{display:none;height:calc(100vh - 46px);overflow:auto;padding:24px}
+.vista.on{display:block}
+
+:root{--fon:#1a1226;--pan:#251833;--tinta:#f0e6ff;--violeta:#a855f7;--lintern:#ffb84d;--suave:#a38cbb}
+body{background:var(--fon);color:var(--tinta);font-family:Georgia,serif}
+.nav{background:#120b1c;border-bottom:2px solid var(--violeta)}.nav b{color:var(--lintern)}
+.home{display:flex;align-items:center;gap:50px;min-height:68vh}
+.linterna{width:160px;height:190px;border:3px solid var(--lintern);border-radius:16px;display:grid;place-items:center;font-size:60px;color:var(--lintern);background:radial-gradient(circle,rgba(255,184,77,.25),transparent);box-shadow:0 0 60px rgba(255,184,77,.25);flex:none}
+.copy h1{font-size:46px;font-weight:400}.copy p{max-width:340px;line-height:1.9;color:var(--suave)}
+.btn{display:inline-block;border:1px solid var(--lintern);color:var(--lintern);padding:10px 16px;margin-top:16px;font-size:11px}
+.tit{display:flex;justify-content:space-between;border-bottom:2px solid var(--violeta);padding-bottom:10px;margin-bottom:24px}.tit h1{font-size:30px;margin:0;font-weight:400}
+.farolas{display:flex;flex-wrap:wrap;gap:12px}
+.farola{width:78px;height:110px;border:2px solid var(--lintern);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6px;background:rgba(255,184,77,.07);box-shadow:0 0 18px rgba(255,184,77,.15)}
+.farola b{font-size:11px;color:var(--lintern)}.farola small{font-size:8px;color:var(--suave);margin-top:6px}
+</style></head><body>
+<div class="nav"><b>妖 Yōkai</b><nav><button class="on" data-v="home">Inicio</button><button data-v="lib">Biblioteca</button><button>Buscar</button><button>Cola</button></nav></div>
+<section class="vista on" id="home"><div class="home"><div class="linterna">妖</div><div class="copy"><p>妖 · ESPÍRITUS NOCTURNOS</p><h1>Canciones embrujadas</h1><p>Linternas de papel y voces del bosque.</p><span class="btn">Abrir biblioteca →</span></div></div></section><section class="vista" id="lib"><div class="tit"><div><small>NOCHE · 01</small><h1>Biblioteca</h1></div><span>8 ESPÍRITUS</span></div><div class="farolas"><div class="farola"><b>Pista 0</b><small>01 · 3:20</small></div><div class="farola"><b>Pista 1</b><small>02 · 3:20</small></div><div class="farola"><b>Pista 2</b><small>03 · 3:20</small></div><div class="farola"><b>Pista 3</b><small>04 · 3:20</small></div><div class="farola"><b>Pista 4</b><small>05 · 3:20</small></div><div class="farola"><b>Pista 5</b><small>06 · 3:20</small></div><div class="farola"><b>Pista 6</b><small>07 · 3:20</small></div><div class="farola"><b>Pista 7</b><small>08 · 3:20</small></div></div></section>
+<script>document.querySelectorAll('.nav button[data-v]').forEach(b=>b.onclick=()=>{
+ document.querySelectorAll('.vista').forEach(v=>v.classList.remove('on'));
+ document.getElementById(b.dataset.v).classList.add('on');
+ document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('on')); b.classList.add('on');});
+</script></body></html>

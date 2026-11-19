@@ -1,0 +1,33 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>05 · Neón</title><style>
+
+*{box-sizing:border-box}body{margin:0;font:14px system-ui;min-height:100vh}
+.nav{height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 20px}
+.nav b{font-size:13px;letter-spacing:.1em}
+.nav button{background:none;border:0;font:11px system-ui;cursor:pointer;padding:6px 12px}
+.vista{display:none;height:calc(100vh - 46px);overflow:auto;padding:24px}
+.vista.on{display:block}
+
+:root{--fon:#0a0713;--pan:#150c26;--neon:#ff2bd6;--cian:#22d3ee;--tex:#f0e9ff;--suave:#9a86c4}
+body{background:var(--fon);color:var(--tex);font-family:system-ui}
+.nav{background:var(--pan);border-bottom:2px solid var(--neon)}.nav b{color:var(--neon);text-shadow:0 0 10px var(--neon)}.nav button{color:var(--suave)}.nav button.on{color:var(--cian);text-shadow:0 0 8px var(--cian)}
+.home{display:flex;flex-direction:column;justify-content:center;min-height:68vh;border:1px solid rgba(255,43,214,.4);padding:32px;box-shadow:inset 0 0 60px rgba(255,43,214,.08)}
+.letras{font-size:70px;color:var(--neon);text-shadow:0 0 20px var(--neon),0 0 40px var(--neon);letter-spacing:.1em}
+.copy h1{font-size:40px;margin:12px 0}.copy p{color:var(--suave);max-width:420px;line-height:1.7}
+.btn{display:inline-block;border:1px solid var(--cian);color:var(--cian);padding:10px 16px;margin-top:16px;font-size:11px;box-shadow:0 0 14px rgba(34,211,238,.3)}
+.tit{display:flex;justify-content:space-between;border-bottom:2px solid var(--neon);padding-bottom:10px;margin-bottom:14px}.tit h1{font-size:30px;margin:0;color:var(--neon)}
+.t{display:inline-block;width:140px;margin:8px;padding:12px;border:1px solid var(--cian);box-shadow:0 0 16px rgba(34,211,238,.2)}
+.t i{display:block;width:100%;height:66px;background:linear-gradient(135deg,var(--neon),var(--cian));margin-bottom:8px}.t strong{font-size:13px}.t small{font-size:9px;color:var(--suave)}
+
+</style></head><body>
+<div class="nav"><b>◆ Neón</b><nav><button class="on" data-v="home">Inicio</button><button data-v="lib">Biblioteca</button><button>Buscar</button><button>Cola</button></nav></div>
+<section class="vista on" id="home"><div class="home"><span class="letras">SAKURA</span><div class="copy"><p>NEÓN · LUZ ARTIFICIAL</p><h1>Música que brilla</h1><p>Colores saturados, letras encendidas y energía de ciudad de noche.</p><span class="btn">Abrir biblioteca →</span></div></div></section>
+<section class="vista" id="lib"><div class="tit"><div><small>BRillo · 01</small><h1>Biblioteca</h1></div><span>8 PIEZAS</span></div><article class="t"><i></i><strong>Pista 0</strong><small>Artista 0 · Álbum 0</small></article><article class="t"><i></i><strong>Pista 1</strong><small>Artista 1 · Álbum 1</small></article><article class="t"><i></i><strong>Pista 2</strong><small>Artista 2 · Álbum 2</small></article><article class="t"><i></i><strong>Pista 3</strong><small>Artista 3 · Álbum 3</small></article><article class="t"><i></i><strong>Pista 4</strong><small>Artista 4 · Álbum 4</small></article><article class="t"><i></i><strong>Pista 5</strong><small>Artista 5 · Álbum 5</small></article><article class="t"><i></i><strong>Pista 6</strong><small>Artista 6 · Álbum 6</small></article><article class="t"><i></i><strong>Pista 7</strong><small>Artista 7 · Álbum 7</small></article></section>
+<script>
+document.querySelectorAll('.nav button[data-v]').forEach(b=>b.onclick=()=>{
+ document.querySelectorAll('.vista').forEach(v=>v.classList.remove('on'));
+ document.getElementById(b.dataset.v).classList.add('on');
+ document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('on'));
+ b.classList.add('on');
+});
+</script></body></html>

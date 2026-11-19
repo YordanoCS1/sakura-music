@@ -27,6 +27,10 @@ const GLIFOS: Partial<Record<ThemeMode, string>> = {
   sumiink: '墨',
   moonlit: '月',
   ledger: '帳',
+  shonen: '⚡',
+  ghost: '☻',
+  samurai: '侍',
+  kawaii: '♡',
 };
 
 /**

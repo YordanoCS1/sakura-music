@@ -1,0 +1,32 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>04 · Vaporwave</title><style>
+
+:root{--mag:#ff4fd8;--cian:#3ae8ff;--fon:#170b2e;--txt:#f6e9ff}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#2a0f4d,#170b2e);color:var(--txt);font:14px system-ui;
+background-image:repeating-linear-gradient(0deg,rgba(58,232,255,.05) 0 1px,transparent 1px 30px)}
+.nav{height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid rgba(255,79,216,.4)}
+.nav b{color:var(--mag)}.nav button{background:none;border:0;color:#a58fc0;font:11px system-ui;cursor:pointer;padding:6px 12px}.nav button.on{color:var(--cian);text-shadow:0 0 8px var(--cian)}
+.vista{display:none;height:calc(100vh - 46px);overflow:auto;padding:24px}.vista.on{display:block}
+.home{display:flex;align-items:center;justify-content:center;text-align:center;min-height:70vh;position:relative}
+.sol{position:absolute;width:260px;height:260px;border-radius:50%;background:linear-gradient(180deg,var(--mag),var(--cian));box-shadow:0 0 80px rgba(255,79,216,.5);top:10%;z-index:0}
+.copy{position:relative;z-index:1}.copy h1{font-size:58px;margin:10px 0;background:linear-gradient(90deg,var(--mag),var(--cian));-webkit-background-clip:text;color:transparent;letter-spacing:-.05em}
+.copy p{color:#c4a8dd;max-width:400px;line-height:1.7}
+.btn{display:inline-block;border:1px solid var(--cian);color:var(--cian);padding:10px 16px;margin-top:16px;font-size:11px;box-shadow:0 0 16px rgba(58,232,255,.25)}
+.tit{display:flex;justify-content:space-between;border-bottom:2px solid var(--mag);padding-bottom:10px;margin-bottom:14px}.tit h1{font-size:32px;margin:0;color:var(--mag);text-shadow:0 0 12px rgba(255,79,216,.5)}
+.t{display:inline-block;width:150px;margin:8px;padding:12px;background:rgba(255,79,216,.08);border:1px solid var(--cian);box-shadow:0 0 18px rgba(58,232,255,.15)}
+.t i{display:block;width:100%;height:70px;background:linear-gradient(135deg,var(--mag),var(--cian));margin-bottom:8px}.t strong{display:block;font-size:14px}.t small{font-size:9px;color:#a58fc0}
+
+</style></head><body>
+<div class="nav"><b>▨ Vaporwave</b><nav><button class="on" data-v="home">Inicio</button><button data-v="lib">Biblioteca</button><button>Buscar</button><button>Cola</button></nav></div>
+<section class="vista on" id="home">
+<div class="home"><span class="sol"></span><div class="copy"><p>ＶＡＰＯＲＷＡＶＥ · 198９</p><h1>Música de otro tiempo</h1><p>Neón, gradientes y nostalgia digital. Tu biblioteca en una dimensión paralela.</p><span class="btn">Abrir biblioteca →</span></div></div></section>
+<section class="vista" id="lib">
+<div class="tit"><div><small>ＣＯＬＥＣＣＩＯＮ</small><h1>Biblioteca</h1></div><span>６ ＰＩＥＺＡＳ</span></div><article class="t"><i></i><strong>Pista 0</strong><small>Artista 0 · Álbum 0</small></article><article class="t"><i></i><strong>Pista 1</strong><small>Artista 1 · Álbum 1</small></article><article class="t"><i></i><strong>Pista 2</strong><small>Artista 2 · Álbum 2</small></article><article class="t"><i></i><strong>Pista 3</strong><small>Artista 3 · Álbum 3</small></article><article class="t"><i></i><strong>Pista 4</strong><small>Artista 4 · Álbum 4</small></article><article class="t"><i></i><strong>Pista 5</strong><small>Artista 5 · Álbum 5</small></article></section>
+<script>
+document.querySelectorAll('.nav button[data-v]').forEach(b=>b.onclick=()=>{
+ document.querySelectorAll('.vista').forEach(v=>v.classList.remove('on'));
+ document.getElementById(b.dataset.v).classList.add('on');
+ document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('on'));
+ b.classList.add('on');
+});
+</script></body></html>

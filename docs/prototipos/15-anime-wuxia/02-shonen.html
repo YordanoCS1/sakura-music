@@ -1,0 +1,30 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>02 · Shōnen</title><style>
+*{box-sizing:border-box}body{margin:0;font:14px system-ui;min-height:100vh}
+.nav{height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 20px}
+.nav b{font-size:13px;letter-spacing:.1em}
+.nav button{background:none;border:0;font:11px system-ui;cursor:pointer;padding:6px 12px}
+.vista{display:none;height:calc(100vh - 46px);overflow:auto;padding:24px}
+.vista.on{display:block}
+
+:root{--fon:#fff6e8;--pan:#fff;--tinta:#1c1c1c;--naranja:#ff6b1a;--amarillo:#ffb800}
+body{background:var(--fon);color:var(--tinta);font-family:system-ui;font-weight:700}
+.nav{background:#fff;border-bottom:4px solid var(--naranja)}.nav b{color:var(--naranja);font-style:italic}.nav button.on{background:var(--naranja);color:#fff}
+.home{display:flex;flex-direction:column;justify-content:center;min-height:68vh;transform:skewX(-4deg)}
+.energy{font-size:84px;font-weight:900;font-style:italic;color:var(--naranja);text-shadow:5px 5px 0 var(--amarillo)}
+.copy h1{font-size:44px;font-style:italic}.copy p{max-width:430px;line-height:1.6}
+.btn{display:inline-block;background:var(--naranja);color:#fff;padding:11px 18px;margin-top:16px;font-style:italic}
+.tit{background:var(--tinta);color:#fff;padding:10px 14px;display:flex;justify-content:space-between}.tit h1{font-size:26px;margin:0;font-style:italic}
+.manga{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.v{position:relative;aspect-ratio:3/4;border:4px solid var(--tinta);background:repeating-linear-gradient(45deg,#fff 0 6px,#f5f5f5 6px 12px);overflow:hidden;display:flex;align-items:flex-end;padding:8px}
+.v i{position:absolute;inset:0;background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(255,107,26,.25) 0deg 6deg,transparent 6deg 12deg)}
+.v strong{position:relative;font-size:12px;font-style:italic;line-height:1.1;text-shadow:1px 1px #fff}
+.v b{position:absolute;top:4px;left:6px;background:var(--amarillo);color:#000;font-size:9px;padding:2px 5px;transform:rotate(-8deg)}
+</style></head><body>
+<div class="nav"><b>⚡ Shōnen</b><nav><button class="on" data-v="home">Inicio</button><button data-v="lib">Biblioteca</button><button>Buscar</button><button>Cola</button></nav></div>
+<section class="vista on" id="home"><div class="home"><div class="energy">⚡ SAKURA!</div><div class="copy"><p>SHŌNEN · ESPÍRITU DE LUCHA</p><h1>¡Dale todo!</h1><p>Energía y determinación. Tu música a mil por hora.</p><span class="btn">Abrir biblioteca →</span></div></div></section><section class="vista" id="lib"><div class="tit"><span>TEAM / BIBLIOTECA</span><span>8 PISTAS</span></div><div class="manga"><div class="v"><i></i><b>GO!</b><strong>Pista 0<br>Artista 0</strong></div><div class="v"><i></i><b>GO!</b><strong>Pista 1<br>Artista 1</strong></div><div class="v"><i></i><b>GO!</b><strong>Pista 2<br>Artista 2</strong></div><div class="v"><i></i><b>GO!</b><strong>Pista 3<br>Artista 3</strong></div><div class="v"><i></i><b>GO!</b><strong>Pista 4<br>Artista 4</strong></div><div class="v"><i></i><b>GO!</b><strong>Pista 5<br>Artista 5</strong></div><div class="v"><i></i><b>GO!</b><strong>Pista 6<br>Artista 6</strong></div><div class="v"><i></i><b>GO!</b><strong>Pista 7<br>Artista 7</strong></div></div></section>
+<script>document.querySelectorAll('.nav button[data-v]').forEach(b=>b.onclick=()=>{
+ document.querySelectorAll('.vista').forEach(v=>v.classList.remove('on'));
+ document.getElementById(b.dataset.v).classList.add('on');
+ document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('on')); b.classList.add('on');});
+</script></body></html>

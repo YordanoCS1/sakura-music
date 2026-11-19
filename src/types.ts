@@ -145,6 +145,10 @@ export type ThemeMode =
   | 'sumiink'
   | 'moonlit'
   | 'ledger'
+  | 'shonen'
+  | 'ghost'
+  | 'samurai'
+  | 'kawaii'
   | 'yoru'
   | 'hanabi'
   | 'aizuri';

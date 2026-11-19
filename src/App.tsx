@@ -63,6 +63,10 @@ const TEMAS_CON_VISTAS_PROPIAS: ThemeMode[] = [
   'sumiink',
   'moonlit',
   'ledger',
+  'shonen',
+  'ghost',
+  'samurai',
+  'kawaii',
 ];
 
 const TEMAS_DISPONIBLES: ThemeOption[] = [
@@ -75,6 +79,10 @@ const TEMAS_DISPONIBLES: ThemeOption[] = [
   { id: 'sumiink', nombre: 'Sumi Ink', descripcion: 'Pincelada blanca sobre negro' },
   { id: 'moonlit', nombre: 'Moonlit', descripcion: 'Noche azul y luna' },
   { id: 'ledger', nombre: 'Ledger', descripcion: 'Libro mayor y sellos rojos' },
+  { id: 'shonen', nombre: 'Shōnen', descripcion: 'Manga, energía y viñetas' },
+  { id: 'ghost', nombre: 'Fantasmas', descripcion: 'Espectros y niebla azul' },
+  { id: 'samurai', nombre: 'Samurái', descripcion: 'Lacado rojo, acero y oro' },
+  { id: 'kawaii', nombre: 'Kawaii', descripcion: 'Pastel, ternura y caritas' },
   { id: 'yoru', nombre: 'Yoru', descripcion: 'Noche cálida y ámbar' },
   { id: 'hanabi', nombre: 'Hanabi', descripcion: 'Neón cian y magenta' },
   { id: 'aizuri', nombre: 'Aizuri', descripcion: 'Índigo teñido y cian' },
@@ -917,6 +925,30 @@ export default function App() {
       glow2: 'bg-indigo-950/40',
       accent: 'from-sky-300 to-blue-500',
       badge: 'bg-sky-300/10 text-sky-100 border-sky-300/30',
+    },
+    shonen: {
+      glow1: 'bg-orange-400/25',
+      glow2: 'bg-amber-600/20',
+      accent: 'from-orange-500 to-amber-400',
+      badge: 'bg-orange-500/15 text-orange-100 border-orange-400/30',
+    },
+    ghost: {
+      glow1: 'bg-cyan-300/15',
+      glow2: 'bg-slate-800/30',
+      accent: 'from-cyan-300 to-slate-400',
+      badge: 'bg-cyan-300/10 text-cyan-100 border-cyan-300/30',
+    },
+    samurai: {
+      glow1: 'bg-red-700/20',
+      glow2: 'bg-amber-800/20',
+      accent: 'from-red-700 to-amber-600',
+      badge: 'bg-red-700/15 text-red-100 border-red-600/30',
+    },
+    kawaii: {
+      glow1: 'bg-pink-300/25',
+      glow2: 'bg-emerald-200/20',
+      accent: 'from-pink-400 to-emerald-300',
+      badge: 'bg-pink-400/10 text-pink-100 border-pink-300/30',
     },
     ledger: {
       glow1: 'bg-amber-100/20',

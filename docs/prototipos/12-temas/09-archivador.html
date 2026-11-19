@@ -1,0 +1,34 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>09 · Archivador</title><style>
+
+*{box-sizing:border-box}body{margin:0;font:14px system-ui;min-height:100vh}
+.nav{height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 20px}
+.nav b{font-size:13px;letter-spacing:.1em}
+.nav button{background:none;border:0;font:11px system-ui;cursor:pointer;padding:6px 12px}
+.vista{display:none;height:calc(100vh - 46px);overflow:auto;padding:24px}
+.vista.on{display:block}
+
+:root{--fon:#d8d3c8;--pan:#e8e4da;--tinta:#33332f;--accento:#4a6b7c;--suave:#858178}
+body{background:var(--fon);color:var(--tinta);font-family:'Courier New',monospace}
+.nav{background:var(--pan);border-bottom:3px solid var(--accento)}.nav b{color:var(--accento);letter-spacing:.1em}.nav button{color:var(--suave)}.nav button.on{background:var(--accento);color:#fff}
+.home{display:flex;align-items:center;gap:48px;min-height:68vh}
+.cajon{width:210px;height:200px;border:3px solid var(--tinta);background:var(--pan);display:flex;flex-direction:column;justify-content:center;gap:6px;padding:16px;flex:none;box-shadow:8px 8px 0 rgba(0,0,0,.1)}
+.cajon i{height:10px;background:var(--accento);display:block}.cajon i:nth-child(2){width:70%}.cajon i:nth-child(3){width:85%}
+.copy h1{font-size:40px;text-transform:uppercase;margin:8px 0}.copy p{max-width:340px;line-height:1.7;color:var(--suave)}
+.btn{display:inline-block;background:var(--accento);color:#fff;padding:10px 16px;margin-top:16px;font-size:11px;text-transform:uppercase}
+.tit{background:var(--accento);color:#fff;padding:12px;display:flex;justify-content:space-between;margin-bottom:12px}.tit h1{font-size:26px;margin:0;text-transform:uppercase}
+.carpeta{display:grid;grid-template-columns:50px 1fr 1fr 60px;align-items:center;padding:12px;border:2px solid var(--tinta);margin-bottom:-2px;background:var(--pan)}
+.carpeta strong{font-size:14px;text-transform:uppercase}.carpeta span{font-size:10px;color:var(--suave)}.carpeta span:first-child{color:var(--accento);font-weight:700}
+
+</style></head><body>
+<div class="nav"><b>▤ Archivador</b><nav><button class="on" data-v="home">Inicio</button><button data-v="lib">Biblioteca</button><button>Buscar</button><button>Cola</button></nav></div>
+<section class="vista on" id="home"><div class="home"><div class="cajon"><i></i><i></i><i></i><span style="margin-top:auto;font-size:11px">ARCHIVO / A-01</span></div><div class="copy"><p>ARCHIVADOR · SISTEMA DE CARPETAS</p><h1>Todo en su lugar</h1><p>Un archivo ordenado. Cada canción clasificada y lista para consultar.</p><span class="btn">Abrir biblioteca →</span></div></div></section>
+<section class="vista" id="lib"><div class="tit"><span>ARCHIVO / INDICE</span><span>8 REGISTROS</span></div><div class="carpeta"><span>01</span><strong>Pista 0</strong><span>Artista 0 · Álbum 0</span><span>3:20</span></div><div class="carpeta"><span>02</span><strong>Pista 1</strong><span>Artista 1 · Álbum 1</span><span>3:20</span></div><div class="carpeta"><span>03</span><strong>Pista 2</strong><span>Artista 2 · Álbum 2</span><span>3:20</span></div><div class="carpeta"><span>04</span><strong>Pista 3</strong><span>Artista 3 · Álbum 3</span><span>3:20</span></div><div class="carpeta"><span>05</span><strong>Pista 4</strong><span>Artista 4 · Álbum 4</span><span>3:20</span></div><div class="carpeta"><span>06</span><strong>Pista 5</strong><span>Artista 5 · Álbum 5</span><span>3:20</span></div><div class="carpeta"><span>07</span><strong>Pista 6</strong><span>Artista 6 · Álbum 6</span><span>3:20</span></div><div class="carpeta"><span>08</span><strong>Pista 7</strong><span>Artista 7 · Álbum 7</span><span>3:20</span></div></section>
+<script>
+document.querySelectorAll('.nav button[data-v]').forEach(b=>b.onclick=()=>{
+ document.querySelectorAll('.vista').forEach(v=>v.classList.remove('on'));
+ document.getElementById(b.dataset.v).classList.add('on');
+ document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('on'));
+ b.classList.add('on');
+});
+</script></body></html>

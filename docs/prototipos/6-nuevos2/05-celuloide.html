@@ -1,0 +1,34 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>05 · Celuloide</title><style>
+
+:root{--fon:#111014;--pan:#1c1b21;--oro:#d4a64a;--tex:#f0eadc;--suave:#a49c8c;--linea:#38343c}
+*{box-sizing:border-box}body{margin:0;background:var(--fon);color:var(--tex);font:14px Georgia,serif}
+.nav{height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;background:#0c0b0e;border-bottom:3px solid var(--oro)}
+.nav b{letter-spacing:.2em;color:var(--oro)}.nav button{background:none;border:0;color:var(--suave);font:11px Georgia;cursor:pointer;padding:7px 13px}.nav button.on{color:var(--oro)}
+.vista{display:none;height:calc(100vh - 48px);overflow:auto;padding:26px}.vista.on{display:block}
+.home{display:flex;align-items:center;gap:48px;min-height:68vh}
+.pelicula{width:210px;height:250px;border:10px solid var(--pan);background:linear-gradient(180deg,#2a2420,#0c0b0e);display:grid;place-items:center;font-size:54px;color:var(--oro);position:relative}
+.pelicula::before,.pelicula::after{content:'';position:absolute;left:6px;right:6px;top:10px;height:6px;background:repeating-linear-gradient(90deg,var(--linea) 0 8px,transparent 8px 16px)}
+.pelicula::after{top:auto;bottom:10px}
+.copy h1{font-size:46px;font-weight:400;margin:8px 0}.copy p{max-width:340px;line-height:1.9;color:var(--suave)}
+.btn{display:inline-block;border:1px solid var(--oro);color:var(--oro);padding:10px 16px;margin-top:16px;font-size:11px}
+.tit{display:flex;justify-content:space-between;border-bottom:2px solid var(--oro);padding-bottom:10px;margin-bottom:16px}.tit h1{font-size:32px;margin:0;font-weight:400}
+.t{display:inline-block;width:150px;margin:8px;padding:8px;background:var(--pan);border:1px solid var(--linea)}
+.t i{display:block;width:100%;height:80px;background:linear-gradient(135deg,#3a2f22,#0c0b0e);margin-bottom:8px;position:relative}
+.t i::after{content:'▶';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:var(--oro);font-size:20px}
+.t strong{display:block;font-size:14px}.t small{font-size:9px;color:var(--suave)}
+
+</style></head><body>
+<div class="nav"><b>▶ Celuloide</b><nav><button class="on" data-v="home">Inicio</button><button data-v="lib">Biblioteca</button><button>Buscar</button><button>Cola</button></nav></div>
+<section class="vista on" id="home">
+<div class="home"><div class="pelicula">▶</div><div class="copy"><p>CELULOIDE · CINE EN CASA</p><h1>Tu música, en pantalla</h1><p>Luz de proyector, grano de película y carátulas como fotogramas.</p><span class="btn">Abrir biblioteca →</span></div></div></section>
+<section class="vista" id="lib">
+<div class="tit"><div><small>CARTELERA · 01</small><h1>Biblioteca</h1></div><span>8 FOTOGRAMAS</span></div><article class="t"><i></i><strong>Pista 0</strong><small>Artista 0 · Álbum 0</small></article><article class="t"><i></i><strong>Pista 1</strong><small>Artista 1 · Álbum 1</small></article><article class="t"><i></i><strong>Pista 2</strong><small>Artista 2 · Álbum 2</small></article><article class="t"><i></i><strong>Pista 3</strong><small>Artista 3 · Álbum 3</small></article><article class="t"><i></i><strong>Pista 4</strong><small>Artista 4 · Álbum 4</small></article><article class="t"><i></i><strong>Pista 5</strong><small>Artista 5 · Álbum 5</small></article><article class="t"><i></i><strong>Pista 6</strong><small>Artista 6 · Álbum 6</small></article><article class="t"><i></i><strong>Pista 7</strong><small>Artista 7 · Álbum 7</small></article></section>
+<script>
+document.querySelectorAll('.nav button[data-v]').forEach(b=>b.onclick=()=>{
+ document.querySelectorAll('.vista').forEach(v=>v.classList.remove('on'));
+ document.getElementById(b.dataset.v).classList.add('on');
+ document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('on'));
+ b.classList.add('on');
+});
+</script></body></html>

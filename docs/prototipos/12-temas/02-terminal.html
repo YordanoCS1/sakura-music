@@ -1,0 +1,33 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>02 · Terminal</title><style>
+
+*{box-sizing:border-box}body{margin:0;font:14px system-ui;min-height:100vh}
+.nav{height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 20px}
+.nav b{font-size:13px;letter-spacing:.1em}
+.nav button{background:none;border:0;font:11px system-ui;cursor:pointer;padding:6px 12px}
+.vista{display:none;height:calc(100vh - 46px);overflow:auto;padding:24px}
+.vista.on{display:block}
+
+:root{--fon:#08120a;--pan:#0d1c0e;--verde:#4dff6a;--tenue:#2f7a3a}
+body{background:var(--fon);color:var(--verde);font-family:Consolas,monospace;
+background-image:repeating-linear-gradient(0deg,rgba(77,255,106,.035) 0 1px,transparent 1px 4px)}
+.nav{background:#060e07;border-bottom:1px solid var(--verde)}.nav b{color:var(--verde)}.nav button{color:var(--tenue)}.nav button.on{color:var(--verde);background:rgba(77,255,106,.1)}
+.home{display:flex;flex-direction:column;justify-content:center;min-height:68vh;border:1px solid var(--verde);padding:30px}
+.h1{font-size:28px}.copy h1{font-size:30px;margin:14px 0}.copy p{color:var(--tenue);max-width:480px;line-height:1.6}
+.prompt{color:var(--verde)}.btn{display:inline-block;border:1px solid var(--verde);padding:9px 14px;margin-top:14px;font-size:11px;color:var(--verde)}
+.tit{border-bottom:1px solid var(--verde);padding-bottom:8px;margin-bottom:10px}.tit h1{font-size:20px;margin:0}
+.cmd{display:grid;grid-template-columns:70px 1fr 1fr 70px;padding:8px;border-bottom:1px solid var(--tenue);font-size:12px}
+.cmd strong{color:var(--verde)}.cmd span{color:var(--tenue)}
+
+</style></head><body>
+<div class="nav"><b>▶ Terminal</b><nav><button class="on" data-v="home">Inicio</button><button data-v="lib">Biblioteca</button><button>Buscar</button><button>Cola</button></nav></div>
+<section class="vista on" id="home"><div class="home"><p class="prompt">sakura@local:~$ iniciar --modo=terminal</p><div class="copy"><h1>&gt; MÚSICA EN SISTEMA</h1><p>Todo conectado, todo local. Tu biblioteca como una red de nodos esperando activarse.</p><span>[ OK ] 8 pistas indexadas</span><br><span class="btn">$ abrir biblioteca _</span></div></div></section>
+<section class="vista" id="lib"><div class="tit"><span>root@sakura:~/library$</span><span>8 ITEMS</span></div><div class="cmd"><span>01</span><strong>Pista 0</strong><span>Artista 0 · Álbum 0</span><span>3:20</span></div><div class="cmd"><span>02</span><strong>Pista 1</strong><span>Artista 1 · Álbum 1</span><span>3:20</span></div><div class="cmd"><span>03</span><strong>Pista 2</strong><span>Artista 2 · Álbum 2</span><span>3:20</span></div><div class="cmd"><span>04</span><strong>Pista 3</strong><span>Artista 3 · Álbum 3</span><span>3:20</span></div><div class="cmd"><span>05</span><strong>Pista 4</strong><span>Artista 4 · Álbum 4</span><span>3:20</span></div><div class="cmd"><span>06</span><strong>Pista 5</strong><span>Artista 5 · Álbum 5</span><span>3:20</span></div><div class="cmd"><span>07</span><strong>Pista 6</strong><span>Artista 6 · Álbum 6</span><span>3:20</span></div><div class="cmd"><span>08</span><strong>Pista 7</strong><span>Artista 7 · Álbum 7</span><span>3:20</span></div></section>
+<script>
+document.querySelectorAll('.nav button[data-v]').forEach(b=>b.onclick=()=>{
+ document.querySelectorAll('.vista').forEach(v=>v.classList.remove('on'));
+ document.getElementById(b.dataset.v).classList.add('on');
+ document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('on'));
+ b.classList.add('on');
+});
+</script></body></html>

@@ -44,6 +44,8 @@ test.beforeEach(async ({ page }) => {
       tools_status: [],
       remote_is_enabled: false,
       remote_local_ip: '127.0.0.1',
+      search_catalog_songs: [],
+      search_catalog_albums: [],
     };
     const w = window as unknown as {
       __TAURI_INTERNALS__: Record<string, unknown>;

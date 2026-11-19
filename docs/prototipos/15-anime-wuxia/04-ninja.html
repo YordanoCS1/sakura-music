@@ -1,0 +1,30 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>04 · Ninja</title><style>
+*{box-sizing:border-box}body{margin:0;font:14px system-ui;min-height:100vh}
+.nav{height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 20px}
+.nav b{font-size:13px;letter-spacing:.1em}
+.nav button{background:none;border:0;font:11px system-ui;cursor:pointer;padding:6px 12px}
+.vista{display:none;height:calc(100vh - 46px);overflow:auto;padding:24px}
+.vista.on{display:block}
+
+:root{--fon:#0a0e16;--pan:#111926;--tinta:#dbe6f2;--azul:#4d8fd6;--cian:#67d8e8;--suave:#7a90a8}
+body{background:var(--fon);color:var(--tinta);font-family:'Courier New',monospace}
+.nav{background:#070b12;border-bottom:1px solid var(--azul)}.nav b{color:var(--cian)}
+.home{display:flex;align-items:center;gap:50px;min-height:68vh}
+.sombra{width:180px;height:180px;border:2px dashed var(--azul);border-radius:50%;display:grid;place-items:center;font-size:64px;color:var(--cian);flex:none}
+.copy h1{font-size:46px}.copy p{max-width:340px;line-height:1.8;color:var(--suave)}
+.btn{display:inline-block;border:1px solid var(--cian);color:var(--cian);padding:10px 16px;margin-top:16px;font-size:11px}
+.tit{display:flex;justify-content:space-between;border-bottom:1px solid var(--azul);padding-bottom:10px;margin-bottom:20px}.tit h1{font-size:28px;margin:0}
+.misiones{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.mis{border:1px solid rgba(103,216,232,.3);padding:14px;background:rgba(103,216,232,.04);text-align:center}
+.mis .n{font-size:30px;color:var(--cian);display:block;margin-bottom:8px}
+.mis strong{display:block;font-size:12px}.mis small{font-size:9px;color:var(--suave)}
+.mis .bar{height:3px;background:var(--azul);margin-top:10px;display:block}
+</style></head><body>
+<div class="nav"><b>影 Ninja</b><nav><button class="on" data-v="home">Inicio</button><button data-v="lib">Biblioteca</button><button>Buscar</button><button>Cola</button></nav></div>
+<section class="vista on" id="home"><div class="home"><div class="sombra">影</div><div class="copy"><p>影 · MISIÓN EN CURSO</p><h1>Escucha en silencio</h1><p>Cada pista es una misión encubierta.</p><span class="btn">Abrir biblioteca →</span></div></div></section><section class="vista" id="lib"><div class="tit"><span>MISIONES / 01</span><span>8 OBJETIVOS</span></div><div class="misiones"><div class="mis"><span class="n">01</span><strong>Pista 0</strong><small>Artista 0</small><span class="bar"></span></div><div class="mis"><span class="n">02</span><strong>Pista 1</strong><small>Artista 1</small><span class="bar"></span></div><div class="mis"><span class="n">03</span><strong>Pista 2</strong><small>Artista 2</small><span class="bar"></span></div><div class="mis"><span class="n">04</span><strong>Pista 3</strong><small>Artista 3</small><span class="bar"></span></div><div class="mis"><span class="n">05</span><strong>Pista 4</strong><small>Artista 4</small><span class="bar"></span></div><div class="mis"><span class="n">06</span><strong>Pista 5</strong><small>Artista 5</small><span class="bar"></span></div><div class="mis"><span class="n">07</span><strong>Pista 6</strong><small>Artista 6</small><span class="bar"></span></div><div class="mis"><span class="n">08</span><strong>Pista 7</strong><small>Artista 7</small><span class="bar"></span></div></div></section>
+<script>document.querySelectorAll('.nav button[data-v]').forEach(b=>b.onclick=()=>{
+ document.querySelectorAll('.vista').forEach(v=>v.classList.remove('on'));
+ document.getElementById(b.dataset.v).classList.add('on');
+ document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('on')); b.classList.add('on');});
+</script></body></html>

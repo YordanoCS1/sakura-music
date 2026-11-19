@@ -19,6 +19,8 @@ test.beforeEach(async ({ page }) => {
       remote_local_ip: '127.0.0.1',
       remote_set_enabled: true,
       remote_update_state: null,
+      search_catalog_songs: [],
+      search_catalog_albums: [],
       get_app_info: {
         engine: 'Tauri 2.0 + Rust Engine',
         rust_version: 'rustc (e2e)',
@@ -224,7 +226,7 @@ test('el tablist responde al teclado', async ({ page }) => {
   await expect(page.getByRole('tab', { name: /Buscar/ })).toBeFocused();
 });
 
-test('los seis temas propios usan vistas propias sin el selector de 9 vistas', async ({ page }) => {
+test('los temas propios usan vistas propias sin el selector de 9 vistas', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });
 
@@ -235,6 +237,10 @@ test('los seis temas propios usan vistas propias sin el selector de 9 vistas', a
     { id: 'sumiink', nombre: 'Sumi Ink' },
     { id: 'moonlit', nombre: 'Moonlit' },
     { id: 'ledger', nombre: 'Ledger' },
+    { id: 'shonen', nombre: 'Shōnen' },
+    { id: 'ghost', nombre: 'Fantasmas' },
+    { id: 'samurai', nombre: 'Samurái' },
+    { id: 'kawaii', nombre: 'Kawaii' },
   ];
 
   for (const tema of temas) {

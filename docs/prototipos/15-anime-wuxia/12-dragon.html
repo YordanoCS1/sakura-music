@@ -1,0 +1,28 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>12 · Dragón</title><style>
+*{box-sizing:border-box}body{margin:0;font:14px system-ui;min-height:100vh}
+.nav{height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 20px}
+.nav b{font-size:13px;letter-spacing:.1em}
+.nav button{background:none;border:0;font:11px system-ui;cursor:pointer;padding:6px 12px}
+.vista{display:none;height:calc(100vh - 46px);overflow:auto;padding:24px}
+.vista.on{display:block}
+
+:root{--fon:#140b08;--pan:#1f110b;--tinta:#f5e6cf;--rojo:#d13b1f;--oro:#e0a93b;--suave:#b08a63}
+body{background:var(--fon);color:var(--tinta);font-family:Georgia,serif}
+.nav{background:#0e0705;border-bottom:3px solid var(--oro)}.nav b{color:var(--oro)}
+.home{display:flex;align-items:center;gap:50px;min-height:68vh}
+.dragon{width:200px;height:200px;border:4px solid var(--rojo);border-radius:50%;display:grid;place-items:center;font-size:76px;color:var(--oro);box-shadow:0 0 60px rgba(209,59,31,.3);flex:none}
+.copy h1{font-size:48px;font-weight:400}.copy p{max-width:340px;line-height:1.9;color:var(--suave)}
+.btn{display:inline-block;border:1px solid var(--oro);color:var(--oro);padding:10px 16px;margin-top:16px;font-size:11px}
+.tit{display:flex;justify-content:space-between;border-bottom:3px solid var(--oro);padding-bottom:10px;margin-bottom:20px}.tit h1{font-size:30px;margin:0;font-weight:400}
+.escamas{display:flex;flex-wrap:wrap;gap:0}
+.escama{width:90px;height:76px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(224,169,59,.2),rgba(209,59,31,.2));border:1px solid var(--oro);clip-path:polygon(0 0,100% 0,100% 70%,50% 100%,0 70%)}
+.escama b{font-size:11px}.escama small{font-size:8px;color:var(--suave)}
+</style></head><body>
+<div class="nav"><b>龍 Dragón</b><nav><button class="on" data-v="home">Inicio</button><button data-v="lib">Biblioteca</button><button>Buscar</button><button>Cola</button></nav></div>
+<section class="vista on" id="home"><div class="home"><div class="dragon">龍</div><div class="copy"><p>龍 · ESPÍRITU DEL DRAGÓN</p><h1>Fuego y poder</h1><p>Escamas de oro y aliento de fuego.</p><span class="btn">Abrir biblioteca →</span></div></div></section><section class="vista" id="lib"><div class="tit"><div><small>GUARIDA · 01</small><h1>Biblioteca</h1></div><span>8 ESCAMAS</span></div><div class="escamas"><div class="escama"><b>Pista 0</b><small>龍 01</small></div><div class="escama"><b>Pista 1</b><small>龍 02</small></div><div class="escama"><b>Pista 2</b><small>龍 03</small></div><div class="escama"><b>Pista 3</b><small>龍 04</small></div><div class="escama"><b>Pista 4</b><small>龍 05</small></div><div class="escama"><b>Pista 5</b><small>龍 06</small></div><div class="escama"><b>Pista 6</b><small>龍 07</small></div><div class="escama"><b>Pista 7</b><small>龍 08</small></div></div></section>
+<script>document.querySelectorAll('.nav button[data-v]').forEach(b=>b.onclick=()=>{
+ document.querySelectorAll('.vista').forEach(v=>v.classList.remove('on'));
+ document.getElementById(b.dataset.v).classList.add('on');
+ document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('on')); b.classList.add('on');});
+</script></body></html>

@@ -1,0 +1,29 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>03 · Samurái</title><style>
+*{box-sizing:border-box}body{margin:0;font:14px system-ui;min-height:100vh}
+.nav{height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 20px}
+.nav b{font-size:13px;letter-spacing:.1em}
+.nav button{background:none;border:0;font:11px system-ui;cursor:pointer;padding:6px 12px}
+.vista{display:none;height:calc(100vh - 46px);overflow:auto;padding:24px}
+.vista.on{display:block}
+
+:root{--fon:#1a1512;--pan:#241c17;--tinta:#efe6d6;--rojo:#b7352a;--oro:#c9a961;--suave:#9e8f7c}
+body{background:var(--fon);color:var(--tinta);font-family:Georgia,serif}
+.nav{background:#120e0b;border-bottom:2px solid var(--rojo)}.nav b{color:var(--oro)}
+.home{display:flex;align-items:center;gap:52px;min-height:68vh}
+.katana{width:200px;height:200px;border:3px solid var(--oro);border-radius:50%;display:grid;place-items:center;font-size:70px;color:var(--rojo);flex:none}
+.copy h1{font-size:48px;font-weight:400}.copy p{max-width:340px;line-height:1.9;color:var(--suave)}
+.btn{display:inline-block;border:1px solid var(--oro);color:var(--oro);padding:10px 16px;margin-top:16px;font-size:11px}
+.tit{display:flex;justify-content:space-between;border-bottom:2px solid var(--oro);padding-bottom:10px;margin-bottom:20px}.tit h1{font-size:30px;margin:0;font-weight:400}
+.lamas{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.lama{display:flex;align-items:center;gap:14px;padding:14px;border:1px solid rgba(201,169,97,.35);background:linear-gradient(120deg,rgba(183,53,42,.12),transparent);clip-path:polygon(0 0,100% 0,100% 78%,92% 100%,0 100%)}
+.lama span{width:46px;height:46px;display:grid;place-items:center;border:2px solid var(--oro);border-radius:50%;color:var(--rojo);flex:none}
+.lama strong{font-size:15px}.lama small{display:block;color:var(--suave);font-size:10px}
+</style></head><body>
+<div class="nav"><b>侍 Samurái</b><nav><button class="on" data-v="home">Inicio</button><button data-v="lib">Biblioteca</button><button>Buscar</button><button>Cola</button></nav></div>
+<section class="vista on" id="home"><div class="home"><div class="katana">侍</div><div class="copy"><p>侍 · CAMINO DEL GUERRERO</p><h1>Honor en cada nota</h1><p>Armadura lacada y acero. Tu biblioteca como un dojo.</p><span class="btn">Abrir biblioteca →</span></div></div></section><section class="vista" id="lib"><div class="tit"><div><small>DOJO · 01</small><h1>Biblioteca</h1></div><span>8 PIEZAS</span></div><div class="lamas"><div class="lama"><span>01</span><div><strong>Pista 0</strong><small>Artista 0 · Álbum 0</small></div></div><div class="lama"><span>02</span><div><strong>Pista 1</strong><small>Artista 1 · Álbum 1</small></div></div><div class="lama"><span>03</span><div><strong>Pista 2</strong><small>Artista 2 · Álbum 2</small></div></div><div class="lama"><span>04</span><div><strong>Pista 3</strong><small>Artista 3 · Álbum 3</small></div></div><div class="lama"><span>05</span><div><strong>Pista 4</strong><small>Artista 4 · Álbum 4</small></div></div><div class="lama"><span>06</span><div><strong>Pista 5</strong><small>Artista 5 · Álbum 5</small></div></div><div class="lama"><span>07</span><div><strong>Pista 6</strong><small>Artista 6 · Álbum 6</small></div></div><div class="lama"><span>08</span><div><strong>Pista 7</strong><small>Artista 7 · Álbum 7</small></div></div></div></section>
+<script>document.querySelectorAll('.nav button[data-v]').forEach(b=>b.onclick=()=>{
+ document.querySelectorAll('.vista').forEach(v=>v.classList.remove('on'));
+ document.getElementById(b.dataset.v).classList.add('on');
+ document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('on')); b.classList.add('on');});
+</script></body></html>

@@ -1,0 +1,32 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>03 · Brutalist</title><style>
+
+:root{--neg:#0a0a0a;--fon:#e8e8e4;--amar:#f5ff00;--gris:#b9b9b2}
+*{box-sizing:border-box}body{margin:0;background:var(--fon);color:var(--neg);font:14px 'Courier New',monospace}
+.nav{height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:var(--neg);color:#fff;border-bottom:4px solid var(--amar)}
+.nav b{letter-spacing:.08em}.nav button{background:none;border:0;color:#999;font:11px 'Courier New';cursor:pointer;padding:6px 12px}.nav button.on{background:var(--amar);color:var(--neg)}
+.vista{display:none;height:calc(100vh - 46px);overflow:auto;padding:24px}.vista.on{display:block}
+.home{display:grid;grid-template-columns:1fr 1fr;gap:30px;min-height:70vh}
+.bloque{background:var(--neg);color:var(--amar);padding:30px;display:flex;flex-direction:column;justify-content:space-between;font-weight:700}
+.bloque .big{font-size:100px;line-height:.8}
+.copy h1{font-size:46px;line-height:.95;text-transform:uppercase;margin:8px 0;letter-spacing:-.04em}.copy p{max-width:340px;line-height:1.6}
+.btn{display:inline-block;background:var(--neg);color:var(--amar);padding:11px 16px;margin-top:16px;font-weight:700;text-transform:uppercase}
+.tit{background:var(--neg);color:#fff;padding:12px 16px;display:flex;justify-content:space-between;margin-bottom:10px}.tit h1{font-size:28px;margin:0;text-transform:uppercase}
+.f{display:grid;grid-template-columns:50px 1fr 1fr 60px;align-items:center;padding:12px 10px;border:2px solid var(--neg);margin-bottom:-2px;background:#fff}
+.f strong{font-size:15px;text-transform:uppercase}.f span{font-size:10px}.f span:first-child{background:var(--amar);padding:4px;font-weight:700}
+.f:nth-child(2n){background:var(--gris)}
+
+</style></head><body>
+<div class="nav"><b>▣ Brutalist</b><nav><button class="on" data-v="home">Inicio</button><button data-v="lib">Biblioteca</button><button>Buscar</button><button>Cola</button></nav></div>
+<section class="vista on" id="home">
+<div class="home"><div class="bloque"><span>SYS / 001</span><div class="big">▣</div><span>NO DECOR<br>ONLY FUNCTION</span></div><div class="copy"><p>[ BRUTALIST · RAW INTERFACE ]</p><h1>Música<br>sin relleno</h1><p>Hormigón,negro y amarillo. Bloques apilados, cero adornos. La estructura a la vista.</p><span class="btn">Abrir biblioteca →</span></div></div></section>
+<section class="vista" id="lib">
+<div class="tit"><span>LIBRARY / INDEX</span><span>6 TRACKS</span></div><div class="f"><span>Nº</span><span>TÍTULO</span><span>ARTISTA / ÁLBUM</span><span>TIEMPO</span></div><div class="f"><span>01</span><strong>Pista 0</strong><span>Artista 0 · Álbum 0</span><span>3:20</span></div><div class="f"><span>02</span><strong>Pista 1</strong><span>Artista 1 · Álbum 1</span><span>3:20</span></div><div class="f"><span>03</span><strong>Pista 2</strong><span>Artista 2 · Álbum 2</span><span>3:20</span></div><div class="f"><span>04</span><strong>Pista 3</strong><span>Artista 3 · Álbum 3</span><span>3:20</span></div><div class="f"><span>05</span><strong>Pista 4</strong><span>Artista 4 · Álbum 4</span><span>3:20</span></div><div class="f"><span>06</span><strong>Pista 5</strong><span>Artista 5 · Álbum 5</span><span>3:20</span></div></section>
+<script>
+document.querySelectorAll('.nav button[data-v]').forEach(b=>b.onclick=()=>{
+ document.querySelectorAll('.vista').forEach(v=>v.classList.remove('on'));
+ document.getElementById(b.dataset.v).classList.add('on');
+ document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('on'));
+ b.classList.add('on');
+});
+</script></body></html>

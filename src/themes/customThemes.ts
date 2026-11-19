@@ -24,6 +24,10 @@ const ARQUETIPOS: Arquetipo[] = [
   'sumiink',
   'moonlit',
   'ledger',
+  'shonen',
+  'ghost',
+  'samurai',
+  'kawaii',
 ];
 
 function esValido(dato: unknown): dato is TemaPersonalizado {

@@ -55,7 +55,11 @@ export default function ThemeLibrary({
     theme !== 'swiss' &&
     theme !== 'sumiink' &&
     theme !== 'moonlit' &&
-    theme !== 'ledger'
+    theme !== 'ledger' &&
+    theme !== 'shonen' &&
+    theme !== 'ghost' &&
+    theme !== 'samurai' &&
+    theme !== 'kawaii'
   ) {
     return null;
   }
@@ -180,6 +184,62 @@ export default function ThemeLibrary({
             <span className="ledger-cabecera-count">{total} piezas · 100% local</span>
           </header>
         );
+      case 'shonen':
+        return (
+          <header className="shonen-cab">
+            <span className="shonen-cab-glifo" aria-hidden="true">
+              ⚡
+            </span>
+            <div className="shonen-cab-tit">
+              <small>TEAM / BIBLIOTECA</small>
+              <h1>Biblioteca</h1>
+            </div>
+            {navCarpetas}
+            <span className="shonen-cab-count">{total} PISTAS</span>
+          </header>
+        );
+      case 'ghost':
+        return (
+          <header className="ghost-cab">
+            <span className="ghost-cab-glifo" aria-hidden="true">
+              ☻
+            </span>
+            <div className="ghost-cab-tit">
+              <small>ESPÍRITUS · 01</small>
+              <h1>Biblioteca</h1>
+            </div>
+            {navCarpetas}
+            <span className="ghost-cab-count">{total} ECOS</span>
+          </header>
+        );
+      case 'samurai':
+        return (
+          <header className="samurai-cab">
+            <span className="samurai-cab-glifo" aria-hidden="true">
+              侍
+            </span>
+            <div className="samurai-cab-tit">
+              <small>DOJO · 01</small>
+              <h1>Biblioteca</h1>
+            </div>
+            {navCarpetas}
+            <span className="samurai-cab-count">{total} PIEZAS</span>
+          </header>
+        );
+      case 'kawaii':
+        return (
+          <header className="kawaii-cab">
+            <span className="kawaii-cab-glifo" aria-hidden="true">
+              ♡
+            </span>
+            <div className="kawaii-cab-tit">
+              <small>PARQUE · 01</small>
+              <h1>Biblioteca</h1>
+            </div>
+            {navCarpetas}
+            <span className="kawaii-cab-count">{total} AMIGOS</span>
+          </header>
+        );
       default:
         return (
           <header className="theme-library-head">
@@ -197,6 +257,10 @@ export default function ThemeLibrary({
     sumiink: 'Trazos',
     moonlit: 'Sectores',
     ledger: 'Registros',
+    shonen: 'Misiones',
+    ghost: 'Ecos',
+    samurai: 'Formas',
+    kawaii: 'Amigos',
   };
   const subcarpetas = folderExplorerData.subfolders.slice(0, 12);
   const selectorCarpetas = subcarpetas.length > 0 && (
@@ -605,6 +669,133 @@ export default function ThemeLibrary({
                 桜
               </span>
             </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (theme === 'shonen') {
+    return (
+      <div className="shonen-library">
+        {encabezado}
+        {selectorCarpetas}
+        {vistaTracks.length === 0 ? (
+          vacio
+        ) : (
+          <div className="shonen-manga">
+            {vistaTracks.map((track, i) => (
+              <article
+                key={track.id}
+                className={`shonen-vigneta ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+              >
+                <span className="shonen-go">GO!</span>
+                <button type="button" onClick={() => onPlayTrack(track)}>
+                  <span className="shonen-portada">{portadaDe(track)}</span>
+                  <strong>{track.title}</strong>
+                </button>
+                <small>
+                  {track.artist} · {track.album}
+                </small>
+                <span className="shonen-num">{String(i + 1).padStart(2, '0')}</span>
+                {acciones(track)}
+              </article>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (theme === 'ghost') {
+    return (
+      <div className="ghost-library">
+        {encabezado}
+        {selectorCarpetas}
+        {vistaTracks.length === 0 ? (
+          vacio
+        ) : (
+          <div className="ghost-espiritus">
+            {vistaTracks.map((track) => (
+              <article
+                key={track.id}
+                className={`ghost-espiritu ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+              >
+                <button type="button" onClick={() => onPlayTrack(track)}>
+                  <span className="ghost-cara">☻</span>
+                  <strong>{track.title}</strong>
+                  <small>
+                    {track.artist} · {track.album}
+                  </small>
+                </button>
+                <span className="ghost-acc">{acciones(track)}</span>
+              </article>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (theme === 'samurai') {
+    return (
+      <div className="samurai-library">
+        {encabezado}
+        {selectorCarpetas}
+        {vistaTracks.length === 0 ? (
+          vacio
+        ) : (
+          <div className="samurai-lamas">
+            {vistaTracks.map((track, i) => (
+              <article
+                key={track.id}
+                className={`samurai-lama ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+              >
+                <span className="samurai-num">{String(i + 1).padStart(2, '0')}</span>
+                <button type="button" onClick={() => onPlayTrack(track)}>
+                  <strong>{track.title}</strong>
+                  <small>
+                    {track.artist} · {track.album}
+                  </small>
+                </button>
+                {acciones(track)}
+              </article>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (theme === 'kawaii') {
+    return (
+      <div className="kawaii-library">
+        {encabezado}
+        {selectorCarpetas}
+        {vistaTracks.length === 0 ? (
+          vacio
+        ) : (
+          <div className="kawaii-amigos">
+            {vistaTracks.map((track, i) => (
+              <article
+                key={track.id}
+                className={`kawaii-amigo ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+                style={
+                  {
+                    '--c': ['#ff9ec4', '#9ee0c8', '#c9b0f0', '#ffd89e'][i % 4],
+                  } as React.CSSProperties
+                }
+              >
+                <button type="button" onClick={() => onPlayTrack(track)}>
+                  <span className="kawaii-cara">(◕‿◕)</span>
+                  <strong>{track.title}</strong>
+                  <small>
+                    {track.artist} · {track.album}
+                  </small>
+                </button>
+                {acciones(track)}
+              </article>
+            ))}
           </div>
         )}
       </div>

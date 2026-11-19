@@ -1,0 +1,30 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>07 · Mecha</title><style>
+*{box-sizing:border-box}body{margin:0;font:14px system-ui;min-height:100vh}
+.nav{height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 20px}
+.nav b{font-size:13px;letter-spacing:.1em}
+.nav button{background:none;border:0;font:11px system-ui;cursor:pointer;padding:6px 12px}
+.vista{display:none;height:calc(100vh - 46px);overflow:auto;padding:24px}
+.vista.on{display:block}
+
+:root{--fon:#0b1018;--pan:#131c28;--tinta:#d8e6f2;--azul:#3b82f6;--rojo:#ef4444;--suave:#8296ac}
+body{background:var(--fon);color:var(--tinta);font-family:'Courier New',monospace}
+.nav{background:#070c14;border-bottom:2px solid var(--azul)}.nav b{color:var(--azul)}
+.home{display:flex;flex-direction:column;justify-content:center;min-height:68vh;border:2px solid var(--azul);padding:26px}
+.hud{display:flex;gap:10px;margin-bottom:16px}.hud i{height:10px;flex:1;background:var(--azul);opacity:.6}
+.copy h1{font-size:34px;text-transform:uppercase;letter-spacing:.1em}.copy p{color:var(--suave);max-width:460px}
+.btn{display:inline-block;background:var(--rojo);color:#fff;padding:10px 16px;margin-top:16px;font-size:11px}
+.tit{background:var(--azul);color:#fff;padding:10px;display:flex;justify-content:space-between}.tit h1{font-size:22px;margin:0}
+.sistemas{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.sis{border:1px solid var(--azul);padding:12px;background:rgba(59,130,246,.06)}
+.sis .head{display:flex;justify-content:space-between;font-size:10px;color:var(--suave)}
+.sis strong{display:block;font-size:14px;margin:8px 0;color:var(--tinta)}
+.sis .meter{height:6px;background:#1e293b}.sis .meter i{display:block;height:100%;background:var(--rojo)}
+</style></head><body>
+<div class="nav"><b>▣ Mecha</b><nav><button class="on" data-v="home">Inicio</button><button data-v="lib">Biblioteca</button><button>Buscar</button><button>Cola</button></nav></div>
+<section class="vista on" id="home"><div class="home"><div class="hud"><i></i><i></i><i></i></div><div class="copy"><p>MECHA · SISTEMA ACTIVADO</p><h1>&gt; PILOTO, CONÉCTATE</h1><p>Todos los sistemas en línea.</p><span class="btn">Iniciar secuencia →</span></div></div></section><section class="vista" id="lib"><div class="tit"><span>SISTEMA / UNIDADES</span><span>8 MECHAS</span></div><div class="sistemas"><div class="sis"><div class="head"><span>UNIDAD 01</span><span>ONLINE</span></div><strong>Pista 0</strong><div class="meter"><i style="width:30%"></i></div></div><div class="sis"><div class="head"><span>UNIDAD 02</span><span>ONLINE</span></div><strong>Pista 1</strong><div class="meter"><i style="width:38%"></i></div></div><div class="sis"><div class="head"><span>UNIDAD 03</span><span>ONLINE</span></div><strong>Pista 2</strong><div class="meter"><i style="width:46%"></i></div></div><div class="sis"><div class="head"><span>UNIDAD 04</span><span>ONLINE</span></div><strong>Pista 3</strong><div class="meter"><i style="width:54%"></i></div></div><div class="sis"><div class="head"><span>UNIDAD 05</span><span>ONLINE</span></div><strong>Pista 4</strong><div class="meter"><i style="width:62%"></i></div></div><div class="sis"><div class="head"><span>UNIDAD 06</span><span>ONLINE</span></div><strong>Pista 5</strong><div class="meter"><i style="width:70%"></i></div></div><div class="sis"><div class="head"><span>UNIDAD 07</span><span>ONLINE</span></div><strong>Pista 6</strong><div class="meter"><i style="width:78%"></i></div></div><div class="sis"><div class="head"><span>UNIDAD 08</span><span>ONLINE</span></div><strong>Pista 7</strong><div class="meter"><i style="width:86%"></i></div></div></div></section>
+<script>document.querySelectorAll('.nav button[data-v]').forEach(b=>b.onclick=()=>{
+ document.querySelectorAll('.vista').forEach(v=>v.classList.remove('on'));
+ document.getElementById(b.dataset.v).classList.add('on');
+ document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('on')); b.classList.add('on');});
+</script></body></html>
