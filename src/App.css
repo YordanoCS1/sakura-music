@@ -6768,8 +6768,8 @@ html[data-theme-transition='origami'] #theme-panel.panel-enter { animation: t-or
 @keyframes t-origami { from { opacity:0; transform:translateY(-10px) skewY(1.2deg); } }
 
 /* SWISS · barrido seco en dos pasos. */
-html[data-theme-transition='swiss'] #theme-panel.panel-enter { animation: t-swiss 170ms steps(3,end) both; }
-@keyframes t-swiss { from { opacity:0; transform:translateX(24px); } }
+html[data-theme-transition='swiss'] #theme-panel.panel-enter { animation: t-swiss 130ms cubic-bezier(.2,.7,.3,1) both; }
+@keyframes t-swiss { from { opacity:0; transform:translateX(40px); } }
 
 /* SUMI INK · fundido limpio, sin blur. */
 html[data-theme-transition='sumiink'] #theme-panel.panel-enter { animation: t-sumi 200ms ease-out both; }

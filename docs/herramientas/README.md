@@ -8,7 +8,7 @@ Utilidades que acompañan a Sakura Music. Ninguna es necesaria para usar la app.
 
 **Para cambiar toda la app**, entrá a **Ajustes → Importar un tema → Abrir generador** (o copiá el JSON del generador externo y pegalo en *Importar JSON*). El generador integrado tiene vista previa en vivo, selector de arquetipo y botón *Aplicar tema*, todo dentro de la app. El arquetipo define la estructura de Home, biblioteca, barra superior, Buscar y Cola; el CSS define la paleta. Los temas importados se guardan en `localStorage` (`sakura_temas_personalizados`) y se inyectan en runtime, sin tocar el código fuente.
 
-Cada arquetipo también define una **transición de vista** propia al cambiar de pestaña: deslizamiento en Shoji, plegado en Origami, barrido por pasos en Swiss, fundido en Sumi Ink, subida en Moonlit y giro de página en Ledger. Se anima directamente el panel con `transform`/`opacity` (GPU, 170-220 ms) en vez de capturar la página con View Transitions, para que no se sienta lag. Los cambios rápidos de pestaña no se encolan y se respeta `prefers-reduced-motion`.
+Cada arquetipo también define una **transición de vista** propia al cambiar de pestaña: deslizamiento en Shoji, plegado en Origami, barrido continuo en Swiss, fundido en Sumi Ink, subida en Moonlit y giro de página en Ledger. Se anima directamente el panel con `transform`/`opacity` (GPU, 170-220 ms) en vez de capturar la página con View Transitions, para que no se sienta lag. Los cambios rápidos de pestaña no se encolan y se respeta `prefers-reduced-motion`.
 
 Arquetipos disponibles: `shoji`, `origami`, `swiss`, `sumiink`, `moonlit`, `ledger`, `sumie` y `byobu`.
 

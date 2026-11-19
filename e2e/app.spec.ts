@@ -407,6 +407,23 @@ test('el generador integrado aplica un tema con su arquetipo', async ({ page }) 
   expect(duracion).toBe('0.21s');
 });
 
+test('la transición de Swiss es rápida y continua', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('sakura_theme', 'swiss');
+    localStorage.setItem('sakura_ambient_particles', 'false');
+  });
+  await page.goto('/');
+  await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });
+
+  await page.getByRole('tab', { name: /Biblioteca/ }).click();
+  const animacion = await page.locator('#theme-panel').evaluate((el) => {
+    const estilo = getComputedStyle(el);
+    return { duracion: estilo.animationDuration, timing: estilo.animationTimingFunction };
+  });
+  expect(animacion.duracion).toBe('0.13s');
+  expect(animacion.timing).toBe('cubic-bezier(0.2, 0.7, 0.3, 1)');
+});
+
 test('se pueden borrar temas personalizados', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });

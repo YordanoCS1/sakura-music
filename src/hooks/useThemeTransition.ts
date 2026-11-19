@@ -9,7 +9,7 @@ type SetTab = (tab: AppTab) => void;
  * usando sólo transform/opacity para que el navegador lo haga en el GPU.
  */
 export function useThemeTransition(tema: ThemeMode, setTab: SetTab): SetTab {
-  const animando = useRef(false);
+  const temporizador = useRef<number | undefined>(undefined);
 
   return useCallback(
     (tab: AppTab) => {
@@ -18,22 +18,22 @@ export function useThemeTransition(tema: ThemeMode, setTab: SetTab): SetTab {
 
       document.documentElement.dataset['themeTransition'] = tema;
 
-      if (reduceMotion || !panel || animando.current) {
+      if (reduceMotion || !panel) {
         setTab(tab);
         return;
       }
 
-      animando.current = true;
-      // Reiniciamos la animación aunque la pestaña no cambie.
+      // Reiniciamos la animación aunque la pestaña no cambie. No bloqueamos
+      // los cambios rápidos: cada clic Reinicia su propia animación corta.
       panel.classList.remove('panel-enter');
       void panel.offsetWidth;
       panel.classList.add('panel-enter');
       setTab(tab);
 
-      window.setTimeout(() => {
+      window.clearTimeout(temporizador.current);
+      temporizador.current = window.setTimeout(() => {
         panel.classList.remove('panel-enter');
-        animando.current = false;
-      }, 240);
+      }, 200);
     },
     [tema, setTab],
   );
