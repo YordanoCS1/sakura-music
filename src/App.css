@@ -7015,3 +7015,29 @@ html[data-theme-transition='kawaii'] #theme-panel.panel-enter { animation: t-kaw
 .swiss-poster.is-active .swiss-poster-info small { color:#fff; }
 .swiss-poster.is-active .swiss-poster-foot { border-color:#444; color:#aaa; }
 .swiss-poster.is-active .theme-row-actions button { color:#aaa; }
+
+
+/* ========================================================= */
+/* ICONOS DE NAVEGACIÓN POR TEMA                               */
+/* ========================================================= */
+.theme-nav-tabs button { display:inline-flex; align-items:center; gap:7px; }
+.theme-nav-tab-icon { display:inline-grid; place-items:center; width:20px; height:20px; flex:none; font-size:14px; line-height:1; opacity:.75; transition:transform .16s ease, opacity .16s ease; }
+.theme-nav-tabs button:hover .theme-nav-tab-icon { transform:scale(1.15); opacity:1; }
+.theme-nav-tabs button.is-active .theme-nav-tab-icon { transform:scale(1.1); opacity:1; }
+
+/* Estilo kanji: serif, un poco más grande */
+.theme-nav[data-icon-style='kanji'] .theme-nav-tab-icon { font-family:'Cormorant Garamond',Georgia,serif; font-size:16px; }
+/* Estilo monoespacio: formas cuadradas */
+.theme-nav[data-icon-style='mono'] .theme-nav-tab-icon { font-family:'JetBrains Mono',Consolas,monospace; font-size:13px; font-weight:700; }
+/* Estilo símbolo: system-ui */
+.theme-nav[data-icon-style='symbol'] .theme-nav-tab-icon { font-family:system-ui,'Segoe UI Symbol',sans-serif; font-size:15px; }
+
+/* Detalles por tema */
+.theme-nav.tema-swiss .theme-nav-tab-icon { border:1px solid currentColor; border-radius:2px; width:18px; height:18px; }
+.theme-nav.tema-origami .theme-nav-tab-icon { clip-path:polygon(0 0,100% 0,100% 78%,78% 100%,0 100%); background:currentColor; color:transparent; }
+.theme-nav.tema-origami button.is-active .theme-nav-tab-icon { color:var(--set-on-accent-base,#fff); }
+.theme-nav.tema-kawaii .theme-nav-tab-icon { border-radius:50%; background:rgba(255,255,255,.6); width:22px; height:22px; }
+.theme-nav.tema-ghost .theme-nav-tab-icon { filter:drop-shadow(0 0 5px currentColor); }
+.theme-nav.tema-shonen .theme-nav-tab-icon { font-weight:900; font-style:italic; }
+.theme-nav.tema-ledger .theme-nav-tab-icon { border:1px solid currentColor; border-radius:50%; width:19px; height:19px; }
+.theme-nav.tema-moonlit .theme-nav-tab-icon { filter:drop-shadow(0 0 6px currentColor); }

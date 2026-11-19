@@ -412,6 +412,22 @@ test('el generador integrado aplica un tema con su arquetipo', async ({ page }) 
   );
 });
 
+test('cada tema usa sus propios iconos de navegacion', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('sakura_theme', 'samurai'));
+  await page.goto('/');
+  await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });
+
+  const iconos = await page.locator('.theme-nav-tab-icon').allTextContents();
+  expect(iconos).toEqual(['侍', '巻', '探', '列', '整']);
+  expect(await page.locator('.theme-nav').getAttribute('data-icon-style')).toBe('kanji');
+
+  await page.getByRole('tab', { name: /Ajustes/ }).click();
+  await page.getByRole('button', { name: /Swiss/ }).click();
+  const iconosSwiss = await page.locator('.theme-nav-tab-icon').allTextContents();
+  expect(iconosSwiss).toEqual(['▦', '▤', '⌕', '☰', '⊞']);
+  expect(await page.locator('.theme-nav').getAttribute('data-icon-style')).toBe('mono');
+});
+
 test('el splash de arranque adopta el tema guardado', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('sakura_theme', 'shonen'));
   await page.goto('/');

@@ -1,5 +1,6 @@
 import { Search, X } from 'lucide-react';
 import type { AppTab, ThemeMode } from '../types';
+import { estiloIconos, iconosDe } from '../themes/themeIcons';
 
 interface ThemeNavProps {
   theme: ThemeMode;
@@ -45,8 +46,16 @@ export default function ThemeNav({
   searchQuery,
   onSearchChange,
 }: ThemeNavProps) {
+  const iconos = iconosDe(theme);
+  const estilo = estiloIconos(theme);
+
   return (
-    <nav className={`theme-nav tema-${theme}`} role="navigation" aria-label="Navegación principal">
+    <nav
+      className={`theme-nav tema-${theme}`}
+      data-icon-style={estilo}
+      role="navigation"
+      aria-label="Navegación principal"
+    >
       <span className="theme-nav-glifo" aria-hidden="true">
         {GLIFOS[theme] ?? '桜'}
       </span>
@@ -65,7 +74,10 @@ export default function ThemeNav({
             className={activeTab === item.id ? 'is-active' : ''}
             onClick={() => onNavigate(item.id)}
           >
-            {item.label}
+            <span className="theme-nav-tab-icon" aria-hidden="true">
+              {iconos[item.id]}
+            </span>
+            <span>{item.label}</span>
           </button>
         ))}
       </div>

@@ -75,7 +75,7 @@ for (const tema of ['shoji', 'origami', 'swiss', 'sumiink', 'moonlit', 'ledger']
     await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });
     await expect(page.locator('.app-shell')).toHaveAttribute('data-skin', tema);
     await page.getByRole('tab', { name: /Inicio/ }).click();
-    await expect(page.locator('[role="tab"][aria-selected="true"]')).toHaveText('Inicio');
+    await expect(page.locator('[role="tab"][aria-selected="true"]')).toContainText('Inicio');
     await page.mouse.move(0, 0);
     await page.waitForTimeout(250);
 
