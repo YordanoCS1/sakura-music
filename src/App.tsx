@@ -1427,6 +1427,11 @@ export default function App() {
                 temas={todosLosTemas}
                 onImportarTema={importarTema}
                 onAbrirGenerador={() => setGeneradorAbierto(true)}
+                onGuardarTema={(tema) => {
+                  setCustomThemes(guardarTemaPersonalizado(tema));
+                  setTheme(tema.id);
+                  localStorage.setItem('sakura_theme', tema.id);
+                }}
                 onBorrarTema={borrarTema}
                 temasPersonalizadosIds={customThemes.map((tema) => tema.id)}
                 remoteEnabled={controlRemoto.enabled}
