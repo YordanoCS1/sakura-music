@@ -712,6 +712,10 @@ export default function App() {
     isOpeningAlbum,
     albumLink,
     setAlbumLink,
+    songLink,
+    setSongLink,
+    isOpeningSong,
+    openSongByLink,
     openEditModal,
     resetField,
     resetAllFields,
@@ -1386,6 +1390,10 @@ export default function App() {
               albumLink={albumLink}
               onSetAlbumLink={setAlbumLink}
               onOpenAlbumByLink={openAlbumByLink}
+              songLink={songLink}
+              onSetSongLink={setSongLink}
+              isOpeningSong={isOpeningSong}
+              onOpenSongByLink={openSongByLink}
               onSetCatalogMode={setCatalogMode}
               onPickCover={pickNewCoverImage}
               onResetField={resetField}

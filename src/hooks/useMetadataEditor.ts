@@ -56,6 +56,9 @@ export function useMetadataEditor({
   const [isOpeningAlbum, setIsOpeningAlbum] = useState(false);
   // Enlace directo de álbum de iTunes/Apple Music (cuando no aparece en el buscador)
   const [albumLink, setAlbumLink] = useState('');
+  // Enlace directo de canción: permite importar una pista concreta por su ID.
+  const [songLink, setSongLink] = useState('');
+  const [isOpeningSong, setIsOpeningSong] = useState(false);
 
   const openEditModal = (track: ScannedTrack, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
@@ -313,6 +316,51 @@ export function useMetadataEditor({
     }
   };
 
+  // Cargar una canción concreta desde su enlace de iTunes/Apple Music.
+  // La URL de canción trae el ID del álbum en la ruta y el de la pista en `i=`.
+  const openSongByLink = async (link: string) => {
+    const trimmed = link.trim();
+    if (!trimmed) {
+      setCatalogError('Pega primero el enlace de la canción de iTunes/Apple Music.');
+      return;
+    }
+    const ccMatch =
+      trimmed.match(/\/music\.apple\.com\/([a-z]{2})\//i) ||
+      trimmed.match(/\/itunes\.apple\.com\/([a-z]{2})\//i);
+    const country = ccMatch ? ccMatch[1].toLowerCase() : 'us';
+    const idMatch = trimmed.match(/\/(\d{8,15})(?:\/|\?|$)/);
+    const collectionId = idMatch ? idMatch[1] : null;
+    if (!collectionId) {
+      setCatalogError(
+        'No se pudo extraer el ID. Pega un enlace tipo https://music.apple.com/us/album/.../<id>?i=<id>.',
+      );
+      return;
+    }
+    const trackMatch = trimmed.match(/[?&]i=(\d{8,15})/);
+    const trackId = trackMatch ? trackMatch[1] : null;
+
+    setIsOpeningSong(true);
+    setCatalogError(null);
+    try {
+      const tracks: CatalogAlbumTrack[] = await invoke('open_catalog_album', {
+        source: 'itunes',
+        id: collectionId,
+        country,
+      });
+      if (tracks.length === 0) {
+        setCatalogError('No se encontraron pistas para ese enlace. Verificá la URL.');
+        return;
+      }
+      const elegida = (trackId && tracks.find((t) => t.id === trackId)) || tracks[0];
+      await applyAlbumTrack(elegida);
+    } catch (err) {
+      console.error('Error al cargar canción por enlace:', err);
+      setCatalogError(`Error al cargar la canción desde el enlace: ${String(err)}`);
+    } finally {
+      setIsOpeningSong(false);
+    }
+  };
+
   // Aplicar campos de un candidato (canción) al formulario.
   const applyFields = (fields: {
     title?: string;
@@ -481,6 +529,10 @@ export function useMetadataEditor({
     setIsOpeningAlbum,
     albumLink,
     setAlbumLink,
+    songLink,
+    setSongLink,
+    isOpeningSong,
+    setIsOpeningSong,
     openEditModal,
     resetField,
     resetAllFields,
@@ -488,6 +540,7 @@ export function useMetadataEditor({
     searchCatalog,
     openAlbum,
     openAlbumByLink,
+    openSongByLink,
     applyCandidate,
     applyAlbumTrack,
     handlePaste,

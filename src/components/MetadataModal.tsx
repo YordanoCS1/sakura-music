@@ -59,6 +59,8 @@ interface MetadataModalProps {
   catalogAlbumTracks: CatalogAlbumTrack[];
   isOpeningAlbum: boolean;
   albumLink: string;
+  songLink: string;
+  isOpeningSong: boolean;
   getCoverSrc: (coverUrl: string | null) => string;
   onClose: () => void;
   onPaste: (e: React.ClipboardEvent) => void;
@@ -69,6 +71,8 @@ interface MetadataModalProps {
   onApplyCandidate: (candidate: CatalogCandidate, applyCoverOnly: boolean) => void;
   onOpenAlbum: (album: CatalogAlbum) => void;
   onOpenAlbumByLink: (link: string) => void;
+  onSetSongLink: (v: string) => void;
+  onOpenSongByLink: (link: string) => void;
   onApplyAlbumTrack: (track: CatalogAlbumTrack, applyCoverOnly: boolean) => void;
   onPickCover: () => void;
   onResetField: (field: EditField) => void;
@@ -115,6 +119,8 @@ export default function MetadataModal({
   catalogAlbumTracks,
   isOpeningAlbum,
   albumLink,
+  songLink,
+  isOpeningSong,
   getCoverSrc,
   onClose,
   onPaste,
@@ -125,6 +131,8 @@ export default function MetadataModal({
   onApplyCandidate,
   onOpenAlbum,
   onOpenAlbumByLink,
+  onSetSongLink,
+  onOpenSongByLink,
   onApplyAlbumTrack,
   onPickCover,
   onResetField,
@@ -773,6 +781,39 @@ export default function MetadataModal({
                       <Link2 className="w-3.5 h-3.5" />
                     )}
                     Cargar álbum
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Pegar enlace de una canción concreta */}
+            {catalogMode === 'songs' && catalogSource === 'itunes' && (
+              <div className="p-3 rounded-2xl bg-cyan-500/[0.04] border border-cyan-500/20">
+                <div className="flex items-center gap-2 mb-1.5 text-cyan-300 text-xs font-semibold">
+                  <Link2 className="w-3.5 h-3.5" />
+                  ¿Tenés el enlace de la canción? Pegalo para importar sus datos
+                </div>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <input
+                    type="text"
+                    value={songLink}
+                    onChange={(e) => onSetSongLink(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && onOpenSongByLink(songLink)}
+                    placeholder="https://music.apple.com/us/album/.../<id>?i=<id>"
+                    className="flex-1 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs font-mono focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 outline-none transition-colors"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => onOpenSongByLink(songLink)}
+                    disabled={isOpeningSong || !songLink.trim()}
+                    className="px-4 py-2 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-200 text-xs font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-1.5"
+                  >
+                    {isOpeningSong ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Link2 className="w-3.5 h-3.5" />
+                    )}
+                    Cargar canción
                   </button>
                 </div>
               </div>

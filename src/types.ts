@@ -53,6 +53,7 @@ export interface CatalogAlbum {
 
 // Pista dentro de un álbum abierto, lista para aplicarse a la canción en edición.
 export interface CatalogAlbumTrack {
+  id?: string | null;
   source: CatalogSource;
   title: string;
   artist: string;

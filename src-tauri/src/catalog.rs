@@ -22,6 +22,7 @@ pub struct CatalogAlbum {
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[serde(rename_all = "snake_case")]
 pub struct CatalogAlbumTrack {
+    pub id: Option<String>,
     pub source: String,
     pub title: String,
     pub artist: String,
@@ -151,6 +152,7 @@ async fn open_itunes_album(
         .iter()
         .filter(|r| r["wrapperType"].as_str() == Some("track"))
         .map(|t| CatalogAlbumTrack {
+            id: t["trackId"].as_u64().map(|v| v.to_string()),
             source: "itunes".to_string(),
             title: t["trackName"].as_str().unwrap_or("").to_string(),
             artist: t["artistName"]
@@ -249,6 +251,10 @@ async fn open_deezer_album(
     let tracks = items
         .into_iter()
         .map(|t| CatalogAlbumTrack {
+            id: t["id"]
+                .as_u64()
+                .map(|v| v.to_string())
+                .or_else(|| t["id"].as_str().map(|v| v.to_string())),
             source: "deezer".to_string(),
             title: t["title"].as_str().unwrap_or("").to_string(),
             artist: t["artist"]["name"]
@@ -359,6 +365,7 @@ async fn open_musicbrainz_album(
                     .map(|s| s.to_string())
                     .unwrap_or_else(|| album_artist.clone());
                 tracks.push(CatalogAlbumTrack {
+                    id: t["id"].as_str().map(|v| v.to_string()),
                     source: "musicbrainz".to_string(),
                     title: t["title"].as_str().unwrap_or("").to_string(),
                     artist: rec_artist,
