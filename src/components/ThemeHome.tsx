@@ -336,20 +336,30 @@ export default function ThemeHome({
   if (theme === 'shonen') {
     return (
       <div className="shonen-home">
-        <div className="shonen-energia">⚡ SAKURA!</div>
-        <div className="shonen-copy">
-          <p>SHŌNEN · ESPÍRITU DE LUCHA</p>
-          <h1>¡Dale todo!</h1>
-          <p>Energía, determinación y ese grito que lo cambia todo. Tu música a mil por hora.</p>
-          <div className="shonen-botones">
+        <div className="shonen-luz" aria-hidden="true" />
+        <div className="shonen-panel">
+          <span className="shonen-kicker">SHŌNEN · CAPÍTULO 01</span>
+          <h1>
+            ¡Dale <em>todo!</em>
+          </h1>
+          <p>
+            Cada día es una pelea, cada canción una oportunidad de superarse. Ponete el uniforme y
+            entrá al combate.
+          </p>
+          <div className="shonen-acciones">
             <button type="button" onClick={() => onNavigate('library')}>
-              Abrir biblioteca
+              Abrir biblioteca →
             </button>
             <button type="button" onClick={() => onNavigate('search')}>
               Buscar música
             </button>
           </div>
-          <p className="shonen-dato">{trackCount} pistas · modo batalla</p>
+          <p className="shonen-dato">{trackCount} pistas · entrenamiento diario</p>
+        </div>
+        <div className="shonen-vigneta" aria-hidden="true">
+          <span className="shonen-grito">AAAAAA!</span>
+          <span className="shonen-silueta">⚡</span>
+          <span className="shonen-lineas" />
         </div>
       </div>
     );
@@ -358,17 +368,20 @@ export default function ThemeHome({
   if (theme === 'ghost') {
     return (
       <div className="ghost-home">
-        <span className="ghost-brillo" aria-hidden="true" />
-        <div className="ghost-espiritu" aria-hidden="true">
-          ☻
+        <span className="ghost-niebla s1" aria-hidden="true" />
+        <span className="ghost-niebla s2" aria-hidden="true" />
+        <span className="ghost-luna" aria-hidden="true" />
+        <div className="ghost-figura" aria-hidden="true">
+          <span>☻</span>
         </div>
-        <div className="ghost-copy">
-          <p>GHOST · ESPÍRITUS SONOROS</p>
-          <h1>Ecos del pasado</h1>
+        <div className="ghost-panel">
+          <span className="ghost-kicker">GHOST · ECOS DEL PASADO</span>
+          <h1>Lo que quedó sonando</h1>
           <p>
-            Cada canción es un fantasma que vuelve a sonar. Tu biblioteca habita entre niebla y luz.
+            Voces que vuelven entre niebla. Tu biblioteca es un cementerio de buenos momentos
+            esperando una nueva reproducción.
           </p>
-          <div className="ghost-botones">
+          <div className="ghost-acciones">
             <button type="button" onClick={() => onNavigate('library')}>
               Abrir biblioteca
             </button>
@@ -385,14 +398,21 @@ export default function ThemeHome({
   if (theme === 'samurai') {
     return (
       <div className="samurai-home">
-        <div className="samurai-katana" aria-hidden="true">
-          侍
+        <div className="samurai-patio">
+          <span className="samurai-sol" aria-hidden="true" />
+          <span className="samurai-suelo" aria-hidden="true" />
+          <div className="samurai-guerrero" aria-hidden="true">
+            侍
+          </div>
         </div>
-        <div className="samurai-copy">
-          <p>侍 · CAMINO DEL GUERRERO</p>
-          <h1>Honor en cada nota</h1>
-          <p>Armadura lacada, acero y silencio. Tu biblioteca como un dojo.</p>
-          <div className="samurai-botones">
+        <div className="samurai-panel">
+          <span className="samurai-kicker">侍 · CAMINO DEL GUERRERO</span>
+          <h1>El sonido del acero</h1>
+          <p>
+            disciplina, silencio y un golpe preciso. Tu biblioteca es un dojo donde cada canción es
+            una forma que dominar.
+          </p>
+          <div className="samurai-acciones">
             <button type="button" onClick={() => onNavigate('library')}>
               Abrir biblioteca
             </button>
@@ -400,7 +420,7 @@ export default function ThemeHome({
               Buscar música
             </button>
           </div>
-          <p className="samurai-dato">{trackCount} pistas · disciplina</p>
+          <p className="samurai-dato">{trackCount} formas · lacado y oro</p>
         </div>
       </div>
     );
@@ -409,14 +429,22 @@ export default function ThemeHome({
   if (theme === 'kawaii') {
     return (
       <div className="kawaii-home">
-        <div className="kawaii-cara" aria-hidden="true">
-          (◕‿◕)
+        <div className="kawaii-nubes" aria-hidden="true">
+          <span className="kawaii-nube s1" />
+          <span className="kawaii-nube s2" />
+          <span className="kawaii-arco" />
         </div>
-        <div className="kawaii-copy">
-          <p>♡ KAWAII · TODO TIERNO</p>
-          <h1>¡Música monísima!</h1>
-          <p>Colores pastel, caritas felices y pura ternura para tus oídos.</p>
-          <div className="kawaii-botones">
+        <div className="kawaii-panel">
+          <div className="kawaii-cara-grande" aria-hidden="true">
+            <span>♡</span>
+          </div>
+          <span className="kawaii-kicker">KAWAII · MÚSICA TIERNA</span>
+          <h1>¡Escucha con una sonrisa!</h1>
+          <p>
+            Colores pastel, caritas felices y pura ternura. Tu biblioteca es un parque donde cada
+            canción es un amigo nuevo.
+          </p>
+          <div className="kawaii-acciones">
             <button type="button" onClick={() => onNavigate('library')}>
               Abrir biblioteca
             </button>

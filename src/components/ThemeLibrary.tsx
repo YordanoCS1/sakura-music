@@ -683,24 +683,36 @@ export default function ThemeLibrary({
         {vistaTracks.length === 0 ? (
           vacio
         ) : (
-          <div className="shonen-manga">
-            {vistaTracks.map((track, i) => (
-              <article
-                key={track.id}
-                className={`shonen-vigneta ${activeTrack?.id === track.id ? 'is-active' : ''}`}
-              >
-                <span className="shonen-go">GO!</span>
-                <button type="button" onClick={() => onPlayTrack(track)}>
-                  <span className="shonen-portada">{portadaDe(track)}</span>
-                  <strong>{track.title}</strong>
-                </button>
-                <small>
-                  {track.artist} · {track.album}
-                </small>
-                <span className="shonen-num">{String(i + 1).padStart(2, '0')}</span>
-                {acciones(track)}
-              </article>
-            ))}
+          <div className="shonen-combate">
+            <div className="shonen-cabecera-lista">
+              <span>ENTRENAMIENTO / 01</span>
+              <span>{vistaTracks.length} OPONENTES</span>
+            </div>
+            <div className="shonen-ronda">
+              {vistaTracks.map((track, i) => (
+                <article
+                  key={track.id}
+                  className={`shonen-oponente ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+                >
+                  <span className="shonen-rango">{String(i + 1).padStart(2, '0')}</span>
+                  <button
+                    type="button"
+                    className="shonen-retador"
+                    onClick={() => onPlayTrack(track)}
+                  >
+                    <span className="shonen-avatar">{portadaDe(track)}</span>
+                    <span className="shonen-datos">
+                      <strong>{track.title}</strong>
+                      <small>
+                        {track.artist} · {track.album} · {track.duration_str}
+                      </small>
+                    </span>
+                  </button>
+                  <span className="shonen-vs">VS</span>
+                  <div className="shonen-acc">{acciones(track)}</div>
+                </article>
+              ))}
+            </div>
           </div>
         )}
       </div>
@@ -715,18 +727,20 @@ export default function ThemeLibrary({
         {vistaTracks.length === 0 ? (
           vacio
         ) : (
-          <div className="ghost-espiritus">
+          <div className="ghost-cementerio">
+            <div className="ghost-niebla-fondo" aria-hidden="true" />
             {vistaTracks.map((track) => (
               <article
                 key={track.id}
-                className={`ghost-espiritu ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+                className={`ghost-lapida ${activeTrack?.id === track.id ? 'is-active' : ''}`}
               >
                 <button type="button" onClick={() => onPlayTrack(track)}>
-                  <span className="ghost-cara">{portadaDe(track)}</span>
+                  <span className="ghost-retrato">{portadaDe(track)}</span>
                   <strong>{track.title}</strong>
                   <small>
                     {track.artist} · {track.album}
                   </small>
+                  <span className="ghost-anos">R.I.P. · {track.duration_str}</span>
                 </button>
                 <span className="ghost-acc">{acciones(track)}</span>
               </article>
@@ -745,23 +759,29 @@ export default function ThemeLibrary({
         {vistaTracks.length === 0 ? (
           vacio
         ) : (
-          <div className="samurai-lamas">
-            {vistaTracks.map((track, i) => (
-              <article
-                key={track.id}
-                className={`samurai-lama ${activeTrack?.id === track.id ? 'is-active' : ''}`}
-              >
-                <span className="samurai-portada">{portadaDe(track)}</span>
-                <span className="samurai-num">{String(i + 1).padStart(2, '0')}</span>
-                <button type="button" onClick={() => onPlayTrack(track)}>
-                  <strong>{track.title}</strong>
-                  <small>
-                    {track.artist} · {track.album}
-                  </small>
-                </button>
-                {acciones(track)}
-              </article>
-            ))}
+          <div className="samurai-dojo">
+            <div className="samurai-muro" aria-hidden="true">
+              <span className="samurai-sol" />
+            </div>
+            <div className="samurai-tatami">
+              {vistaTracks.map((track, i) => (
+                <article
+                  key={track.id}
+                  className={`samurai-kata ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+                >
+                  <span className="samurai-kanji">侍</span>
+                  <button type="button" onClick={() => onPlayTrack(track)}>
+                    <span className="samurai-portada">{portadaDe(track)}</span>
+                    <strong>{track.title}</strong>
+                    <small>
+                      {track.artist} · {track.album}
+                    </small>
+                  </button>
+                  <span className="samurai-grado">{['I', 'II', 'III', 'IV', 'V'][i % 5]} DAN</span>
+                  <div className="samurai-acc">{acciones(track)}</div>
+                </article>
+              ))}
+            </div>
           </div>
         )}
       </div>
@@ -776,25 +796,29 @@ export default function ThemeLibrary({
         {vistaTracks.length === 0 ? (
           vacio
         ) : (
-          <div className="kawaii-amigos">
+          <div className="kawaii-jardin">
+            <span className="kawaii-arco-arriba" aria-hidden="true" />
             {vistaTracks.map((track, i) => (
               <article
                 key={track.id}
-                className={`kawaii-amigo ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+                className={`kawaii-nube-amiga ${activeTrack?.id === track.id ? 'is-active' : ''}`}
                 style={
                   {
-                    '--c': ['#ff9ec4', '#9ee0c8', '#c9b0f0', '#ffd89e'][i % 4],
+                    '--c': ['#ffc0d9', '#b8ecd8', '#d9c6f2', '#ffe0b0'][i % 4],
                   } as React.CSSProperties
                 }
               >
                 <button type="button" onClick={() => onPlayTrack(track)}>
-                  <span className="kawaii-cara">{portadaDe(track)}</span>
+                  <span className="kawaii-foto">
+                    {portadaDe(track)}
+                    <span className="kawaii-ojitos">(◕‿◕)</span>
+                  </span>
                   <strong>{track.title}</strong>
                   <small>
                     {track.artist} · {track.album}
                   </small>
                 </button>
-                {acciones(track)}
+                <div className="kawaii-acc">{acciones(track)}</div>
               </article>
             ))}
           </div>
