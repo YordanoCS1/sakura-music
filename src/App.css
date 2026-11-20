@@ -7728,3 +7728,64 @@ html[data-theme-transition='manga'] #theme-panel.panel-enter { animation:t-manga
 .theme-modal.tema-manga > div[class*='bg-white/'] p {
   color:#101010 !important;
 }
+
+
+/* Ajuste fino del editor Manga: sacar las barras negras de las columnas y
+   suavizar los paneles, dejar los tabs y botones en papel con borde. */
+.theme-modal.tema-manga form > div > div {
+  border:0 !important; background:transparent !important; box-shadow:none !important;
+}
+.theme-modal.tema-manga form > div > div > div[class*='rounded-2xl'] {
+  background:#fff !important;
+  border:2px solid rgba(16,16,16,.55) !important;
+  border-radius:2px !important;
+  box-shadow:3px 3px 0 rgba(214,40,40,.22) !important;
+}
+.theme-modal.tema-manga > div[class*='bg-white/'] > div[class*='bg-white/5'] {
+  background:#f2efe9 !important;
+  border:2px solid #101010 !important;
+  border-radius:2px !important;
+}
+.theme-modal.tema-manga > div[class*='bg-white/'] button {
+  color:#101010 !important;
+  border-radius:2px !important;
+}
+.theme-modal.tema-manga > div[class*='bg-white/'] button[class*='from-accent-500'] {
+  background:#d62828 !important;
+  color:#fff !important;
+  border:2px solid #101010 !important;
+}
+.theme-modal.tema-manga > div:last-child button {
+  background:#fff !important;
+  color:#101010 !important;
+  border:2px solid #101010 !important;
+  border-radius:2px !important;
+}
+.theme-modal.tema-manga > div:last-child button:last-child {
+  background:#d62828 !important;
+  color:#fff !important;
+}
+.theme-modal.tema-manga form [class*='aspect-square'] {
+  box-shadow:4px 4px 0 rgba(214,40,40,.35) !important;
+}
+
+.theme-modal.tema-manga > div[class*='bg-white/'] div[class*='bg-white/5'] {
+  background:#f2efe9 !important; border:2px solid #101010 !important; border-radius:2px !important;
+}
+.theme-modal.tema-manga > div[class*='bg-white/'] div[class*='bg-white/5'] button {
+  background:transparent !important; color:#101010 !important; border-radius:2px !important;
+}
+.theme-modal.tema-manga > div[class*='bg-white/'] div[class*='bg-white/5'] button[class*='from-accent-500'] {
+  background:#d62828 !important; color:#fff !important; border:2px solid #101010 !important;
+}
+.theme-modal.tema-manga > div:last-child button {
+  background:#fff !important; color:#101010 !important;
+  border:2px solid #101010 !important; border-radius:2px !important;
+}
+.theme-modal.tema-manga > div:last-child button[class*='from-accent-500'] {
+  background:#d62828 !important; color:#fff !important;
+}
+
+.theme-modal.tema-manga > div:last-child button:last-child:not([class*='from-accent-500']) {
+  background:#fff !important; color:#101010 !important; border:2px solid #101010 !important;
+}
