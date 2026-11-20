@@ -23,7 +23,9 @@ que se parezca al tuyo y seguí la causa probable.
    La app también las detecta en la carpeta de datos `bin/` y en winget.
 
 3. **Comprobá el estado en la app:** en **Cola** y en **Ajustes** ves el motor
-   Tauri, la versión de `rustc` (real, no de ejemplo) y la memoria del proceso.
+   Tauri, la versión de `rustc` (real, no de ejemplo) y la memoria del proceso;
+   en **Ajustes → Sistema** está el doctor de SQLite, la papelera, las
+   actualizaciones y los logs.
 
 ## Arranque
 
@@ -101,19 +103,38 @@ No perdés tags ni portadas: todo eso vive en los archivos de audio.
 |---|---|---|
 | El tema no cambia un color de estado | Los estados (rojo error, verde éxito) no siguen el tema | Es intencional |
 | El tema no se guarda | `localStorage` bloqueado | Limpiá los datos del WebView2 y volvé a abrir la app |
+| Cambié de tema y la biblioteca no cambia de vista | Elegiste uno de los 4 temas genéricos | Los 12 temas propios son los que traen biblioteca, cabecera y diálogos propios |
+| La paleta `⌘K` no abre | El atajo no llegó al WebView | Probá `Ctrl+K` en Windows/Linux; tocá la lupa de la cabecera como alternativa |
+
+## Actualizaciones y papelera
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| **Buscar actualizaciones** dice que no hay | No hay versión nueva publicada, o el endpoint apunta a `REPLACE_OWNER/REPLACE_REPO` | Si compilaste vos, configurá el owner/repo real en `tauri.conf.json` antes de publicar |
+| El actualizador falla con error de firma | El bundle no fue firmado con la clave privada correcta, o el binario fue modificado | No lo instales: bajá el instalador del canal oficial, que sí pasa la verificación minisign |
+| Después de instalar no se reinicia | El proceso no pudo relanzarse | Cerrá la app y abrila de nuevo: la versión nueva ya está instalada |
+| Borré pistas y no aparece **Deshacer** | Pasaron los 9 segundos del toast | El archivo quedó en `trash\`: Ajustes → Sistema muestra el contador, pero la restauración sólo se hace desde el toast dentro de esos 9 segundos |
+| El contador de la papelera no baja | Hay archivos pendientes de borrado definitivo | Tocá **Vaciar papelera** en Ajustes → Sistema; esa acción sí es irreversible |
+| La base crece sin parar o las búsquedas van lentas | Índice SQLite desactualizado | En Ajustes → Sistema usá **Verificar** y **Compactar**; los respaldos se crean con `VACUUM INTO` |
+
+El panel **Ajustes → Sistema** también muestra integridad, pistas indexadas,
+entradas FTS, tamaño y esquema (`user_version=2`), y tiene un visor de
+`sakura.log` con botón **Copiar** para pegarlo en un issue.
 
 ## Dónde están los datos
 
 ```text
 %LOCALAPPDATA%\com.sakura.music\
-  library.sqlite3        ← índice local de la biblioteca
+  library.sqlite3        ← índice local de la biblioteca (SQLite + FTS5)
   library_cache.json     ← caché antigua (se conserva tras importarla)
   covers\                ← carátulas (con extensión real)
+  trash\                 ← borrados recuperables con Deshacer (9 s)
   bin\                   ← yt-dlp / ffmpeg opcionales
 ```
 
-**Tu música no vive ahí**: vive en tu biblioteca. Si borrás estos archivos,
-solo perdés caché y carátulas; la app los regenera.
+**Tu música no vive ahí**: vive en tu biblioteca. Si borrás el índice y las
+carátulas, la app los regenera; en cambio, borrar `trash\` descarta los archivos
+que todavía podías recuperar con **Deshacer**.
 
 ```text
 WebView2 → localStorage → claves sakura_*:
@@ -151,7 +172,8 @@ Incluí:
 ## Diagnóstico para desarrolladores
 
 ```powershell
-cargo test --manifest-path src-tauri/Cargo.toml   # 21 tests Rust
+cargo test --manifest-path src-tauri/Cargo.toml   # 42 tests Rust
+npm run pipeline                                  # 29 unitarios + 26 E2E + 42 tests Rust + build
 node node_modules/typescript/bin/tsc --noEmit      # tipos
 npm run build                                      # tsc + vite build
 ```

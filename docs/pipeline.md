@@ -13,12 +13,12 @@ flowchart TD
       S1["npm ci"] --> S2["typecheck · tsc --noEmit"]
       S2 --> S3["lint · ESLint"]
       S3 --> S4["formato · Prettier"]
-      S4 --> S5["tests unitarios · Vitest (7)"]
-      S5 --> S6["tests E2E · Playwright (2)"]
+      S4 --> S5["tests unitarios · Vitest (29)"]
+      S5 --> S6["tests E2E · Playwright (26)"]
       S6 --> S7["build · vite"]
       S7 --> S8["cargo fmt --check"]
       S8 --> S9["cargo clippy -D warnings"]
-      S9 --> S10["cargo test (21)"]
+      S9 --> S10["cargo test (42)"]
       S10 --> S11["npm audit · informativo"]
     end
 
@@ -42,16 +42,24 @@ flowchart TD
 | 2 | Tipos | `npm run typecheck` | sí | `strict` + `noUnusedLocals` del frontend |
 | 3 | Lint | `npm run lint` | sí | React Hooks y reglas de TypeScript |
 | 4 | Formato | `npm run format:check` | sí | Prettier en TS/TSX/JS/JSON/YAML |
-| 5 | Unitarios | `npm test` | sí | Cola persistida y `ErrorBoundary` |
-| 6 | E2E | `npm run test:e2e` | sí | Arranque, splash, pestañas y teclado |
+| 5 | Unitarios | `npm test` | sí | 29 tests: cola persistida, toast de deshacer y `ErrorBoundary` |
+| 6 | E2E | `npm run test:e2e` | sí | 26 tests: arranque, splash, 6 pestañas, paleta ⌘K y teclado |
 | 7 | Build | `npm run build` | sí | `tsc` + bundle de producción |
 | 8 | Formato Rust | `cargo fmt --check` | sí | `rustfmt.toml` |
 | 9 | Lint Rust | `cargo clippy -D warnings` | sí | 0 avisos |
-| 10 | Tests Rust | `cargo test` | sí | 21 pruebas |
+| 10 | Tests Rust | `cargo test` | sí | 42 pruebas (incluye migraciones, playlists y lyrics) |
 | 11 | Auditoría | `npm run audit` | **no** | `picomatch`: aviso *high* sin corrección |
 | 12 | Instalador | `npm run tauri build` | sí | Sólo con tag o manual |
 
-Las etapas 1–11 corren en **Windows, macOS y Linux**. La 12 sólo en Windows.
+Las etapas 1–11 corren en **Windows, macOS y Linux** (matriz de 3 SO). La 12
+sólo en Windows y usa los secrets de firma del updater.
+
+> Nota de build: `src-tauri/Cargo.toml` fija `[profile.dev] debug = 0`. MSVC se
+> topaba con el error D8050 cuando los target paths largos incluían información
+> de debug completa; si necesitás símbolos, usá un profile explícito, pero no
+> cambies el default del pipeline.
+
+`npm run pipeline` ejecuta las etapas bloqueantes en orden y hoy pasa en verde.
 
 ## Cómo verlo
 

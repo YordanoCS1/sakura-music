@@ -18,47 +18,54 @@ flowchart LR
 ```
 
 Todo lo externo es fuente o destino: YouTube y los catálogos se consultan,
-`ffmpeg` transforma y el disco guarda el resultado. El único estado propio es la
-caché de biblioteca, la carpeta de carátulas y las preferencias del navegador.
+`ffmpeg` transforma y el disco guarda el resultado. El estado propio vive en la
+caché SQLite (con playlists, papelera e índice FTS5), la carpeta de carátulas,
+los respaldos y las preferencias del navegador. La app es local-first: no hay
+servidor, cuentas ni login.
 
 ## Capas
 
 ```mermaid
 flowchart TB
     subgraph UI["src/App.tsx · presentación"]
-        HOME["home · search · queue<br/>library · settings"]
-        PLAYER["player HTML5<br/>asset: + Blob URL"]
-        EDITOR["editor proveído<br/>lote {updated,errors}"]
-        THEME["tema vía --m3-*<br/>(id: space)"]
+        TABS["6 pestañas (AppTab):<br/>home · library · search · queue<br/>playlists · settings"]
+        PLAYER["PlayerBar + NowPlayingPanel<br/>Detalles · Letras · Álbum · Artista<br/>asset: + Blob URL"]
+        PANEL["PlaylistsPanel · CommandPalette ⌘K<br/>UndoToast · SystemPanel<br/>VirtualizedGrid en LibraryTab"]
+        THEME["4 genéricos (LibraryTab, 9 vistas)<br/>+ 12 propios (ThemeLibrary/Home/Nav)<br/>data-theme=space · data-skin={tema}"]
     end
 
     subgraph IPC["IPC Tauri"]
-        CMD["invoke(): 22 comandos<br/>(19 lib.rs + 3 catalog.rs)"]
-        EVT["eventos de progreso y resultados"]
+        CMD["invoke(): 43 comandos<br/>(40 lib.rs + 3 catalog.rs)"]
+        EVT["6 eventos de progreso y resultados"]
     end
 
     subgraph CORE["src-tauri/src/ · backend Rust"]
         SCAN["scanner.rs<br/>walkdir + rayon + lofty"]
-        DB["library_db.rs<br/>SQLite + índice incremental"]
+        DB["library_db.rs<br/>SQLite bundled + FTS5<br/>user_version=2 + backups"]
         WATCH["library_watcher.rs<br/>notify + debounce"]
         DL["downloader.rs<br/>DownloadManager, 2 en paralelo"]
         PATH["paths.rs<br/>.tauri_data, OnceLock"]
-        LIB["lib.rs<br/>comandos, caché, scope asset"]
-        CATALOG["catalog.rs<br/>búsqueda en catálogos"]
+        LIB["lib.rs<br/>40 comandos, scope asset, ciclo de vida"]
+        CATALOG["catalog.rs<br/>3 comandos de catálogo"]
+        VAL["validacion.rs<br/>frontera IPC"]
+        PL["playlists.rs · lyrics.rs<br/>queue.rs · logging.rs · remote.rs · tools.rs"]
     end
 
     subgraph EXT["Externos"]
         YTDLP["yt-dlp"]
         FFMPEG["ffmpeg"]
-        NET["HTTP: iTunes, Deezer, MusicBrainz<br/>+ Cover Art Archive"]
+        NET["HTTP: iTunes, Deezer, MusicBrainz<br/>+ Cover Art Archive + updater"]
         DISK["Disco"]
     end
 
     UI --> CMD
     UI --> EVT
+    CMD --> VAL
+    VAL --> LIB
     LIB --> DB
     LIB --> WATCH
     LIB --> CATALOG
+    LIB --> PL
     CORE --> YTDLP
     CORE --> FFMPEG
     CATALOG --> NET
@@ -67,18 +74,23 @@ flowchart TB
 
 | Capa | Responsabilidad | No debe |
 |---|---|---|
-| `src/App.tsx` | Pestañas, reproductor, editor, cola, temas. Lee `localStorage` para preferencias. | Leer tags ni lanzar `yt-dlp` directamente |
-| `lib.rs` | Registrar comandos, inicializar carpeta de datos, autorizar carpetas en el scope `asset:`, cancelar descargas al salir. | Contener lógica de parsing o pesos |
+| `src/App.tsx` | Seis pestañas (`AppTab`), reproductor, editor, cola, temas. Lee `localStorage` para preferencias. | Leer tags ni lanzar `yt-dlp` directamente |
+| Componentes `src/components/` | `NowPlayingPanel` (Detalles/Letras/Álbum/Artista), `PlaylistsPanel`, `CommandPalette` (⌘K), `UndoToast`, `SystemPanel`, `VirtualizedGrid`; `ThemeLibrary`/`ThemeHome`/`ThemeNav` para los 12 temas propios. | Hablar directo con Rust: todo pasa por `invoke`/eventos |
+| `lib.rs` | Registrar los 40 comandos propios, inicializar carpeta de datos, autorizar carpetas en el scope `asset:`, cancelar descargas al salir. | Contener lógica de parsing o pesos |
 | `catalog.rs` | Consultar iTunes, Deezer y MusicBrainz (con portadas de Cover Art Archive) vía `reqwest`, con User-Agent propio, y exponer 3 comandos Tauri. | Hacer `fetch` desde el frontend (CORS/User-Agent) ni pintar UI |
+| `validacion.rs` | Validar en la frontera IPC (longitudes, caracteres de control, rutas y lotes) y exigir scope canónico para escrituras. | Confiar en lo que manda el frontend |
 | `scanner.rs` | Enumerar y leer pistas en paralelo, lectura/escritura de tags con `lofty`, carátulas con extensión real. | Conocer React ni `localStorage` |
-| `library_db.rs` | Persistir la biblioteca en SQLite, importar la caché antigua y sincronizar escaneos diferenciales. | Leer tags o conocer React |
+| `library_db.rs` | Persistir la biblioteca en SQLite (`rusqlite` bundled + FTS5), migraciones `user_version`, respaldos `VACUUM INTO`, doctor y logs. | Leer tags o conocer React |
 | `library_watcher.rs` | Vigilar recursivamente la carpeta seleccionada y agrupar cambios del sistema de archivos. | Leer tags o modificar la biblioteca directamente |
-| `downloader.rs` | Búsqueda, resolución de playlists, cola con `Mutex` + `Condvar`, cancelación por PID, parsing de progreso. | Pintar UI |
-| `paths.rs` | Única verdad sobre la carpeta de datos (`OnceLock` + fallback a `.tauri_data`). | Duplicar resolución de rutas |
+| `playlists.rs` / `lyrics.rs` | Tablas `playlists`/`playlist_tracks` con `ON DELETE CASCADE`; parser `.lrc` con múltiples timestamps. | Pintar UI |
+| `queue.rs` / `downloader.rs` | Cola persistente; búsqueda, resolución de playlists, `DownloadManager` con `Mutex` + `Condvar`, cancelación por PID. | Pintar UI |
+| `paths.rs` / `logging.rs` / `remote.rs` / `tools.rs` | Única verdad sobre la carpeta de datos (`OnceLock`), logs redactados, control HTTP local, detección e instalación de binarios con SHA256 fijo. | Duplicar resolución de rutas ni exponer secretos |
 
-> Deuda conocida: LibraryTab.tsx concentra las vistas de biblioteca (~1281 lineas);
-> App.tsx (~1058 lineas) mantiene el estado y el player. Componentes u hooks nuevos
-> grandes deberian vivir en su propio archivo.
+> Nota: las vistas genéricas viven en `LibraryTab.tsx` (9 vistas) y usan
+> `VirtualizedGrid` con `content-visibility` condicional en bibliotecas de más
+> de 60 pistas; los 12 temas propios tienen `ThemeLibrary`/`ThemeHome`/`ThemeNav`
+> y sus propios diálogos, iconos y splash. `App.tsx` conserva el estado raíz y el
+> player; las piezas grandes nuevas se separan en `src/components/`.
 
 ## Modelo de hilos
 
@@ -99,13 +111,16 @@ flowchart TB
 
 ## Persistencia
 
-La biblioteca usa SQLite para conservar sus pistas y detectar cambios entre
-escaneos. La cola de descargas sigue guardándose como JSON.
+La biblioteca usa SQLite (`rusqlite` con SQLite bundled, FTS5 y `user_version=2`)
+para conservar pistas, playlists y papelera, y detectar cambios entre escaneos.
+La cola de descargas sigue guardándose como JSON.
 
 ```mermaid
 flowchart TB
     BASE["app_local_data_dir()<br/>AppData/Local/com.sakura.music"]
-    BASE --> CACHE["library.sqlite3<br/>índice de pistas"]
+    BASE --> CACHE["library.sqlite3<br/>pistas + FTS5 + playlists<br/>+ deleted_tracks (user_version=2)"]
+    BASE --> BACKUPS["backups/<br/>VACUUM INTO, retención 3"]
+    BASE --> TRASH["trash/<br/>archivos borrados (deshacer)"]
     BASE --> QUEUE["download_queue.json<br/>foto de la cola (100 filas)"]
     BASE --> COVERS["covers/<br/>carátulas con extensión real"]
     BASE --> BIN["bin/<br/>yt-dlp / ffmpeg opcionales"]
@@ -115,7 +130,10 @@ flowchart TB
 
 | Dato | Archivo / clave | Formato | Retención |
 |---|---|---|---|
-| Biblioteca | `library.sqlite3` | SQLite; importación inicial desde JSON legado | Índice reconstruible desde los audios |
+| Biblioteca | `library.sqlite3` | SQLite bundled; FTS5 + triggers (v1), índices artist/album/year/genre (v2); importación inicial desde JSON legado | Índice reconstruible desde los audios |
+| Playlists | tablas `playlists` / `playlist_tracks` | SQLite, `foreign_keys=ON` y `ON DELETE CASCADE` | Permanente hasta borrar la lista |
+| Papelera | `deleted_tracks` + `trash/` | Fila con token + archivo movido; `restore_deleted_track`, `empty_trash` | Hasta deshacer o vaciar (toast de 9 s) |
+| Respaldos | `backups/` | `VACUUM INTO` consistente con WAL | 3 más recientes; uno automático antes de migrar |
 | Cola | `download_queue.json` | JSON, escritura atómica | 100 filas más recientes; lo activo vuelve como `interrumpida` |
 | Carátulas | `covers/` | JPG/PNG/WebP/GIF/BMP/TIFF reales | Cache, deduplicada por hash |
 | Portadas temporales | `covers/temp_*` | Imagen cualquiera | Se borran al arrancar y antes de guardar una nueva |
@@ -146,6 +164,17 @@ y cae a `./.tauri_data` en tests o llamadas tempranas. Nunca se usa el
 tags, caché y portadas. En Windows el archivo temporal se cierra antes del
 rename (el handle abierto bloquea el reemplazo).
 
+### Base de datos: PRAGMAs y migraciones
+
+`library_db.rs` abre con `WAL`, `synchronous=NORMAL`, `temp_store=MEMORY` y
+`foreign_keys=ON`. El esquema se versiona con `PRAGMA user_version`: **1** agrega
+FTS5 y sus disparadores de mantenimiento; **2** agrega índices por
+artista/álbum/año/género. Antes de subir la versión se crea un respaldo con
+`VACUUM INTO` y se conservan los 3 más recientes. `doctor_detallado` (comando
+`doctor_database`) corre `integrity_check`, reconstruye el índice FTS5 y
+devuelve métricas; `backup_database`, `vacuum_database` y `get_system_logs`
+(redactando secretos) alimentan Ajustes → Sistema.
+
 ## Seguridad
 
 - **CSP estricta** en `tauri.conf.json` (no es `null`): `default-src 'self'`,
@@ -163,6 +192,23 @@ rename (el handle abierto bloquea el reemplazo).
   concreto. yt-dlp: carpeta de datos `bin/`, legado `%APPDATA%/sakura-music/bin`,
   `PATH`. ffmpeg: `bin/`, legado `%LOCALAPPDATA%/SakuraMusic/bin`, enlaces de
   winget, `PATH`.
+- **Validación en la frontera IPC:** todo argumento que entra por `invoke()`
+  pasa por `validacion.rs` (longitud de textos, rutas, lotes, caracteres de
+  control y NUL). Las escrituras de metadatos exigen además que la ruta
+  canónica de la pista esté dentro de la biblioteca activa y que la portada
+  venga de `covers/`; los borrados y movimientos se validan con el mismo
+  criterio.
+- **Herramientas con SHA256 fijo:** `install_downloader_tools` descarga yt-dlp y
+  ffmpeg a `bin/` y verifica el hash contra un valor fijo; nunca sobrescribe un
+  binario que ya está en el `PATH`. Los logs del sistema se redactan para no
+  filtrar secretos.
+- **Actualizador:** los plugins `updater`/`process` consultan el endpoint de
+  GitHub Releases definido en la configuración con la clave pública provista.
+  El endpoint de plantilla (`REPLACE_OWNER/REPLACE_REPO`) debe reemplazarse
+  antes de publicar; los instaladores son NSIS/MSI.
+- **Sin login:** la app es local-first. Agregar un login local sería teatro
+  (no protege nada sin servidor); recién tiene sentido con sincronización y
+  hashes Argon2id.
 - **Cancelación real:** los PIDs se registran al hacer `spawn` y se matan con
   el árbol completo (`taskkill /T`), porque `yt-dlp` tiene hijos `ffmpeg`.
 
@@ -222,12 +268,63 @@ sequenceDiagram
 
 ## Tema visual
 
-La app usa seis temas, **M3 Zen** (por defecto), Sumi-e, Byōbu, Yoru, Hanabi y Aizuri,
-definidos con variables semánticas `--m3-*`, `--space-*`, `--accent-*` y `--theme-*`
-en `App.css`. Tailwind mapea `accent-*` a esas variables, así que
-`from-accent-500` o `text-accent-300` siguen al tema sin duplicar clases.
-El id elegido se fija en el contenedor raíz y se persiste en `localStorage`
-(`sakura_theme`). Ver [ADR 0012](adr/0012-temas-multiples.md).
+La app usa **16 temas**, divididos en dos familias:
+
+- **4 genéricos:** `space` (M3 Zen, por defecto), `yoru`, `hanabi` y `aizuri`.
+  Comparten `LibraryTab.tsx` con sus 9 vistas y se identifican con
+  `data-theme="space"` fijo en el contenedor raíz.
+- **12 propios:** `sumie`, `byobu`, `shoji`, `origami`, `swiss`, `sumiink`,
+  `moonlit`, `ledger`, `shonen`, `ghost`, `samurai` y `kawaii`. Cada uno fija
+  `data-theme="space"` y usa `data-skin={tema}`, con `ThemeLibrary`,
+  `ThemeHome` y `ThemeNav` propios: cabecera, Buscar, Cola, ajustes, diálogos,
+  transiciones, iconos y splash propios.
+
+Los tokens semánticos `--m3-*`, `--space-*`, `--accent-*` y `--theme-*` viven en
+`App.css`. Tailwind mapea `accent-*` a esas variables, así que
+`from-accent-500` o `text-accent-300` siguen al tema sin duplicar clases. El
+glifo del splash hace un handoff continuo al logo de la navegación mediante
+`view-transition-name: sakura-glifo`. La preferencia se persiste en
+`localStorage` (`sakura_theme`). Ver [ADR 0012](adr/0012-temas-multiples.md) y
+[diseno.md](diseno.md).
+
+## Subsistemas nuevos
+
+### Playlists
+
+Las listas viven en las tablas `playlists` y `playlist_tracks`, con
+`foreign_keys=ON` y `ON DELETE CASCADE`. Los comandos `list_playlists`,
+`create_playlist`, `rename_playlist`, `delete_playlist`, `get_playlist`,
+`playlist_add_tracks`, `playlist_remove_track` y `playlist_reorder` se exponen
+desde `lib.rs` y se consumen en `PlaylistsPanel` (pestaña Listas, también
+accesible desde ⌘K). Cada tema propio estiliza el panel.
+
+### Papelera y deshacer
+
+`delete_library_track` no borra el archivo: lo mueve a `<datos>/trash` y
+guarda la fila en `deleted_tracks` con un token. `restore_deleted_track` lo
+devuelve, `empty_trash` borra definitivamente y `trash_count` informa el
+contador que muestra `SystemPanel`. El `UndoToast` ofrece **Deshacer** durante
+9 segundos.
+
+### Letras
+
+`lyrics.rs` parsea archivos `.lrc` (varios timestamps por línea y metadatos
+`[ar:...]`) y `read_lyrics` devuelve líneas con su tiempo en segundos. El panel
+`NowPlayingPanel`, pestaña **Letras**, resalta la línea activa y hace autoscroll
+siguiendo `currentTime`.
+
+### Validación
+
+`validacion.rs` es la frontera IPC: valida textos, rutas, cantidades y lotes
+antes de tocar el disco. Las operaciones de metadatos y borrado exigen la ruta
+canónica dentro de la biblioteca activa y portadas dentro de `covers/`.
+
+### Actualizador
+
+Los plugins `updater` y `process` gestionan las actualizaciones desde Ajustes →
+Sistema. La clave pública se lee de la configuración, el endpoint apunta a
+GitHub Releases (plantilla `REPLACE_OWNER/REPLACE_REPO` a reemplazar) y los
+instaladores se generan como NSIS/MSI. Ver [release.md](release.md).
 
 ## Manejo de errores
 
@@ -243,6 +340,10 @@ El id elegido se fija en el contenedor raíz y se persiste en `localStorage`
 | Carpeta inexistente | `scan_library` devuelve `[]` sin escribir caché |
 | Archivo con solo-lectura | Se quita el flag antes de escribir y se reintenta 4 veces |
 | Portada temporal vieja | `cleanup_temp_covers` borra `temp_*` al arrancar |
+| Búsqueda FTS fallida | `search_library_fts` falla y el frontend cae al filtro local |
+| BD corrupta antes de migrar | Se restaura el último respaldo `VACUUM INTO`; `doctor_detallado` informa `integrity_check` |
+| Borrar con deshacer | El archivo va a `trash/` y queda una fila en `deleted_tracks`; si vence el toast, se vacía desde Ajustes |
+| Actualización sin firma válida | El updater rechaza el bundle; la clave pública debe coincidir con la privada usada al publicar |
 
 ## Puntos de extensión
 
@@ -250,8 +351,9 @@ El id elegido se fija en el contenedor raíz y se persiste en `localStorage`
 |---|---|---|
 | Un comando Tauri | `src-tauri/src/lib.rs` + `App.tsx` (`invoke`) | Registrarlo en `invoke_handler!` y mapear errores como `String` |
 | Un formato de descarga | `src-tauri/src/downloader.rs` (rama `fmt_lower` en `run_download`) | Agregar tests de parsing si cambia el progreso |
-| Un tema nuevo | `src/App.css` (bloque `.app-shell[data-skin='id']`) + tipo `ThemeMode` en `src/types.ts` | Seguir el patrón de tokens `--m3-*`, `--space-*`, `--accent-*` y `--theme-*` del ADR 0012 |
-| Una vista nueva | `src/components/LibraryTab.tsx` (ramas `viewMode`) y `src/components/LibraryShowcase.tsx` | El tipo `ViewMode`, el switcher en `LibraryToolbar.tsx` y las 9 vistas existentes |
+| Un tema genérico nuevo | `src/App.css` (tokens bajo `[data-skin='id']`) + `ThemeMode` en `src/types.ts` | Reutiliza `LibraryTab` de 9 vistas; mantiene `data-theme="space"` fijo |
+| Un tema propio nuevo | Bloques `.app-shell[data-skin='id']` en `App.css` + `ThemeLibrary`/`ThemeHome`/`ThemeNav` nuevos | Debe proveer cabecera, Buscar, Cola, ajustes, diálogos, transiciones, iconos y splash propios |
+| Una vista nueva | `src/components/LibraryTab.tsx` (ramas `viewMode`) y `src/components/LibraryShowcase.tsx` | El tipo `ViewMode`, el switcher en `LibraryToolbar.tsx`, las 9 vistas existentes y `VirtualizedGrid` si pasa de 60 pistas |
 | Una fuente de catálogo | `src-tauri/src/catalog.rs` (comandos `search_catalog_songs`, `search_catalog_albums` y `open_catalog_album`) | Respetar el CSP: están permitidos `itunes.apple.com`, `api.deezer.com`, `musicbrainz.org` y `coverartarchive.org` (`ws://localhost:1420` solo en dev) |
 
 Los detalles de cada receta están en [desarrollo.md](desarrollo.md).

@@ -18,7 +18,7 @@ Gestor, reproductor, descargador y etiquetador de música para escritorio, const
 ### ⚡ Motor de escaneo en Rust
 - **Paralelismo masivo:** `rayon` + `walkdir` escanean carpetas completas en todos los núcleos.
 - **Formatos:** MP3, FLAC, M4A, Opus, OGG, WAV y AAC (leídos con `lofty`).
-- **Biblioteca en SQLite:** la caché vive en `library.db` (modo WAL) dentro de la carpeta de datos del usuario, vía `rusqlite`. Se actualiza por `mtime` + tamaño, así que re-escanea sin leer los tags de todo el disco.
+- **Biblioteca en SQLite:** la caché vive en `library.sqlite3` (con `rusqlite` *bundled*, modo WAL, `synchronous=NORMAL`, `temp_store=MEMORY` y `foreign_keys=ON`) dentro de la carpeta de datos del usuario, con índice **FTS5** para la búsqueda. Se actualiza por `mtime` + tamaño, así que re-escanea sin leer los tags de todo el disco.
 - **Escritura atómica:** todos los tags, la base de datos y las portadas se escriben con temporal + `rename`, con reintentos. Un corte de luz no deja el archivo a medio escribir.
 - **Carátulas:** se extraen a `covers/` con deduplicación por hash y extensión real según la firma del archivo (JPG/PNG/WebP/GIF/BMP/TIFF), no siempre `.jpg`.
 - **Vigilante de la carpeta:** `notify` observa la carpeta escaneada y emite `library-changed` cuando cambian los archivos, para actualizar la vista sin re-escanear a mano.
@@ -27,14 +27,20 @@ Gestor, reproductor, descargador y etiquetador de música para escritorio, const
 - El audio se sirve vía protocolo `asset:` y se carga en memoria como Blob URL.
 - Al soltar el `fetch`, Windows libera el handle: podés renombrar, editar tags o cambiar la carátula **mientras suena**, sin `os error 5`.
 - Play/pausa, seek, volumen, mute, shuffle, repetición (`off` / `all` / `one`) y avance automático que respeta "repetición apagada" al llegar al final de la lista.
-- **Reproductor inmersivo (Now Playing):** clic en la portada del player y se abre una vista grande con la portada protagonista, el fondo teñido con el color dominante de la carátula y controles amplios.
+- **Panel “Ahora suena” ampliado:** tocando la portada del reproductor se abre una vista grande con la portada protagonista, el color dominante de la carátula teñendo el fondo y controles amplios, organizada en cuatro pestañas: **Detalles**, **Letras**, **Álbum** y **Artista**. El glifo del splash hace la transición continua hacia la navegación con View Transitions.
 
 ### 🗂️ Playlists, deshacer y actualizaciones
 - **Playlists persistentes** en SQLite: pestaña Listas con alta, renombre, borrado, carga de pistas y reorden manual, con estilo propio por tema.
-- **Borrado con Deshacer**: los archivos van a `trash/` y se restauran desde el toast o desde Ajustes → Sistema.
+- **Borrado con Deshacer**: los archivos van a `trash/` y se restauran desde el toast durante 9 s; Ajustes → Sistema muestra el contador y permite **Vaciar papelera**.
 - **Letras `.lrc` sincronizadas** en el panel “Ahora suena”, con resaltado y autoscroll.
 - **Paleta de comandos** con `Ctrl+K` / `⌘K` para navegar, cambiar tema, controlar la reproducción y buscar pistas.
-- **Actualizaciones** con firma minisign e instaladores NSIS/MSI; Ajustes → Sistema permite buscar e instalar versiones nuevas.
+- **Actualizaciones automáticas** firmadas con minisign e instaladores NSIS/MSI; Ajustes → Sistema permite buscar e instalar versiones nuevas.
+
+### 🛠️ Mantenimiento, doctor y herramientas
+- **Migraciones versionadas** con `PRAGMA user_version=2` (1 = FTS5 y disparadores, 2 = índices en artista, álbum, año y género), respaldo automático previo con `VACUUM INTO` y retención de 3 copias.
+- **Doctor del sistema** en Ajustes → Sistema: integridad, pistas indexadas, entradas FTS, tamaño y esquema de SQLite, con botones **Verificar**, **Compactar**, **Crear respaldo**, **Vaciar papelera** y **Buscar actualizaciones**, más un visor de logs con **Copiar**.
+- **Control remoto local** en el puerto `17342` (Ajustes → Control remoto) y **CLI `sakura-cli`** para tareas por línea de comandos.
+- **Generador de temas** para crear variantes propias a partir de un arquetipo existente.
 
 ### 🏷️ Editor de metadatos y edición en lote
 - Edición individual y por lote (Batch Editor) con `lofty` en RAM y escritura atómica.
@@ -54,11 +60,12 @@ Gestor, reproductor, descargador y etiquetador de música para escritorio, const
 - yt-dlp/ffmpeg se buscan en: carpeta de datos de la app (`bin/`), instalación histórica de la v1 (`%APPDATA%/LOCALAPPDATA`), enlaces de winget y `PATH`. Nunca hay rutas hardcodeadas de un usuario.
 - Timeouts y reintentos de red: `--socket-timeout 30`, `--retries 3`, `--fragment-retries 3`, `--windows-filenames`.
 
-### 🎨 Interfaz M3 Zen (Material 3 + calma japonesa)
-- **Seis temas seleccionables en Ajustes:** **M3 Zen** (marfil y rosa sakura), **Sumi-e** (pergamino flotante sobre tinta), **Byōbu** (pantalla dividida de tinta), **Yoru** (noche cálida y ámbar), **Hanabi** (neón cian y magenta) y **Aizuri** (índigo teñido). Sumi-e y Byōbu cambian la estructura completa, no sólo la paleta. El cambio es instantáneo y se guarda en `sakura_theme`.
+### 🎨 16 temas (Material 3 + calma japonesa)
+- **16 temas seleccionables en Ajustes → Diseño Visual:** los **4 genéricos** (**M3 Zen**/`space`, marfil y rosa sakura; **Yoru**, noche cálida y ámbar; **Hanabi**, neón cian y magenta; **Aizuri**, índigo teñido) usan `LibraryTab` con las 9 vistas clásicas. Los **12 temas propios** (**Sumi-e**, **Byōbu**, **Shoji**, **Origami**, **Swiss**, **Sumi Ink**, **Moonlit**, **Ledger**, **Shōnen**, **Fantasmas**, **Samurái** y **Kawaii**) tienen vistas estructurales completas: Inicio, biblioteca, cabecera, Buscar, Cola, ajustes, diálogos y transiciones propios, no sólo otra paleta. El cambio es instantáneo y se guarda en `sakura_theme`.
+- **Selector:** el tema base queda fijo en `data-theme='space'`; los temas propios se aplican con `data-skin`, con transición continua del glifo del splash a la navegación mediante View Transitions.
 - **Navegación superior:** barra de pestañas con indicador deslizante animado y emblema de vinilo con el kanji 桜.
-- 5 pestañas: Inicio, Biblioteca, Buscar, Cola y Ajustes.
-- **9 vistas de biblioteca:** Carpetas (con breadcrumbs), Cuadrícula, Lista (tabla), Álbumes, **Pared** (mosaico de portadas con el título y artista de cada canción, filtrado por la carpeta seleccionada), **CDs**, **3D (Tilt)**, **Luz (Glow)** y **Portadas**.
+- **6 pestañas:** Inicio, Biblioteca, Buscar, Cola, **Listas** (playlists) y Ajustes.
+- **9 vistas de biblioteca** (en los 4 temas genéricos): Carpetas (con breadcrumbs), Cuadrícula, Lista (tabla), Álbumes, **Pared** (mosaico de portadas con el título y artista de cada canción, filtrado por la carpeta seleccionada), **CDs**, **3D (Tilt)**, **Luz (Glow)** y **Portadas**.
 - Opacidad y blur del vidrio, resplandor ambiental, partículas, estilo de reproductor (flotante/fijo/mini) y favoritos persistentes.
 - Datos técnicos reales: versión de `rustc` (inyectada en `build.rs`) y memoria del proceso en Windows (via `windows-sys`), nunca literales de ejemplo.
 
@@ -97,9 +104,11 @@ Gestor, reproductor, descargador y etiquetador de música para escritorio, const
 ┌──────────────────────────────▼──────────────────────────────┐
 │                    Almacenamiento local                     │
 │ app_local_data_dir() (AppData/Local/com.sakura.music)       │
-│   • library_cache.json / library.sqlite3  (índice)          │
+│   • library.sqlite3                (índice SQLite + FTS5)    │
+│   • library_cache.json             (caché v1 importada)      │
 │   • download_queue.json            (cola persistente)      │
 │   • covers/                        (carátulas)              │
+│   • trash/                         (borrados con Deshacer)   │
 │   • bin/                           (yt-dlp / ffmpeg)         │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -131,7 +140,8 @@ npm run tauri build   # instalador .exe / .msi
 Checks de código:
 
 ```powershell
-cargo test --manifest-path src-tauri/Cargo.toml   # 21 tests Rust
+npm run pipeline                                  # tipos, lint, formato, 29 unitarios, 26 E2E, build, fmt/clippy y 42 tests Rust
+cargo test --manifest-path src-tauri/Cargo.toml   # 42 tests Rust
 node node_modules/typescript/bin/tsc --noEmit     # tipos del frontend
 ```
 
@@ -149,39 +159,57 @@ Sakura_Music/
 │   ├── App.css                   # Tailwind + variables --accent-* (tema M3 Zen)
 │   ├── types.ts                  # tipos compartidos
 │   ├── components/
-│   │   ├── ZenTopNav.tsx         # navegación superior (pestañas)
+│   │   ├── ZenTopNav.tsx         # navegación superior (6 pestañas)
 │   │   ├── HomeTab.tsx           # inicio
-│   │   ├── LibraryTab.tsx        # biblioteca (vistas)
+│   │   ├── LibraryTab.tsx        # biblioteca (9 vistas de los temas genéricos)
 │   │   ├── LibraryShowcase.tsx  # vista Pared (mosaico de portadas)
+│   │   ├── NovelLibraryViews.tsx # vistas CDs/3D/Luz/Portadas
 │   │   ├── LibraryToolbar.tsx    # cabecera y switcher de vistas
-│   │   ├── PlayerBar.tsx         # reproductor + Now Playing inmersivo
+│   │   ├── PlayerBar.tsx         # reproductor + panel “Ahora suena”
+│   │   ├── NowPlayingPanel.tsx   # pestañas Detalles/Letras/Álbum/Artista
 │   │   ├── MetadataModal.tsx     # editor de metadatos
 │   │   ├── BatchModal.tsx        # edición en lote
 │   │   ├── SearchTab.tsx         # buscar y descargar
 │   │   ├── QueueTab.tsx          # cola de descargas
+│   │   ├── PlaylistsPanel.tsx    # pestaña Listas (SQLite)
+│   │   ├── UndoToast.tsx         # borrado con Deshacer
+│   │   ├── CommandPalette.tsx    # paleta Ctrl+K / ⌘K
+│   │   ├── SystemPanel.tsx       # doctor: SQLite, papelera, actualizaciones y logs
+│   │   ├── ThemeNav.tsx / ThemeHome.tsx / ThemeLibrary.tsx / ThemeSearch.tsx / ThemeQueue.tsx  # vistas propias
+│   │   ├── ThemeGeneratorModal.tsx # generador de temas
 │   │   ├── SettingsTab.tsx       # ajustes
 │   │   └── DeleteTracksDialog.tsx
+│   ├── themes/
+│   │   ├── customThemes.ts       # temas propios persistidos en localStorage
+│   │   └── themeIcons.ts         # glifos por tema
 │   └── hooks/
 │       ├── usePlayer.ts          # reproducción, shuffle, repeat
 │       ├── useDownloadQueue.ts   # cola de descargas + persistencia
 │       ├── useOnlineSearch.ts    # búsqueda YouTube
 │       ├── useFolderExplorer.ts  # navegación por carpetas
 │       ├── useMetadataEditor.ts  # edición individual
-│       └── useBatchEditor.ts     # edición en lote
+│       ├── useBatchEditor.ts     # edición en lote
+│       ├── useRemoteControl.ts   # servidor local en el puerto 17342
+│       └── useThemeTransition.ts # View Transitions del splash a la nav
 ├── src-tauri/                    # Backend Rust
 │   ├── src/
-│   │   ├── lib.rs                # comandos Tauri (19), caché, scope asset, ciclo de vida
-│   │   ├── catalog.rs            # 3 comandos de catálogo (iTunes/Deezer/MusicBrainz)
+│   │   ├── lib.rs                # comandos Tauri (43 en total), caché, scope asset, ciclo de vida
+│   │   ├── catalog.rs            # comandos de catálogo (iTunes/Deezer/MusicBrainz)
+│   │   ├── validacion.rs         # validación de parámetros IPC (longitudes, NUL, control)
+│   │   ├── remote.rs             # control remoto local (puerto 17342)
 │   │   ├── main.rs               # entrada desktop
 │   │   ├── scanner.rs            # escaneo Rayon, tags lofty, escritura atómica, tests
 │   │   ├── downloader.rs         # DownloadManager, yt-dlp, cancelación, tests
-│   │   ├── library_db.rs         # índice SQLite (rusqlite), tests
+│   │   ├── library_db.rs         # índice SQLite (rusqlite + FTS5), migraciones, tests
 │   │   ├── library_watcher.rs     # vigilante de carpeta (notify)
 │   │   ├── queue.rs              # cola de descargas persistente, tests
 │   │   └── paths.rs              # resolución centralizada de la carpeta de datos
 │   ├── Cargo.toml / Cargo.lock   # dependencias (commiteado: es una app)
-│   ├── tauri.conf.json           # ventana, CSP y asset scope acotado
+│   ├── tauri.conf.json           # ventana, CSP, updater (minisign) y asset scope acotado
+│   ├── updater.key.pub           # clave pública de las actualizaciones
 │   └── capabilities/default.json
+├── scripts/                      # benchmark_scan.mjs y utilidades
+├── .github/workflows/            # CI (matriz Windows/macOS/Linux) y release con firma
 ├── docs/                         # documentación del proyecto (ver abajo)
 ├── legacy_python/                # v1.0 histórica (Python + PySide6)
 ├── iniciar_sakura.bat            # lanzador de desarrollo para Windows
@@ -199,11 +227,14 @@ Todo el detalle vivido en `docs/`, en Markdown plano con Mermaid, sin MkDocs:
 - [Requisitos](docs/requisitos.md) — promesas verificables con su criterio.
 - [Casos de uso](docs/casos-de-uso.md) — actores y flujos contra el código real.
 - [Desarrollo](docs/desarrollo.md) — setup, tests y recetas.
-- [Contrato IPC](docs/ipc-contract.md) — los 22 comandos Tauri y los 5 eventos.
+- [Contrato IPC](docs/ipc-contract.md) — los 43 comandos Tauri y los 6 eventos.
 - [Formatos de datos](docs/data-formats.md) — SQLite, cola persistente y preferencias.
-- [Manual de usuario](docs/manual/README.md) — instalación, buscar/descargar, biblioteca, metadatos y resolución de problemas.
+- [Manual de usuario](docs/manual/README.md) — instalación, buscar/descargar, biblioteca, playlists, deshacer, letras, metadatos y resolución de problemas.
+- [Funciones nuevas](docs/nuevas-funciones.md) — playlists, deshacer, letras LRC, paleta ⌘K, actualizaciones y benchmarks.
+- [Herramientas](docs/herramientas/README.md) — CLI `sakura-cli`, generador de temas y control remoto.
+- [Pipeline de CI](docs/pipeline.md) — etapas, métricas de tests y el comando `npm run pipeline`.
 - [ADRs](docs/adr/README.md) — decisiones. Los 0001–0008 quedaron como histórico de la v1; 0009 y posteriores rigen la v2.
-- [Cómo contribuir](CONTRIBUTING.md), [Seguridad](SECURITY.md), [Changelog](CHANGELOG.md), [sistema de diseño](docs/diseno.md), [pipeline de CI](docs/pipeline.md) y [guía de release](docs/release.md).
+- [Cómo contribuir](CONTRIBUTING.md), [Seguridad](SECURITY.md), [Changelog](CHANGELOG.md), [sistema de diseño](docs/diseno.md) y [guía de release](docs/release.md).
 
 > Las capturas en `docs/img/` son de la UI de la v1 (PySide6). Están pendientes de reemplazo por capturas de la app Tauri/React.
 

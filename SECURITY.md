@@ -35,12 +35,18 @@ Fuera de alcance: el contenido de las canciones descargadas, las políticas de l
 - **CSP acotada** en `tauri.conf.json`: sin `unsafe-eval`, `object-src 'none'`, `frame-ancestors 'none'`; `connect-src` solo a los hosts necesarios.
 - **Capabilities mínimas**: `core:default`, window y dialog. No se conceden permisos amplios de `fs`, `shell` ni `http`.
 - **Scope de assets** restringido a `$AUDIO`, `$APPLOCALDATA` y `$TEMP`, ampliado en runtime solo para las carpetas de la biblioteca.
-- **Validación de rutas** antes de borrar: `symlink_metadata` + `canonicalize` + comprobación de que el archivo quede dentro de la carpeta raíz. El mismo criterio se aplica al ampliar el scope: una ruta canónica fuera de la raíz activa se rechaza y el fallo se informa al frontend.
-- **Registro local** en `<datos>/sakura.log` para avisos que antes se perdían en una consola inexistente; no guarda datos personales ni rutas de búsquedas.
+- **Validación de rutas** antes de borrar: `symlink_metadata` + `canonicalize` + comprobación de que el archivo quede dentro de la carpeta raíz. El mismo criterio se aplica al ampliar el scope y **antes de escribir tags**: se valida la ruta canónica y que la pista pertenezca a la biblioteca activa; una ruta fuera de la raíz se rechaza y el fallo se informa al frontend.
+- **Validación de parámetros IPC** en `src-tauri/src/validacion.rs`: longitudes máximas, ausencia de bytes NUL y de caracteres de control en los argumentos que llegan del frontend.
+- **Registro local** en `<datos>/sakura.log` para avisos que antes se perdían en una consola inexistente; no guarda datos personales ni rutas de búsquedas, y los tokens quedan **redactados** antes de escribirse.
 - **Subprocessos sin shell**: `Command` con argumentos por `.arg()`, sin interpolación.
 - **Herramientas verificadas**: si el usuario instala yt-dlp o FFmpeg desde Ajustes, se descargan de URLs fijadas y se valida su SHA256 antes de escribir nada; nunca se pisa un binario existente.
+- **Actualizaciones automáticas firmadas** con minisign: el plugin `updater` de Tauri verifica la firma con la clave pública de `src-tauri/updater.key.pub` antes de instalar. La clave privada está ignorada por git y los secretos de firma viven sólo en el CI.
 - **Sin secretos en el código** ni rutas hardcodeadas de usuarios.
+
+## Por qué no hay login
+
+Sakura Music es **local-first**: lee y escribe archivos que están en tu máquina y no tiene cuenta, usuario ni servidor propio. Un login local sería **teatro de seguridad**: cualquiera con acceso al equipo podría saltárselo, y no protegería nada de lo que la app realmente maneja. Tendría sentido recién con **sincronización entre dispositivos**, y ahí sí correspondería almacenar credenciales con un KDF como **Argon2id**. Hoy no hay login y **no está planeado**.
 
 ## Para releases
 
-Antes de publicar: `npm audit`, `cargo audit`, revisión de dependencias y firma de los instaladores. La app no incluye actualizaciones automáticas todavía, así que cada versión debe distribuirse por un canal verificable.
+Antes de publicar: `npm audit`, `cargo audit`, revisión de dependencias y firma de los instaladores NSIS/MSI con minisign. Reemplazá `REPLACE_OWNER/REPLACE_REPO` por el owner/repo real en `src-tauri/tauri.conf.json` y mantené la clave pública en `src-tauri/updater.key.pub`; la privada (`updater.key`) nunca entra al repositorio. El CI de GitHub Actions ya corre la matriz Windows/macOS/Linux y, con los secrets `TAURI_SIGNING_PRIVATE_KEY` y `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`, genera y firma los bundles en el job de build. Las actualizaciones se instalan sólo si la firma es válida, así que el canal de distribución queda verificado de extremo a extremo.

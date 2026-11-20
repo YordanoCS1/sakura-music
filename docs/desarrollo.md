@@ -25,17 +25,28 @@ La versión real de `rustc` se captura en `src-tauri/build.rs` y se muestra en
 ```text
 Sakura_Music/
 ├── src/                          # Frontend (React 19 + TypeScript)
-│   ├── App.tsx                   # estado raíz: pestañas, player, editor, cola (~1058 líneas)
+│   ├── App.tsx                   # estado raíz: 6 pestañas (AppTab), player, editor, cola
 │   ├── main.tsx                  # entrada de React
-│   ├── App.css                   # Tailwind + tokens --m3-* / --accent-* del tema M3 Zen
-│   ├── types.ts                  # tipos compartidos (ScannedTrack, ViewMode, …)
+│   ├── App.css                   # Tailwind + tokens --m3-* / --accent-* / --theme-* de los 16 temas
+│   ├── types.ts                  # tipos compartidos (ScannedTrack, ViewMode, AppTab, ThemeMode, …)
 │   ├── components/
 │   │   ├── ZenTopNav.tsx         # navegación superior (pestañas + indicador)
+│   │   ├── ThemeNav.tsx          # navegación de los 12 temas propios
+│   │   ├── ThemeHome.tsx         # inicio de los temas propios
+│   │   ├── ThemeLibrary.tsx      # biblioteca propia (no usa las 9 vistas genéricas)
+│   │   ├── ThemeQueue.tsx        # cola propia
+│   │   ├── ThemeSearch.tsx       # búsqueda propia
 │   │   ├── HomeTab.tsx
-│   │   ├── LibraryTab.tsx        # vistas: Carpetas/Cuadrícula/Lista/Álbumes/Pared/CDs/3D/Luz/Portadas
+│   │   ├── LibraryTab.tsx        # 9 vistas: Carpetas/Cuadrícula/Lista/Álbumes/Pared/CDs/3D/Luz/Portadas
+│   │   ├── VirtualizedGrid.tsx   # grid virtualizado + content-visibility (>60 pistas)
 │   │   ├── LibraryShowcase.tsx   # vista Pared (mosaico de portadas)
 │   │   ├── LibraryToolbar.tsx    # cabecera y switcher de vistas
 │   │   ├── PlayerBar.tsx         # reproductor + Now Playing inmersivo
+│   │   ├── NowPlayingPanel.tsx   # pestañas Detalles/Letras/Álbum/Artista
+│   │   ├── PlaylistsPanel.tsx    # pestaña Listas
+│   │   ├── CommandPalette.tsx    # ⌘K / Ctrl+K
+│   │   ├── UndoToast.tsx         # deshacer borrados (9 s)
+│   │   ├── SystemPanel.tsx       # salud BD, papelera, updater y logs
 │   │   ├── MetadataModal.tsx     # editor de metadatos
 │   │   ├── BatchModal.tsx        # edición en lote
 │   │   ├── SearchTab.tsx         # buscar y descargar
@@ -48,18 +59,28 @@ Sakura_Music/
 ├── src-tauri/                    # Backend (Tauri 2 + Rust)
 │   ├── src/
 │   │   ├── main.rs               # callback mínimo para desktop
-│   │   ├── lib.rs                # comandos Tauri (19), caché, scope asset, ciclo de vida
+│   │   ├── lib.rs                # 40 comandos Tauri, scope asset, ciclo de vida
 │   │   ├── catalog.rs            # 3 comandos de catálogo (iTunes/Deezer/MusicBrainz)
 │   │   ├── scanner.rs            # walkdir + rayon + lofty, escritura atómica, tests
 │   │   ├── downloader.rs         # DownloadManager, yt-dlp, cancelación, tests
-│   │   ├── library_db.rs         # índice SQLite (rusqlite), tests
+│   │   ├── library_db.rs         # SQLite bundled + FTS5, user_version=2, backups, doctor, tests
 │   │   ├── library_watcher.rs    # vigilante de carpeta (notify), evento library-changed
+│   │   ├── playlists.rs          # tablas playlists/playlist_tracks con ON DELETE CASCADE
+│   │   ├── lyrics.rs             # parser .lrc (varios timestamps por línea)
+│   │   ├── validacion.rs         # validación en la frontera IPC
 │   │   ├── queue.rs              # cola de descargas persistente, tests
-│   │   └── paths.rs              # carpeta de datos estable (OnceLock)
-│   ├── Cargo.toml / Cargo.lock   # dependencias (Cargo.lock commiteado: es una app)
+│   │   ├── paths.rs              # carpeta de datos estable (OnceLock)
+│   │   ├── logging.rs            # logs del sistema con redacción de secretos
+│   │   ├── remote.rs             # control HTTP local (puerto 17342)
+│   │   └── tools.rs              # detección e instalación con SHA256 fijo
+│   ├── Cargo.toml / Cargo.lock   # dependencias (Cargo.lock commiteado: es una app; [profile.dev] debug=0)
 │   ├── build.rs                  # inyecta RUSTC_VERSION real
-│   ├── tauri.conf.json           # ventana, CSP y asset scope
-│   └── capabilities/default.json # permisos: core, dialog
+│   ├── tauri.conf.json           # ventana, CSP, updater, NSIS/MSI y asset scope
+│   ├── updater.key.pub           # clave pública del updater (la privada no se commitea)
+│   └── capabilities/default.json # permisos: core, dialog, updater, process
+├── scripts/
+│   └── benchmark_scan.mjs        # benchmark de escaneo (10k pistas ≈ 12,6 s en release)
+├── e2e/                          # suites Playwright (26 tests)
 ├── docs/                         # esta documentación
 ├── legacy_python/                # v1.0 histórica (Python + PySide6), no se toca
 ├── iniciar_sakura.bat            # npm run tauri dev en Windows
@@ -81,24 +102,34 @@ npm run check           # tipos + lint + formato + tests + build del frontend
 npm run typecheck       # solo tsc --noEmit
 npm run lint            # ESLint sobre src/
 npm run format          # Prettier sobre TS/TSX/JS/JSON/YAML
-npm run test            # Vitest (tests unitarios del frontend)
-cargo test --manifest-path src-tauri/Cargo.toml   # 21 tests Rust
+npm run test            # Vitest (29 tests unitarios del frontend)
+npm run test:e2e        # Playwright (26 tests E2E)
+npm run pipeline        # check + E2E + fmt + clippy + cargo test → pasa en verde
+cargo test --manifest-path src-tauri/Cargo.toml   # 42 tests Rust
 cargo fmt --check --manifest-path src-tauri/Cargo.toml
 cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings
 ```
 
+> **`[profile.dev] debug = 0`** en `Cargo.toml`: MSVC (linker D8050) no maneja
+> bien los target paths largos con información de debug completa. Si necesitás
+> debug symbols, hacelo con un profile explícito, pero no cambies el default.
+
 ### Integración continua
 
-`.github/workflows/ci.yml` ejecuta en Windows, macOS y Linux las mismas
-comprobaciones: `npm ci`, los cinco scripts anteriores, `cargo fmt --check`,
-`cargo clippy -D warnings` y `cargo test`. La auditoría de npm
-(`npm run audit`) corre como paso informativo: hoy hay un aviso *high* de
-`picomatch` que afecta solo a dependencias de desarrollo y todavía no tiene
-corrección; no bloquea el pipeline.
+`.github/workflows/ci.yml` ejecuta en Windows, macOS y Linux (matriz de 3 SO) las
+mismas comprobaciones: `npm ci`, `npm run pipeline` (tipos, lint, formato, 29
+unitarios, 26 E2E, build del frontend, `cargo fmt --check`, `cargo clippy -D
+warnings` y los 42 tests Rust). La auditoría de npm (`npm run audit`) corre como
+paso informativo: hoy hay un aviso *high* de `picomatch` que afecta solo a
+dependencias de desarrollo y todavía no tiene corrección; no bloquea el pipeline.
 
-La generación del instalador de Windows se hace aparte, sólo cuando se
-dispara el workflow a mano o se pushea un tag, y sube el bundle como artefacto.
-Dependabot revisa npm, Cargo y GitHub Actions semanalmente.
+El job `build` genera los instaladores **NSIS/MSI** cuando se dispara a mano o
+se pushea un tag `v*`: usa los secrets `TAURI_SIGNING_PRIVATE_KEY` y
+`TAURI_SIGNING_PRIVATE_KEY_PASSWORD` para firmar con el updater y sube el bundle
+como artefacto. `.github/workflows/release.yml` publica en GitHub Releases con
+el mismo par de claves; antes de publicar hay que reemplazar
+`REPLACE_OWNER/REPLACE_REPO` en `tauri.conf.json`. Dependabot revisa npm, Cargo
+y GitHub Actions semanalmente.
 
 ### Recortar la corrida
 
@@ -115,16 +146,36 @@ Los tests Rust prueban parsing de `yt-dlp` (`parsea_linea_de_busqueda`,
 extensión de imagen por firma, hash FNV-1a, formateo de duración y escritura
 atómica sin dejar temporales. El test de escritura usa `target/test-tmp/`
 porque el rename falla con `%TEMP%` desincronizado del cwd en este Windows.
+Además hay tests de integración de la migración `user_version` con backup
+automático sobre una base en disco, del parser `.lrc`, de las consultas de
+playlists y del toast de deshacer.
+
+### Benchmark de escaneo
+
+`scripts/benchmark_scan.mjs [cantidad]` genera MP3 mínimos y mide el escaneo
+real del CLI compilado en release (el comando `scan` ya imprime los
+milisegundos). En esta máquina, **10.000 pistas tardaron ~12,6 s** en el primer
+escaneo. Para correrlo:
+
+```powershell
+npm run build
+cargo build --release --manifest-path src-tauri/Cargo.toml
+node scripts/benchmark_scan.mjs 10000
+```
+
+Es una medición manual: no entra en `npm run pipeline` porque depende de
+tiempos de disco y del binario release.
 
 ## Casos de uso de desarrollo
 
-Los tests del frontend (`src/**/*.test.ts` y `.test.tsx`) cubren la conversión
-entre el ítem de UI y el formato persistido de la cola y el fallback del
-`ErrorBoundary`. Todo lo demás se verifica a mano:
-búsqueda real en YouTube, descarga en los 4
-formatos, playlist completa, edición individual y en lote (incluido el mensaje
-de fallos parciales), iTunes/Deezer/MusicBrainz, temas y efectos, y
-cancelación/reintento de filas.
+Los tests del frontend (`src/**/*.test.ts` y `.test.tsx`, 29 en total) cubren
+la conversión entre el ítem de UI y el formato persistido de la cola, el toast
+de deshacer y el fallback del `ErrorBoundary`; los 26 tests E2E de `e2e/`
+verifican arranque, splash, las 6 pestañas, paleta ⌘K y teclado. Todo lo demás
+se verifica a mano: búsqueda real en YouTube, descarga en los 4 formatos,
+playlist completa, edición individual y en lote (incluido el mensaje de fallos
+parciales), iTunes/Deezer/MusicBrainz, letras `.lrc`, playlists, los 16 temas y
+sus efectos, cancelación/reintento de filas y búsqueda de actualizaciones.
 
 ## Recetas para extender
 
@@ -140,14 +191,31 @@ cancelación/reintento de filas.
 
 ### Agregar un tema
 
-1. En `src/App.css`, agregá `[data-theme='nuevo']` con sus tokens `--m3-*`.
-2. En `src/types.ts`, sumá `'nuevo'` a `ThemeMode`; en `src/App.tsx`, agrega su
-   entrada a `themeGlows` (glow/acento/badge/borde) y valida su persistencia.
-3. Si el tema cambia fondos o superficies, define sus estilos en `App.css`.
-   Corré `npm run build` para validar tipos y clases Tailwind.
+**Genérico:** sumá el id a `ThemeMode` en `src/types.ts` y un bloque
+`.app-shell[data-skin='id']` en `src/App.css` con `--m3-*`, `--space-*`,
+`--accent-*` y `--theme-*`. Mantiene `data-theme="space"` fijo y reutiliza
+`LibraryTab` de 9 vistas.
 
-Los cambios limitados a la paleta usan `accent-*`; los temas visuales completos
-requieren estilos de superficie además de los tokens de color.
+**Propio:** además de lo anterior, creá sus `ThemeLibrary`/`ThemeHome`/`ThemeNav`
+según corresponda, con cabecera, Buscar, Cola, ajustes, diálogos y transiciones
+propios, más iconos y splash propios. Revisá `ViewMode` y el switcher si
+agregás vistas. Verificá el handoff del glifo con
+`view-transition-name: sakura-glifo`.
+
+Corré `npm run build` para validar tipos y clases Tailwind. Los cambios
+limitados a la paleta usan `accent-*`; los 12 temas propios requieren estilos de
+superficie además de los tokens de color. Ver [ADR 0012](adr/0012-temas-multiples.md).
+
+### Agregar una playlist o una operación de papelera
+
+1. Implementá la lógica en `src-tauri/src/playlists.rs` (o `library_db.rs` para
+   `deleted_tracks`), con `foreign_keys=ON` y `ON DELETE CASCADE`.
+2. Exponé el comando en `lib.rs`, registralo en `invoke_handler!` y validá los
+   argumentos en `validacion.rs` en la frontera IPC.
+3. Agregalo a `docs/ipc-contract.md` (43 comandos / 6 eventos) y al tipo en
+   `src/types.ts`; consumilo desde `PlaylistsPanel` o `UndoToast`.
+4. Si el comando crea archivos visibles, autorizá la carpeta con
+   `app.asset_protocol_scope().allow_directory(...)`.
 
 ### Agregar una vista de biblioteca
 
@@ -184,7 +252,7 @@ requieren estilos de superficie además de los tokens de color.
 | Rutas | `paths.rs` es el único lugar que conoce la carpeta de datos; nunca hay rutas hardcodeadas de usuario |
 | Escrituras | Siempre `write_atomic` para tags, caché y portadas |
 | Colores | Solo `accent-*` (variables `--accent-*`) fuera de `App.css`; el resto es rosa de apoyo (status) |
-| Tests | Un `#[test]` por comportamiento puro en su módulo; el frontend se verifica con `tsc` + build |
+| Tests | Un `#[test]` por comportamiento puro en su módulo (42 Rust); el frontend con 29 unitarios Vitest + 26 E2E Playwright, más `tsc` + build |
 
 ## Documentación
 

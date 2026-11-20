@@ -70,9 +70,9 @@ espera turno.
 **Al cerrar la app se cancela y mata todo lo pendiente.** No quedan procesos
 `yt-dlp` huérfanos. Pero la cola **sí se guarda entre sesiones**: al reabrir
 aparece el aviso "Se restauraron N descargas…", y las que estaban en curso
-vuelven como `interrumpida` y **se reanudan solas** desde el principio
-(yt-dlp no continúa a mitad de archivo). Las terminadas, canceladas y con error
-quedan como historial en la Cola.
+vuelven como `interrumpida` y **se reanudan solas**: yt-dlp se invoca con
+`--continue` y reutiliza el archivo parcial cuando puede. Las terminadas,
+canceladas y con error quedan como historial en la Cola.
 
 ## Qué hacer si una descarga falla
 
@@ -83,3 +83,15 @@ quedan como historial en la Cola.
    bajarlo desde la app: probá otro resultado.
 
 Los errores llegan traducidos por yt-dlp (por ejemplo, "Video unavailable").
+
+## Listas y atajos
+
+Las **playlists de YouTube que cargás acá** son listas de descarga temporales;
+para guardar tu propia colección usá la pestaña **Listas**, con playlists
+persistentes en SQLite. Cómo crearlas, renombrarlas y reordenarlas está en
+[biblioteca.md](biblioteca.md#listas-playlists).
+
+Desde cualquier pestaña podés apretar `Ctrl+K` / `⌘K` para abrir la **paleta de
+comandos**: navegación, cambio de tema, reproducción y búsqueda de pistas con
+**↑↓**, **↵** y **esc**. Está disponible en los 16 temas y se detalla en
+[apariencia.md](apariencia.md).

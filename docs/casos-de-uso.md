@@ -31,6 +31,11 @@ regla vive en un módulo Rust o en `src/App.tsx`, se nombra el archivo.
 | CU-10 | Configurar la app | Usuario | Preferencias en `localStorage` |
 | CU-11 | Diagnosticar un fallo | Usuario | Causa legible y acción siguiente (reintentar, instalar herramienta) |
 | CU-12 | Extender la app | Desarrollador | Comando, tema, vista o formato nuevos sin romper tests |
+| CU-13 | Crear y ordenar playlists | Usuario | Listas persistentes con pistas reordenables |
+| CU-14 | Deshacer un borrado | Usuario | Archivo y fila restaurados desde la papelera |
+| CU-15 | Ver letras sincronizadas | Usuario | Letra resaltada y con autoscroll mientras suena |
+| CU-16 | Navegar con la paleta de comandos | Usuario | Acción ejecutada con ⌘K sin salir del teclado |
+| CU-17 | Actualizar la app | Usuario | Nueva versión descargada, verificada e instalada |
 
 ---
 
@@ -297,19 +302,27 @@ Tabla).
 
 **Flujo principal**
 
-1. La app ofrece seis temas: **M3 Zen**, Sumi-e, Byōbu, Yoru, Hanabi y Aizuri. En Ajustes
-   se elige uno y `data-theme` se fija en el contenedor raíz. El valor se persiste
-   en `sakura_theme`; `ThemeMode` reúne los cinco identificadores.
+1. La app ofrece **16 temas**: 4 genéricos (**M3 Zen**/`space`, Yoru, Hanabi y
+   Aizuri) y 12 propios (Sumi-e, Byōbu, Shōji, Origami, Swiss, Sumi Ink,
+   Moonlit, Ledger, Shōnen, Fantasmas, Samurái y Kawaii). En Ajustes se elige
+   uno. Los genéricos fijan `data-theme="space"` y usan `LibraryTab` de 9
+   vistas; los propios usan `data-skin={tema}` con `ThemeLibrary`/`ThemeHome`/
+   `ThemeNav` propios. El valor se persiste en `sakura_theme`; `ThemeMode` reúne
+   los 16 identificadores.
 2. Los valores de superficie (`--m3-surface`, `--m3-primary`, etc.) y los
    `--accent-*` de `App.css` definen la paleta; Tailwind mapea `accent-*` a esas
-   variables, así que toda la UI usa la misma identidad.
+   variables, así que toda la UI usa la misma identidad. Cada tema propio
+   redefine además cabecera, Buscar, Cola, ajustes, diálogos, transiciones,
+   iconos y splash.
 3. En **Ajustes** se elige el tema y se ajustan los efectos: opacidad/blur del
    vidrio, resplandor ambiental, partículas y estilo del reproductor (flotante/fijo/mini).
-   Se persisten en `localStorage` (`sakura_*`).
+   Se persisten en `localStorage` (`sakura_*`). El glifo del splash hace handoff
+   continuo al logo de la navegación con `view-transition-name: sakura-glifo`.
 
 **Dónde está:** `src/types.ts` (`ThemeMode`), `src/App.tsx`
-(`data-theme`), `src/App.css` (`[data-theme='space']`), `tailwind.config.js`
-(paleta `accent-*`).
+(`data-theme`), `src/App.css` (bloques `[data-skin='id']`, `IDENTIDAD POR TEMA`),
+`src/components/ThemeLibrary.tsx`, `ThemeHome.tsx`, `ThemeNav.tsx`,
+`tailwind.config.js` (paleta `accent-*`).
 
 ---
 
@@ -363,9 +376,11 @@ Ajustes).
 2. Para un **comando** nuevo, agregalo en `src-tauri/src/lib.rs`, registralo en
    `invoke_handler!` y consumilo con `invoke` desde `App.tsx`. Mapeá errores
    como `String`.
-3. Para un **tema** nuevo, agregá `[data-theme='...']` y sus tokens `--m3-*` en
-   `App.css`, el valor en `ThemeMode` (`src/types.ts`) y sus glows en `App.tsx`
-   (hoy el tema es fijo, `space`, y no hay selector visible).
+3. Para un **tema genérico** nuevo, agregá su bloque `[data-skin='...']` y sus
+   tokens `--m3-*` en `App.css` y el valor en `ThemeMode` (`src/types.ts`);
+   reutiliza `LibraryTab`. Para un **tema propio**, además creá sus
+   `ThemeLibrary`/`ThemeHome`/`ThemeNav` con diálogos, transiciones, iconos y
+   splash propios (hoy son 12 propios + 4 genéricos).
 4. Para una **vista** nueva, agregá `ViewMode` y una rama en `LibraryTab.tsx` sin
    antiparse con las otras vistas.
 5. Para un **formato** nuevo, sumá la rama en `run_download` (`downloader.rs`).
@@ -376,4 +391,152 @@ Ajustes).
 
 **Dónde está:** `docs/desarrollo.md`.
 
-**Tests:** `cargo test` (21 Rust) y `node node_modules/typescript/bin/tsc --noEmit`.
+**Tests:** `npm test` (29 Vitest), `npm run test:e2e` (26 Playwright),
+`cargo test` (42 Rust) y `npm run pipeline` (pasa en verde).
+
+---
+
+## CU-13 · Crear y ordenar playlists
+
+**Actor:** Usuario.
+
+**Precondiciones:** hay pistas en la biblioteca.
+
+**Flujo principal**
+
+1. El usuario abre la pestaña **Listas** (o pulsa ⌘K y elige *Listas*).
+2. Pulsa **Nueva lista**, escribe el nombre y confirma: el comando
+   `create_playlist` crea la fila en `playlists`.
+3. Arrastra o agrega pistas desde la biblioteca con `playlist_add_tracks`;
+   `get_playlist` muestra el detalle ordenado.
+4. Reordena con las flechas (`playlist_reorder`), quita una pista
+   (`playlist_remove_track`), renombra (`rename_playlist`) o borra la lista
+   (`delete_playlist`). Con `foreign_keys=ON` y `ON DELETE CASCADE`, borrar la
+   lista limpia `playlist_tracks`.
+
+**Flujos alternativos**
+
+- **Sin pistas:** el panel muestra un `EmptyState` con la acción de escanear.
+- **Tema propio:** el panel adopta los estilos del tema; Swiss, Shōnen, Kawaii,
+  Fantasmas, Luna y Samurái tienen variantes explícitas.
+
+**Postcondiciones:** la lista persiste en SQLite y se reabre igual al reiniciar.
+
+**Dónde está:** `src/components/PlaylistsPanel.tsx`, `src/App.tsx`,
+`src-tauri/src/playlists.rs`, `src-tauri/src/lib.rs` (comandos de playlist).
+
+---
+
+## CU-14 · Deshacer un borrado
+
+**Actor:** Usuario. **Sistema:** sistema de archivos, SQLite.
+
+**Flujo principal**
+
+1. El usuario borra una pista desde la biblioteca. `delete_library_track` no
+   la elimina: la mueve a `<datos>/trash` y guarda la fila en `deleted_tracks`
+   con un token.
+2. Aparece `UndoToast` con un botón **Deshacer** y una cuenta regresiva de
+   9 segundos.
+3. Si toca **Deshacer**, `restore_deleted_track` devuelve el archivo a su ruta
+   original y reinserta la fila en la biblioteca.
+4. Si expira, el archivo queda en la papelera. `trash_count` muestra el
+   contador en Ajustes → Sistema y `empty_trash` borra definitivamente.
+
+**Flujos alternativos**
+
+- **Ya restaurado:** el token deja de ser válido y el toast se cierra.
+- **Varios borrados:** cada uno tiene su propio token y su propio toast.
+
+**Postcondiciones:** no se pierde música por un borrado accidental dentro de
+los 9 segundos; el borrado definitivo es explícito.
+
+**Dónde está:** `src/components/UndoToast.tsx`, `src-tauri/src/lib.rs`
+(`delete_library_track`, `restore_deleted_track`, `empty_trash`, `trash_count`),
+`src-tauri/src/library_db.rs`.
+
+---
+
+## CU-15 · Ver letras sincronizadas
+
+**Actor:** Usuario. **Sistema:** archivos `.lrc` locales.
+
+**Precondiciones:** existe un `.lrc` (o `.LRC`) junto al audio.
+
+**Flujo principal**
+
+1. El usuario abre el panel **Ahora suena** y elige la pestaña **Letras**
+   (`NowPlayingPanel.tsx`).
+2. `read_lyrics` busca el archivo y `lyrics.rs` lo parsea: acepta varios
+   timestamps por línea y metadatos `[ar:...]`, y devuelve líneas con tiempo en
+   segundos.
+3. Mientras suena, la línea activa se resalta y el panel hace autoscroll
+   siguiendo `currentTime`.
+4. El usuario puede pasar a **Detalles**, **Álbum** o **Artista** sin perder la
+   posición de reproducción.
+
+**Flujos alternativos**
+
+- **Sin `.lrc`:** la pestaña muestra un estado vacío con una acción concreta;
+  no se consulta ningún servicio externo.
+
+**Postcondiciones:** la letra acompaña a la pista sin bloquear el archivo.
+
+**Dónde está:** `src/components/NowPlayingPanel.tsx`, `src-tauri/src/lyrics.rs`,
+`src-tauri/src/lib.rs` (`read_lyrics`).
+
+---
+
+## CU-16 · Navegar con la paleta de comandos
+
+**Actor:** Usuario.
+
+**Flujo principal**
+
+1. El usuario pulsa `Ctrl+K` / `⌘K`: se abre `CommandPalette` sobre el tema
+   activo.
+2. Escribe para filtrar; con ↑↓ recorre las acciones (navegar a las 6
+   pestañas, cambiar tema, reproducir/pausar, buscar pistas).
+3. Pulsa ↵ para ejecutar o Esc para cerrar. Acciones como *Listas* y
+   *Biblioteca* cambian `activeTab` de `AppTab`.
+
+**Flujos alternativos**
+
+- **Sin resultados:** la paleta muestra un mensaje y mantiene el foco en el
+  campo de búsqueda.
+
+**Postcondiciones:** la acción se ejecuta sin sacar las manos del teclado.
+
+**Dónde está:** `src/components/CommandPalette.tsx`, `src/App.tsx`
+(`activeTab`), `src/types.ts` (`AppTab`).
+
+---
+
+## CU-17 · Actualizar la app
+
+**Actor:** Usuario. **Sistemas:** GitHub Releases, plugins `updater`/`process`.
+
+**Precondiciones:** hay una versión publicada con el endpoint y la clave
+pública configurados (`REPLACE_OWNER/REPLACE_REPO` ya reemplazado).
+
+**Flujo principal**
+
+1. En Ajustes → Sistema, `SystemPanel` muestra **Buscar actualizaciones**.
+2. El plugin `updater` consulta `latest.json` y compara con la versión actual.
+3. Si hay una nueva, el usuario pulsa **Instalar \<versión\>**. El bundle se
+   descarga, se verifica con la clave pública y se instala con el plugin
+   `process`.
+4. Se muestra el estado de la actualización; los logs quedan visibles en el
+   mismo panel (redactados).
+
+**Flujos alternativos**
+
+- **Firma inválida:** la instalación se rechaza y se informa el error.
+- **Sin red:** se muestra el error y se puede reintentar más tarde.
+
+**Postcondiciones:** la app queda en la nueva versión; el binario anterior se
+reemplaza sin perder la carpeta de datos (biblioteca, playlists y papelera).
+
+**Dónde está:** `src/components/SystemPanel.tsx`, `src-tauri/tauri.conf.json`
+(updater, clave pública, `nsis`/`msi`), `.github/workflows/release.yml` y
+[release.md](release.md) con los secrets de firma.

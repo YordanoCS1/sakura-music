@@ -40,17 +40,20 @@ npm run pipeline        # todo lo que corre el CI, en orden
 O, si querés correr las etapas por separado:
 
 ```powershell
-npm run check                                   # tipos + lint + formato + tests + build
-npm run test:e2e                                # navegador + arranque de la UI
-cargo test --manifest-path src-tauri/Cargo.toml  # 21 tests Rust
+npm run check                                   # tipos + lint + formato + 29 unitarios + build
+npm run test:e2e                                # navegador + arranque de la UI (26 E2E)
+cargo test --manifest-path src-tauri/Cargo.toml  # 42 tests Rust
 cargo fmt --check --manifest-path src-tauri/Cargo.toml
 cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings
 ```
 
-El mapa visual está en [docs/pipeline.md](docs/pipeline.md).
+El mapa visual está en [docs/pipeline.md](docs/pipeline.md) y las funciones
+recientes en [docs/nuevas-funciones.md](docs/nuevas-funciones.md).
 
 Eso mismo corre el CI en Windows, macOS y Linux. Si agregás lógica al
-frontend, sumá un test con Vitest en `src/**/*.test.ts`.
+frontend, sumá un test con Vitest en `src/**/*.test.ts`. Para medir el escaneo,
+usá `node scripts/benchmark_scan.mjs [cantidad]` (el CLI `scan` imprime los
+milisegundos; en esta máquina, 10.000 pistas tardaron ~12,6 s en release).
 
 Si tu cambio toca la UI, revisá también el comportamiento con `npm run tauri dev`: búsqueda, reproducción (incluido renombrar una pista mientras suena) y persistencia de la cola al reabrir.
 

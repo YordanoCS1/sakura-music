@@ -34,7 +34,11 @@ escaneo lo reconstruye desde los archivos. No se pierde música ni tags.
 > La música no vive en la carpeta de datos: vive en la carpeta que elegiste
 > como biblioteca.
 
-## Las nueve vistas
+## Las nueve vistas (temas genéricos)
+
+Estas nueve vistas son las de `LibraryTab`, usadas por los **4 temas genéricos**
+(M3 Zen, Yoru, Hanabi y Aizuri). Los **12 temas propios** tienen una biblioteca
+estructural propia en lugar de este switcher.
 
 | Vista | Ideal para |
 |---|---|
@@ -65,9 +69,9 @@ carpetas filtra la lista (con indicador "Filtrando por carpeta: …" y opción d
 En Cuadrícula y Tabla, marcá casillas para seleccionar. Al seleccionar más de
 una aparece la barra de lote con **Seleccionar todas**, **Deseleccionar** y
 **Editar en lote (N)**. También podés usar **Eliminar (N)** para borrar los
-archivos seleccionados del disco; la app pide confirmación antes de hacerlo.
-El borrado es permanente. El detalle de edición está en
-[metadatos-y-letras.md](metadatos-y-letras.md).
+archivos seleccionados del disco; la app pide confirmación antes de hacerlo y
+el borrado se puede **deshacer** durante unos segundos (ver más abajo). El
+detalle de edición está en [metadatos-y-letras.md](metadatos-y-letras.md).
 
 ## Reproducción
 
@@ -81,7 +85,25 @@ reproductor inferior:
 - Repetición: apagada, todas, una
 
 Al terminar la última pista con la repetición apagada, la app **se detiene**
-(no vuelve al inicio como en la v1).
+(no vuelve al inicio como en la v1). Tocando la portada del reproductor se abre
+el panel **Ahora suena**, con las pestañas Detalles, Letras, Álbum y Artista.
+
+## Listas (playlists)
+
+La pestaña **Listas** de la navegación guarda tus listas en SQLite (tablas
+`playlists` y `playlist_tracks`). Podés **crear**, renombrar y borrar listas,
+agregar pistas desde la biblioteca, quitarlas y reordenarlas con las flechas.
+Cada lista se persiste entre sesiones y cada tema le da su propio estilo al
+panel (los 12 temas propios tienen variantes explícitas).
+
+## Borrado con Deshacer
+
+Cuando borrás pistas, el archivo no se elimina de golpe: se mueve a la carpeta
+`trash/` dentro de los datos de la app y aparece un toast con **Deshacer**
+durante **9 segundos**. Si lo tocás, vuelven el archivo y su fila en la
+biblioteca. Pasado ese tiempo, el archivo queda en la papelera y podés vaciarla
+desde **Ajustes → Sistema → Vaciar papelera**, donde también ves el contador de
+elementos. El vaciado sí es definitivo.
 
 ## La biblioteca está vacía
 
@@ -96,5 +118,6 @@ Si no hay música, ves un estado vacío con **Escanear Carpeta de Música** y
 | No se ve la portada | El archivo no tiene tag de portada ni `folder.jpg`/`cover.*`: editala |
 | La carpeta no abre | La carpeta no existe o Tauri no puede leerla: re-eligí la carpeta |
 | Un tema no cambia el color | Cerrá y volvé a abrir: el tema se aplica al instante y se persiste en `localStorage` |
+| No aparece la pestaña Listas | Buscala entre las 6 pestañas de la navegación: Inicio, Biblioteca, Buscar, Cola, Listas y Ajustes |
 
-Más en [problemas.md](problemas.md).
+Más en [problemas.md](problemas.md) y en [../nuevas-funciones.md](../nuevas-funciones.md).

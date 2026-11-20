@@ -17,7 +17,7 @@ Se evaluó la migración hacia una arquitectura moderna basada en **Tauri 2.0** 
    - **Descargas multihilo:** Orquestación asíncrona de `yt-dlp` con eventos de progreso en tiempo real (`download-progress`) enviados al frontend vía IPC de Tauri.
 
 2. **Frontend en React + TypeScript + Tailwind CSS:**
-   - **Diseño Glassmorphism:** Interfaz moderna con blur de fondo, degradados dinámicos y 4 paletas de color conmutables (Sakura, Cyber, Amber, Emerald). Nota: el glassmorphism y esas paletas quedaron revertidos; el tema por defecto es `space` (M3 Zen) y en [ADR 0012](0012-temas-multiples.md) se incorporaron otros cuatro temas sin blur.
+   - **Diseño Glassmorphism:** Interfaz moderna con blur de fondo, degradados dinámicos y 4 paletas de color conmutables (Sakura, Cyber, Amber, Emerald). Nota: el glassmorphism y esas paletas quedaron revertidos; el tema por defecto es `space` (M3 Zen) y en [ADR 0012](0012-temas-multiples.md) se incorporaron otros cuatro temas sin blur. Estado actual: 16 temas, 12 de ellos con identidad estructural propia ([ADR 0019](0019-temas-propios-estructurales.md)).
    - **Reproducción libre de bloqueos:** El reproductor carga el audio en memoria mediante Blob URLs (`URL.createObjectURL`), cerrando de inmediato el handle del archivo en el sistema operativo y permitiendo editar tags o carátulas incluso mientras la canción está sonando.
    - **Editor Pro con Catálogo:** Búsqueda en línea integrada contra la API de Apple Music / iTunes para obtener metadatos y carátulas en alta resolución (600x600), soporte de pegado de imágenes (`Ctrl+V`), y controles de reversión individuales.
 

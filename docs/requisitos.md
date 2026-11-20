@@ -10,9 +10,9 @@ este documento (con fecha y motivo). **No se renumeran.**
 ## Cómo leer la trazabilidad
 
 - **Criterio:** qué tiene que pasar para considerar el requisito cumplido.
-- **Test:** `cargo test` (Rust) o `tsc --noEmit` (tipos). Hoy la suite es **17
-  tests Rust** (6 de `downloader`, 4 de `queue`, 4 de `scanner` y 3 de
-  `library_db`); el frontend no tiene tests automatizados (deuda conocida).
+- **Test:** `npm test` (Vitest, **29 tests** del frontend), `npm run test:e2e`
+  (Playwright, **26 tests**), `cargo test` (Rust, **42 tests**) o `tsc --noEmit`
+  (tipos). `npm run pipeline` corre todo en orden y pasa en verde.
 - Si un requisito depende de red o de un binario externo, no se testea en la
   suite: se verifica a mano con `yt-dlp`/`ffmpeg` reales.
 
@@ -76,7 +76,7 @@ ruta y la biblioteca se reescanea.
 `RotateCcw`). Reintentar crea un job nuevo con los mismos datos. "Limpiar
 terminadas" solo saca filas finales; "Cancelar todo" solo toca las activas.
 
-**Test:** verificación manual (no hay tests de frontend).
+**Test:** verificación manual (los tests del frontend cubren la cola persistida y el toast de deshacer).
 
 #### RF-07 · Detectar herramientas externas
 
@@ -125,7 +125,7 @@ Cuadrícula, Tabla, Álbumes, Pared (mosaico de portadas), CDs, 3D (Tilt), Luz
 (Glow) y Portadas. El buscador filtra por título/artista/álbum; navegar carpetas
 con breadcrumbs filtra el resto de vistas. La vista se persiste en `localStorage`.
 
-**Test:** verificación manual (no hay tests de frontend).
+**Test:** verificación manual (los tests del frontend cubren la cola persistida y el toast de deshacer).
 
 #### RF-12 · Reproducir sin bloquear el archivo
 
@@ -181,25 +181,33 @@ guardado. La carpeta `covers/` no crece sin control entre sesiones.
 
 #### RF-17 · Temas visuales seleccionables
 
-**Criterio:** la app ofrece seis temas (M3 Zen, Sumi-e, Byōbu, Yoru, Hanabi y Aizuri)
-seleccionables desde Ajustes. Cada tema define variables semánticas `--m3-*`, `--space-*`,
-`--accent-*` y `--theme-*` bajo su `[data-skin='id']`. El elegido se persiste en
-`localStorage` (`sakura_theme`) y se aplica sin recargar.
+**Criterio:** la app ofrece **16 temas**: 4 genéricos (`space`/M3 Zen, `yoru`,
+`hanabi`, `aizuri`) con `LibraryTab` de 9 vistas y `data-theme="space"` fijo, y
+12 propios (`sumie`, `byobu`, `shoji`, `origami`, `swiss`, `sumiink`, `moonlit`,
+`ledger`, `shonen`, `ghost`, `samurai`, `kawaii`) con `data-skin={tema}` y
+`ThemeLibrary`/`ThemeHome`/`ThemeNav` propios (cabecera, Buscar, Cola, ajustes,
+diálogos, transiciones, iconos y splash propios). Cada tema define variables
+`--m3-*`, `--space-*`, `--accent-*` y `--theme-*` bajo su `[data-skin='id']`. El
+elegido se persiste en `localStorage` (`sakura_theme`) y se aplica sin recargar;
+el glifo del splash hace handoff al logo de la nav con
+`view-transition-name: sakura-glifo`.
 
-**Test:** `tsc --noEmit` + `npm run build` (verifica que Tailwind genera las
-clases `accent-*` que usan los tokens).
+**Test:** `tsc --noEmit` + `npm run build` (Tailwind genera las clases
+`accent-*`); snapshots E2E de `e2e/` cubren las 6 pestañas por tema.
 
 #### RF-18 · Navegación superior y vista Pared
 
-**Criterio:** la navegación principal es una barra superior de pestañas
-(Inicio, Biblioteca, Buscar, Cola, Ajustes) con un indicador deslizante sobre la
-pestaña activa, en lugar del antiguo rail/sidebar. La biblioteca ofrece 9 vistas:
-**Carpetas, Cuadrícula, Lista, Álbumes, Pared, CDs, 3D (Tilt), Luz (Glow) y
-Portadas**; la vista Pared muestra un mosaico
-de portadas filtrado por la carpeta seleccionada, con el nombre y artista de cada
-pista.
+**Criterio:** la navegación principal es una barra superior con **6 pestañas**
+(`AppTab`): Inicio, Biblioteca, Buscar, Cola, **Listas** y Ajustes, con un
+indicador deslizante sobre la pestaña activa, en lugar del antiguo
+rail/sidebar. La biblioteca ofrece 9 vistas: **Carpetas, Cuadrícula, Lista,
+Álbumes, Pared, CDs, 3D (Tilt), Luz (Glow) y Portadas**; la vista Pared muestra
+un mosaico de portadas filtrado por la carpeta seleccionada, con el nombre y
+artista de cada pista. `VirtualizedGrid` y `content-visibility` mantienen el
+scroll fluido en bibliotecas de más de 60 pistas.
 
-**Test:** verificación manual.
+**Test:** `npm run test:e2e` (arranque, splash y navegación entre las 6
+pestañas) + verificación manual de la vista Pared.
 
 #### RF-19 · Persistir la cola y reanudar al abrir
 
@@ -214,6 +222,74 @@ ausente o corrupto → cola vacía, sin romper el arranque.
 `queue::tests::conserva_estados_finales`,
 `queue::tests::roundtrip_json_con_campos_necesarios`,
 `queue::tests::json_corrupto_no_rompe_y_devuelve_vacio`.
+
+#### RF-20 · Playlists persistentes
+
+**Criterio:** se pueden crear, renombrar, borrar, cargar pistas desde la
+biblioteca, quitarlas y reordenar listas desde la pestaña **Listas**
+(`PlaylistsPanel`). Las tablas `playlists` y `playlist_tracks` usan
+`foreign_keys=ON` y `ON DELETE CASCADE`: borrar una lista limpia sus filas. Los
+comandos son `list_playlists`, `create_playlist`, `rename_playlist`,
+`delete_playlist`, `get_playlist`, `playlist_add_tracks`,
+`playlist_remove_track` y `playlist_reorder`.
+
+**Test:** tests Rust de consultas de playlists en `library_db.rs` + snapshot E2E
+de la pestaña Listas.
+
+#### RF-21 · Deshacer borrados con papelera
+
+**Criterio:** `delete_library_track` mueve el archivo a `<datos>/trash` y guarda
+una fila en `deleted_tracks` con un token, en vez de borrarlo. `UndoToast`
+muestra **Deshacer** durante 9 segundos; `restore_deleted_track` recupera el
+archivo y la fila, `empty_trash` borra definitivamente y `trash_count` informa
+el contador de Ajustes → Sistema (`SystemPanel`).
+
+**Test:** `UndoToast.test.tsx` (29 unitarios Vitest) + `library_db.rs` (tests de
+la migración y las consultas de la papelera).
+
+#### RF-22 · Letras sincronizadas
+
+**Criterio:** la pestaña **Letras** de `NowPlayingPanel` busca un `.lrc` (o
+`.LRC`) junto al audio y lo parsea con `lyrics.rs` (varios timestamps por línea
+y metadatos `[ar:...]`). `read_lyrics` devuelve líneas con tiempo en segundos;
+la línea activa se resalta y hace autoscroll siguiendo `currentTime`.
+
+**Test:** tests Rust del parser `.lrc` en `lyrics.rs` + verificación manual del
+resaltado durante la reproducción.
+
+#### RF-23 · Paleta de comandos
+
+**Criterio:** `Ctrl+K` / `⌘K` abre `CommandPalette` para navegar entre las 6
+pestañas, cambiar tema, controlar la reproducción y buscar pistas. ↑↓ navega,
+↵ ejecuta y Esc cierra. La paleta usa los mismos tokens `accent-*` del tema
+activo.
+
+**Test:** `npm run test:e2e` (atajo de teclado y navegación) + verificación
+manual del cambio de tema desde la paleta.
+
+#### RF-24 · Salud de la base de datos
+
+**Criterio:** `library_db.rs` abre con `WAL`, `synchronous=NORMAL`,
+`temp_store=MEMORY` y `foreign_keys=ON`. `user_version=2`: la migración 1 agrega
+FTS5 y disparadores, la 2 índices de artista/álbum/año/género. Antes de migrar
+se crea un respaldo con `VACUUM INTO` (retención de 3). `doctor_detallado`
+(comando `doctor_database`) corre `integrity_check` y reconstruye el índice;
+`vacuum_database`, `backup_database` y `get_system_logs` (con secretos redactados)
+se muestran en Ajustes → Sistema.
+
+**Test:** test de integración de la migración `user_version` con backup
+automático sobre una base en disco (`library_db.rs`) + `cargo test` (42).
+
+#### RF-25 · Actualizaciones e instaladores
+
+**Criterio:** los plugins `updater`/`process` permiten buscar e instalar
+actualizaciones desde Ajustes → Sistema con la clave pública configurada y un
+endpoint de GitHub Releases (`REPLACE_OWNER/REPLACE_REPO` se reemplaza antes de
+publicar). El build genera instaladores **NSIS/MSI**; el job `build` del CI y
+`release.yml` firman con `TAURI_SIGNING_PRIVATE_KEY` y su password.
+
+**Test:** revisión de `tauri.conf.json` y del workflow; `npm run pipeline` +
+firma de prueba con el par de claves (verificación manual antes de publicar).
 
 ---
 
@@ -234,16 +310,20 @@ y pausa lineal. Sin temporales huérfanos tras un éxito.
 
 **Test:** `scanner::tests::escritura_atomica_reemplaza_y_no_deja_temporales`.
 
-#### RNF-03 · Seguridad: CSP y asset scope acotado
+#### RNF-03 · Seguridad: CSP, scope acotado y validación IPC
 
 **Criterio:** `tauri.conf.json` define CSP estricta (no `null`) y scope
 `["$AUDIO/**", "$APPLOCALDATA/**", "$TEMP/**"]`. Las carpetas elegidas por el
 usuario se autorizan en runtime (`allow_directory`). `connect-src` limita la
 red a `ipc:`, `asset:`, dev (`ws://localhost:1420`), iTunes, Deezer,
-`musicbrainz.org` y `coverartarchive.org`.
+`musicbrainz.org` y `coverartarchive.org`. Todo argumento IPC pasa por
+`validacion.rs`: la metadata exige la ruta canónica dentro de la biblioteca
+activa y la portada dentro de `covers/`; los binarios se instalan con SHA256
+fijo y los logs redactan secretos. No hay login: la app es local-first y un
+login local sería teatro; recién aporta seguridad con sync + Argon2id.
 
-**Test:** revisión de `tauri.conf.json`; `npm run build` + `cargo test`
-pasan con la CSP activa.
+**Test:** revisión de `tauri.conf.json` y `validacion.rs`; `npm run build` +
+`cargo test` pasan con la CSP activa.
 
 #### RNF-04 · Carpeta de datos estable
 
@@ -291,14 +371,16 @@ enlaza a `docs/`.
 
 | Módulo | Requisitos | Tests |
 |---|---|---|
-| Búsqueda y descargas | RF-01 … RF-07 | `cargo test` (6 tests de `downloader`, 4 de `queue`), manual |
-| Biblioteca y reproducción | RF-08 … RF-12 | `cargo test` (4 tests de `scanner`, 3 de `library_db`), manual |
+| Búsqueda y descargas | RF-01 … RF-07 | `cargo test` (`downloader`, `queue`, `tools`), manual |
+| Biblioteca y reproducción | RF-08 … RF-12 | `cargo test` (`scanner`, `library_db`), manual |
 | Metadatos y catálogo | RF-13 … RF-16 | `cargo test` + `tsc`, manual |
-| Apariencia | RF-17 … RF-18 | `tsc` + `npm run build`, manual |
-| Transversales | RNF-01 … RNF-08 | suite completa |
+| Apariencia y navegación | RF-17 … RF-18 | Vitest + E2E + `npm run build`, manual |
+| Playlists, papelera, letras, paleta, BD y updater | RF-20 … RF-25 | Vitest (29), E2E (26), `cargo test` (42), manual |
+| Transversales | RNF-01 … RNF-08 | `npm run pipeline` completo |
 
-**Total de la suite Rust: 21 tests** (6 de `downloader`, 4 de `queue`, 4 de
-`scanner`, 3 de `library_db` y 4 de `tools`).
+**Totales:** 29 tests unitarios Vitest, 26 tests E2E Playwright y **42 tests
+Rust** (`downloader`, `queue`, `scanner`, `library_db`, `tools`, migraciones,
+playlists y lyrics). `npm run pipeline` pasa en verde.
 
 ## Requisitos retirados (v1)
 
@@ -307,7 +389,7 @@ enlaza a `docs/`.
 | RF-04 (v1) | Saltar duplicados en la cola | Retirado en la v2: hoy cada descarga es un job independiente reintentable |
 | RF-09, RF-10 (v1) | Cola persistente e historial de 1000 entradas | Reemplazados por RF-19 (persistencia acotada a 100) y sin historial separado |
 | RF-12, RF-13 (v1) | Índice SQLite `mtime_ns` + watcher incremental | Reemplazado: hoy es SQLite `library.sqlite3` (validado por `mtime` + tamaño) con watcher `notify`, no caché JSON con escaneo completo |
-| RF-20, RF-22, RF-23 (v1) | Aplicar álbum, deshacer con manifiestos, letras LRCLIB | Retirados: no hay editor de álbum, ni manifiestos, ni letras |
+| RF-20, RF-22, RF-23 (v1) | Aplicar álbum, deshacer con manifiestos, letras LRCLIB | Retirados: no hay editor de álbum ni manifiestos; las letras se implementaron distinto (`.lrc` local, RF-22 v2), sin LRCLIB |
 | RF-25, RF-26 (v1) | Tema ambiente desde la portada e iconos personalizados | Retirados: no existen en la v2 |
 | RF-28 (v1) | Actualizar herramientas con `pip`/`winget` | Retirado: la v2 solo **detecta** yt-dlp/ffmpeg |
 | RF-29, RF-30 (v1) | Launcher/splash y cierre con QThreads | Reemplazados por el ciclo de vida de Tauri (RNF-01, RF-03) |

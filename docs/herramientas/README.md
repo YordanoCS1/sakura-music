@@ -10,7 +10,7 @@ Utilidades que acompañan a Sakura Music. Ninguna es necesaria para usar la app.
 
 Cada arquetipo también define una **transición de vista** propia al cambiar de pestaña: deslizamiento en Shoji, plegado en Origami, barrido continuo en Swiss, fundido en Sumi Ink, subida en Moonlit y giro de página en Ledger. Se anima directamente el panel con `transform`/`opacity` (GPU, 170-220 ms) en vez de capturar la página con View Transitions, para que no se sienta lag. Los cambios rápidos de pestaña no se encolan y se respeta `prefers-reduced-motion`.
 
-Arquetipos disponibles: `shoji`, `origami`, `swiss`, `sumiink`, `moonlit`, `ledger`, `sumie` y `byobu`.
+Arquetipos disponibles: `sumie`, `byobu`, `shoji`, `origami`, `swiss`, `sumiink`, `moonlit`, `ledger`, `shonen`, `ghost`, `samurai` y `kawaii`. Cada arquetipo redefine Home, biblioteca, cabecera, Buscar, Cola, ajustes, diálogos y transiciones; no es sólo una paleta (ver [ADR 0019](../adr/0019-temas-propios-estructurales.md)).
 
 También se puede generar desde el CLI:
 
@@ -39,7 +39,7 @@ Comandos:
 
 | Comando | Qué hace |
 |---|---|
-| `scan <carpeta>` | Escanea archivos de audio y sincroniza SQLite. |
+| `scan <carpeta>` | Escanea archivos de audio, sincroniza SQLite e imprime el tiempo en milisegundos. |
 | `search <texto> [--limit N]` | Busca con el índice FTS5. |
 | `export [-o archivo]` | Exporta la biblioteca a JSON (o la imprime). |
 | `import <archivo.json>` | Importa pistas con el mismo upsert que la app. |
@@ -52,7 +52,18 @@ Por defecto usa `src-tauri/.tauri_data`, la misma carpeta que la app. Con `--dat
 cargo run --bin sakura-cli -- --data "C:\Backup\sakura" search gurenge
 ```
 
-## 3. Control remoto local
+## 3. Benchmark de escaneo
+
+```powershell
+node scripts/benchmark_scan.mjs 10000
+```
+
+Genera MP3 mínimos en una carpeta temporal, compila el CLI en `release` y mide
+un escaneo real. En esta máquina, **10.000 pistas tardaron ~12,6 s** en el
+primer escaneo. El número depende del disco y del tamaño de los archivos: es una
+referencia para comparar cambios en el escáner, no un objetivo de rendimiento.
+
+## 4. Control remoto local
 
 La app levanta un servidor HTTP mínimo en el puerto **17342**. Se activa desde **Ajustes → Control remoto**. Desde el celular, en la misma Wi-Fi, se entra a `http://<IP local>:17342`.
 

@@ -1,8 +1,44 @@
 # 🌸 Sakura Music — Informe de 8 Temas (todas las pantallas)
 
-**Propuesta de identidad visual para el reproductor.** Esta vez se ven **todas las pantallas** de la app en cada tema, no solo el inicio. Cada tema muestra las 5 vistas principales: **Home, Biblioteca (cuadrícula), Lista de canciones, Now Playing y Cola.**
+> [!IMPORTANT]
+> **Esto es documentación de diseño / propuesta de prototipo histórica.** Los
+> ocho temas de abajo (Cyberpunk, Bosque Místico, Océano Profundo, Lavanda
+> Verano, Bambú Minimal, Puesta de Sol, Noche Estrellada y Neón Rosa) son
+> **prototipos HTML** de una etapa de exploración visual: **no son los temas que
+> implementa hoy la app**. La implementación real está en `src/App.css` (tokens
+> `--m3-*`, `--space-*`, `--accent-*` y `--theme-*` bajo
+> `[data-skin='id']`), en `src/components/ThemeLibrary.tsx` y en
+> `src/components/ThemeHome.tsx` (con `ThemeNav`, `ThemeSearch`, `ThemeQueue` y
+> los diálogos/transiciones/iconos/splash propios). Consultá
+> [diseno.md](../diseno.md) y [ADR 0012](../adr/0012-temas-multiples.md) para el
+> estado actual.
 
-> 💡 **Verlos en vivo:** abre `docs/temas/sakura_temas.html` (doble clic, autocontenido). Verás los 8 temas, cada uno con sus 5 pantallas en una fila.
+**Propuesta original de identidad visual para el reproductor.** Se veían
+**todas las pantallas** de la app en cada tema, no solo el inicio. Cada tema
+mostraba las 5 vistas principales: **Home, Biblioteca (cuadrícula), Lista de
+canciones, Now Playing y Cola.**
+
+> 💡 **Ver los prototipos en vivo:** abrí `docs/temas/sakura_temas.html` (doble
+> clic, autocontenido). Ahí están los 8 prototipos, cada uno con sus 5 pantallas
+> en una fila. Es una maqueta, no la UI de la app.
+
+## Estado actual de la implementación
+
+La app **no usa seis temas ni estos ocho prototipos**: implementa **16 temas**,
+divididos en dos familias:
+
+- **4 genéricos** (`space`/M3 Zen, `yoru`, `hanabi`, `aizuri`): comparten
+  `LibraryTab.tsx` con 9 vistas y fijan `data-theme="space"`.
+- **12 propios** (`sumie`, `byobu`, `shoji`, `origami`, `swiss`, `sumiink`,
+  `moonlit`, `ledger`, `shonen`, `ghost`, `samurai`, `kawaii`): usan
+  `data-skin={tema}` y tienen `ThemeLibrary`, `ThemeHome` y `ThemeNav` propios,
+  con cabecera, Buscar, Cola, ajustes, diálogos, transiciones, iconos y splash
+  propios.
+
+Algunos prototipos de este informe inspiraron temas propios (por ejemplo,
+*Bambú Minimal* → `sumie`/`shoji`, *Noche Estrellada* → `moonlit`/`yoru`,
+*Puesta de Sol* → `hanabi`, *Neón Rosa* → `kawaii`/`ghost`), pero las paletas y
+la estructura final son las de `App.css`, no las de este HTML.
 
 ---
 
@@ -93,5 +129,9 @@
 
 ---
 
-## ▶️ Siguientes pasos
-Abre el HTML, mira cada tema en sus 5 pantallas, y dime qué tema te gusta (por número). Puedo implementarlo en el reproductor real o mezclar elementos de varios.
+## ▶️ Siguientes pasos (históricos)
+
+Esta sección se conserva tal cual porque documenta el proceso de diseño original:
+"abrí el HTML, mirá cada tema en sus 5 pantallas y decí cuál te gusta". Hoy esos
+pasos ya no están pendientes: la app implementa los 16 temas descriptos arriba.
+Para temas nuevos, seguí la receta de [desarrollo.md](../desarrollo.md).

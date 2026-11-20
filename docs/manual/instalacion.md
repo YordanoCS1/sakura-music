@@ -49,15 +49,28 @@ Para tener la app instalada (instalador .exe / .msi):
 npm run tauri build
 ```
 
+## Actualizaciones
+
+Si instalaste la app con el instalador, entrá a **Ajustes → Sistema** y tocá
+**Buscar actualizaciones**. Si hay una versión nueva aparece **Instalar
+\<versión\>**: se baja, se verifica la firma **minisign** con la clave pública
+incluida y se instala; después la app se reinicia sola. Las actualizaciones
+firmadas son las únicas que se aceptan, así que no hace falta buscar instaladores
+por fuera del canal oficial. Si compilás desde el código, antes de publicar hay
+que configurar el endpoint real en `tauri.conf.json` (el repo trae
+`REPLACE_OWNER/REPLACE_REPO` como marcador de posición); el detalle está en
+[../nuevas-funciones.md](../nuevas-funciones.md).
+
 ## Dónde quedan tus datos
 
 Por defecto, en Windows:
 
 ```text
 %LOCALAPPDATA%\com.sakura.music\
-  library.sqlite3        ← índice local de la biblioteca
+  library.sqlite3        ← índice local de la biblioteca (SQLite + FTS5)
   library_cache.json     ← caché antigua; se importa una vez si existe
   covers\                ← carátulas con extensión real
+  trash\                 ← borrados recientes, recuperables con Deshacer
   bin\                   ← yt-dlp / ffmpeg opcionales
 ```
 
@@ -79,7 +92,9 @@ nuevo. No perdés tags ni audio.
    descargá tu primera canción en el formato que prefieras.
 4. En **Cola** mirá el porcentaje, velocidad y ETA; al terminar, la canción
    aparece sola en Biblioteca.
-5. En **Ajustes** ajustá los efectos visuales.
+5. En **Ajustes** elegí uno de los 16 temas y ajustá los efectos visuales; en
+   **Ajustes → Sistema** podés verificar la base, vaciar la papelera y buscar
+   actualizaciones.
 
 Los siguientes pasos están en [buscar-y-descargar.md](buscar-y-descargar.md) y
 [biblioteca.md](biblioteca.md).

@@ -1,5 +1,11 @@
 # Funciones nuevas (2026)
 
+Resumen de los cambios recientes. El detalle técnico y el porqué están en los
+ADR [0013](adr/0013-playlists-persistentes.md) a
+[0020](adr/0020-paleta-de-comandos.md); los formatos persistidos están en
+[data-formats.md](data-formats.md) y el contrato IPC en
+[ipc-contract.md](ipc-contract.md).
+
 ## Playlists persistentes
 
 Pestaña **Listas** en la navegación (también accesible desde ⌘K). Las listas viven en las tablas `playlists` y `playlist_tracks` de SQLite, con `ON DELETE CASCADE`. Se pueden crear, renombrar, borrar, cargar pistas desde la biblioteca, quitarlas y reordenar con las flechas. Cada tema tiene su propio estilo de panel; los arquetipos Swiss, Shōnen, Kawaii, Fantasmas, Luna y Samurái tienen variantes explícitas, el resto hereda las variables del tema.

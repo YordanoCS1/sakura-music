@@ -1,21 +1,46 @@
 # Apariencia
 
-Sakura Music 2.0 ofrece **seis temas visuales**: M3 Zen, Sumi-e, Byōbu, Yoru, Hanabi y
-Aizuri. Elegí el que quieras en **Ajustes → Diseño Visual**; el cambio es
-inmediato y se recuerda al reabrir la app.
+Sakura Music 2.0 ofrece **16 temas visuales**: **4 genéricos** y **12 propios con
+estructura completa**. Elegí el que quieras en **Ajustes → Diseño Visual**; el
+cambio es inmediato y se recuerda al reabrir la app.
 
-## Los seis temas
+## Los 4 temas genéricos
+
+Usan la biblioteca clásica (`LibraryTab`) con sus **9 vistas** y comparten la
+misma estructura, con paleta y detalles propios.
 
 | Tema | Cómo se ve |
 |---|---|
-| **M3 Zen** | Marfil y rosa sakura. El tema clásico de la app. |
-| **Byōbu** | Pantalla dividida: panel de tinta con kanji monumental y reproductor, panel editorial de contenido. |
-| **Sumi-e** | Papel crudo, tinta carbón y bermellón, con tipografía serif. |
+| **M3 Zen** (`space`) | Marfil y rosa sakura. El tema clásico de la app. |
 | **Yoru** | Noche cálida, grafito y ámbar. Oscuro pero sin neón. |
 | **Hanabi** | Azul noche con cian y magenta, tipografía monoespacio y esquinas vivas. |
 | **Aizuri** | Índigo profundo, blanco hueso y cian, con serif. |
 
-Cada tema tiene identidad propia, no es sólo un cambio de color: Sumi-e usa una banda editorial con regla bermellón y tarjetas sin sombra; Yoru reduce la navegación a un rail de iconos ámbar; Hanabi es angular, monoespacio y con neón; Aizuri usa una banda horizontal serif en índigo. M3 Zen conserva su diseño original.
+## Los 12 temas propios
+
+Cada uno tiene **Home, biblioteca, cabecera, Buscar, Cola, ajustes, diálogos y
+transiciones propios**: no se limitan a recolorear la interfaz. El selector base
+queda fijo en `data-theme='space'` y cada tema propio se aplica con `data-skin`.
+
+| Tema | Cómo se ve |
+|---|---|
+| **Sumi-e** | Pergamino flotante, papel crudo, tinta carbón y bermellón, con tipografía serif. |
+| **Byōbu** | Pantalla dividida: panel de tinta con kanji monumental y reproductor, panel editorial de contenido. |
+| **Shoji** | Biombo de papel y madera: paneles translúcidos con marcos de listones. |
+| **Origami** | Papel plegado rosa, con pliegues y sombras geométricas. |
+| **Swiss** | Grid estricto y Helvetica: tipografía grande, blanco y negro, acento rojo. |
+| **Sumi Ink** | Pincelada blanca sobre negro, alto contraste y tinta expresiva. |
+| **Moonlit** | Noche azul y luna, con superficies frías y resplandor suave. |
+| **Ledger** | Libro mayor y sellos rojos: tablas, rayas y aspecto de papel contable. |
+| **Shōnen** | Manga, energía y viñetas: ritmo de cómic, amarillo y negro. |
+| **Fantasmas** | Espectros y niebla azul, con transparencias y aire frío. |
+| **Samurái** | Lacado rojo, acero y oro, con líneas de armadura y sellos. |
+| **Kawaii** | Pastel, ternura y caritas, con formas redondeadas y colores dulces. |
+
+También podés crear los tuyos con el **generador de temas**: elegís un
+arquetipo entre los 12 propios, ajustás colores y el CSS se inyecta en runtime
+sin tocar archivos del proyecto. Los temas generados se guardan en
+`localStorage` (`sakura_temas_personalizados`) y aparecen en el selector.
 
 ## Identidad del tema M3 Zen
 
@@ -37,8 +62,9 @@ Todas viven en `localStorage` y se restauran al reabrir la app:
 
 | Clave | Qué guarda |
 |---|---|
-| `sakura_theme` | Tema visual (`space`, `sumie`, `yoru`, `hanabi` o `aizuri`) |
-| `sakura_view_mode` | Vista de biblioteca activa (`folders`, `grid`, `table`, `albums`, `mosaic`, `cds`, `tilt`, `glow`, `portadas`) |
+| `sakura_theme` | Tema visual: `space`, `yoru`, `hanabi`, `aizuri` (genéricos) o `sumie`, `byobu`, `shoji`, `origami`, `swiss`, `sumiink`, `moonlit`, `ledger`, `shonen`, `ghost`, `samurai`, `kawaii` (propios) |
+| `sakura_temas_personalizados` | Temas creados con el generador (arquetipo + CSS) |
+| `sakura_view_mode` | Vista de biblioteca activa en los temas genéricos (`folders`, `grid`, `table`, `albums`, `mosaic`, `cds`, `tilt`, `glow`, `portadas`) |
 | `sakura_player_style` | Estilo del reproductor (`floating` / `fixed` / `mini`) |
 | `sakura_glass_opacity` | Opacidad del vidrio |
 | `sakura_glass_blur` | Desenfoque (backdrop blur) |
@@ -70,14 +96,24 @@ Todo se aplica en tiempo real.
   portada, título y controles básicos. El botón de maximizar dentro del mini
   vuelve al modo flotante y restaura el tamaño original.
 
-En ambos, hacer clic en la **portada** del reproductor abre el **Now Playing
-inmersivo**: portada grande, fondo teñido con el color dominante de la carátula
-y controles amplios. Clic fuera o el botón × lo cierra.
+En ambos, hacer clic en la **portada** del reproductor abre el panel **Ahora
+suena**: portada grande, fondo teñido con el color dominante de la carátula,
+controles amplios y cuatro pestañas — **Detalles**, **Letras** (con `.lrc`
+sincronizadas), **Álbum** y **Artista**. Clic fuera o el botón × lo cierra. Al
+entrar, el glifo del splash pasa a la navegación con una transición continua
+(View Transitions).
+
+## Paleta de comandos (⌘K)
+
+`Ctrl+K` / `⌘K` abre la paleta de comandos: sirve para navegar entre pestañas,
+cambiar de tema, controlar la reproducción y buscar pistas. Usá **↑↓** para
+moverte, **↵** para ejecutar y **esc** para cerrar. La paleta toma el estilo del
+tema activo, incluidos los 12 propios.
 
 ## Vistas de biblioteca
 
-En **Biblioteca** cambiás entre nueve vistas, disponibles en el switcher del
-toolbar:
+En los **4 temas genéricos**, **Biblioteca** ofrece nueve vistas en el switcher
+del toolbar:
 
 | Vista | Qué muestra |
 |---|---|
@@ -91,18 +127,20 @@ toolbar:
 | **Luz (Glow)** | Portadas con resplandor ambiental |
 | **Portadas** | Galería de carátulas |
 
-La vista se persiste en `sakura_view_mode`.
+La vista se persiste en `sakura_view_mode`. En los **12 temas propios** no hay
+switcher de nueve vistas: cada tema dibuja su propia biblioteca estructural, con
+Home, cabecera, Buscar, Cola, ajustes y diálogos a juego.
 
 ## Qué cambia y qué no
 
-Como solo hay un tema, no hay conmutación visual que explique cambios de
-colores entre secciones. Aun así:
+Con 16 temas, al cambiar de tema cambian la paleta, la tipografía, los componentes
+y —en los 12 propios— la estructura completa de cada pantalla. Aun así:
 
 | Sí | No |
 |---|---|
-| El layout de cada vista de biblioteca (Carpetas/Cuadrícula/Lista/Álbumes/Pared/CDs/3D/Luz/Portadas) | Tu música, tags y portadas |
-| El tamaño/orientación del reproductor (flotante o fijo) | Los atajos y controles |
-| Los efectos de vidrio, glow y partículas (opcionales) | La lógica de descargas o escaneo |
+| La paleta, la tipografía y el estilo de navegación, tarjetas y reproductor | Tu música, tags y portadas |
+| El layout de la biblioteca (9 vistas genéricas o una vista estructural propia) | Los atajos y controles |
+| El tamaño/orientación del reproductor (flotante, fijo o mini) y los efectos (opcionales) | La lógica de descargas o escaneo |
 
 ## Problemas frecuentes
 
@@ -111,6 +149,7 @@ colores entre secciones. Aun así:
 | El botón no cambia de color | Usa un color de estado fijo (rojo/ámbar/verde) | Es intencional: los estados de condición no siguen el tema |
 | La preferencia no se guarda | `localStorage` bloqueado por el WebView | Limpiá los datos del sitio en WebView2 y volvé a elegir |
 | Las partículas no aparecen | Están apagadas en Ajustes | Activá **Efectos atmosféricos de partículas** |
-| Texto poco legible en algún modal | Superficie heredada de estilos viejos | Reportalo: los modales nuevos usan las superficies claras de M3 Zen |
+| Texto poco legible en algún modal | Superficie heredada de estilos viejos | Reportalo: los modales nuevos usan las superficies claras del tema activo |
+| Un tema propio no cambia la estructura | Estás en un tema genérico (`space`, `yoru`, `hanabi` o `aizuri`) | Elegí uno de los 12 temas propios: son los que traen Home, biblioteca y diálogos propios |
 
-Más en [problemas.md](problemas.md).
+Más en [problemas.md](problemas.md) y en [../nuevas-funciones.md](../nuevas-funciones.md).

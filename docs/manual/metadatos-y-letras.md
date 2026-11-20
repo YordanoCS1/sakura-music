@@ -1,4 +1,4 @@
-# Metadatos y portadas
+# Metadatos, portadas y letras
 
 Los tags incrustados en cada archivo son la **fuente de verdad** de la
 biblioteca. Sakura los lee y escribe en Rust con `lofty`, en RAM, y solo toca el
@@ -84,7 +84,7 @@ ya tenga. Solo se escribe lo que marcaste.
 
 ### Si el lote falla en parte
 
-El lote devuelve `{ actualizadas, errores }`. Si 8 de 10 se guardan y 2 fallan
+El lote devuelve `{ updated, errors }`. Si 8 de 10 se guardan y 2 fallan
 (archivo bloqueado, permisos, formato no soportado), la app te dice
 **"Se actualizaron 8 y 2 fallaron: …"** con las primeras razones, y no abre el
 modal de éxito total. Antes, la v1 fingía éxito aunque nada se hubiera escrito.
@@ -101,6 +101,18 @@ modal de éxito total. Antes, la v1 fingía éxito aunque nada se hubiera escrit
 Si un archivo no permite escribir (bloqueado, sin permisos), el editor informa
 el error puntual y el resto del lote sigue.
 
+## Letras sincronizadas (`.lrc`)
+
+En el panel **Ahora suena** (tocá la portada del reproductor), la pestaña
+**Letras** busca un archivo `.lrc` con el mismo nombre que el audio, al lado de
+él; también reconoce la extensión `.LRC`. El parser acepta además metadatos como
+`[ar:...]` y **varios timestamps por línea**, así que funciona con letras que
+repiten estribillo.
+
+La línea activa se resalta y hace **autoscroll** siguiendo `currentTime` de la
+pista. Si no hay `.lrc`, la pestaña lo indica y no consulta servicios externos:
+la letra live en tu carpeta.
+
 ## Buenos hábitos
 
 - **No uses el lote para borrar**: un campo desmarcado no se toca. Para limpiar
@@ -110,9 +122,10 @@ el error puntual y el resto del lote sigue.
   más compatible.
 - **Hacé una copia** de tu biblioteca antes de un lote grande: la escritura es
   atómica, pero un lote equivocado sigues siendo tuyo.
-- **La v1 no existe más acá**: no hay letra incrustada (LRCLIB), ni deshacer con
-  manifiestos, ni "aplicar a todo el álbum" del editor. Si extrañás alguna de
-  esas funciones, está en `legacy_python/`.
+- **La v1 no existe más acá**: acá las letras son archivos `.lrc` al lado del
+  audio (no letra incrustada vía LRCLIB), el deshacer usa la papelera en
+  `<datos>/trash` (no manifiestos) y no está el "aplicar a todo el álbum" del
+  editor v1. Si extrañás esa última función, está en `legacy_python/`.
 
 ## Problemas frecuentes
 
@@ -122,5 +135,6 @@ el error puntual y el resto del lote sigue.
 | La portada no cambia | Formato sin soporte de carátula | Probá otro formato o dejá `folder.jpg` |
 | El lote no actualizó nada | Todos los campos estaban desmarcados | Activá al menos un campo |
 | Quedaron `temp_*` en `covers/` | La app se cerró con un editor abierto | Ventana nueva: se limpian solos al arrancar |
+| La pestaña Letras está vacía | No hay `.lrc` al lado del audio, o el nombre no coincide | Poné `Canción.lrc` junto a `Canción.mp3` y volvé a abrir el panel |
 
-Más en [problemas.md](problemas.md).
+Más en [problemas.md](problemas.md) y en [../nuevas-funciones.md](../nuevas-funciones.md).
