@@ -172,3 +172,12 @@ En Manga, **Buscar** muestra el formulario dentro de una viñeta con el sello
 descarga como una página numerada con barra de progreso roja. El editor de
 metadatos abre con una cinta `第 01 話 · EDICIÓN DE METADATOS` y campos sobre
 papel blanco con borde negro.
+
+
+### Biblioteca de Estudio: mesa de mezcla
+
+Cada pista es un **canal vertical** con número CH, LED de estado, tapa, controles
+rápidos (favorito, editar, borrar), perillas de EQ de 3 bandas, fader con escala
+en dB, medidor VU de salida y control de pan. Arriba están la sesión, el medidor
+master y el transporte; abajo, el bus master. Los canales se recorren con scroll
+horizontal, como en una consola real.

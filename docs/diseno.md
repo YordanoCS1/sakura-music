@@ -173,3 +173,8 @@ Todo estado vacío usa el componente `EmptyState.tsx`: una marca (sakura, descar
 **Manga en Buscar/Cola/editor:** las tres vistas comparten la mismas reglas que
 la biblioteca (papel `#fbfaf7`, tinta `#101010`, acento `#d62828`, screentone).
 El editor fuerza sus superficies internas porque usa clases Tailwind propias.
+
+
+**Biblioteca de Estudio:** mesa de mezcla con canales verticales, perillas EQ,
+faders con escala dB, VU segmentado, pan, transporte y bus master. Es la vista
+más detallada del sistema y rompe con el patrón de filas o grillas.

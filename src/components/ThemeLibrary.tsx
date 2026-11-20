@@ -815,6 +815,8 @@ export default function ThemeLibrary({
   }
 
   if (theme === 'space') {
+    const db = (i: number) => ['+6', '+4', '+2', '0', '-2', '-4', '-6'][i % 7];
+    const nivel = (i: number) => 22 + ((i * 17) % 62);
     return (
       <div className="estudio-library space-library">
         {encabezado}
@@ -822,38 +824,135 @@ export default function ThemeLibrary({
         {vistaTracks.length === 0 ? (
           vacio
         ) : (
-          <div className="estudio-canales-lista">
-            {vistaTracks.map((track, i) => (
-              <article
-                key={track.id}
-                className={`estudio-canal ${activeTrack?.id === track.id ? 'is-active' : ''}`}
-              >
-                <span className="estudio-canal-num">{String(i + 1).padStart(2, '0')}</span>
-                <button
-                  type="button"
-                  className="estudio-canal-tapa"
-                  onClick={() => onPlayTrack(track)}
-                  aria-label={`Reproducir ${track.title}`}
-                >
-                  {portadaDe(track)}
+          <div className="estudio-mesa">
+            {/* Cabecera de la consola: sesión, transporte y medidor general */}
+            <div className="estudio-mesa-cab">
+              <div className="estudio-sesion">
+                <span>SESIÓN · 01</span>
+                <strong>{total} CANALES</strong>
+                <small>RACK A · 48 kHz / 24 BIT</small>
+              </div>
+              <div className="estudio-master" aria-hidden="true">
+                <div className="estudio-master-vu">
+                  {Array.from({ length: 18 }, (_, i) => (
+                    <i key={i} className={i > 14 ? 'es-rojo' : i > 11 ? 'es-ambar' : ''} />
+                  ))}
+                </div>
+                <div className="estudio-master-escala">
+                  <span>-20</span>
+                  <span>-10</span>
+                  <span>-5</span>
+                  <span>0</span>
+                  <span>+3</span>
+                </div>
+              </div>
+              <div className="estudio-transporte" aria-hidden="true">
+                <button type="button" title="Retroceder">
+                  ◀◀
                 </button>
-                <span className="estudio-canal-copy">
-                  <strong>{track.title}</strong>
-                  <small>{track.artist}</small>
-                </span>
-                <span className="estudio-canal-fader" aria-hidden="true">
-                  <i style={{ top: `${18 + (i % 7) * 10}%` }} />
-                </span>
-                <span className="estudio-canal-vu" aria-hidden="true">
-                  <i />
-                  <i />
-                  <i />
-                  <i />
-                  <i />
-                </span>
-                <span className="estudio-canal-acc">{acciones(track)}</span>
-              </article>
-            ))}
+                <button type="button" className={isPlaying ? 'is-on' : ''} title="Reproducir">
+                  {isPlaying ? '❚❚' : '▶'}
+                </button>
+                <button type="button" title="Detener">
+                  ■
+                </button>
+              </div>
+            </div>
+
+            {/* Canales: cada pista es un strip completo de consola */}
+            <div className="estudio-mesa-canales">
+              {vistaTracks.map((track, i) => (
+                <article
+                  key={track.id}
+                  className={`estudio-strip ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+                >
+                  <div className="estudio-strip-cab">
+                    <span>CH {String(i + 1).padStart(2, '0')}</span>
+                    <i className="estudio-strip-led" aria-hidden="true" />
+                  </div>
+                  <div className="estudio-strip-acc">{acciones(track)}</div>
+
+                  <button
+                    type="button"
+                    className="estudio-strip-tapa"
+                    onClick={() => onPlayTrack(track)}
+                    aria-label={`Reproducir ${track.title}`}
+                  >
+                    {portadaDe(track)}
+                  </button>
+
+                  <div className="estudio-strip-info">
+                    <strong title={track.title}>{track.title}</strong>
+                    <small title={track.artist}>{track.artist}</small>
+                  </div>
+
+                  <div className="estudio-strip-bloque">
+                    <span className="estudio-strip-etiqueta">EQ · 3 BANDAS</span>
+                    <div className="estudio-strip-knobs">
+                      {['HI', 'MD', 'LO'].map((banda, k) => (
+                        <span key={banda} className="estudio-knob-wrap">
+                          <i
+                            className="estudio-knob"
+                            style={
+                              {
+                                '--giro': `${-130 + ((i * 23 + k * 47) % 260)}deg`,
+                              } as React.CSSProperties
+                            }
+                          />
+                          <small>{banda}</small>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="estudio-strip-bloque">
+                    <span className="estudio-strip-etiqueta">GANANCIA</span>
+                    <div className="estudio-strip-fader-zona">
+                      <div className="estudio-strip-escala" aria-hidden="true">
+                        {['+6', '+3', '0', '-3', '-6', '-∞'].map((marca) => (
+                          <span key={marca}>{marca}</span>
+                        ))}
+                      </div>
+                      <div className="estudio-strip-fader" aria-hidden="true">
+                        <i style={{ top: `${12 + (i % 7) * 11}%` }} />
+                      </div>
+                    </div>
+                    <small className="estudio-strip-db">{db(i)} dB</small>
+                  </div>
+
+                  <div className="estudio-strip-bloque">
+                    <span className="estudio-strip-etiqueta">VU · SALIDA</span>
+                    <div className="estudio-strip-vu" aria-hidden="true">
+                      {Array.from({ length: 12 }, (_, k) => (
+                        <i key={k} className={k < Math.round(nivel(i) / 9) ? 'is-on' : ''} />
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="estudio-strip-bloque estudio-strip-pan">
+                    <span className="estudio-strip-etiqueta">PAN</span>
+                    <i
+                      className="estudio-knob estudio-knob-pan"
+                      style={{ '--giro': `${-110 + ((i * 37) % 220)}deg` } as React.CSSProperties}
+                    />
+                    <small>
+                      {i % 2 === 0 ? 'L' : 'R'}
+                      {Math.abs((i * 7) % 40)}
+                    </small>
+                  </div>
+
+                  <span className="estudio-strip-tornillo" aria-hidden="true" />
+                </article>
+              ))}
+            </div>
+
+            <div className="estudio-mesa-pie">
+              <span>MASTER OUT</span>
+              <div className="estudio-mesa-pie-linea" aria-hidden="true">
+                <i />
+              </div>
+              <span>0 dB · ESTÉREO</span>
+            </div>
           </div>
         )}
       </div>
