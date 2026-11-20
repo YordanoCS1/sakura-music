@@ -12,7 +12,7 @@ pub struct ScanEntry {
     pub modified_ns: i64,
 }
 
-const TRACK_COLUMNS: &str = "id, path, title, artist, album, album_artist, track_number, \
+pub(crate) const TRACK_COLUMNS: &str = "id, path, title, artist, album, album_artist, track_number, \
     duration, duration_str, format, bitrate_kbps, cover_url, year, genre, file_size, modified_ns";
 
 /// Carpeta raíz de la biblioteca activa, usada para validar scope y borrados.
@@ -33,7 +33,7 @@ fn root_desde(connection: &Connection) -> Result<String, String> {
         .ok_or_else(|| "No hay una carpeta de biblioteca activa".to_string())
 }
 
-fn open_connection() -> Result<Connection, String> {
+pub(crate) fn open_connection() -> Result<Connection, String> {
     let path = paths::library_db_file();
     let parent = path
         .parent()
@@ -53,13 +53,14 @@ fn open_connection() -> Result<Connection, String> {
     // un cierre de la app, pero no espera un fsync en cada escritura.
     // temp_store=MEMORY evita archivos temporales en las ordenaciones grandes.
     connection
-        .pragma_update(None, "synchronous", "NORMAL")
+        .pragma_update(None, "foreign_keys", "ON")
+        .and_then(|_| connection.pragma_update(None, "synchronous", "NORMAL"))
         .and_then(|_| connection.pragma_update(None, "temp_store", "MEMORY"))
         .map_err(|error| format!("No se pudo optimizar SQLite: {}", error))?;
     Ok(connection)
 }
 
-fn create_schema(connection: &Connection) -> Result<(), String> {
+pub(crate) fn create_schema(connection: &Connection) -> Result<(), String> {
     connection
         .execute_batch(
             // WAL permite leer la biblioteca mientras el escáner escribe, sin
@@ -91,6 +92,28 @@ fn create_schema(connection: &Connection) -> Result<(), String> {
                  key TEXT PRIMARY KEY NOT NULL,
                  value TEXT NOT NULL
              );
+              -- Playlists: la posición ordena y la FK limpia al borrar la lista.
+              CREATE TABLE IF NOT EXISTS playlists (
+                 id TEXT PRIMARY KEY NOT NULL,
+                 name TEXT NOT NULL,
+                 created_at INTEGER NOT NULL
+              );
+              CREATE TABLE IF NOT EXISTS playlist_tracks (
+                 playlist_id TEXT NOT NULL REFERENCES playlists(id) ON DELETE CASCADE,
+                 path TEXT NOT NULL,
+                 position INTEGER NOT NULL,
+                 PRIMARY KEY (playlist_id, path)
+              );
+              CREATE INDEX IF NOT EXISTS playlist_tracks_orden
+                 ON playlist_tracks(playlist_id, position);
+              -- Papelera: guarda el archivo y los datos de la pista para Deshacer.
+              CREATE TABLE IF NOT EXISTS deleted_tracks (
+                 token TEXT PRIMARY KEY NOT NULL,
+                 original_path TEXT NOT NULL,
+                 trash_path TEXT NOT NULL,
+                 track_json TEXT NOT NULL,
+                 deleted_at INTEGER NOT NULL
+              );
              CREATE VIRTUAL TABLE IF NOT EXISTS library_fts USING fts5(
                  title, artist, album,
                  content='library_tracks',
@@ -125,7 +148,7 @@ fn create_schema(connection: &Connection) -> Result<(), String> {
         .map_err(|error| format!("No se pudo inicializar SQLite: {}", error))
 }
 
-fn upsert_on(connection: &Connection, entry: &ScanEntry) -> Result<(), rusqlite::Error> {
+pub(crate) fn upsert_on(connection: &Connection, entry: &ScanEntry) -> Result<(), rusqlite::Error> {
     let track = &entry.track;
     let sql = format!(
         "INSERT INTO library_tracks ({TRACK_COLUMNS}) VALUES (
@@ -164,7 +187,7 @@ fn upsert_on(connection: &Connection, entry: &ScanEntry) -> Result<(), rusqlite:
     Ok(())
 }
 
-fn read_entry(row: &Row<'_>) -> rusqlite::Result<ScanEntry> {
+pub(crate) fn read_entry(row: &Row<'_>) -> rusqlite::Result<ScanEntry> {
     let track_number: Option<i64> = row.get(6)?;
     let bitrate: Option<i64> = row.get(10)?;
     let year: Option<i64> = row.get(12)?;
@@ -557,9 +580,149 @@ pub fn doctor() -> Result<String, String> {
     ))
 }
 
-pub fn delete_track(path: &str) -> Result<(), String> {
+/// Mueve el archivo a la papelera y devuelve un token para poder deshacer.
+/// El borrado definitivo sólo ocurre desde "Vaciar papelera".
+pub fn delete_track(path: &str) -> Result<String, String> {
     let connection = open_connection()?;
-    delete_track_on(&connection, path)
+    // Leemos la pista ANTES de borrarla: `delete_track_on` quita la fila.
+    let entrada = connection
+        .query_row(
+            &format!("SELECT {TRACK_COLUMNS} FROM library_tracks WHERE path = ?1"),
+            [path],
+            read_entry,
+        )
+        .optional()
+        .map_err(|error| format!("No se pudo leer la pista antes de borrarla: {}", error))?;
+    let Some(entrada) = entrada else {
+        return Err("La pista ya no pertenece a la biblioteca actual".to_string());
+    };
+    delete_track_on(&connection, path)?;
+
+    let token = format!(
+        "{}-{}",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map(|d| d.as_nanos())
+            .unwrap_or(0)
+    );
+    let extension = Path::new(path)
+        .extension()
+        .and_then(|ext| ext.to_str())
+        .unwrap_or("audio");
+    let destino = paths::trash_dir().join(format!("{token}.{extension}"));
+    mover_archivo(Path::new(path), &destino)?;
+
+    connection
+        .execute(
+            "INSERT INTO deleted_tracks (token, original_path, trash_path, track_json, deleted_at)
+             VALUES (?1, ?2, ?3, ?4, ?5)",
+            params![
+                token,
+                path,
+                destino.to_string_lossy().to_string(),
+                serde_json::to_string(&entrada.track).map_err(|error| format!(
+                    "No se pudo guardar la pista en la papelera: {}",
+                    error
+                ))?,
+                std::time::SystemTime::now()
+                    .duration_since(std::time::UNIX_EPOCH)
+                    .map(|d| d.as_secs() as i64)
+                    .unwrap_or(0),
+            ],
+        )
+        .map_err(|error| format!("No se pudo registrar el borrado: {}", error))?;
+    Ok(token)
+}
+
+/// `rename` falla si la papelera está en otra unidad; en ese caso se copia y
+/// se borra el original para no perder el archivo.
+fn mover_archivo(origen: &Path, destino: &Path) -> Result<(), String> {
+    match std::fs::rename(origen, destino) {
+        Ok(()) => Ok(()),
+        Err(cross) if cross.kind() == std::io::ErrorKind::CrossesDevices => {
+            std::fs::copy(origen, destino).map_err(|error| {
+                format!("No se pudo copiar el archivo a la papelera: {}", error)
+            })?;
+            std::fs::remove_file(origen)
+                .map_err(|error| format!("No se pudo quitar el archivo original: {}", error))
+        }
+        Err(error) => Err(format!(
+            "No se pudo mover el archivo a la papelera: {}",
+            error
+        )),
+    }
+}
+
+#[derive(Serialize)]
+pub struct Borrado {
+    pub token: String,
+    pub title: String,
+    pub count: usize,
+}
+
+/// Restaura un borrado: vuelve a mover el archivo y reinserta la pista en SQLite.
+pub fn restore_deleted_track(token: &str) -> Result<String, String> {
+    let connection = open_connection()?;
+    let fila: Option<(String, String, String)> = connection
+        .query_row(
+            "SELECT original_path, trash_path, track_json FROM deleted_tracks WHERE token = ?1",
+            [token],
+            |fila| Ok((fila.get(0)?, fila.get(1)?, fila.get(2)?)),
+        )
+        .optional()
+        .map_err(|error| format!("No se pudo buscar el borrado: {}", error))?;
+    let Some((original, papelera, json)) = fila else {
+        return Err("Ese borrado ya no está disponible".to_string());
+    };
+    let track: ScannedTrack = serde_json::from_str(&json)
+        .map_err(|error| format!("No se pudo leer la pista guardada: {}", error))?;
+    if let Some(padre) = Path::new(&original).parent() {
+        std::fs::create_dir_all(padre)
+            .map_err(|error| format!("No se pudo recrear la carpeta original: {}", error))?;
+    }
+    mover_archivo(Path::new(&papelera), Path::new(&original))?;
+    upsert_on(
+        &connection,
+        &ScanEntry {
+            track: track.clone(),
+            modified_ns: 0,
+        },
+    )
+    .map_err(|error| format!("No se pudo reinsertar la pista: {}", error))?;
+    connection
+        .execute("DELETE FROM deleted_tracks WHERE token = ?1", [token])
+        .map_err(|error| format!("No se pudo cerrar la restauración: {}", error))?;
+    Ok(original)
+}
+
+/// Cantidad de borrados pendientes, para mostrar en Ajustes → Sistema.
+pub fn trash_count() -> Result<i64, String> {
+    let connection = open_connection()?;
+    connection
+        .query_row("SELECT COUNT(*) FROM deleted_tracks", [], |fila| {
+            fila.get(0)
+        })
+        .map_err(|error| format!("No se pudo contar la papelera: {}", error))
+}
+
+/// Borra definitivamente los archivos de la papelera.
+pub fn empty_trash() -> Result<usize, String> {
+    let connection = open_connection()?;
+    let rutas: Vec<String> = connection
+        .prepare("SELECT trash_path FROM deleted_tracks")
+        .map_err(|error| format!("No se pudo leer la papelera: {}", error))?
+        .query_map([], |fila| fila.get(0))
+        .map_err(|error| format!("No se pudo leer la papelera: {}", error))?
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|error| format!("No se pudo leer la papelera: {}", error))?;
+    for ruta in &rutas {
+        let _ = std::fs::remove_file(ruta);
+    }
+    connection
+        .execute("DELETE FROM deleted_tracks", [])
+        .map_err(|error| format!("No se pudo vaciar la papelera: {}", error))?;
+    Ok(rutas.len())
 }
 
 pub fn clear() -> Result<(), String> {
@@ -826,6 +989,90 @@ mod tests_hardening {
         assert!(validar_scope(&raiz.to_string_lossy(), &fuera).is_err());
 
         std::fs::remove_dir_all(base).unwrap();
+    }
+}
+
+#[cfg(test)]
+mod tests_migracion {
+    use super::*;
+
+    #[test]
+    fn migracion_versiona_y_backupea_antes_de_subir_el_esquema() {
+        const NANOS: u128 = 1_000_000_000;
+        let stamp = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+            / NANOS;
+        let base = std::env::current_dir()
+            .unwrap()
+            .join("target")
+            .join("test-tmp")
+            .join(format!("sakura-migracion-{}-{stamp}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&base);
+        paths::set_test_data_dir(base.clone());
+
+        // Base "vieja": esquema actual pero marcada como versión 1.
+        {
+            let conexion = Connection::open(paths::library_db_file()).unwrap();
+            create_schema(&conexion).unwrap();
+            conexion.execute("PRAGMA user_version = 1", []).unwrap();
+            upsert_on(
+                &conexion,
+                &ScanEntry {
+                    track: ScannedTrack {
+                        id: "t1".to_string(),
+                        path: r"C:\M\a.flac".to_string(),
+                        title: "Antes de migrar".to_string(),
+                        artist: "Artista".to_string(),
+                        album: "Álbum".to_string(),
+                        album_artist: None,
+                        track_number: None,
+                        duration: 100,
+                        duration_str: "1:40".to_string(),
+                        format: "FLAC".to_string(),
+                        bitrate_kbps: None,
+                        cover_url: None,
+                        year: None,
+                        genre: None,
+                        file_size: 10,
+                    },
+                    modified_ns: 0,
+                },
+            )
+            .unwrap();
+        }
+
+        initialize().unwrap();
+
+        let conexion = Connection::open(paths::library_db_file()).unwrap();
+        let version: i32 = conexion
+            .query_row("PRAGMA user_version", [], |fila| fila.get(0))
+            .unwrap();
+        assert_eq!(version, USER_VERSION_ACTUAL);
+        let total: i64 = conexion
+            .query_row("SELECT COUNT(*) FROM library_tracks", [], |fila| {
+                fila.get(0)
+            })
+            .unwrap();
+        assert_eq!(total, 1);
+        let indice: bool = conexion
+            .query_row(
+                "SELECT 1 FROM sqlite_master WHERE type = 'index' AND name = 'library_idx_genre'",
+                [],
+                |_| Ok(true),
+            )
+            .optional()
+            .unwrap()
+            .unwrap_or(false);
+        assert!(indice);
+
+        let backups: Vec<_> = std::fs::read_dir(&base)
+            .unwrap()
+            .flatten()
+            .filter(|entrada| entrada.file_name().to_string_lossy().ends_with(".bak"))
+            .collect();
+        assert!(!backups.is_empty(), "debió crearse un respaldo automático");
     }
 }
 

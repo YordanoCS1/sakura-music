@@ -7,9 +7,21 @@
 //! llamadas que lleguen antes de que termine el arranque.
 
 use std::path::PathBuf;
+#[cfg(test)]
+use std::sync::Mutex;
 use std::sync::OnceLock;
 
 static DATA_DIR: OnceLock<PathBuf> = OnceLock::new();
+
+/// En tests, permite apuntar la carpeta de datos a un directorio temporal.
+/// Como el directorio es global, sólo un test a la vez debe usarlo.
+#[cfg(test)]
+static TEST_DATA_DIR: Mutex<Option<PathBuf>> = Mutex::new(None);
+
+#[cfg(test)]
+pub fn set_test_data_dir(dir: PathBuf) {
+    *TEST_DATA_DIR.lock().unwrap() = Some(dir);
+}
 
 /// Fija la carpeta de datos. Se llama una sola vez durante el arranque.
 pub fn init(dir: PathBuf) {
@@ -18,6 +30,10 @@ pub fn init(dir: PathBuf) {
 
 /// Carpeta de datos ya resuelta, o `.tauri_data` como último recurso.
 pub fn data_dir() -> PathBuf {
+    #[cfg(test)]
+    if let Some(dir) = TEST_DATA_DIR.lock().unwrap().clone() {
+        return dir;
+    }
     if let Some(dir) = DATA_DIR.get() {
         return dir.clone();
     }
@@ -42,6 +58,12 @@ pub fn library_db_file() -> PathBuf {
 
 pub fn queue_file() -> PathBuf {
     ensure_data_dir().join("download_queue.json")
+}
+
+pub fn trash_dir() -> PathBuf {
+    let dir = ensure_data_dir().join("trash");
+    let _ = std::fs::create_dir_all(&dir);
+    dir
 }
 
 pub fn covers_dir() -> PathBuf {

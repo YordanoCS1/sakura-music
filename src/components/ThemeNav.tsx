@@ -16,6 +16,7 @@ const ITEMS: { id: AppTab; label: string }[] = [
   { id: 'library', label: 'Biblioteca' },
   { id: 'search', label: 'Buscar' },
   { id: 'queue', label: 'Cola' },
+  { id: 'playlists', label: 'Listas' },
   { id: 'settings', label: 'Ajustes' },
 ];
 

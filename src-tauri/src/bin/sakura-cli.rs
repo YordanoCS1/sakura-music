@@ -66,6 +66,7 @@ fn comando_scan(args: &[String]) -> Result<(), String> {
         return Err(format!("No es una carpeta: {carpeta}"));
     }
 
+    let inicio = std::time::Instant::now();
     let archivos = scanner::list_audio_files(ruta);
     let entradas: Vec<library_db::ScanEntry> = archivos
         .iter()
@@ -83,7 +84,10 @@ fn comando_scan(args: &[String]) -> Result<(), String> {
 
     let total = entradas.len();
     library_db::sync_scan(ruta, &entradas)?;
-    println!("Escaneadas {total} pistas en {carpeta}");
+    println!(
+        "Escaneadas {total} pistas en {carpeta} · {} ms",
+        inicio.elapsed().as_millis()
+    );
     Ok(())
 }
 

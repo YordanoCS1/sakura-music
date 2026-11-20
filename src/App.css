@@ -7210,3 +7210,110 @@ html.splash-handoff .player-dock { animation: contenido-aparecer 460ms 120ms eas
   content-visibility: auto;
   contain-intrinsic-size: auto 220px;
 }
+
+
+/* ========================================================= */
+/* DESHACER BORRADO                                           */
+/* ========================================================= */
+.undo-toast {
+  position:fixed; z-index:260; left:50%; bottom:104px; transform:translateX(-50%);
+  display:flex; align-items:center; gap:10px; min-width:340px; max-width:90vw;
+  padding:10px 12px; border:1px solid rgba(255,255,255,.16); border-radius:12px;
+  background:rgba(20,16,26,.96); color:#f4eef6; box-shadow:0 18px 48px rgba(0,0,0,.5);
+  backdrop-filter:blur(12px); animation:undo-subir 240ms cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes undo-subir { from { opacity:0; transform:translate(-50%,14px); } }
+.undo-toast-icon { width:28px; height:28px; display:grid; place-items:center; border-radius:8px; background:#a8442f; color:#fff; }
+.undo-toast-copy { flex:1; display:flex; flex-direction:column; gap:1px; }
+.undo-toast-copy strong { font-size:12px; }
+.undo-toast-copy small { font-size:10px; opacity:.65; }
+.undo-toast-btn { padding:6px 12px; border:1px solid rgba(255,255,255,.25); border-radius:8px; background:transparent; color:inherit; cursor:pointer; font-size:11px; font-weight:600; }
+.undo-toast-btn:hover { background:rgba(255,255,255,.12); }
+.undo-toast-close { border:0; background:transparent; color:inherit; opacity:.6; cursor:pointer; }
+
+/* Letras sincronizadas */
+.np-letras { display:flex; flex-direction:column; gap:10px; min-height:260px; max-height:300px; overflow-y:auto; padding:8px 4px; }
+.np-letra-linea { margin:0; font-size:13px; line-height:1.5; color:var(--np-muted); transition:color 180ms, transform 180ms; }
+.np-letra-linea.is-current { color:var(--np-accent); font-weight:700; font-size:16px; transform:translateX(4px); }
+.np-letras code { font:10px 'JetBrains Mono',monospace; opacity:.8; }
+
+/* ========================================================= */
+/* PLAYLISTS                                                  */
+/* ========================================================= */
+.playlists-panel { --pl-fondo:rgba(127,127,127,.05); --pl-linea:rgba(127,127,127,.18); --pl-acento:#a8442f; min-height:100%; color:inherit; }
+.playlists-cab { display:flex; align-items:center; gap:14px; margin-bottom:18px; }
+.playlists-glifo { width:44px; height:44px; display:grid; place-items:center; border-radius:12px; background:var(--pl-acento); color:#fff; }
+.playlists-cab h1 { margin:0; font-size:24px; }
+.playlists-cab p { margin:2px 0 0; font-size:11px; opacity:.65; }
+.playlists-nueva { margin-left:auto; display:inline-flex; align-items:center; gap:6px; padding:9px 14px; border:1px solid var(--pl-linea); border-radius:9px; background:var(--pl-acento); color:#fff; border-color:transparent; cursor:pointer; font-size:11px; }
+.playlists-estado { margin:0 0 12px; padding:8px 10px; border-left:2px solid var(--pl-acento); background:var(--pl-fondo); font-size:11px; }
+.playlists-cuerpo { display:grid; grid-template-columns:230px 1fr; gap:16px; min-height:420px; }
+.playlists-lista { display:flex; flex-direction:column; gap:6px; padding:10px; border:1px solid var(--pl-linea); border-radius:12px; background:var(--pl-fondo); }
+.playlists-item { display:flex; align-items:center; gap:8px; width:100%; padding:9px 10px; border:1px solid transparent; border-radius:8px; background:transparent; color:inherit; cursor:pointer; text-align:left; font-size:12px; }
+.playlists-item.is-active { background:var(--pl-acento); color:#fff; }
+.playlists-item span { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.playlists-item small { font:9px 'JetBrains Mono',monospace; opacity:.7; }
+.playlists-vacio { padding:14px; font-size:11px; opacity:.6; }
+.playlists-inline { display:flex; align-items:center; gap:4px; }
+.playlists-inline input { flex:1; min-width:0; padding:7px 9px; border:1px solid var(--pl-linea); border-radius:7px; background:var(--pl-fondo); color:inherit; font-size:11px; }
+.playlists-inline button { display:grid; place-items:center; width:26px; height:26px; border:1px solid var(--pl-linea); border-radius:7px; background:transparent; color:inherit; cursor:pointer; }
+.playlists-detalle { padding:14px; border:1px solid var(--pl-linea); border-radius:12px; background:var(--pl-fondo); min-width:0; }
+.playlists-detalle-head { display:flex; align-items:center; gap:12px; margin-bottom:12px; flex-wrap:wrap; }
+.playlists-detalle-head h2 { margin:0; font-size:18px; }
+.playlists-tools { margin-left:auto; display:flex; align-items:center; gap:6px; }
+.playlists-tools button { display:inline-flex; align-items:center; gap:5px; padding:6px 9px; border:1px solid var(--pl-linea); border-radius:7px; background:transparent; color:inherit; cursor:pointer; font-size:10px; }
+.playlists-tools button:hover { border-color:var(--pl-acento); }
+.playlists-sin-seleccion { height:100%; min-height:300px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; opacity:.4; }
+.playlists-pista { display:flex; align-items:center; gap:9px; padding:7px 8px; border-bottom:1px solid var(--pl-linea); }
+.playlists-pista.is-active .playlists-num { color:var(--pl-acento); }
+.playlists-num { width:22px; font:10px 'JetBrains Mono',monospace; opacity:.6; }
+.playlists-portada { width:34px; height:34px; flex:none; display:grid; place-items:center; overflow:hidden; border:1px solid var(--pl-linea); border-radius:6px; background:var(--pl-fondo); color:var(--pl-acento); cursor:pointer; }
+.playlists-portada img { width:100%; height:100%; object-fit:cover; }
+.playlists-copy { flex:1; min-width:0; }
+.playlists-copy strong { display:block; font-size:11px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.playlists-copy small { display:block; font-size:9px; opacity:.6; }
+.playlists-pista > button:not(.playlists-portada) { display:grid; place-items:center; width:24px; height:24px; border:0; border-radius:6px; background:transparent; color:inherit; opacity:.55; cursor:pointer; }
+.playlists-pista > button:not(.playlists-portada):hover { opacity:1; background:var(--pl-fondo); }
+.playlists-picker { margin-bottom:12px; padding:10px; border:1px solid var(--pl-linea); border-radius:10px; }
+.playlists-picker label { display:flex; align-items:center; gap:7px; padding:7px 9px; border:1px solid var(--pl-linea); border-radius:7px; }
+.playlists-picker input { flex:1; min-width:0; border:0; background:transparent; color:inherit; font-size:11px; outline:0; }
+.playlists-picker-list { max-height:180px; overflow-y:auto; margin:8px 0; }
+.playlists-picker-list button { display:flex; align-items:center; gap:8px; width:100%; padding:6px; border:0; border-radius:6px; background:transparent; color:inherit; cursor:pointer; text-align:left; }
+.playlists-picker-list button.is-checked { background:var(--pl-fondo); }
+.playlists-check { width:16px; height:16px; display:grid; place-items:center; border:1px solid var(--pl-linea); border-radius:4px; color:var(--pl-acento); }
+.playlists-picker-list strong { display:block; font-size:11px; }
+.playlists-picker-list small { display:block; font-size:9px; opacity:.6; }
+.playlists-confirmar { padding:7px 12px; border:0; border-radius:7px; background:var(--pl-acento); color:#fff; cursor:pointer; font-size:11px; }
+.playlists-panel.tema-swiss { --pl-acento:#111; --pl-linea:#111; --pl-fondo:#fff; }
+.playlists-panel.tema-kawaii { --pl-acento:#e5749b; --pl-linea:rgba(255,158,196,.4); --pl-fondo:rgba(255,255,255,.6); }
+.playlists-panel.tema-shonen { --pl-acento:#ff6b1a; --pl-linea:#1c1c1c; --pl-fondo:#fff6e8; }
+.playlists-panel.tema-ghost, .playlists-panel.tema-moonlit { --pl-acento:#67e8f9; --pl-linea:rgba(143,182,232,.28); --pl-fondo:rgba(143,182,232,.06); }
+.playlists-panel.tema-samurai { --pl-acento:#c9a961; --pl-linea:rgba(201,169,97,.35); --pl-fondo:rgba(201,169,97,.06); }
+
+/* ========================================================= */
+/* PALETA DE COMANDOS                                         */
+/* ========================================================= */
+.cmd-paleta { position:fixed; inset:0; z-index:280; display:flex; align-items:flex-start; justify-content:center; padding:14vh 20px 20px; background:rgba(6,4,10,.7); backdrop-filter:blur(10px); animation:np-aparecer 160ms ease both; }
+.cmd-paleta-inner { --cmd-fondo:#18141f; --cmd-linea:rgba(255,255,255,.14); --cmd-acento:#a8442f; --cmd-texto:#f4eef6; width:min(600px,100%); max-height:70vh; overflow:hidden; display:flex; flex-direction:column; border:1px solid var(--cmd-linea); border-radius:14px; background:var(--cmd-fondo); color:var(--cmd-texto); box-shadow:0 40px 90px rgba(0,0,0,.6); }
+.cmd-buscar { display:flex; align-items:center; gap:10px; padding:14px 16px; border-bottom:1px solid var(--cmd-linea); }
+.cmd-buscar input { flex:1; min-width:0; border:0; background:transparent; color:inherit; font-size:14px; outline:0; }
+.cmd-buscar kbd { padding:2px 6px; border:1px solid var(--cmd-linea); border-radius:5px; font:9px 'JetBrains Mono',monospace; opacity:.6; }
+.cmd-resultados { flex:1; overflow-y:auto; padding:6px; }
+.cmd-grupo { padding:8px 10px 4px; font:9px 'JetBrains Mono',monospace; letter-spacing:.14em; text-transform:uppercase; opacity:.5; }
+.cmd-opcion { display:flex; align-items:center; gap:10px; width:100%; padding:9px 10px; border:0; border-radius:8px; background:transparent; color:inherit; cursor:pointer; text-align:left; }
+.cmd-opcion.is-active { background:var(--cmd-acento); color:#fff; }
+.cmd-opcion span { flex:1; min-width:0; }
+.cmd-opcion strong { display:block; font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.cmd-opcion small { display:block; font-size:10px; opacity:.7; }
+.cmd-vacio { padding:18px; text-align:center; font-size:12px; opacity:.6; }
+.cmd-pie { display:flex; gap:14px; padding:8px 14px; border-top:1px solid var(--cmd-linea); font:9px 'JetBrains Mono',monospace; opacity:.6; }
+.cmd-paleta-inner.tema-swiss { --cmd-fondo:#fff; --cmd-linea:#111; --cmd-acento:#111; --cmd-texto:#111; }
+.cmd-paleta-inner.tema-kawaii { --cmd-fondo:#fff7fb; --cmd-linea:rgba(255,158,196,.5); --cmd-acento:#e5749b; --cmd-texto:#5a2f48; }
+.cmd-paleta-inner.tema-shonen { --cmd-fondo:#fff6e8; --cmd-linea:#1c1c1c; --cmd-acento:#ff6b1a; --cmd-texto:#1c1c1c; }
+.cmd-paleta-inner.tema-ghost, .cmd-paleta-inner.tema-moonlit { --cmd-fondo:#0e1622; --cmd-linea:rgba(143,182,232,.3); --cmd-acento:#67e8f9; --cmd-texto:#dfe8f7; }
+.cmd-paleta-inner.tema-samurai { --cmd-fondo:#1a1512; --cmd-linea:rgba(201,169,97,.35); --cmd-acento:#c9a961; --cmd-texto:#efe6d6; }
+
+@media (max-width:820px) {
+  .playlists-cuerpo { grid-template-columns:1fr; }
+  .undo-toast { min-width:0; width:calc(100% - 24px); }
+}

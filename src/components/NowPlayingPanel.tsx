@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { invoke } from '@tauri-apps/api/core';
 import {
   Disc3,
   FileMusic,
@@ -16,7 +17,7 @@ import {
   SkipForward,
   X,
 } from 'lucide-react';
-import type { ScannedTrack, ThemeMode } from '../types';
+import type { LyricLine, ScannedTrack, ThemeMode } from '../types';
 
 interface NowPlayingPanelProps {
   theme: ThemeMode;
@@ -89,6 +90,9 @@ export default function NowPlayingPanel(props: NowPlayingPanelProps) {
   } = props;
 
   const [vista, setVista] = useState<Vista>('detalles');
+  const [letras, setLetras] = useState<LyricLine[]>([]);
+  const [cargandoLetras, setCargandoLetras] = useState(false);
+  const letrasRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const alTeclar = (e: KeyboardEvent) => {
@@ -146,6 +150,41 @@ export default function NowPlayingPanel(props: NowPlayingPanelProps) {
         </button>
       ))}
     </div>
+  );
+
+  // Las letras se cargan del `.lrc` que esté al lado del archivo de audio.
+  useEffect(() => {
+    if (vista !== 'letras' || !activeTrack?.path) return;
+    let cancelada = false;
+    setCargandoLetras(true);
+    invoke<LyricLine[]>('read_lyrics', { path: activeTrack.path })
+      .then((lineas) => {
+        if (!cancelada) setLetras(lineas ?? []);
+      })
+      .catch(() => {
+        if (!cancelada) setLetras([]);
+      })
+      .finally(() => {
+        if (!cancelada) setCargandoLetras(false);
+      });
+    return () => {
+      cancelada = true;
+    };
+  }, [vista, activeTrack?.path]);
+
+  // Autoscroll suave a la línea que suena.
+  useEffect(() => {
+    if (vista !== 'letras' || !letrasRef.current) return;
+    letrasRef.current.querySelector('.is-current')?.scrollIntoView({
+      block: 'center',
+      behavior: 'smooth',
+    });
+  }, [currentTime, vista, letras]);
+
+  // Última línea cuyo timestamp ya pasó (con un pequeño margen de tolerancia).
+  const lineaActiva = letras.reduce<number>(
+    (actual, linea, indice) => (linea.time <= currentTime + 0.25 ? indice : actual),
+    -1,
   );
 
   return createPortal(
@@ -325,14 +364,28 @@ export default function NowPlayingPanel(props: NowPlayingPanelProps) {
                 </div>
               )}
               {vista === 'letras' && (
-                <div className="np-letras">
-                  <div className="np-letra-line is-current">♪</div>
-                  <p className="np-letra-nota">
-                    No se encontró un archivo de letras (.lrc) para esta pista.
-                  </p>
-                  <p className="np-letra-nota">
-                    Cuando esté disponible, las letras se mostrarán sincronizadas aquí.
-                  </p>
+                <div className="np-letras" ref={letrasRef}>
+                  {cargandoLetras && <p className="np-letra-nota">Buscando letras…</p>}
+                  {!cargandoLetras && letras.length === 0 && (
+                    <>
+                      <div className="np-letra-line is-current">♪</div>
+                      <p className="np-letra-nota">
+                        No se encontró un archivo .lrc junto a esta pista.
+                      </p>
+                      <p className="np-letra-nota">
+                        Poné <code>{activeTrack?.title ?? 'cancion'}.lrc</code> en la misma carpeta
+                        para ver las letras sincronizadas.
+                      </p>
+                    </>
+                  )}
+                  {letras.map((linea, indice) => (
+                    <p
+                      key={`${linea.time}-${indice}`}
+                      className={`np-letra-linea ${indice === lineaActiva ? 'is-current' : ''}`}
+                    >
+                      {linea.text || '♪'}
+                    </p>
+                  ))}
                 </div>
               )}
               {vista === 'album' && (

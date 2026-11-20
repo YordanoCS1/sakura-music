@@ -9,7 +9,9 @@ pub mod downloader;
 pub mod library_db;
 pub mod library_watcher;
 pub mod logging;
+pub mod lyrics;
 pub mod paths;
+pub mod playlists;
 pub mod queue;
 pub mod remote;
 pub mod scanner;
@@ -262,9 +264,9 @@ fn clear_library_cache() -> Result<bool, String> {
 }
 
 #[tauri::command]
-fn delete_library_track(path: String) -> Result<bool, String> {
-    library_db::delete_track(&path)?;
-    Ok(true)
+fn delete_library_track(path: String) -> Result<String, String> {
+    val::ruta(&path, "Ruta del archivo")?;
+    library_db::delete_track(&path)
 }
 
 /// Borra las portadas temporales de sesiones anteriores. El frontend solo usa
@@ -450,6 +452,95 @@ fn validar_lote(
     Ok(())
 }
 
+/* ----------------------------- playlists -------------------------------- */
+
+#[tauri::command]
+fn list_playlists() -> Result<Vec<playlists::Playlist>, String> {
+    playlists::list()
+}
+
+#[tauri::command]
+fn create_playlist(name: String) -> Result<playlists::Playlist, String> {
+    val::texto(&name, 80, "Nombre de la playlist")?;
+    if name.trim().is_empty() {
+        return Err("El nombre de la playlist no puede estar vacío".to_string());
+    }
+    playlists::create(name.trim())
+}
+
+#[tauri::command]
+fn rename_playlist(id: String, name: String) -> Result<(), String> {
+    val::texto(&id, 64, "Identificador de playlist")?;
+    val::texto(&name, 80, "Nombre de la playlist")?;
+    if name.trim().is_empty() {
+        return Err("El nombre de la playlist no puede estar vacío".to_string());
+    }
+    playlists::rename(&id, name.trim())
+}
+
+#[tauri::command]
+fn delete_playlist(id: String) -> Result<(), String> {
+    val::texto(&id, 64, "Identificador de playlist")?;
+    playlists::delete(&id)
+}
+
+#[tauri::command]
+fn get_playlist(id: String) -> Result<playlists::PlaylistDetail, String> {
+    val::texto(&id, 64, "Identificador de playlist")?;
+    playlists::detail(&id)
+}
+
+#[tauri::command]
+fn playlist_add_tracks(id: String, paths: Vec<String>) -> Result<usize, String> {
+    val::texto(&id, 64, "Identificador de playlist")?;
+    val::cantidad(paths.len(), val::MAX_LOTE, "Cantidad de pistas")?;
+    for path in &paths {
+        val::ruta(path, "Ruta del archivo")?;
+    }
+    playlists::add_tracks(&id, &paths)
+}
+
+#[tauri::command]
+fn playlist_remove_track(id: String, path: String) -> Result<(), String> {
+    val::texto(&id, 64, "Identificador de playlist")?;
+    val::ruta(&path, "Ruta del archivo")?;
+    playlists::remove_track(&id, &path)
+}
+
+#[tauri::command]
+fn playlist_reorder(id: String, paths: Vec<String>) -> Result<(), String> {
+    val::texto(&id, 64, "Identificador de playlist")?;
+    val::cantidad(paths.len(), val::MAX_LOTE, "Cantidad de pistas")?;
+    for path in &paths {
+        val::ruta(path, "Ruta del archivo")?;
+    }
+    playlists::reorder(&id, &paths)
+}
+
+/* --------------------------- papelera / letras -------------------------- */
+
+#[tauri::command]
+fn restore_deleted_track(token: String) -> Result<String, String> {
+    val::texto(&token, 128, "Identificador del borrado")?;
+    library_db::restore_deleted_track(&token)
+}
+
+#[tauri::command]
+fn empty_trash() -> Result<usize, String> {
+    library_db::empty_trash()
+}
+
+#[tauri::command]
+fn trash_count() -> Result<i64, String> {
+    library_db::trash_count()
+}
+
+#[tauri::command]
+fn read_lyrics(path: String) -> Result<Vec<lyrics::LyricLine>, String> {
+    val::ruta(&path, "Ruta del archivo")?;
+    lyrics::read_for(&path)
+}
+
 /// Panel de salud de la base de datos en Ajustes → Sistema.
 #[tauri::command]
 fn doctor_database() -> Result<library_db::DoctorResultado, String> {
@@ -588,6 +679,8 @@ pub fn run() {
             Ok(())
         })
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
+        .plugin(tauri_plugin_process::init())
         .invoke_handler(tauri::generate_handler![
             get_app_info,
             get_default_music_dir,
@@ -619,7 +712,19 @@ pub fn run() {
             doctor_database,
             vacuum_database,
             backup_database,
-            get_system_logs
+            get_system_logs,
+            list_playlists,
+            create_playlist,
+            rename_playlist,
+            delete_playlist,
+            get_playlist,
+            playlist_add_tracks,
+            playlist_remove_track,
+            playlist_reorder,
+            restore_deleted_track,
+            empty_trash,
+            trash_count,
+            read_lyrics
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application");

@@ -29,6 +29,13 @@ Gestor, reproductor, descargador y etiquetador de música para escritorio, const
 - Play/pausa, seek, volumen, mute, shuffle, repetición (`off` / `all` / `one`) y avance automático que respeta "repetición apagada" al llegar al final de la lista.
 - **Reproductor inmersivo (Now Playing):** clic en la portada del player y se abre una vista grande con la portada protagonista, el fondo teñido con el color dominante de la carátula y controles amplios.
 
+### 🗂️ Playlists, deshacer y actualizaciones
+- **Playlists persistentes** en SQLite: pestaña Listas con alta, renombre, borrado, carga de pistas y reorden manual, con estilo propio por tema.
+- **Borrado con Deshacer**: los archivos van a `trash/` y se restauran desde el toast o desde Ajustes → Sistema.
+- **Letras `.lrc` sincronizadas** en el panel “Ahora suena”, con resaltado y autoscroll.
+- **Paleta de comandos** con `Ctrl+K` / `⌘K` para navegar, cambiar tema, controlar la reproducción y buscar pistas.
+- **Actualizaciones** con firma minisign e instaladores NSIS/MSI; Ajustes → Sistema permite buscar e instalar versiones nuevas.
+
 ### 🏷️ Editor de metadatos y edición en lote
 - Edición individual y por lote (Batch Editor) con `lofty` en RAM y escritura atómica.
 - El lote devuelve `{ updated, errors }`: si 2 de 10 archivos fallan, la app te dice **cuáles** en vez de fingir éxito.

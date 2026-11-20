@@ -46,6 +46,47 @@ test.beforeEach(async ({ page }) => {
       get_system_logs: '00:00:01 [INFO] lib: Escaneo de prueba',
       vacuum_database: 'Base compactada: 20 KB → 12 KB',
       backup_database: 'Respaldo creado',
+      trash_count: 0,
+      empty_trash: 0,
+      delete_library_track: 'token-e2e',
+      restore_deleted_track: 'Disco\\p0.flac',
+      read_lyrics: [
+        { time: 0.0, text: 'Primera línea' },
+        { time: 2.5, text: 'Segunda línea' },
+        { time: 5.0, text: 'Estribillo' },
+      ],
+      list_playlists: [
+        { id: 'pl-1', name: 'Favoritas', created_at: 1, track_count: 2 },
+        { id: 'pl-2', name: 'Para el viaje', created_at: 2, track_count: 0 },
+      ],
+      get_playlist: {
+        playlist: { id: 'pl-1', name: 'Favoritas', created_at: 1, track_count: 2 },
+        tracks: [
+          {
+            id: 'l0',
+            path: 'Disco\\l0.flac',
+            title: 'Canción de lista',
+            artist: 'Artista A',
+            album: 'Álbum Uno',
+            album_artist: null,
+            track_number: 1,
+            duration: 200,
+            duration_str: '3:20',
+            format: 'FLAC',
+            bitrate_kbps: 900,
+            cover_url: null,
+            year: 2024,
+            genre: 'Jazz',
+            file_size: 1000,
+          },
+        ],
+      },
+      create_playlist: { id: 'pl-3', name: 'Nueva', created_at: 3, track_count: 0 },
+      rename_playlist: null,
+      delete_playlist: null,
+      playlist_add_tracks: 1,
+      playlist_remove_track: null,
+      playlist_reorder: null,
     };
     const internals = window as unknown as {
       __TAURI_INTERNALS__: {
@@ -427,6 +468,75 @@ test('el generador integrado aplica un tema con su arquetipo', async ({ page }) 
   );
 });
 
+test('la paleta de comandos navega con ⌘K', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });
+  await page.keyboard.press('Control+k');
+  const paleta = page.getByRole('dialog', { name: 'Paleta de comandos' });
+  await expect(paleta).toBeVisible();
+  await paleta.getByRole('textbox', { name: 'Buscar comandos' }).fill('Playlists');
+  await paleta.getByRole('option', { name: /Playlists/ }).click();
+  await expect(page.locator('.playlists-panel')).toBeVisible();
+  await expect(page.locator('.playlists-item')).toHaveCount(2);
+});
+
+test('las playlists muestran sus pistas', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });
+  await page
+    .getByRole('tab', { name: /Listas/ })
+    .first()
+    .click();
+  await expect(page.locator('.playlists-item')).toHaveCount(2);
+  await expect(page.locator('.playlists-detalle-head h2')).toHaveText('Favoritas');
+  await expect(page.locator('.playlists-pista')).toHaveCount(1);
+  await expect(page.locator('.playlists-pista')).toContainText('Canción de lista');
+});
+
+test('las letras .lrc se muestran sincronizadas en el panel', async ({ page }) => {
+  await page.addInitScript(() => {
+    const tracks = [
+      {
+        id: 'p0',
+        path: 'Disco\\\\p0.flac',
+        title: 'Pista 0',
+        artist: 'Artista A',
+        album: 'Álbum Uno',
+        album_artist: null,
+        track_number: 1,
+        duration: 200,
+        duration_str: '3:20',
+        format: 'FLAC',
+        bitrate_kbps: 900,
+        cover_url: null,
+        year: 2024,
+        genre: 'Jazz',
+        file_size: 1000,
+      },
+    ];
+    const internals = window as unknown as {
+      __TAURI_INTERNALS__: { invoke: (cmd: string) => Promise<unknown> };
+    };
+    const anterior = internals.__TAURI_INTERNALS__.invoke;
+    internals.__TAURI_INTERNALS__.invoke = async (cmd: string, args?: unknown) => {
+      if (cmd === 'get_cached_library') return tracks;
+      return anterior(cmd, args);
+    };
+  });
+  await page.goto('/');
+  await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });
+  await page.getByRole('tab', { name: /Biblioteca/ }).click();
+  await page
+    .getByRole('button', { name: /Reproducir/ })
+    .first()
+    .click();
+  await page.locator('.npr-cover').click();
+  const panel = page.getByRole('dialog', { name: 'Ahora reproduciendo' });
+  await panel.getByRole('tab', { name: /Letras/ }).click();
+  await expect(panel.locator('.np-letra-linea')).toHaveCount(3);
+  await expect(panel.locator('.np-letra-linea').first()).toContainText('Primera línea');
+});
+
 test('Ajustes → Sistema muestra la salud de la base y los registros', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });
@@ -527,13 +637,13 @@ test('cada tema usa sus propios iconos de navegacion', async ({ page }) => {
   await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });
 
   const iconos = await page.locator('.theme-nav-tab-icon').allTextContents();
-  expect(iconos).toEqual(['侍', '巻', '探', '列', '整']);
+  expect(iconos).toEqual(['侍', '巻', '探', '列', '陣', '整']);
   expect(await page.locator('.theme-nav').getAttribute('data-icon-style')).toBe('kanji');
 
   await page.getByRole('tab', { name: /Ajustes/ }).click();
   await page.getByRole('button', { name: /Swiss/ }).click();
   const iconosSwiss = await page.locator('.theme-nav-tab-icon').allTextContents();
-  expect(iconosSwiss).toEqual(['▦', '▤', '⌕', '☰', '⊞']);
+  expect(iconosSwiss).toEqual(['▦', '▤', '⌕', '☰', '▤', '⊞']);
   expect(await page.locator('.theme-nav').getAttribute('data-icon-style')).toBe('mono');
 });
 

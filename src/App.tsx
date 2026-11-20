@@ -25,6 +25,9 @@ import QueueTab from './components/QueueTab';
 import HomeTab from './components/HomeTab';
 import SettingsTab from './components/SettingsTab';
 import PlayerBar from './components/PlayerBar';
+import UndoToast from './components/UndoToast';
+import PlaylistsPanel from './components/PlaylistsPanel';
+import CommandPalette from './components/CommandPalette';
 import SearchTab from './components/SearchTab';
 import ThemeSearch from './components/ThemeSearch';
 import ThemeQueue from './components/ThemeQueue';
@@ -90,6 +93,7 @@ const TEMAS_DISPONIBLES: ThemeOption[] = [
 
 export default function App() {
   const [activeTab, setActiveTabRaw] = useState<AppTab>('library');
+  const [paletaAbierta, setPaletaAbierta] = useState(false);
   const [generadorAbierto, setGeneradorAbierto] = useState(false);
   const libraryScrollRef = useRef<HTMLDivElement>(null);
   const [customThemes, setCustomThemes] = useState(() => temasPersonalizados());
@@ -147,6 +151,18 @@ export default function App() {
     }
   };
   const setActiveTab = useThemeTransition(temaBase, setActiveTabRaw);
+
+  // ⌘K / Ctrl+K abre la paleta desde cualquier pestaña.
+  useEffect(() => {
+    const alTeclar = (evento: KeyboardEvent) => {
+      if ((evento.metaKey || evento.ctrlKey) && evento.key.toLowerCase() === 'k') {
+        evento.preventDefault();
+        setPaletaAbierta((abierta) => !abierta);
+      }
+    };
+    window.addEventListener('keydown', alTeclar);
+    return () => window.removeEventListener('keydown', alTeclar);
+  }, []);
   const [playerStyle, setPlayerStyle] = useState<PlayerStyle>(() => {
     return (localStorage.getItem('sakura_player_style') as PlayerStyle) || 'floating';
   });
@@ -610,6 +626,10 @@ export default function App() {
   // Selección múltiple y Batch Editor
   const [selectedTrackIds, setSelectedTrackIds] = useState<Set<string>>(new Set());
   const [pendingDeleteTracks, setPendingDeleteTracks] = useState<ScannedTrack[]>([]);
+  const [borradoDeshacible, setBorradoDeshacible] = useState<{
+    tokens: string[];
+    count: number;
+  } | null>(null);
   // (estado y lógica del editor de metadatos: ver src/hooks/useBatchEditor.ts
   // y src/hooks/useMetadataEditor.ts)
   const toggleSelectTrack = (trackId: string, e?: React.MouseEvent) => {
@@ -644,11 +664,13 @@ export default function App() {
     if (selectedTracks.length === 0 || isDeletingTracks || isScanning) return;
     setIsDeletingTracks(true);
     const deletedIds = new Set<string>();
+    const tokens: string[] = [];
     const failures: { title: string; error: unknown }[] = [];
     try {
       for (const track of selectedTracks) {
         try {
-          await invoke<boolean>('delete_library_track', { path: track.path });
+          const token = await invoke<string>('delete_library_track', { path: track.path });
+          tokens.push(token);
           deletedIds.add(track.id);
         } catch (error) {
           failures.push({ title: track.title, error });
@@ -676,6 +698,10 @@ export default function App() {
           setIsPlaying(false);
           setActiveTrack(null);
         }
+      }
+
+      if (tokens.length > 0) {
+        setBorradoDeshacible({ tokens, count: tokens.length });
       }
 
       if (failures.length > 0) {
@@ -1128,7 +1154,9 @@ export default function App() {
                         ? 'Buscar'
                         : activeTab === 'queue'
                           ? 'Cola'
-                          : 'Ajustes'}
+                          : activeTab === 'playlists'
+                            ? 'Playlists'
+                            : 'Ajustes'}
                 </span>
               </div>
 
@@ -1426,6 +1454,19 @@ export default function App() {
               />
             )}
 
+            {/* TAB: PLAYLISTS */}
+            {activeTab === 'playlists' && (
+              <div className="main-scroll-region flex-1 overflow-y-auto p-6 custom-scroll">
+                <PlaylistsPanel
+                  theme={temaBase}
+                  tracks={tracks}
+                  activeTrack={activeTrack}
+                  getCoverSrc={getCoverSrc}
+                  onPlayTrack={handlePlayTrack}
+                />
+              </div>
+            )}
+
             {/* TAB: AJUSTES */}
             {activeTab === 'settings' && (
               <SettingsTab
@@ -1477,6 +1518,47 @@ export default function App() {
               />
             )}
           </div>
+
+          {paletaAbierta && (
+            <CommandPalette
+              theme={temaBase}
+              tracks={tracks}
+              temas={todosLosTemas}
+              isPlaying={isPlaying}
+              onClose={() => setPaletaAbierta(false)}
+              onNavigate={setActiveTab}
+              onSetTheme={handleSetTheme}
+              onPlayTrack={handlePlayTrack}
+              onTogglePlay={togglePlay}
+              onNext={() => handleNextTrack()}
+              onPrevious={handlePreviousTrack}
+            />
+          )}
+
+          {borradoDeshacible && (
+            <UndoToast
+              count={borradoDeshacible.count}
+              onDismiss={() => setBorradoDeshacible(null)}
+              onUndo={async () => {
+                const actual = borradoDeshacible;
+                setBorradoDeshacible(null);
+                try {
+                  for (const token of actual.tokens) {
+                    await invoke('restore_deleted_track', { token });
+                  }
+                  const restauradas = await invoke<ScannedTrack[]>('get_cached_library');
+                  setTracks(restauradas);
+                  setScanMessage(
+                    `${actual.count} ${actual.count === 1 ? 'pista restaurada' : 'pistas restauradas'}.`,
+                  );
+                  window.setTimeout(() => setScanMessage(null), 4000);
+                } catch (error) {
+                  console.error('No se pudo deshacer el borrado:', error);
+                  setScanMessage('No se pudo deshacer el borrado; mirá la papelera en Sistema.');
+                }
+              }}
+            />
+          )}
 
           {/* ========================================================= */}
           {/* REPRODUCTOR TEMÁTICO (DOCK FLOTANTE / BARRA FIJA)         */}

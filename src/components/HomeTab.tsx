@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import {
   Sparkles,
   Library,
+  ListMusic,
   Search,
   DownloadCloud,
   Settings,
@@ -61,6 +62,7 @@ const NAV = [
   { id: 'library' as AppTab, label: 'Biblioteca', desc: 'Tu colección', icon: Library },
   { id: 'search' as AppTab, label: 'Buscar', desc: 'Catálogo online', icon: Search },
   { id: 'queue' as AppTab, label: 'Cola', desc: 'Descargas', icon: DownloadCloud },
+  { id: 'playlists' as AppTab, label: 'Listas', desc: 'Tus selecciones', icon: ListMusic },
   { id: 'settings' as AppTab, label: 'Ajustes', desc: 'Preferencias', icon: Settings },
 ];
 

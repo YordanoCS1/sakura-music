@@ -1,6 +1,6 @@
 # Contrato IPC (frontend ↔ Rust)
 
-Toda la comunicación entre React y el núcleo Rust pasa por `invoke()` y por eventos de Tauri. Este documento es la lista canonical de los **31 comandos** y los **6 eventos**. Si agregás uno, actualizá este archivo en el mismo commit.
+Toda la comunicación entre React y el núcleo Rust pasa por `invoke()` y por eventos de Tauri. Este documento es la lista canonical de los **43 comandos** y los **6 eventos**. Si agregás uno, actualizá este archivo en el mismo commit.
 
 Los tipos (`ScannedTrack`, `PersistedDownload`, etc.) están en [`src/types.ts`](../src/types.ts) y su contrato Rust en los módulos indicados. Los formatos persistidos están en [data-formats.md](data-formats.md).
 
@@ -23,7 +23,7 @@ Los tipos (`ScannedTrack`, `PersistedDownload`, etc.) están en [`src/types.ts`]
 | `get_cached_library` | — | `ScannedTrack[]` | `lib.rs` |
 | `scan_library` | `folder_path: string` | `ScannedTrack[]` | `lib.rs` |
 | `clear_library_cache` | — | `boolean` | `lib.rs` |
-| `delete_library_track` | `path: string` | `boolean` | `lib.rs` |
+| `delete_library_track` | `path: string` | `string` (token para deshacer) | `lib.rs` |
 | `search_library_fts` | `query: string`, `limit?: number` | `ScannedTrack[]` | `lib.rs` |
 
 `search_library_fts` usa el índice FTS5 de SQLite (título, artista y álbum, sin acentos) y es la búsqueda principal de la biblioteca; si falla, el frontend cae al filtro local.
@@ -76,6 +76,25 @@ Fuentes: `itunes`, `deezer` y `musicbrainz`. Estas consultas viven en Rust porqu
 | `backup_database` | — | `string` (ruta del respaldo) | `lib.rs` |
 | `get_system_logs` | `limit?: number` | `string` | `lib.rs` |
 
+### Playlists y papelera
+
+| Comando | Parámetros | Devuelve | Origen |
+|---|---|---|---|
+| `list_playlists` | — | `Playlist[]` | `lib.rs` |
+| `create_playlist` | `name: string` | `Playlist` | `lib.rs` |
+| `rename_playlist` | `id`, `name` | — | `lib.rs` |
+| `delete_playlist` | `id` | — | `lib.rs` |
+| `get_playlist` | `id` | `PlaylistDetail` | `lib.rs` |
+| `playlist_add_tracks` | `id`, `paths: string[]` | `number` (agregadas) | `lib.rs` |
+| `playlist_remove_track` | `id`, `path` | — | `lib.rs` |
+| `playlist_reorder` | `id`, `paths: string[]` | — | `lib.rs` |
+| `restore_deleted_track` | `token: string` | `string` (ruta restaurada) | `lib.rs` |
+| `empty_trash` | — | `number` | `lib.rs` |
+| `trash_count` | — | `number` | `lib.rs` |
+| `read_lyrics` | `path: string` | `LyricLine[]` | `lib.rs` |
+
+Las playlists guardan rutas en `playlist_tracks` con `foreign_keys = ON`: si se borra la lista, SQLite limpia sus filas. `delete_library_track` mueve el archivo a `<datos>/trash` y devuelve un token; `restore_deleted_track` lo devuelve y reinserta la pista. `read_lyrics` busca un `.lrc` junto al audio y devuelve líneas con `time` en segundos.
+
 Estos cuatro alimentan Ajustes → Sistema. `doctor_database` corre `PRAGMA integrity_check`, reconstruye el índice FTS5 y devuelve métricas (pistas, entradas del índice, tamaño, versión de esquema, último respaldo). `backup_database` usa `VACUUM INTO` para una copia consistente con WAL activo y conserva los tres respaldos más recientes. Los respaldos automáticos se crean antes de subir `PRAGMA user_version`.
 
 Si faltan las herramientas, `tools_status` informa qué está disponible y
@@ -97,7 +116,7 @@ El frontend filtra `library-changed` comparando la ruta con la carpeta activa, p
 
 ## Registro de comandos
 
-Los 31 comandos están registrados en el `invoke_handler` de `lib.rs` (28 definidos ahí y 3 en `catalog.rs`). Si agregás uno nuevo:
+Los 43 comandos están registrados en el `invoke_handler` de `lib.rs` (40 definidos ahí y 3 en `catalog.rs`). Si agregás uno nuevo:
 
 1. Definilo con `#[tauri::command]` y devolvé `Result<_, String>` cuando pueda fallar.
 2. Registralo en `generate_handler!`.

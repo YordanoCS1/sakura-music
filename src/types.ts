@@ -19,6 +19,11 @@ export interface ScannedTrack {
   file_size: number;
 }
 
+export interface LyricLine {
+  time: number;
+  text: string;
+}
+
 export interface PlaylistInfo {
   title: string;
   uploader: string;
@@ -158,7 +163,7 @@ export interface ThemeOption {
   nombre: string;
   descripcion: string;
 }
-export type AppTab = 'home' | 'search' | 'library' | 'queue' | 'settings';
+export type AppTab = 'home' | 'search' | 'library' | 'queue' | 'playlists' | 'settings';
 export type PlayerStyle = 'floating' | 'fixed' | 'mini';
 export type ViewMode =
   'folders' | 'grid' | 'table' | 'albums' | 'mosaic' | 'cds' | 'tilt' | 'glow' | 'portadas';
@@ -190,4 +195,16 @@ export interface FolderExplorerData {
   allFolderTracks: ScannedTrack[];
   currentPathStr: string;
   rootFolderName: string;
+}
+
+export interface Playlist {
+  id: string;
+  name: string;
+  created_at: number;
+  track_count: number;
+}
+
+export interface PlaylistDetail {
+  playlist: Playlist;
+  tracks: ScannedTrack[];
 }
