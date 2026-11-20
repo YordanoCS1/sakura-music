@@ -670,6 +670,67 @@ fn scan_library(
     Ok(tracks)
 }
 
+/// Resuelve la carpeta de datos de la app instalada y, si viene de una
+/// instalación antigua desarrollada en el repo, copia `.tauri_data` ahí para
+/// no perder la biblioteca. Se llama antes de abrir SQLite.
+fn preparar_directorio_datos(app: &tauri::AppHandle) -> Result<PathBuf, String> {
+    let destino = app
+        .path()
+        .app_local_data_dir()
+        .map_err(|error| format!("No se pudo resolver la carpeta de datos: {error}"))?;
+    eprintln!(
+        "Sakura Music · APPLOCALDATA resuelto: {}",
+        destino.display()
+    );
+    if let Ok(otro) = app.path().app_data_dir() {
+        eprintln!("Sakura Music · APPDATA resuelto: {}", otro.display());
+    }
+    std::fs::create_dir_all(&destino).map_err(|error| {
+        format!(
+            "No se pudo crear la carpeta de datos ({}) : {error}",
+            destino.display()
+        )
+    })?;
+
+    let anterior = std::env::current_dir()
+        .unwrap_or_else(|_| PathBuf::from("."))
+        .join(".tauri_data");
+    let hay_datos_nuevos = destino.join("library.sqlite3").exists();
+    if !hay_datos_nuevos && anterior.join("library.sqlite3").exists() {
+        copiar_arbol(&anterior, &destino)?;
+        logging::info(
+            "lib",
+            &format!(
+                "Datos migrados de {} a {}",
+                anterior.display(),
+                destino.display()
+            ),
+        );
+    }
+    Ok(destino)
+}
+
+fn copiar_arbol(origen: &Path, destino: &Path) -> Result<(), String> {
+    for entrada in std::fs::read_dir(origen)
+        .map_err(|error| format!("No se pudo leer la carpeta anterior: {error}"))?
+        .flatten()
+    {
+        let destino_entrada = destino.join(entrada.file_name());
+        let tipo = entrada
+            .file_type()
+            .map_err(|error| format!("No se pudo inspeccionar un dato: {error}"))?;
+        if tipo.is_dir() {
+            std::fs::create_dir_all(&destino_entrada)
+                .map_err(|error| format!("No se pudo crear una subcarpeta: {error}"))?;
+            copiar_arbol(&entrada.path(), &destino_entrada)?;
+        } else if !destino_entrada.exists() {
+            std::fs::copy(entrada.path(), &destino_entrada)
+                .map_err(|error| format!("No se pudo copiar un dato: {error}"))?;
+        }
+    }
+    Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let app = tauri::Builder::default()
@@ -678,11 +739,16 @@ pub fn run() {
         .setup(|app| {
             let handle = app.handle().clone();
 
-            // Fijamos .tauri_data antes de abrir la base de datos: así todos los
-            // módulos resuelven la misma carpeta a través de `paths::*`.
-            let mut data_dir = std::env::current_dir().unwrap_or_else(|_| PathBuf::from("."));
-            data_dir.push(".tauri_data");
-            let _ = std::fs::create_dir_all(&data_dir);
+            // La app instalada NO puede escribir en el directorio de trabajo
+            // (suele ser Program Files o el escritorio). Tauri nos da una
+            // carpeta APPLOCALDATA con permisos, que además ya está en el
+            // scope del protocolo `asset:`.
+            let data_dir = preparar_directorio_datos(&handle)?;
+            eprintln!("Sakura Music · carpeta de datos: {}", data_dir.display());
+            logging::info(
+                "lib",
+                &format!("Carpeta de datos resuelta: {}", data_dir.display()),
+            );
             paths::init(data_dir.clone());
             library_db::initialize().map_err(std::io::Error::other)?;
             if let Err(error) = remote::iniciar(handle.clone()) {
@@ -700,7 +766,7 @@ pub fn run() {
                     .min_inner_size(940.0, 600.0)
                     .center()
                     // Sin barra de título nativa: la UI dibuja una barra personalizada
-                    // (TitleBar.tsx) acorde al tema M3 Zen.
+                    // (TitleBar.tsx) acorde al tema Estudio.
                     .decorations(false)
                     .data_directory(data_dir)
                     .build()?;

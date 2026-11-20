@@ -49,6 +49,11 @@ Hay dos firmas distintas y no conviene confundirlas:
 
 Si no hay certificado de código, **no finjas que está firmado**: documentalo en las notas de release para que el usuario sepa que Windows puede mostrar una advertencia la primera vez.
 
+> **Importante:** el endpoint del updater en `tauri.conf.json` apunta a
+> `sakura-music/sakura-music`. Si publicás en otro repo, cambialo antes de
+> compilar el instalador: debe coincidir con el repo real o la app nunca va a
+> encontrar `latest.json`.
+
 ## 5. Publicar
 
 1. Hacé el commit de preparación y verificá que el CI esté en verde.

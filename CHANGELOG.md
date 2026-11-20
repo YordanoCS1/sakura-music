@@ -5,6 +5,7 @@ Todos los cambios destacables de este proyecto se registran acá. El formato sig
 ## [Sin publicar]
 
 ### Agregado
+- **Instalador personalizado** con marca Estudio: cabecera y barra lateral propias, selector de idioma, página de elección de carpeta, menú Inicio, acceso al escritorio y hooks que documentan la ruta de datos y limpian al desinstalar.
 - **Portada giratoria**: la tapa del reproductor y del panel "Ahora suena" gira mientras suena y se frena al pausar, con forma y velocidad propias por tema (círculo en Moonlit, cuadrado en Swiss, viñeta en Manga).
 - **Iconos animados por tema**: chispa en Shōnen, niebla en Fantasmas, pétalo en Sakura, tinta en Sumi-e, tramado en Manga; CSS puro y `prefers-reduced-motion`.
 - **Pestaña de estadísticas**: duración, géneros, artistas top, décadas, formatos y cobertura de portadas con gráficos adaptados a cada tema.
@@ -65,6 +66,10 @@ Todos los cambios destacables de este proyecto se registran acá. El formato sig
 - Dependencias de desarrollo obsoletas y el `@ts-expect-error` de `vite.config.ts` (ya está `@types/node`).
 - El doc de `paths.rs` describía `app_local_data_dir` cuando el código usa `.tauri_data` dentro del directorio de trabajo.
 - Referencias de documentación a archivos y comandos que ya no existen.
+
+### Listo para empaquetar
+- La carpeta de datos pasó del directorio de trabajo a `APPLOCALDATA` de Tauri, con migración automática del `.tauri_data` antiguo: la app instalada ya no intenta escribir en `Program Files`.
+- Endpoint del actualizador apuntado a `sakura-music/sakura-music` y bundle NSIS/MSI configurados.
 
 ## [2.0.0]
 

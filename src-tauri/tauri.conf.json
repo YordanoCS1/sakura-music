@@ -40,13 +40,30 @@
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ]
+    ],
+    "windows": {
+      "webviewInstallMode": {
+        "type": "downloadBootstrapper"
+      },
+      "nsis": {
+        "installMode": "currentUser",
+        "displayLanguageSelector": true,
+        "installerIcon": "icons/icon.ico",
+        "headerImage": "icons/installer-header.bmp",
+        "sidebarImage": "icons/installer-sidebar.bmp",
+        "startMenuFolder": "Sakura Music",
+        "installerHooks": "windows/hooks.nsh",
+        "languages": ["Spanish", "English"]
+      }
+    },
+    "copyright": "Sakura Music · estudio local",
+    "homepage": "https://github.com/sakura-music/sakura-music"
   },
   "plugins": {
     "updater": {
       "active": true,
       "endpoints": [
-        "https://github.com/REPLACE_OWNER/REPLACE_REPO/releases/latest/download/latest.json"
+        "https://github.com/sakura-music/sakura-music/releases/latest/download/latest.json"
       ],
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEJFMjcxNjY4QTRFMTEwNkIKUldSckVPR2thQlludnRxU3UvWHdpcnhycUN4Um1oa2d1YndkT1h2RkJZOUFRTmpvTkZUZEhOQXAK"
     }

@@ -1,6 +1,6 @@
 # Formatos de datos y preferencias
 
-Todo lo que la app guarda vive en una única carpeta de datos. En desarrollo es `.tauri_data/` dentro del directorio del proyecto (`src-tauri/src/lib.rs` la fija al arrancar); los módulos acceden siempre a través de `src-tauri/src/paths.rs`.
+Todo lo que la app guarda vive en una única carpeta de datos: **`APPLOCALDATA` de Tauri** (en Windows, `%LOCALAPPDATA%\com.sakura.music`), resuelta en `lib.rs::preparar_directorio_datos()`. En desarrollo, si existe un `.tauri_data/` viejo en el directorio del proyecto y aún no hay datos nuevos, se copia automáticamente para no perder la biblioteca. Los módulos acceden siempre a través de `src-tauri/src/paths.rs`.
 
 ```text
 <datos de la app>/

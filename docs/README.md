@@ -16,6 +16,7 @@ Esta carpeta contiene la documentación técnica y de referencia del proyecto Sa
 | Flujos paso a paso | [casos-de-uso.md](casos-de-uso.md) |
 | Setup, tests y recetas | [desarrollo.md](desarrollo.md) |
 | Versionar, firmar y publicar | [release.md](release.md) |
+| Construir el instalador (launcher) | [launcher.md](launcher.md) |
 | Ver el pipeline de CI | [pipeline.md](pipeline.md) |
 | Auditoría de contraste de los 14 temas | [contraste.md](contraste.md) |
 | Tokens y reglas visuales | [diseno.md](diseno.md) |
