@@ -17,6 +17,15 @@ administrador). El modo de instalación es `currentUser`; si querés que ofrezca
 también "para todos los usuarios", cambiá `installMode` a `both` en
 `tauri.conf.json` (el instalador pedirá elevación).
 
+## No compilar con cargo directo
+
+El instalador **siempre** se genera con `npm run tauri build`. Si compilás el
+binario con `cargo build --release` y después usás `tauri bundle`, el exe no
+lleva el feature `custom-protocol`: la app intenta cargar el frontend desde
+`http://localhost:1420` (el servidor de desarrollo), abre Edge y muestra
+`ERR_CONNECTION_REFUSED`. El build de Tauri es el que habilita ese feature y
+embede los archivos de `dist/`.
+
 ## Artefactos
 
 En `src-tauri/target/release/bundle/nsis/`:
