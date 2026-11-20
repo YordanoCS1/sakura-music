@@ -27,6 +27,7 @@ Acusamos recibo en un plazo de **7 días** y procuramos publicar una corrección
 - Path traversal en el borrado de pistas o en la carpeta de salida de descargas.
 - Inyección de argumentos en los subprocessos.
 - Exfiltración de datos de la biblioteca.
+- Abuso del host de letras (`https://lrclib.net`) o inyección de contenido en un `.lrc`.
 
 Fuera de alcance: el contenido de las canciones descargadas, las políticas de los servicios externos (YouTube, iTunes, Deezer, MusicBrainz) y las vulnerabilidades de `yt-dlp`/`ffmpeg` que deban reportarse a esos proyectos.
 
@@ -41,7 +42,8 @@ Fuera de alcance: el contenido de las canciones descargadas, las políticas de l
 - **Subprocessos sin shell**: `Command` con argumentos por `.arg()`, sin interpolación.
 - **Herramientas verificadas**: si el usuario instala yt-dlp o FFmpeg desde Ajustes, se descargan de URLs fijadas y se valida su SHA256 antes de escribir nada; nunca se pisa un binario existente.
 - **Actualizaciones automáticas firmadas** con minisign: el plugin `updater` de Tauri verifica la firma con la clave pública de `src-tauri/updater.key.pub` antes de instalar. La clave privada está ignorada por git y los secretos de firma viven sólo en el CI.
-- **Sin secretos en el código** ni rutas hardcodeadas de usuarios.
+- **Sin secretos en el código** ni rutas hardcodeadas de usuarios. LRCLIB no requiere clave; el User-Agent va en `catalog.rs`.
+- **Letras validadas**: los archivos `.lrc` se escriben con el mismo scope canónico que los tags y el frontend convierte las letras planas a formato LRC antes de guardarlas.
 
 ## Por qué no hay login
 

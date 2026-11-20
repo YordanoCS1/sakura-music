@@ -1,6 +1,6 @@
 # 0015. Letras LRC y panel de detalle
 
-- **Estado:** Aceptada (2026-11-19)
+- **Estado:** Aceptada (2026-11-19); la parte "sin online" fue ampliada por [ADR 0021](0021-busqueda-de-letras-online.md)
 
 ## Contexto
 

@@ -138,3 +138,15 @@ la letra live en tu carpeta.
 | La pestaña Letras está vacía | No hay `.lrc` al lado del audio, o el nombre no coincide | Poné `Canción.lrc` junto a `Canción.mp3` y volvé a abrir el panel |
 
 Más en [problemas.md](problemas.md) y en [../nuevas-funciones.md](../nuevas-funciones.md).
+
+
+## Buscar letras online
+
+En el panel **Ahora suena** → pestaña **Letras** hay un botón **Buscar letras online**.
+Se precarga con el título y el artista de la pista; Rust consulta LRCLIB y muestra
+los resultados con una etiqueta **SINC** (letra sincronizada) o **PLANA**. Al
+elegir uno se guarda un `.lrc` al lado del archivo de audio y empieza a resaltarse
+en tiempo real. **Quitar .lrc** elimina ese archivo sin tocar la canción.
+
+Si no hay conexión, las letras que ya estén en disco siguen funcionando: la
+búsqueda online es un complemento, no un requisito.

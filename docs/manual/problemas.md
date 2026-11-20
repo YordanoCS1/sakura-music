@@ -172,8 +172,8 @@ Incluí:
 ## Diagnóstico para desarrolladores
 
 ```powershell
-cargo test --manifest-path src-tauri/Cargo.toml   # 42 tests Rust
-npm run pipeline                                  # 29 unitarios + 26 E2E + 42 tests Rust + build
+cargo test --manifest-path src-tauri/Cargo.toml   # 43 tests Rust
+npm run pipeline                                  # 29 unitarios + 27 E2E + 43 tests Rust + build
 node node_modules/typescript/bin/tsc --noEmit      # tipos
 npm run build                                      # tsc + vite build
 ```

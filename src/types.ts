@@ -19,6 +19,17 @@ export interface ScannedTrack {
   file_size: number;
 }
 
+export interface LyricsSearchResult {
+  id: number;
+  title: string;
+  artist: string;
+  album: string;
+  duration: number;
+  instrumental: boolean;
+  plain_lyrics: string;
+  synced_lyrics: string;
+}
+
 export interface LyricLine {
   time: number;
   text: string;

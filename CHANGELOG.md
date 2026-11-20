@@ -5,6 +5,7 @@ Todos los cambios destacables de este proyecto se registran acá. El formato sig
 ## [Sin publicar]
 
 ### Agregado
+- **Búsqueda online de letras** en LRCLIB desde el panel “Ahora suena”, con resultados SINC/PLANA, botón *Aplicar* que escribe el `.lrc` al lado de la pista y *Quitar .lrc*. Tres comandos IPC nuevos y CSP actualizada.
 - Catálogo de metadatos con **MusicBrainz** y **Cover Art Archive**, además de iTunes y Deezer. Las consultas pasan por `src-tauri/src/catalog.rs` por CORS y por el User-Agent que exige MusicBrainz.
 - Exploración de álbumes del catálogo: se abren sus pistas y se aplica la que corresponda a la canción en edición.
 - Cuatro vistas nuevas de biblioteca: **CDs, 3D, Luz y Portadas** (llegamos a 9 vistas en total).
@@ -31,12 +32,12 @@ Todos los cambios destacables de este proyecto se registran acá. El formato sig
 - **Actualizaciones automáticas firmadas** con minisign e instaladores NSIS/MSI; clave pública en `src-tauri/updater.key.pub`, privada ignorada por git y endpoint a configurar al publicar (`REPLACE_OWNER/REPLACE_REPO` en `tauri.conf.json`).
 - **Migraciones versionadas** con `PRAGMA user_version=2` (1 = FTS5 y disparadores, 2 = índices en artista/álbum/año/genero), respaldo automático `VACUUM INTO` con retención de 3 y PRAGMAs WAL + `synchronous=NORMAL` + `temp_store=MEMORY` + `foreign_keys=ON`.
 - **Benchmark de escaneo** `node scripts/benchmark_scan.mjs [cantidad]`: 10.000 pistas tardaron ~12,6 s en release en esta máquina; el CLI `scan` imprime los milisegundos.
-- **`npm run pipeline`** como comando único para todo lo que corre el CI: 29 unitarios Vitest, 26 E2E Playwright y 42 tests Rust.
+- **`npm run pipeline`** como comando único para todo lo que corre el CI: 29 unitarios Vitest, 27 E2E Playwright y 43 tests Rust.
 
 ### Cambiado
 - La identidad de los temas dejó de ser sólo de paleta: navegación, tarjetas, reproductor, tipografía y sombras cambian según el tema; ~200 superficies hardcodeadas se tokenizaron para que los 16 temas apliquen de verdad. Sumi-e incorpora textura washi, sellos hanko, ensō y trazos de pincel; los 12 temas propios suman estructura completa, con el selector base fijo en `data-theme='space'` y `data-skin` para cada uno.
 - Todos los comentarios del código están en español rioplatense y explican decisiones no obvias.
-- La documentación se actualizó para reflejar 43 comandos Tauri, 6 eventos, 42 tests Rust y 9 vistas.
+- La documentación se actualizó para reflejar 46 comandos Tauri, 6 eventos, 43 tests Rust y 9 vistas.
 - Código Rust y frontend formateados con `rustfmt` y Prettier; clippy pasa con `-D warnings`.
 - La ventana se declara sin decoraciones también en `tauri.conf.json`, igual que en `lib.rs`.
 - `DownloadManager` usa `parking_lot`: un panic en un hilo de descarga ya no envenena un mutex y, con `panic = "abort"`, no se lleva la app por delante.

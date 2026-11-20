@@ -35,7 +35,7 @@ flowchart TB
     end
 
     subgraph IPC["IPC Tauri"]
-        CMD["invoke(): 43 comandos<br/>(40 lib.rs + 3 catalog.rs)"]
+        CMD["invoke(): 46 comandos<br/>(43 lib.rs + 3 catalog.rs)"]
         EVT["6 eventos de progreso y resultados"]
     end
 

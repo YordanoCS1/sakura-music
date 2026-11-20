@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { invoke } from '@tauri-apps/api/core';
 import {
@@ -6,18 +6,20 @@ import {
   FileMusic,
   Heart,
   ListMusic,
+  Loader2,
   Mic2,
   Music2,
   Pause,
   Play,
   Repeat,
   Repeat1,
+  Search,
   Shuffle,
   SkipBack,
   SkipForward,
   X,
 } from 'lucide-react';
-import type { LyricLine, ScannedTrack, ThemeMode } from '../types';
+import type { LyricLine, LyricsSearchResult, ScannedTrack, ThemeMode } from '../types';
 
 interface NowPlayingPanelProps {
   theme: ThemeMode;
@@ -92,6 +94,11 @@ export default function NowPlayingPanel(props: NowPlayingPanelProps) {
   const [vista, setVista] = useState<Vista>('detalles');
   const [letras, setLetras] = useState<LyricLine[]>([]);
   const [cargandoLetras, setCargandoLetras] = useState(false);
+  const [mostrarBuscador, setMostrarBuscador] = useState(false);
+  const [consultaLetras, setConsultaLetras] = useState('');
+  const [resultadosLetras, setResultadosLetras] = useState<LyricsSearchResult[]>([]);
+  const [buscandoLetras, setBuscandoLetras] = useState(false);
+  const [mensajeLetras, setMensajeLetras] = useState('');
   const letrasRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -153,24 +160,23 @@ export default function NowPlayingPanel(props: NowPlayingPanelProps) {
   );
 
   // Las letras se cargan del `.lrc` que esté al lado del archivo de audio.
-  useEffect(() => {
-    if (vista !== 'letras' || !activeTrack?.path) return;
-    let cancelada = false;
+  const cargarLetrasLocal = useCallback(async () => {
+    if (!activeTrack?.path) return;
     setCargandoLetras(true);
-    invoke<LyricLine[]>('read_lyrics', { path: activeTrack.path })
-      .then((lineas) => {
-        if (!cancelada) setLetras(lineas ?? []);
-      })
-      .catch(() => {
-        if (!cancelada) setLetras([]);
-      })
-      .finally(() => {
-        if (!cancelada) setCargandoLetras(false);
-      });
-    return () => {
-      cancelada = true;
-    };
-  }, [vista, activeTrack?.path]);
+    try {
+      const lineas = await invoke<LyricLine[]>('read_lyrics', { path: activeTrack.path });
+      setLetras(lineas ?? []);
+    } catch {
+      setLetras([]);
+    } finally {
+      setCargandoLetras(false);
+    }
+  }, [activeTrack?.path]);
+
+  useEffect(() => {
+    if (vista !== 'letras') return;
+    void cargarLetrasLocal();
+  }, [vista, cargarLetrasLocal]);
 
   // Autoscroll suave a la línea que suena.
   useEffect(() => {
@@ -180,6 +186,62 @@ export default function NowPlayingPanel(props: NowPlayingPanelProps) {
       behavior: 'smooth',
     });
   }, [currentTime, vista, letras]);
+
+  const buscarLetras = async () => {
+    if (!activeTrack) return;
+    setBuscandoLetras(true);
+    setMensajeLetras('');
+    try {
+      const resultados = await invoke<LyricsSearchResult[]>('search_lyrics', {
+        query: consultaLetras || activeTrack.title,
+        artist: activeTrack.artist || null,
+        album: activeTrack.album || null,
+        duration: activeTrack.duration || null,
+      });
+      setResultadosLetras(resultados ?? []);
+      if ((resultados ?? []).length === 0)
+        setMensajeLetras('No encontramos letras para esa canción.');
+    } catch (error) {
+      setMensajeLetras(`No se pudo buscar letras: ${String(error)}`);
+    } finally {
+      setBuscandoLetras(false);
+    }
+  };
+
+  const aplicarLetras = async (resultado: LyricsSearchResult) => {
+    if (!activeTrack) return;
+    // Si no hay versión sincronizada, convertimos la letra plana a LRC para
+    // que el parser la muestre igual (todo en el segundo 0).
+    const lrc = (resultado.synced_lyrics || resultado.plain_lyrics || '')
+      .split('\n')
+      .filter((linea) => linea.trim())
+      .map((linea) => (/^\s*\[\d{2}:/.test(linea) ? linea : `[00:00.00]${linea.trim()}`))
+      .join('\n');
+    if (!lrc) {
+      setMensajeLetras('Ese resultado no trae letras.');
+      return;
+    }
+    try {
+      await invoke('save_track_lyrics', { path: activeTrack.path, lrc });
+      setResultadosLetras([]);
+      setMostrarBuscador(false);
+      setMensajeLetras(`Letras de “${resultado.title}” guardadas al lado de la pista.`);
+      await cargarLetrasLocal();
+    } catch (error) {
+      setMensajeLetras(`No se pudieron guardar las letras: ${String(error)}`);
+    }
+  };
+
+  const quitarLetras = async () => {
+    if (!activeTrack) return;
+    try {
+      await invoke('delete_track_lyrics', { path: activeTrack.path });
+      setLetras([]);
+      setMensajeLetras('Se quitó el archivo .lrc de esta pista.');
+    } catch (error) {
+      setMensajeLetras(`No se pudieron quitar las letras: ${String(error)}`);
+    }
+  };
 
   // Última línea cuyo timestamp ya pasó (con un pequeño margen de tolerancia).
   const lineaActiva = letras.reduce<number>(
@@ -364,28 +426,102 @@ export default function NowPlayingPanel(props: NowPlayingPanelProps) {
                 </div>
               )}
               {vista === 'letras' && (
-                <div className="np-letras" ref={letrasRef}>
-                  {cargandoLetras && <p className="np-letra-nota">Buscando letras…</p>}
-                  {!cargandoLetras && letras.length === 0 && (
-                    <>
-                      <div className="np-letra-line is-current">♪</div>
-                      <p className="np-letra-nota">
-                        No se encontró un archivo .lrc junto a esta pista.
-                      </p>
-                      <p className="np-letra-nota">
-                        Poné <code>{activeTrack?.title ?? 'cancion'}.lrc</code> en la misma carpeta
-                        para ver las letras sincronizadas.
-                      </p>
-                    </>
-                  )}
-                  {letras.map((linea, indice) => (
-                    <p
-                      key={`${linea.time}-${indice}`}
-                      className={`np-letra-linea ${indice === lineaActiva ? 'is-current' : ''}`}
+                <div className="np-letras-wrap">
+                  <div className="np-letras-buscar">
+                    <button
+                      type="button"
+                      className="np-letras-toggle"
+                      onClick={() => {
+                        setMostrarBuscador((valor) => !valor);
+                        if (!mostrarBuscador && !consultaLetras && activeTrack) {
+                          setConsultaLetras(`${activeTrack.title} ${activeTrack.artist}`.trim());
+                        }
+                      }}
                     >
-                      {linea.text || '♪'}
-                    </p>
-                  ))}
+                      <Search className="w-3.5 h-3.5" /> Buscar letras online
+                    </button>
+                    {letras.length > 0 && (
+                      <button
+                        type="button"
+                        className="np-letras-quitar"
+                        onClick={() => void quitarLetras()}
+                      >
+                        Quitar .lrc
+                      </button>
+                    )}
+                  </div>
+
+                  {mostrarBuscador && (
+                    <div className="np-letras-form">
+                      <input
+                        value={consultaLetras}
+                        onChange={(evento) => setConsultaLetras(evento.target.value)}
+                        onKeyDown={(evento) => {
+                          if (evento.key === 'Enter') void buscarLetras();
+                        }}
+                        placeholder="Canción y artista…"
+                        aria-label="Buscar letras online"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => void buscarLetras()}
+                        disabled={buscandoLetras}
+                      >
+                        {buscandoLetras ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                          <Search className="w-3.5 h-3.5" />
+                        )}
+                        Buscar
+                      </button>
+                    </div>
+                  )}
+
+                  {mensajeLetras && <p className="np-letra-nota">{mensajeLetras}</p>}
+
+                  {resultadosLetras.length > 0 && (
+                    <div className="np-letras-resultados">
+                      {resultadosLetras.map((resultado) => (
+                        <button
+                          key={resultado.id}
+                          type="button"
+                          className="np-letras-resultado"
+                          onClick={() => void aplicarLetras(resultado)}
+                        >
+                          <span>
+                            <strong>{resultado.title}</strong>
+                            <small>
+                              {resultado.artist}
+                              {resultado.album ? ` · ${resultado.album}` : ''}
+                            </small>
+                          </span>
+                          <em>{resultado.synced_lyrics ? 'SINC' : 'PLANA'}</em>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="np-letras" ref={letrasRef}>
+                    {cargandoLetras && <p className="np-letra-nota">Buscando letras…</p>}
+                    {!cargandoLetras && letras.length === 0 && (
+                      <>
+                        <div className="np-letra-line is-current">♪</div>
+                        <p className="np-letra-nota">
+                          Buscá letras online o poné{' '}
+                          <code>{activeTrack?.title ?? 'cancion'}.lrc</code> en la carpeta de la
+                          pista.
+                        </p>
+                      </>
+                    )}
+                    {letras.map((linea, indice) => (
+                      <p
+                        key={`${linea.time}-${indice}`}
+                        className={`np-letra-linea ${indice === lineaActiva ? 'is-current' : ''}`}
+                      >
+                        {linea.text || '♪'}
+                      </p>
+                    ))}
+                  </div>
                 </div>
               )}
               {vista === 'album' && (

@@ -133,6 +133,13 @@ Array JSON con una foto de la cola. Se escribe de forma atómica (temporal + `re
 
 Carátulas extraídas de los tags o de archivos sueltos. El nombre se deriva de un hash del contenido y la extensión se decide por la firma real de los bytes (JPG, PNG, WebP, GIF, BMP o TIFF), no por lo que diga el tag. Las temporales `temp_*` se borran al abrir la app y antes de guardar una nueva.
 
+## Archivos `.lrc` junto a la pista
+
+Cada canción puede tener un `<mismo nombre>.lrc` en su propia carpeta. Es el
+formato canónico de letras: `read_lyrics` lo lee y `save_track_lyrics` lo escribe
+con temporal + `rename`. No hay tabla de caché: el archivo al lado del audio ya
+es la persistencia. `delete_track_lyrics` lo quita sin tocar el audio.
+
 ## `bin/`
 
 Ubicación preferida para `yt-dlp.exe` y `ffmpeg.exe`. Si no están ahí, se buscan en la instalación histórica de la v1, en los enlaces de winget y en el `PATH`. La app nunca guarda rutas hardcodeadas de un usuario.

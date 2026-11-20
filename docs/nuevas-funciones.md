@@ -37,3 +37,12 @@ La pestaña **Letras** del panel “Ahora suena” busca un `.lrc` al lado del a
 ## Pruebas
 
 Se agregaron tests de integración para la migración `user_version` con backup automático sobre una base en disco, del parser LRC, de las consultas de playlists y del toast de deshacer. Los snapshots visuales se actualizaron por la sexta pestaña de navegación.
+
+
+## Buscador de letras online
+
+La pestaña Letras del panel “Ahora suena” busca en **LRCLIB** con el mismo
+patrón del editor de metadatos: Rust consulta el servicio (sin clave, User-Agent
+identificado), el frontend muestra resultados con badge SINC/PLANA y *Aplicar*
+guarda el `.lrc` al lado de la pista con escritura atómica. No se agregó caché:
+el `.lrc` local ya es la persistencia. Ver [ADR 0021](adr/0021-busqueda-de-letras-online.md).

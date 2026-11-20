@@ -7317,3 +7317,42 @@ html.splash-handoff .player-dock { animation: contenido-aparecer 460ms 120ms eas
   .playlists-cuerpo { grid-template-columns:1fr; }
   .undo-toast { min-width:0; width:calc(100% - 24px); }
 }
+
+
+/* ========================================================= */
+/* BUSCADOR DE LETRAS EN EL PANEL AHORA SUENA                  */
+/* ========================================================= */
+.np-letras-wrap { display:flex; flex-direction:column; gap:10px; min-height:0; }
+.np-letras-buscar { display:flex; align-items:center; gap:8px; }
+.np-letras-toggle, .np-letras-quitar {
+  display:inline-flex; align-items:center; gap:6px; padding:7px 10px;
+  border:1px solid var(--np-line); border-radius:9px; background:var(--np-card);
+  color:var(--np-text); cursor:pointer; font-size:10px;
+}
+.np-letras-toggle:hover { border-color:var(--np-accent); }
+.np-letras-quitar { margin-left:auto; opacity:.7; }
+.np-letras-form { display:flex; gap:6px; }
+.np-letras-form input {
+  flex:1; min-width:0; padding:8px 10px; border:1px solid var(--np-line);
+  border-radius:8px; background:rgba(0,0,0,.12); color:var(--np-text); font-size:11px; outline:0;
+}
+.np-letras-form button {
+  display:inline-flex; align-items:center; gap:5px; padding:8px 11px; border:0;
+  border-radius:8px; background:var(--np-accent); color:#fff; cursor:pointer; font-size:10px;
+}
+.np-letras-form button:disabled { opacity:.6; }
+.np-letras-resultados { display:flex; flex-direction:column; gap:4px; max-height:150px; overflow-y:auto; }
+.np-letras-resultado {
+  display:flex; align-items:center; gap:10px; width:100%; padding:8px 10px;
+  border:1px solid var(--np-line); border-radius:8px; background:var(--np-card);
+  color:var(--np-text); cursor:pointer; text-align:left;
+}
+.np-letras-resultado:hover { border-color:var(--np-accent); }
+.np-letras-resultado span { flex:1; min-width:0; }
+.np-letras-resultado strong { display:block; font-size:11px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.np-letras-resultado small { display:block; font-size:9px; color:var(--np-muted); }
+.np-letras-resultado em {
+  font:9px 'JetBrains Mono',monospace; font-style:normal; padding:2px 5px;
+  border:1px solid var(--np-line); border-radius:4px; color:var(--np-accent);
+}
+.np-letras-wrap .np-letras { max-height:260px; }

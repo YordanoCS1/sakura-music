@@ -49,7 +49,8 @@ pub struct CatalogCandidate {
 }
 
 // User-Agent identificativo exigido por MusicBrainz (y respetado por todos).
-const APP_UA: &str = "SakuraMusic/2.0 (https://github.com/sakura-music; sakura@music.app)";
+pub(crate) const APP_UA: &str =
+    "SakuraMusic/2.0 (https://github.com/sakura-music; sakura@music.app)";
 
 async fn http_client() -> reqwest::Client {
     reqwest::Client::builder()

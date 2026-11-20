@@ -392,7 +392,7 @@ Ajustes).
 **Dónde está:** `docs/desarrollo.md`.
 
 **Tests:** `npm test` (29 Vitest), `npm run test:e2e` (26 Playwright),
-`cargo test` (42 Rust) y `npm run pipeline` (pasa en verde).
+`cargo test` (43 Rust) y `npm run pipeline` (pasa en verde).
 
 ---
 

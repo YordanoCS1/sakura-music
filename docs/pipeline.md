@@ -43,11 +43,11 @@ flowchart TD
 | 3 | Lint | `npm run lint` | sí | React Hooks y reglas de TypeScript |
 | 4 | Formato | `npm run format:check` | sí | Prettier en TS/TSX/JS/JSON/YAML |
 | 5 | Unitarios | `npm test` | sí | 29 tests: cola persistida, toast de deshacer y `ErrorBoundary` |
-| 6 | E2E | `npm run test:e2e` | sí | 26 tests: arranque, splash, 6 pestañas, paleta ⌘K y teclado |
+| 6 | E2E | `npm run test:e2e` | sí | 27 tests: arranque, splash, 6 pestañas, paleta ⌘K y teclado |
 | 7 | Build | `npm run build` | sí | `tsc` + bundle de producción |
 | 8 | Formato Rust | `cargo fmt --check` | sí | `rustfmt.toml` |
 | 9 | Lint Rust | `cargo clippy -D warnings` | sí | 0 avisos |
-| 10 | Tests Rust | `cargo test` | sí | 42 pruebas (incluye migraciones, playlists y lyrics) |
+| 10 | Tests Rust | `cargo test` | sí | 43 pruebas (incluye migraciones, playlists y lyrics) |
 | 11 | Auditoría | `npm run audit` | **no** | `picomatch`: aviso *high* sin corrección |
 | 12 | Instalador | `npm run tauri build` | sí | Sólo con tag o manual |
 

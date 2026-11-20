@@ -541,6 +541,35 @@ fn read_lyrics(path: String) -> Result<Vec<lyrics::LyricLine>, String> {
     lyrics::read_for(&path)
 }
 
+/// Búsqueda de letras con el mismo patrón que el catálogo de metadatos:
+/// Rust consulta LRCLIB y devuelve resultados tipados al frontend.
+#[tauri::command]
+async fn search_lyrics(
+    query: String,
+    artist: Option<String>,
+    album: Option<String>,
+    duration: Option<u32>,
+) -> Result<Vec<lyrics::LyricsSearchResult>, String> {
+    val::texto(&query, val::MAX_CONSULTA, "Búsqueda de letras")?;
+    val::texto_opcional(&artist, val::MAX_TEXTO, "Artista")?;
+    val::texto_opcional(&album, val::MAX_TEXTO, "Álbum")?;
+    val::numero(duration, 86_400, "Duración")?;
+    lyrics::search_online(&query, artist.as_deref(), album.as_deref(), duration).await
+}
+
+#[tauri::command]
+fn save_track_lyrics(path: String, lrc: String) -> Result<String, String> {
+    val::ruta(&path, "Ruta del archivo")?;
+    val::cantidad(lrc.len(), 200_000, "Letras")?;
+    lyrics::save_for(&path, &lrc)
+}
+
+#[tauri::command]
+fn delete_track_lyrics(path: String) -> Result<(), String> {
+    val::ruta(&path, "Ruta del archivo")?;
+    lyrics::delete_for(&path)
+}
+
 /// Panel de salud de la base de datos en Ajustes → Sistema.
 #[tauri::command]
 fn doctor_database() -> Result<library_db::DoctorResultado, String> {
@@ -724,7 +753,10 @@ pub fn run() {
             restore_deleted_track,
             empty_trash,
             trash_count,
-            read_lyrics
+            read_lyrics,
+            search_lyrics,
+            save_track_lyrics,
+            delete_track_lyrics
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application");

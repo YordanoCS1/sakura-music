@@ -18,7 +18,7 @@ Esta carpeta contiene la documentación técnica y de referencia del proyecto Sa
 | Versionar, firmar y publicar | [release.md](release.md) |
 | Ver el pipeline de CI | [pipeline.md](pipeline.md) |
 | Tokens y reglas visuales | [diseno.md](diseno.md) |
-| Comandos y eventos disponibles | [ipc-contract.md](ipc-contract.md) (43 comandos / 6 eventos) |
+| Comandos y eventos disponibles | [ipc-contract.md](ipc-contract.md) (46 comandos / 6 eventos) |
 | Funciones nuevas (playlists, deshacer, letras, updater) | [nuevas-funciones.md](nuevas-funciones.md) |
 | Dónde y cómo se guardan los datos | [data-formats.md](data-formats.md) |
 | Buscar, descargar y entender la cola | [manual/buscar-y-descargar.md](manual/buscar-y-descargar.md) |
@@ -39,9 +39,9 @@ docs/
   desarrollo.md              setup, tests, tipos, benchmark y recetas
   nuevas-funciones.md         playlists, deshacer, letras, paleta y updater
   release.md                 versionado, build, firma y publicación
-  pipeline.md                diagrama y etapas del CI (29/26/42 tests)
+  pipeline.md                diagrama y etapas del CI (29/27/43 tests)
   diseno.md                  tokens y los 16 temas (12 propios + 4 genéricos)
-  ipc-contract.md            43 comandos Tauri y 6 eventos (contrato frontend/Rust)
+  ipc-contract.md            46 comandos Tauri y 6 eventos (contrato frontend/Rust)
   data-formats.md            SQLite, download_queue.json y preferencias
   manual/
     README.md                índice del manual
@@ -73,6 +73,7 @@ docs/
     0018-updater-firmado-e-instaladores.md
     0019-temas-propios-estructurales.md
     0020-paleta-de-comandos.md
+    0021-busqueda-de-letras-online.md
   temas/                     propuestas/prototipos históricos (la implementación real está en App.css/ThemeLibrary/ThemeHome)
   img/                       capturas históricas (v1, pendientes de reemplazo)
     preview_home.png           inicio (v1)
@@ -111,7 +112,7 @@ docs/
   nombra el archivo.
 - **Casos de uso:** `CU-01`…`CU-17`, cada uno con flujo principal, alternativos
   y "dónde está" en el código.
-- **Tests:** 29 unitarios Vitest, 26 E2E Playwright y 42 Rust; `npm run pipeline`
+- **Tests:** 29 unitarios Vitest, 27 E2E Playwright y 43 Rust; `npm run pipeline`
   pasa en verde.
 - **Diagramas:** Mermaid embebido en Markdown. GitHub, GitLab y la vista previa
   de VS Code lo renderizan sin instalar nada. No hay build ni sitio aparte.
@@ -124,7 +125,7 @@ docs/
 | Documento | Última revisión | Fuente principal |
 |---|---|---|
 | `casos-de-uso.md` | 2026-11-19 | `src/App.tsx`, `src-tauri/src/` |
-| `requisitos.md` | 2026-11-19 | código + `npm test` (29) + E2E (26) + `cargo test` (42) + `tsc` |
+| `requisitos.md` | 2026-11-19 | código + `npm test` (29) + E2E (27) + `cargo test` (42) + `tsc` |
 | `arquitectura.md` | 2026-11-19 | `src-tauri/src/`, `src/App.tsx`, `tauri.conf.json` |
 | `ipc-contract.md` | 2026-11-19 | `lib.rs` (40), `catalog.rs` (3), eventos (6) |
 | `data-formats.md` | 2026-11-19 | `library_db.rs`, `playlists.rs`, `queue.rs`, `paths.rs`, `localStorage` |
@@ -133,7 +134,7 @@ docs/
 | `nuevas-funciones.md` | 2026-11-19 | playlists, papelera, letras, paleta y updater |
 | `pipeline.md` | 2026-11-19 | `.github/workflows/ci.yml` + `npm run pipeline` |
 | `manual/` | 2026-11-19 | interfaz real + `tauri.conf.json` |
-| `adr/` | 2026-11-19 | 0009 (migración) + 0010 (cierre) + 0011 (cola) + 0012 (temas) + 0013…0020 (nuevas funciones) |
+| `adr/` | 2026-11-20 | 0009 (migración) + 0010 (cierre) + 0011 (cola) + 0012 (temas) + 0013…0021 (nuevas funciones) |
 | `temas/informe-temas.md` | 2026-11-19 | propuesta histórica de prototipos (ver nota en el archivo) |
 
 La documentación se actualiza **cuando cambia el comportamiento**, no cuando

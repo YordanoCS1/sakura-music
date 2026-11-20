@@ -43,6 +43,7 @@ adelante rigen la v2.
 | [0018](0018-updater-firmado-e-instaladores.md) | Actualizaciones firmadas e instaladores | Vigente |
 | [0019](0019-temas-propios-estructurales.md) | Temas propios con identidad estructural | Vigente (amplía 0012) |
 | [0020](0020-paleta-de-comandos.md) | Paleta de comandos y navegación de seis pestañas | Vigente |
+| [0021](0021-busqueda-de-letras-online.md) | Búsqueda de letras online con LRCLIB | Vigente (amplía 0015) |
 
 ## Cómo agregar una decisión
 

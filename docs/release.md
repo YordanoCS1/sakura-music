@@ -62,6 +62,6 @@ Si no hay certificado de código, **no finjas que está firmado**: documentalo e
 - [ ] Versión coincidente en los 3 archivos.
 - [ ] `CHANGELOG.md` con fecha real.
 - [ ] `npm run check` y `npm run test:e2e` en verde.
-- [ ] `cargo fmt --check`, `clippy -D warnings` y 42 tests Rust en verde.
+- [ ] `cargo fmt --check`, `clippy -D warnings` y 43 tests Rust en verde.
 - [ ] Bundles generados y `latest.json` adjunto; si corresponde, firmados.
 - [ ] Tag `vX.Y.Z` y release con artefactos.

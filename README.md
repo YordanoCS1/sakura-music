@@ -32,7 +32,7 @@ Gestor, reproductor, descargador y etiquetador de música para escritorio, const
 ### 🗂️ Playlists, deshacer y actualizaciones
 - **Playlists persistentes** en SQLite: pestaña Listas con alta, renombre, borrado, carga de pistas y reorden manual, con estilo propio por tema.
 - **Borrado con Deshacer**: los archivos van a `trash/` y se restauran desde el toast durante 9 s; Ajustes → Sistema muestra el contador y permite **Vaciar papelera**.
-- **Letras `.lrc` sincronizadas** en el panel “Ahora suena”, con resaltado y autoscroll.
+- **Letras `.lrc` sincronizadas** en el panel “Ahora suena”, con resaltado y autoscroll y **búsqueda online en LRCLIB** con botón *Aplicar* (ADR 0021).
 - **Paleta de comandos** con `Ctrl+K` / `⌘K` para navegar, cambiar tema, controlar la reproducción y buscar pistas.
 - **Actualizaciones automáticas** firmadas con minisign e instaladores NSIS/MSI; Ajustes → Sistema permite buscar e instalar versiones nuevas.
 
@@ -140,8 +140,8 @@ npm run tauri build   # instalador .exe / .msi
 Checks de código:
 
 ```powershell
-npm run pipeline                                  # tipos, lint, formato, 29 unitarios, 26 E2E, build, fmt/clippy y 42 tests Rust
-cargo test --manifest-path src-tauri/Cargo.toml   # 42 tests Rust
+npm run pipeline                                  # tipos, lint, formato, 29 unitarios, 27 E2E, build, fmt/clippy y 43 tests Rust
+cargo test --manifest-path src-tauri/Cargo.toml   # 43 tests Rust
 node node_modules/typescript/bin/tsc --noEmit     # tipos del frontend
 ```
 
@@ -227,7 +227,7 @@ Todo el detalle vivido en `docs/`, en Markdown plano con Mermaid, sin MkDocs:
 - [Requisitos](docs/requisitos.md) — promesas verificables con su criterio.
 - [Casos de uso](docs/casos-de-uso.md) — actores y flujos contra el código real.
 - [Desarrollo](docs/desarrollo.md) — setup, tests y recetas.
-- [Contrato IPC](docs/ipc-contract.md) — los 43 comandos Tauri y los 6 eventos.
+- [Contrato IPC](docs/ipc-contract.md) — los 46 comandos Tauri y los 6 eventos.
 - [Formatos de datos](docs/data-formats.md) — SQLite, cola persistente y preferencias.
 - [Manual de usuario](docs/manual/README.md) — instalación, buscar/descargar, biblioteca, playlists, deshacer, letras, metadatos y resolución de problemas.
 - [Funciones nuevas](docs/nuevas-funciones.md) — playlists, deshacer, letras LRC, paleta ⌘K, actualizaciones y benchmarks.

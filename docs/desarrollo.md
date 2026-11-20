@@ -80,7 +80,7 @@ Sakura_Music/
 │   └── capabilities/default.json # permisos: core, dialog, updater, process
 ├── scripts/
 │   └── benchmark_scan.mjs        # benchmark de escaneo (10k pistas ≈ 12,6 s en release)
-├── e2e/                          # suites Playwright (26 tests)
+├── e2e/                          # suites Playwright (27 tests)
 ├── docs/                         # esta documentación
 ├── legacy_python/                # v1.0 histórica (Python + PySide6), no se toca
 ├── iniciar_sakura.bat            # npm run tauri dev en Windows
@@ -103,9 +103,9 @@ npm run typecheck       # solo tsc --noEmit
 npm run lint            # ESLint sobre src/
 npm run format          # Prettier sobre TS/TSX/JS/JSON/YAML
 npm run test            # Vitest (29 tests unitarios del frontend)
-npm run test:e2e        # Playwright (26 tests E2E)
+npm run test:e2e        # Playwright (27 tests E2E)
 npm run pipeline        # check + E2E + fmt + clippy + cargo test → pasa en verde
-cargo test --manifest-path src-tauri/Cargo.toml   # 42 tests Rust
+cargo test --manifest-path src-tauri/Cargo.toml   # 43 tests Rust
 cargo fmt --check --manifest-path src-tauri/Cargo.toml
 cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings
 ```
@@ -118,8 +118,8 @@ cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings
 
 `.github/workflows/ci.yml` ejecuta en Windows, macOS y Linux (matriz de 3 SO) las
 mismas comprobaciones: `npm ci`, `npm run pipeline` (tipos, lint, formato, 29
-unitarios, 26 E2E, build del frontend, `cargo fmt --check`, `cargo clippy -D
-warnings` y los 42 tests Rust). La auditoría de npm (`npm run audit`) corre como
+unitarios, 27 E2E, build del frontend, `cargo fmt --check`, `cargo clippy -D
+warnings` y los 43 tests Rust). La auditoría de npm (`npm run audit`) corre como
 paso informativo: hoy hay un aviso *high* de `picomatch` que afecta solo a
 dependencias de desarrollo y todavía no tiene corrección; no bloquea el pipeline.
 
@@ -170,7 +170,7 @@ tiempos de disco y del binario release.
 
 Los tests del frontend (`src/**/*.test.ts` y `.test.tsx`, 29 en total) cubren
 la conversión entre el ítem de UI y el formato persistido de la cola, el toast
-de deshacer y el fallback del `ErrorBoundary`; los 26 tests E2E de `e2e/`
+de deshacer y el fallback del `ErrorBoundary`; los 27 tests E2E de `e2e/`
 verifican arranque, splash, las 6 pestañas, paleta ⌘K y teclado. Todo lo demás
 se verifica a mano: búsqueda real en YouTube, descarga en los 4 formatos,
 playlist completa, edición individual y en lote (incluido el mensaje de fallos
@@ -212,7 +212,7 @@ superficie además de los tokens de color. Ver [ADR 0012](adr/0012-temas-multipl
    `deleted_tracks`), con `foreign_keys=ON` y `ON DELETE CASCADE`.
 2. Exponé el comando en `lib.rs`, registralo en `invoke_handler!` y validá los
    argumentos en `validacion.rs` en la frontera IPC.
-3. Agregalo a `docs/ipc-contract.md` (43 comandos / 6 eventos) y al tipo en
+3. Agregalo a `docs/ipc-contract.md` (46 comandos / 6 eventos) y al tipo en
    `src/types.ts`; consumilo desde `PlaylistsPanel` o `UndoToast`.
 4. Si el comando crea archivos visibles, autorizá la carpeta con
    `app.asset_protocol_scope().allow_directory(...)`.
@@ -252,7 +252,7 @@ superficie además de los tokens de color. Ver [ADR 0012](adr/0012-temas-multipl
 | Rutas | `paths.rs` es el único lugar que conoce la carpeta de datos; nunca hay rutas hardcodeadas de usuario |
 | Escrituras | Siempre `write_atomic` para tags, caché y portadas |
 | Colores | Solo `accent-*` (variables `--accent-*`) fuera de `App.css`; el resto es rosa de apoyo (status) |
-| Tests | Un `#[test]` por comportamiento puro en su módulo (42 Rust); el frontend con 29 unitarios Vitest + 26 E2E Playwright, más `tsc` + build |
+| Tests | Un `#[test]` por comportamiento puro en su módulo (43 Rust); el frontend con 29 unitarios Vitest + 27 E2E Playwright, más `tsc` + build |
 
 ## Documentación
 

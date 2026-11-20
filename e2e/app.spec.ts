@@ -55,6 +55,20 @@ test.beforeEach(async ({ page }) => {
         { time: 2.5, text: 'Segunda línea' },
         { time: 5.0, text: 'Estribillo' },
       ],
+      search_lyrics: [
+        {
+          id: 42,
+          title: 'Pista 0',
+          artist: 'Artista A',
+          album: 'Álbum Uno',
+          duration: 200,
+          instrumental: false,
+          plain_lyrics: '',
+          synced_lyrics: '[00:00.00]Línea bajada\n[00:03.00]Estribillo bajado',
+        },
+      ],
+      save_track_lyrics: 'Disco\\p0.lrc',
+      delete_track_lyrics: null,
       list_playlists: [
         { id: 'pl-1', name: 'Favoritas', created_at: 1, track_count: 2 },
         { id: 'pl-2', name: 'Para el viaje', created_at: 2, track_count: 0 },
@@ -535,6 +549,68 @@ test('las letras .lrc se muestran sincronizadas en el panel', async ({ page }) =
   await panel.getByRole('tab', { name: /Letras/ }).click();
   await expect(panel.locator('.np-letra-linea')).toHaveCount(3);
   await expect(panel.locator('.np-letra-linea').first()).toContainText('Primera línea');
+});
+
+test('se pueden buscar letras online y aplicarlas a la pista', async ({ page }) => {
+  await page.addInitScript(() => {
+    const tracks = [
+      {
+        id: 'p0',
+        path: 'Disco\\p0.flac',
+        title: 'Pista 0',
+        artist: 'Artista A',
+        album: 'Álbum Uno',
+        album_artist: null,
+        track_number: 1,
+        duration: 200,
+        duration_str: '3:20',
+        format: 'FLAC',
+        bitrate_kbps: 900,
+        cover_url: null,
+        year: 2024,
+        genre: 'Jazz',
+        file_size: 1000,
+      },
+    ];
+    const internals = window as unknown as {
+      __TAURI_INTERNALS__: { invoke: (cmd: string) => Promise<unknown> };
+    };
+    const anterior = internals.__TAURI_INTERNALS__.invoke;
+    const bajadas = [
+      { time: 0, text: 'Línea bajada' },
+      { time: 3, text: 'Estribillo bajado' },
+    ];
+    let guardadas = false;
+    internals.__TAURI_INTERNALS__.invoke = async (cmd: string, args?: unknown) => {
+      if (cmd === 'get_cached_library') return tracks;
+      if (cmd === 'read_lyrics') return guardadas ? bajadas : [];
+      if (cmd === 'save_track_lyrics') {
+        guardadas = true;
+        return 'Disco\\p0.lrc';
+      }
+      return anterior(cmd, args);
+    };
+  });
+  await page.goto('/');
+  await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });
+  await page.getByRole('tab', { name: /Biblioteca/ }).click();
+  await page
+    .getByRole('button', { name: /Reproducir/ })
+    .first()
+    .click();
+  await page.locator('.npr-cover').click();
+
+  const panel = page.getByRole('dialog', { name: 'Ahora reproduciendo' });
+  await panel.getByRole('tab', { name: /Letras/ }).click();
+  await panel.getByRole('button', { name: /Buscar letras online/ }).click();
+  await panel.getByRole('button', { name: /^Buscar$/ }).click();
+
+  const resultado = panel.locator('.np-letras-resultado');
+  await expect(resultado).toHaveCount(1);
+  await expect(resultado).toContainText('Pista 0');
+  await resultado.click();
+  await expect(panel.locator('.np-letra-linea')).toHaveCount(2);
+  await expect(panel.locator('.np-letra-linea').first()).toContainText('Línea bajada');
 });
 
 test('Ajustes → Sistema muestra la salud de la base y los registros', async ({ page }) => {

@@ -1,6 +1,6 @@
 # Contrato IPC (frontend ↔ Rust)
 
-Toda la comunicación entre React y el núcleo Rust pasa por `invoke()` y por eventos de Tauri. Este documento es la lista canonical de los **43 comandos** y los **6 eventos**. Si agregás uno, actualizá este archivo en el mismo commit.
+Toda la comunicación entre React y el núcleo Rust pasa por `invoke()` y por eventos de Tauri. Este documento es la lista canonical de los **46 comandos** y los **6 eventos**. Si agregás uno, actualizá este archivo en el mismo commit.
 
 Los tipos (`ScannedTrack`, `PersistedDownload`, etc.) están en [`src/types.ts`](../src/types.ts) y su contrato Rust en los módulos indicados. Los formatos persistidos están en [data-formats.md](data-formats.md).
 
@@ -92,8 +92,11 @@ Fuentes: `itunes`, `deezer` y `musicbrainz`. Estas consultas viven en Rust porqu
 | `empty_trash` | — | `number` | `lib.rs` |
 | `trash_count` | — | `number` | `lib.rs` |
 | `read_lyrics` | `path: string` | `LyricLine[]` | `lib.rs` |
+| `search_lyrics` | `query`, `artist?`, `album?`, `duration?` | `LyricsSearchResult[]` | `lib.rs` |
+| `save_track_lyrics` | `path`, `lrc` | `string` (ruta del `.lrc`) | `lib.rs` |
+| `delete_track_lyrics` | `path` | — | `lib.rs` |
 
-Las playlists guardan rutas en `playlist_tracks` con `foreign_keys = ON`: si se borra la lista, SQLite limpia sus filas. `delete_library_track` mueve el archivo a `<datos>/trash` y devuelve un token; `restore_deleted_track` lo devuelve y reinserta la pista. `read_lyrics` busca un `.lrc` junto al audio y devuelve líneas con `time` en segundos.
+Las playlists guardan rutas en `playlist_tracks` con `foreign_keys = ON`: si se borra la lista, SQLite limpia sus filas. `delete_library_track` mueve el archivo a `<datos>/trash` y devuelve un token; `restore_deleted_track` lo devuelve y reinserta la pista. `read_lyrics` busca un `.lrc` junto al audio y devuelve líneas con `time` en segundos. Con el mismo patrón del catálogo de metadatos, `search_lyrics` consulta **LRCLIB** desde Rust (User-Agent identificado, sin clave) y devuelve resultados con letra sincronizada o plana; `save_track_lyrics` escribe el `.lrc` al lado de la pista con escritura atómica y `delete_track_lyrics` lo quita. El host `https://lrclib.net` se agregó a `connect-src` en la CSP.
 
 El bloque de mantenimiento alimenta Ajustes → Sistema. `doctor_database` corre `PRAGMA integrity_check`, reconstruye el índice FTS5 y devuelve métricas (pistas, entradas del índice, tamaño, versión de esquema, último respaldo). `backup_database` usa `VACUUM INTO` para una copia consistente con WAL activo y conserva los tres respaldos más recientes. Los respaldos automáticos se crean antes de subir `PRAGMA user_version`.
 
@@ -114,11 +117,11 @@ sobrescribe un binario que ya esté en el PATH.
 
 El frontend filtra `library-changed` comparando la ruta con la carpeta activa, para no recargar si cambia otra biblioteca. Los eventos de búsqueda se descartan si su `request_id` no corresponde a la petición vigente.
 
-Además de estos eventos, los plugins `updater` y `process` tienen sus propios canales (`plugin:updater|*`, `plugin:process|*`) y se consumen con las APIs `@tauri-apps/plugin-updater` y `@tauri-apps/plugin-process`, no con `invoke()` directo. Por eso no cuentan en la tabla de 43 comandos. La búsqueda de actualizaciones y el reinicio viven en `SystemPanel.tsx`.
+Además de estos eventos, los plugins `updater` y `process` tienen sus propios canales (`plugin:updater|*`, `plugin:process|*`) y se consumen con las APIs `@tauri-apps/plugin-updater` y `@tauri-apps/plugin-process`, no con `invoke()` directo. Por eso no cuentan en la tabla de 46 comandos. La búsqueda de actualizaciones y el reinicio viven en `SystemPanel.tsx`.
 
 ## Registro de comandos
 
-Los 43 comandos están registrados en el `invoke_handler` de `lib.rs` (40 definidos ahí y 3 en `catalog.rs`). Si agregás uno nuevo:
+Los 46 comandos están registrados en el `invoke_handler` de `lib.rs` (43 definidos ahí y 3 en `catalog.rs`). Si agregás uno nuevo:
 
 1. Definilo con `#[tauri::command]` y devolvé `Result<_, String>` cuando pueda fallar.
 2. Registralo en `generate_handler!`.
