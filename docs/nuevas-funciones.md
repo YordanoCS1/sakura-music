@@ -79,3 +79,13 @@ La **galería de temas** muestra las 14 apariencias como miniaturas con preview
 en vivo y aplicación directa. Los **estados de carga** tienen 14 variantes (un
 indicador distinto por tema) y aparecen en escaneo, búsqueda online, letras y
 guardado de metadatos. Ver [contraste.md](contraste.md) para la auditoría AA.
+
+
+## Vinyl, iconos animados y estadísticas
+
+La portada del reproductor gira mientras suena (se detiene al pausar) con un
+estilo por tema. Los glifos de la navegación tienen animación CSS propia:
+chispa, niebla, pétalo, tinta o tramado según el tema, y se desactivan con
+`prefers-reduced-motion`. La nueva pestaña **Datos** resume la biblioteca con
+duración, géneros, artistas, décadas, formatos y portadas, con gráficos que
+cambian de lenguaje visual en Swiss, Ledger y Manga.

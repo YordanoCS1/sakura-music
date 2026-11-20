@@ -1,5 +1,14 @@
 import { useLayoutEffect, useRef, useState, type KeyboardEvent } from 'react';
-import { DownloadCloud, Heart, Home, Library, ListMusic, Search, Settings } from 'lucide-react';
+import {
+  BarChart3,
+  DownloadCloud,
+  Heart,
+  Home,
+  Library,
+  ListMusic,
+  Search,
+  Settings,
+} from 'lucide-react';
 import type { AppTab, DownloadItem } from '../types';
 
 interface ZenTopNavProps {
@@ -16,6 +25,7 @@ const items: { id: AppTab; label: string; icon: typeof Home }[] = [
   { id: 'search', label: 'Buscar', icon: Search },
   { id: 'queue', label: 'Cola', icon: DownloadCloud },
   { id: 'playlists', label: 'Listas', icon: ListMusic },
+  { id: 'stats', label: 'Datos', icon: BarChart3 },
   { id: 'settings', label: 'Ajustes', icon: Settings },
 ];
 

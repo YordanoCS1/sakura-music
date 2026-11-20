@@ -11,7 +11,7 @@ este documento (con fecha y motivo). **No se renumeran.**
 
 - **Criterio:** qué tiene que pasar para considerar el requisito cumplido.
 - **Test:** `npm test` (Vitest, **58 tests** del frontend), `npm run test:e2e`
-  (Playwright, **30 tests**), `cargo test` (Rust, **43 tests**) o `tsc --noEmit`
+  (Playwright, **31 tests**), `cargo test` (Rust, **43 tests**) o `tsc --noEmit`
   (tipos). `npm run pipeline` corre todo en orden y pasa en verde.
 - Si un requisito depende de red o de un binario externo, no se testea en la
   suite: se verifica a mano con `yt-dlp`/`ffmpeg` reales.
@@ -198,13 +198,13 @@ el glifo del splash hace handoff al logo de la nav con
 `view-transition-name: sakura-glifo`.
 
 **Test:** `tsc --noEmit` + `npm run build` (Tailwind genera las clases
-`accent-*`); snapshots E2E de `e2e/` cubren las 6 pestañas por tema, con el loop
+`accent-*`); snapshots E2E de `e2e/` cubren las 7 pestañas por tema, con el loop
 visual de `visuals.spec.ts` extendido a 7 temas (incluye `manga-home-win32.png`
 y `manga-library-win32.png`).
 
 #### RF-18 · Navegación superior y vista Pared
 
-**Criterio:** la navegación principal es una barra superior con **6 pestañas**
+**Criterio:** la navegación principal es una barra superior con **7 pestañas**
 (`AppTab`): Inicio, Biblioteca, Buscar, Cola, **Listas** y Ajustes, con un
 indicador deslizante sobre la pestaña activa, en lugar del antiguo
 rail/sidebar. La biblioteca ofrece 9 vistas: **Carpetas, Cuadrícula, Lista,
@@ -382,10 +382,10 @@ enlaza a `docs/`.
 | Biblioteca y reproducción | RF-08 … RF-12 | `cargo test` (`scanner`, `library_db`), manual |
 | Metadatos y catálogo | RF-13 … RF-16 | `cargo test` + `tsc`, manual |
 | Apariencia y navegación | RF-17 … RF-18 | Vitest + E2E + `npm run build`, manual |
-| Playlists, papelera, letras, paleta, BD y updater | RF-20 … RF-25 | Vitest (58), E2E (30), `cargo test` (43), manual |
+| Playlists, papelera, letras, paleta, BD y updater | RF-20 … RF-25 | Vitest (58), E2E (31), `cargo test` (43), manual |
 | Transversales | RNF-01 … RNF-08 | `npm run pipeline` completo |
 
-**Totales:** 58 tests unitarios Vitest, 30 tests E2E Playwright y **43 tests
+**Totales:** 58 tests unitarios Vitest, 31 tests E2E Playwright y **43 tests
 Rust** (`downloader`, `queue`, `scanner`, `library_db`, `tools`, migraciones,
 playlists y lyrics). `npm run pipeline` pasa en verde.
 

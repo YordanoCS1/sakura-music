@@ -28,6 +28,7 @@ import PlayerBar from './components/PlayerBar';
 import UndoToast from './components/UndoToast';
 import ThemedLoader from './components/ThemedLoader';
 import PlaylistsPanel from './components/PlaylistsPanel';
+import StatsTab from './components/StatsTab';
 import CommandPalette from './components/CommandPalette';
 import SearchTab from './components/SearchTab';
 import ThemeSearch from './components/ThemeSearch';
@@ -1144,7 +1145,9 @@ export default function App() {
                           ? 'Cola'
                           : activeTab === 'playlists'
                             ? 'Playlists'
-                            : 'Ajustes'}
+                            : activeTab === 'stats'
+                              ? 'Estadísticas'
+                              : 'Ajustes'}
                 </span>
               </div>
 
@@ -1451,6 +1454,13 @@ export default function App() {
                   getCoverSrc={getCoverSrc}
                   onPlayTrack={handlePlayTrack}
                 />
+              </div>
+            )}
+
+            {/* TAB: ESTADÍSTICAS */}
+            {activeTab === 'stats' && (
+              <div className="main-scroll-region flex-1 overflow-y-auto p-6 custom-scroll">
+                <StatsTab theme={temaBase} tracks={tracks} getCoverSrc={getCoverSrc} />
               </div>
             )}
 

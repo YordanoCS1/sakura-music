@@ -278,7 +278,7 @@ export default function NowPlayingPanel(props: NowPlayingPanelProps) {
 
         <div className="np-panel-body">
           <aside className="np-panel-art-col">
-            <div className="np-panel-art">
+            <div className={`np-panel-art np-panel-art-vinilo ${isPlaying ? 'is-girando' : ''}`}>
               {activeTrack?.cover_url ? (
                 <img src={getCoverSrc(activeTrack.cover_url)} alt={activeTrack.title} />
               ) : (

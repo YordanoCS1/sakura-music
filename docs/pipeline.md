@@ -43,7 +43,7 @@ flowchart TD
 | 3 | Lint | `npm run lint` | sí | React Hooks y reglas de TypeScript |
 | 4 | Formato | `npm run format:check` | sí | Prettier en TS/TSX/JS/JSON/YAML |
 | 5 | Unitarios | `npm test` | sí | 30 tests: cola persistida, toast de deshacer y `ErrorBoundary` |
-| 6 | E2E | `npm run test:e2e` | sí | 30 tests: arranque, splash, 6 pestañas, paleta ⌘K y teclado |
+| 6 | E2E | `npm run test:e2e` | sí | 30 tests: arranque, splash, 7 pestañas, paleta ⌘K y teclado |
 | 7 | Build | `npm run build` | sí | `tsc` + bundle de producción |
 | 8 | Formato Rust | `cargo fmt --check` | sí | `rustfmt.toml` |
 | 9 | Lint Rust | `cargo clippy -D warnings` | sí | 0 avisos |

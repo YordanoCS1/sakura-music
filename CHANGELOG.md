@@ -5,6 +5,9 @@ Todos los cambios destacables de este proyecto se registran acá. El formato sig
 ## [Sin publicar]
 
 ### Agregado
+- **Portada giratoria**: la tapa del reproductor y del panel "Ahora suena" gira mientras suena y se frena al pausar, con forma y velocidad propias por tema (círculo en Moonlit, cuadrado en Swiss, viñeta en Manga).
+- **Iconos animados por tema**: chispa en Shōnen, niebla en Fantasmas, pétalo en Sakura, tinta en Sumi-e, tramado en Manga; CSS puro y `prefers-reduced-motion`.
+- **Pestaña de estadísticas**: duración, géneros, artistas top, décadas, formatos y cobertura de portadas con gráficos adaptados a cada tema.
 - **Galería de temas**: vista museo con las 14 apariencias, miniatura, preview en vivo y aplicación con un clic; se abre desde Ajustes → Apariencia.
 - **Estados de carga temáticos**: indicadores con 14 variantes (pétalo, ensō, pincel, barras, chispa, tramado, etc.) en escaneo, búsqueda, letras y guardado de metadatos.
 - **Auditoría de contraste**: corrección AA en Origami, Swiss y Kawaii, texto sobre acento por tema y test guardian en `src/lib/contraste.test.ts` (informe en `docs/contraste.md`).
@@ -37,7 +40,7 @@ Todos los cambios destacables de este proyecto se registran acá. El formato sig
 - **Actualizaciones automáticas firmadas** con minisign e instaladores NSIS/MSI; clave pública en `src-tauri/updater.key.pub`, privada ignorada por git y endpoint a configurar al publicar (`REPLACE_OWNER/REPLACE_REPO` en `tauri.conf.json`).
 - **Migraciones versionadas** con `PRAGMA user_version=2` (1 = FTS5 y disparadores, 2 = índices en artista/álbum/año/genero), respaldo automático `VACUUM INTO` con retención de 3 y PRAGMAs WAL + `synchronous=NORMAL` + `temp_store=MEMORY` + `foreign_keys=ON`.
 - **Benchmark de escaneo** `node scripts/benchmark_scan.mjs [cantidad]`: 10.000 pistas tardaron ~12,6 s en release en esta máquina; el CLI `scan` imprime los milisegundos.
-- **`npm run pipeline`** como comando único para todo lo que corre el CI: 58 unitarios Vitest, 30 E2E Playwright y 43 tests Rust.
+- **`npm run pipeline`** como comando único para todo lo que corre el CI: 58 unitarios Vitest, 31 E2E Playwright y 43 tests Rust.
 
 ### Cambiado
 - La identidad de los temas dejó de ser sólo de paleta: navegación, tarjetas, reproductor, tipografía y sombras cambian según el tema; ~200 superficies hardcodeadas se tokenizaron para que los 14 temas apliquen de verdad. Sumi-e incorpora textura washi, sellos hanko, ensō y trazos de pincel; los 13 temas propios suman estructura completa, con el selector base fijo en `data-theme='space'` y `data-skin` para cada uno.

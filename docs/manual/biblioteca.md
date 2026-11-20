@@ -118,6 +118,13 @@ Si no hay música, ves un estado vacío con **Escanear Carpeta de Música** y
 | No se ve la portada | El archivo no tiene tag de portada ni `folder.jpg`/`cover.*`: editala |
 | La carpeta no abre | La carpeta no existe o Tauri no puede leerla: re-eligí la carpeta |
 | Un tema no cambia el color | Cerrá y volvé a abrir: el tema se aplica al instante y se persiste en `localStorage` |
-| No aparece la pestaña Listas | Buscala entre las 6 pestañas de la navegación: Inicio, Biblioteca, Buscar, Cola, Listas y Ajustes |
+| No aparece la pestaña Listas | Buscala entre las 7 pestañas de la navegación: Inicio, Biblioteca, Buscar, Cola, Listas y Ajustes |
 
 Más en [problemas.md](problemas.md) y en [../nuevas-funciones.md](../nuevas-funciones.md).
+
+
+## Estadísticas
+
+La pestaña **Datos** muestra la biblioteca en números: duración total, tamaño,
+géneros, artistas más frecuentes, décadas, formatos y porcentaje de portadas.
+Los gráficos usan el lenguaje visual del tema activo.

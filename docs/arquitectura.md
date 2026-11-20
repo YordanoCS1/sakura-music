@@ -28,7 +28,7 @@ servidor, cuentas ni login.
 ```mermaid
 flowchart TB
     subgraph UI["src/App.tsx · presentación"]
-        TABS["6 pestañas (AppTab):<br/>home · library · search · queue<br/>playlists · settings"]
+        TABS["7 pestañas (AppTab):<br/>home · library · search · queue<br/>playlists · settings"]
         PLAYER["PlayerBar + NowPlayingPanel<br/>Detalles · Letras · Álbum · Artista<br/>asset: + Blob URL"]
         PANEL["PlaylistsPanel · CommandPalette ⌘K<br/>UndoToast · SystemPanel<br/>VirtualizedGrid en LibraryTab"]
         THEME["1 genérico (LibraryTab, 9 vistas)<br/>+ 13 propios (ThemeLibrary/Home/Nav)<br/>data-theme=space · data-skin={tema}"]

@@ -64,7 +64,7 @@ Gestor, reproductor, descargador y etiquetador de música para escritorio, const
 - **14 temas seleccionables en Ajustes → Diseño Visual:** el **1 genérico** (**M3 Zen**/`space`, marfil y rosa sakura) usa `LibraryTab` con las 9 vistas clásicas. Los **13 temas propios** (**Sumi-e**, **Byōbu**, **Shoji**, **Origami**, **Swiss**, **Sumi Ink**, **Moonlit**, **Ledger**, **Shōnen**, **Fantasmas**, **Samurái**, **Kawaii** y **Manga**) tienen vistas estructurales completas: Inicio, biblioteca, cabecera, Buscar, Cola, ajustes, diálogos y transiciones propios, no sólo otra paleta. **Manga** ("Viñetas, tinta y screentone") trae portada de revista con `第 01 話`, globos de diálogo, sello 開 y línea de tiempo; en biblioteca muestra páginas de viñetas con tramado halftone, tag **GO!** y carátulas en blanco y negro. Su paleta es papel `#fbfaf7`, tinta `#101010` y rojo `#d62828`. El cambio es instantáneo y se guarda en `sakura_theme`.
 - **Selector:** el tema base queda fijo en `data-theme='space'`; los temas propios se aplican con `data-skin`, con transición continua del glifo del splash a la navegación mediante View Transitions.
 - **Navegación superior:** barra de pestañas con indicador deslizante animado y emblema de vinilo con el kanji 桜.
-- **6 pestañas:** Inicio, Biblioteca, Buscar, Cola, **Listas** (playlists) y Ajustes.
+- **7 pestañas:** Inicio, Biblioteca, Buscar, Cola, **Listas** (playlists) y Ajustes.
 - **9 vistas de biblioteca** (en el tema genérico): Carpetas (con breadcrumbs), Cuadrícula, Lista (tabla), Álbumes, **Pared** (mosaico de portadas con el título y artista de cada canción, filtrado por la carpeta seleccionada), **CDs**, **3D (Tilt)**, **Luz (Glow)** y **Portadas**.
 - Opacidad y blur del vidrio, resplandor ambiental, partículas, estilo de reproductor (flotante/fijo/mini) y favoritos persistentes.
 - Datos técnicos reales: versión de `rustc` (inyectada en `build.rs`) y memoria del proceso en Windows (via `windows-sys`), nunca literales de ejemplo.
@@ -140,7 +140,7 @@ npm run tauri build   # instalador .exe / .msi
 Checks de código:
 
 ```powershell
-npm run pipeline                                  # tipos, lint, formato, 58 unitarios, 30 E2E, build, fmt/clippy y 43 tests Rust
+npm run pipeline                                  # tipos, lint, formato, 58 unitarios, 31 E2E, build, fmt/clippy y 43 tests Rust
 cargo test --manifest-path src-tauri/Cargo.toml   # 43 tests Rust
 node node_modules/typescript/bin/tsc --noEmit     # tipos del frontend
 ```
@@ -159,7 +159,7 @@ Sakura_Music/
 │   ├── App.css                   # Tailwind + variables --accent-* (tema M3 Zen)
 │   ├── types.ts                  # tipos compartidos
 │   ├── components/
-│   │   ├── ZenTopNav.tsx         # navegación superior (6 pestañas)
+│   │   ├── ZenTopNav.tsx         # navegación superior (7 pestañas)
 │   │   ├── HomeTab.tsx           # inicio
 │   │   ├── LibraryTab.tsx        # biblioteca (9 vistas del tema genérico)
 │   │   ├── LibraryShowcase.tsx  # vista Pared (mosaico de portadas)

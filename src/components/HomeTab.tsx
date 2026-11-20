@@ -3,6 +3,7 @@ import {
   Sparkles,
   Library,
   ListMusic,
+  BarChart3,
   Search,
   DownloadCloud,
   Settings,
@@ -63,6 +64,7 @@ const NAV = [
   { id: 'search' as AppTab, label: 'Buscar', desc: 'Catálogo online', icon: Search },
   { id: 'queue' as AppTab, label: 'Cola', desc: 'Descargas', icon: DownloadCloud },
   { id: 'playlists' as AppTab, label: 'Listas', desc: 'Tus selecciones', icon: ListMusic },
+  { id: 'stats' as AppTab, label: 'Datos', desc: 'Tu biblioteca en números', icon: BarChart3 },
   { id: 'settings' as AppTab, label: 'Ajustes', desc: 'Preferencias', icon: Settings },
 ];
 

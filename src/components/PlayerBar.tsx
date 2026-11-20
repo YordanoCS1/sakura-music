@@ -214,7 +214,7 @@ export default function PlayerBar({
                 <button
                   type="button"
                   onClick={() => setExpanded(true)}
-                  className="npr-cover"
+                  className={`npr-cover npr-cover-vinilo ${isPlaying ? 'is-girando' : ''}`}
                   aria-label="Ver ahora reproduciendo"
                   title="Ver ahora reproduciendo"
                 >

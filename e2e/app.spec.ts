@@ -678,6 +678,63 @@ test('la galería de temas aplica una apariencia', async ({ page }) => {
   await expect(galeria).toHaveCount(0);
 });
 
+test('la pestaña de estadísticas resume la biblioteca', async ({ page }) => {
+  await page.addInitScript(() => {
+    const tracks = [
+      {
+        id: 'p0',
+        path: 'Disco\\p0.flac',
+        title: 'A',
+        artist: 'Artista A',
+        album: 'X',
+        album_artist: null,
+        track_number: 1,
+        duration: 120,
+        duration_str: '2:00',
+        format: 'FLAC',
+        bitrate_kbps: null,
+        cover_url: null,
+        year: 2019,
+        genre: 'Jazz',
+        file_size: 1000000,
+      },
+      {
+        id: 'p1',
+        path: 'Disco\\p1.flac',
+        title: 'B',
+        artist: 'Artista B',
+        album: 'Y',
+        album_artist: null,
+        track_number: 1,
+        duration: 180,
+        duration_str: '3:00',
+        format: 'MP3',
+        bitrate_kbps: null,
+        cover_url: null,
+        year: 2021,
+        genre: 'Rock',
+        file_size: 2000000,
+      },
+    ];
+    const w = window as unknown as {
+      __TAURI_INTERNALS__: { invoke: (cmd: string) => Promise<unknown> };
+    };
+    const anterior = w.__TAURI_INTERNALS__.invoke;
+    w.__TAURI_INTERNALS__.invoke = async (cmd: string, args?: unknown) =>
+      cmd === 'get_cached_library' ? tracks : anterior(cmd, args);
+  });
+  await page.goto('/');
+  await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });
+  await page.getByRole('tab', { name: /Datos/ }).click();
+
+  const stats = page.locator('.estadisticas');
+  await expect(stats).toBeVisible();
+  await expect(stats.locator('.estadisticas-kpi')).toHaveCount(5);
+  await expect(stats.locator('.estadisticas-barra')).toHaveCount(2);
+  await expect(stats.locator('.estadisticas-decada')).toHaveCount(2);
+  await expect(stats.locator('.estadisticas-donut')).toBeVisible();
+});
+
 test('Ajustes → Sistema muestra la salud de la base y los registros', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });
@@ -778,13 +835,13 @@ test('cada tema usa sus propios iconos de navegacion', async ({ page }) => {
   await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });
 
   const iconos = await page.locator('.theme-nav-tab-icon').allTextContents();
-  expect(iconos).toEqual(['侍', '巻', '探', '列', '陣', '整']);
+  expect(iconos).toEqual(['侍', '巻', '探', '列', '陣', '陣', '整']);
   expect(await page.locator('.theme-nav').getAttribute('data-icon-style')).toBe('kanji');
 
   await page.getByRole('tab', { name: /Ajustes/ }).click();
   await page.getByRole('button', { name: /Swiss/ }).click();
   const iconosSwiss = await page.locator('.theme-nav-tab-icon').allTextContents();
-  expect(iconosSwiss).toEqual(['▦', '▤', '⌕', '☰', '▤', '⊞']);
+  expect(iconosSwiss).toEqual(['▦', '▤', '⌕', '☰', '▤', '▦', '⊞']);
   expect(await page.locator('.theme-nav').getAttribute('data-icon-style')).toBe('mono');
 });
 

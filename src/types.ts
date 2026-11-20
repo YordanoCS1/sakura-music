@@ -172,7 +172,7 @@ export interface ThemeOption {
   nombre: string;
   descripcion: string;
 }
-export type AppTab = 'home' | 'search' | 'library' | 'queue' | 'playlists' | 'settings';
+export type AppTab = 'home' | 'search' | 'library' | 'queue' | 'playlists' | 'stats' | 'settings';
 export type PlayerStyle = 'floating' | 'fixed' | 'mini';
 export type ViewMode =
   'folders' | 'grid' | 'table' | 'albums' | 'mosaic' | 'cds' | 'tilt' | 'glow' | 'portadas';
