@@ -8072,3 +8072,76 @@ html[data-theme-transition='space'] #theme-panel.panel-enter { animation:t-estud
 }
 .estudio-sleeve.is-activa .estudio-sleeve-etiqueta { background:var(--est-led); }
 @media (prefers-reduced-motion:reduce) { .estudio-sleeve-disco { animation:none !important; } }
+
+
+/* ======================================================================== */
+/* ESTUDIO · estantería de vinilos (portadas uniformes)                      */
+/* ======================================================================== */
+.estudio-estanteria {
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(172px,1fr));
+  gap:14px; padding:16px; overflow-y:auto;
+}
+.estudio-disco {
+  position:relative; display:flex; flex-direction:column; gap:8px;
+  padding:10px 10px 12px; border:1px solid #0a0d0f; border-radius:3px;
+  background:linear-gradient(180deg,#242b2f,#181d20);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06), 4px 5px 0 rgba(0,0,0,.4);
+  transition:transform 180ms ease, border-color 180ms ease;
+}
+.estudio-disco:hover { transform:translateY(-3px); }
+.estudio-disco.is-activo { border-color:var(--est-acento); box-shadow:inset 0 0 0 1px rgba(240,162,60,.4), 4px 5px 0 rgba(0,0,0,.4); }
+.estudio-disco-tapa { position:relative; width:100%; aspect-ratio:1; flex:none; }
+.estudio-disco-vinilo {
+  position:absolute; z-index:1; inset:5% -12% 5% 14%; border-radius:50%;
+  border:2px solid #060809;
+  background:repeating-radial-gradient(circle at 50% 50%,#1b2023 0 2px,#0b0e10 2px 4px);
+  box-shadow:0 6px 14px rgba(0,0,0,.7);
+  transition:transform 280ms ease;
+}
+.estudio-disco-vinilo i {
+  position:absolute; inset:38%; border-radius:50%;
+  background:radial-gradient(circle,#e8a447 0 16%,#f0a23c 17% 24%,#12161a 25%);
+  border:1px solid #060809;
+}
+.estudio-disco-funda {
+  position:absolute; z-index:2; inset:0; width:100%; height:100%; padding:0;
+  border:3px solid #080b0d; border-radius:2px; overflow:hidden;
+  background:#0f1315; cursor:pointer;
+  box-shadow:3px 4px 0 rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.08);
+  transition:transform 240ms cubic-bezier(.22,1,.36,1), box-shadow 240ms ease;
+}
+.estudio-disco-funda > img,
+.estudio-disco-funda > span:first-child {
+  display:block; width:100% !important; height:100% !important;
+  object-fit:cover; filter:saturate(1.3) contrast(1.06); font-size:42px;
+}
+.estudio-disco:hover .estudio-disco-funda {
+  transform:translate(-12px,-5px) rotate(-3deg);
+  box-shadow:8px 10px 0 rgba(0,0,0,.6);
+}
+.estudio-disco:hover .estudio-disco-vinilo { transform:translateX(10px) rotate(24deg); }
+.estudio-disco.is-activo .estudio-disco-funda { border-color:var(--est-acento); }
+.estudio-disco.is-activo .estudio-disco-vinilo { animation:vinilo-girar 7s linear infinite; }
+.estudio-disco-brillo { position:absolute; inset:0; pointer-events:none; background:linear-gradient(125deg,rgba(255,255,255,.16),transparent 45%); }
+.estudio-disco-num {
+  position:absolute; z-index:3; bottom:-6px; left:-6px; padding:3px 7px;
+  background:var(--est-acento); color:#15181a; font:800 9px 'JetBrains Mono',monospace;
+  border:1px solid #080b0d; transform:rotate(-6deg); box-shadow:2px 2px 0 rgba(0,0,0,.5);
+}
+.estudio-disco.is-activo .estudio-disco-num { background:var(--est-led); }
+.estudio-disco-led {
+  position:absolute; z-index:3; top:6px; right:6px; width:7px; height:7px;
+  border-radius:50%; background:#3a4136; border:1px solid #0a0d0f;
+}
+.estudio-disco.is-activo .estudio-disco-led { background:var(--est-led); box-shadow:0 0 8px var(--est-led); }
+.estudio-disco-copy { min-height:46px; }
+.estudio-disco-copy strong { display:block; font-size:11px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.estudio-disco-copy small { display:block; font-size:9px; color:var(--est-suave); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.estudio-disco-vu { display:flex; gap:2px; height:6px; margin-top:6px; }
+.estudio-disco-vu i { flex:1; background:#2b3a30; }
+.estudio-disco-vu i.is-on { background:#4f9a5e; }
+.estudio-disco-acc { display:flex; justify-content:center; }
+.estudio-disco-acc .theme-row-actions { gap:5px; }
+.estudio-disco-acc button { width:22px; height:22px; display:grid; place-items:center; padding:0; }
+.biblioteca-muy-grande .estudio-disco { content-visibility:auto; contain-intrinsic-size:auto 320px; }
+@media (prefers-reduced-motion:reduce) { .estudio-disco-vinilo { animation:none !important; } }

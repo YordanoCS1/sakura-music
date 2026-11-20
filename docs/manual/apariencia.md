@@ -174,7 +174,7 @@ metadatos abre con una cinta `第 01 話 · EDICIÓN DE METADATOS` y campos sobr
 papel blanco con borde negro.
 
 
-### Biblioteca de Estudio: mesa de mezcla
+### Biblioteca de Estudio: estantería de vinilos
 
 Cada pista es un **canal vertical** con número CH, LED de estado, tapa, controles
 rápidos (favorito, editar, borrar), perillas de EQ de 3 bandas, fader con escala
