@@ -8145,3 +8145,7 @@ html[data-theme-transition='space'] #theme-panel.panel-enter { animation:t-estud
 .estudio-disco-acc button { width:22px; height:22px; display:grid; place-items:center; padding:0; }
 .biblioteca-muy-grande .estudio-disco { content-visibility:auto; contain-intrinsic-size:auto 320px; }
 @media (prefers-reduced-motion:reduce) { .estudio-disco-vinilo { animation:none !important; } }
+
+
+.set-opcion { padding:7px 11px; border:1px solid var(--set-linea, rgba(120,100,90,.25)); border-radius:8px; background:var(--set-superficie, rgba(127,127,127,.06)); color:inherit; cursor:pointer; font-size:11px; }
+.set-opcion.is-active { background:var(--set-acento, #a8442f); border-color:var(--set-acento, #a8442f); color:#fff; }

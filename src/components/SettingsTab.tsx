@@ -50,6 +50,8 @@ interface SettingsTabProps {
   remoteEnabled: boolean;
   remoteIp: string;
   onToggleRemote: () => void;
+  concurrencia: number;
+  onSetConcurrencia: (n: number) => void;
   onAbrirGenerador: () => void;
   onBorrarTema: (id: string) => void;
   temasPersonalizadosIds: string[];
@@ -87,6 +89,8 @@ export default function SettingsTab(props: SettingsTabProps) {
     remoteEnabled,
     remoteIp,
     onToggleRemote,
+    concurrencia,
+    onSetConcurrencia,
     onAbrirGenerador,
     onBorrarTema,
     temasPersonalizadosIds,
@@ -463,6 +467,30 @@ export default function SettingsTab(props: SettingsTabProps) {
               Entrá a <b>http://{remoteIp}:17342</b> desde el celular en la misma red.
             </p>
           )}
+        </Tarjeta>
+        <Tarjeta
+          n="07b"
+          titulo="Descargas en paralelo"
+          desc="Cuántas canciones se bajan a la vez"
+          icono={Download}
+          ancha
+        >
+          <div className="set-actions">
+            {[1, 2, 3, 4].map((n) => (
+              <button
+                key={n}
+                type="button"
+                className={`set-opcion ${concurrencia === n ? 'is-active' : ''}`}
+                aria-pressed={concurrencia === n}
+                onClick={() => onSetConcurrencia(n)}
+              >
+                {n} {n === 1 ? 'descarga' : 'descargas'}
+              </button>
+            ))}
+          </div>
+          <p className="set-note">
+            Más descargas simultáneas son más rápidas, pero pueden saturar la conexión.
+          </p>
         </Tarjeta>
         <Tarjeta n="08" titulo="Motor nativo" desc="Tauri 2 + Rust" icono={Cpu} ancha>
           <dl className="set-specs">

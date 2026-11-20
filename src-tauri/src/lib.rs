@@ -97,6 +97,12 @@ fn cancel_download(manager: State<'_, Arc<DownloadManager>>, job_id: String) -> 
     manager.cancel(&job_id)
 }
 
+/// Ajusta cuántas descargas corren en paralelo (1..=4).
+#[tauri::command]
+fn set_download_concurrency(manager: State<'_, Arc<DownloadManager>>, max: usize) -> usize {
+    manager.set_max_concurrent(max)
+}
+
 #[tauri::command]
 fn cancel_all_downloads(manager: State<'_, Arc<DownloadManager>>) -> bool {
     manager.cancel_all();
@@ -809,6 +815,7 @@ pub fn run() {
             start_download,
             cancel_download,
             cancel_all_downloads,
+            set_download_concurrency,
             get_download_queue,
             save_download_queue,
             update_track_metadata,

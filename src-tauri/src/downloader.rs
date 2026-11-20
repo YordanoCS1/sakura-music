@@ -21,7 +21,7 @@ use std::sync::Arc;
 use serde::{Deserialize, Serialize};
 use tauri::Emitter;
 
-use crate::paths;
+use crate::{library_db, paths, scanner};
 
 /// Lee la salida de yt-dlp línea por línea sin exigir UTF-8 válido.
 /// En Windows los títulos pueden venir en otra codificación; reemplazamos
@@ -160,6 +160,14 @@ impl DownloadManager {
         inner.job_keys.insert(job_id.to_string(), key.clone());
         inner.active_keys.insert(key);
         true
+    }
+
+    /// Cambia cuántas descargas corren a la vez (1..=4).
+    pub fn set_max_concurrent(&self, max: usize) -> usize {
+        let mut inner = self.inner.lock();
+        inner.max_concurrent = max.clamp(1, 4);
+        self.cv.notify_all();
+        inner.max_concurrent
     }
 
     /// Espera un turno. Devuelve `false` si el trabajo se canceló mientras
@@ -683,6 +691,74 @@ fn find_downloaded_file(dir: &Path, url: &str) -> Option<String> {
     best.map(|(_, path)| path.to_string_lossy().to_string())
 }
 
+/// Archivo persistente de IDs ya descargados: evita bajar de nuevo una pista
+/// aunque se haya limpiado la cola.
+fn ruta_archive() -> PathBuf {
+    paths::ensure_data_dir().join("download_archive.txt")
+}
+
+fn ya_descargado(url: &str) -> bool {
+    let Some(id) = extract_video_id(url) else {
+        return false;
+    };
+    std::fs::read_to_string(ruta_archive())
+        .map(|contenido| contenido.lines().any(|linea| linea.contains(&id)))
+        .unwrap_or(false)
+}
+
+/// Traduce los errores típicos de yt-dlp a mensajes que se entienden.
+fn mensaje_error(detalle: &str) -> String {
+    let bajo = detalle.to_lowercase();
+    if bajo.contains("private video") || bajo.contains("this video is private") {
+        "El video es privado y no se puede descargar.".to_string()
+    } else if bajo.contains("video unavailable") || bajo.contains("unavailable") {
+        "El video no está disponible (borrado o restringido).".to_string()
+    } else if bajo.contains("sign in to confirm") || bajo.contains("not a bot") {
+        "YouTube pidió verificación de usuario. Probá más tarde.".to_string()
+    } else if bajo.contains("http error 429") || bajo.contains("too many requests") {
+        "YouTube limitó las peticiones. Esperá unos minutos.".to_string()
+    } else if bajo.contains("unsupported format") || bajo.contains("requested format") {
+        "No hay audio disponible en el formato elegido.".to_string()
+    } else if bajo.contains("temporary failure in name resolution")
+        || bajo.contains("connection refused")
+        || bajo.contains("network is unreachable")
+    {
+        "Sin conexión a internet.".to_string()
+    } else if bajo.contains("already exists") {
+        "El archivo ya existe y no se sobrescribió.".to_string()
+    } else {
+        format!("No se pudo descargar: {detalle}")
+    }
+}
+
+/// Intenta traer una portada HD del catálogo (iTunes primero). Si falla,
+/// yt-dlp sigue usando la miniatura del video.
+fn portada_hd(titulo: &str, artista: &str, job_id: &str) -> Option<PathBuf> {
+    let consulta = if artista.is_empty() || artista == "Procesando metadatos..." {
+        titulo.to_string()
+    } else {
+        format!("{artista} {titulo}")
+    };
+    let resultados = tauri::async_runtime::block_on(crate::catalog::search_catalog_songs(
+        "itunes".to_string(),
+        consulta,
+    ))
+    .ok()?;
+    let url = resultados
+        .iter()
+        .find_map(|candidato| candidato.cover_url.clone())?;
+    let bytes = tauri::async_runtime::block_on(async {
+        let cliente = reqwest::Client::builder()
+            .timeout(std::time::Duration::from_secs(5))
+            .build()
+            .ok()?;
+        cliente.get(url).send().await.ok()?.bytes().await.ok()
+    })?;
+    let destino = paths::covers_dir().join(format!("temp_dl_{job_id}.jpg"));
+    std::fs::write(&destino, &bytes).ok()?;
+    Some(destino)
+}
+
 fn emit_progress(
     app: &tauri::AppHandle,
     id: &str,
@@ -716,6 +792,11 @@ pub fn execute_download(
     title: Option<String>,
     artist: Option<String>,
 ) -> Result<(), String> {
+    if ya_descargado(&url) {
+        return Err(
+            "Ya descargaste esta pista antes (está en el archivo de descargas).".to_string(),
+        );
+    }
     if !manager.register_job(&job_id, &url, &output_folder, &format_opt) {
         return Err("Ya existe una descarga activa para esta pista y carpeta.".to_string());
     }
@@ -840,6 +921,20 @@ fn run_download(
     let plantilla = nombre_descarga(out_dir, title.as_deref(), artist.as_deref());
     let out_template = out_dir.join(&plantilla).to_string_lossy().to_string();
 
+    if let Some(archivo) = ruta_archive().to_str() {
+        cmd.args(["--download-archive", archivo]);
+    }
+    let portada = portada_hd(
+        title.as_deref().unwrap_or(""),
+        artist.as_deref().unwrap_or(""),
+        job_id,
+    );
+    if let Some(portada) = &portada
+        && let Some(ruta) = portada.to_str()
+    {
+        cmd.args(["--thumbnail", ruta]);
+    }
+
     cmd.arg(url);
     cmd.args(["-o", &out_template]);
     cmd.arg("--extract-audio");
@@ -892,7 +987,7 @@ fn run_download(
                 0.0,
                 "--",
                 "--",
-                &format!("error al iniciar: {}", err),
+                &mensaje_error(&format!("al iniciar: {err}")),
                 None,
             );
             return;
@@ -930,6 +1025,9 @@ fn run_download(
     }
 
     let status = child.wait();
+    if let Some(portada) = &portada {
+        let _ = std::fs::remove_file(portada);
+    }
     manager.unregister_pid(job_id);
     let stderr_text = stderr_thread.join().unwrap_or_default();
 
@@ -941,6 +1039,12 @@ fn run_download(
     match status {
         Ok(status) if status.success() => {
             let file_path = final_path.or_else(|| find_downloaded_file(out_dir, url));
+            if let Some(ruta) = &file_path
+                && let Some(track) = scanner::scan_audio_file(Path::new(ruta))
+                && library_db::upsert_track(&track).is_ok()
+            {
+                let _ = app.emit("library-track-added", track);
+            }
             emit_progress(app, job_id, 100.0, "--", "00:00", "completado", file_path);
         }
         _ => {
@@ -952,9 +1056,9 @@ fn run_download(
                 .trim()
                 .to_string();
             let status = if detail.is_empty() {
-                "error al procesar".to_string()
+                "No se pudo procesar la descarga.".to_string()
             } else {
-                format!("error: {}", detail)
+                mensaje_error(&detail)
             };
             emit_progress(app, job_id, 0.0, "--", "--", &status, None);
         }
@@ -964,6 +1068,23 @@ fn run_download(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn errores_de_yt_dlp_se_traducen() {
+        assert_eq!(
+            mensaje_error("ERROR: Private video"),
+            "El video es privado y no se puede descargar."
+        );
+        assert_eq!(
+            mensaje_error("Sign in to confirm you're not a bot"),
+            "YouTube pidió verificación de usuario. Probá más tarde."
+        );
+        assert_eq!(
+            mensaje_error("Temporary failure in name resolution"),
+            "Sin conexión a internet."
+        );
+        assert!(mensaje_error("algo raro").starts_with("No se pudo descargar:"));
+    }
 
     #[test]
     fn nombres_de_descarga_limpios_y_con_sufijo() {

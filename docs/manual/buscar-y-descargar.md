@@ -104,3 +104,12 @@ según el formato elegido), sin el ID de YouTube. Si ya existe un archivo con
 ese nombre, se agrega `(2)`, `(3)` y así sucesivamente: las dos canciones se
 descargan igual, ninguna se saltea. La única excepción es la **misma URL** dos
 veces en la cola: se rechaza con un aviso para no duplicar el archivo.
+
+
+## Mejoras del flujo de descarga
+
+- **No se repiten**: un archivo `download_archive.txt` guarda los IDs ya bajados, así que aunque limpies la cola o reinicies, la misma URL no se descarga dos veces.
+- **Se indexan solas**: al terminar, la pista se agrega a la biblioteca y aparece sin escaneo manual (evento `library-track-added`).
+- **Portada HD**: antes de descargar se busca carátula en iTunes; si hay, se usa en vez de la miniatura de YouTube. Si falla, se usa la de siempre.
+- **Errores claros**: en vez del texto crudo de yt-dlp, la cola dice cosas como "El video es privado", "Sin conexión a internet" o "YouTube pidió verificación".
+- **Paralelismo configurable**: Ajustes → Sistema → *Descargas en paralelo* permite elegir entre 1 y 4.

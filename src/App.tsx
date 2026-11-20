@@ -96,6 +96,10 @@ const TEMAS_DISPONIBLES: ThemeOption[] = [
 export default function App() {
   const [activeTab, setActiveTabRaw] = useState<AppTab>('library');
   const [paletaAbierta, setPaletaAbierta] = useState(false);
+  const [concurrencia, setConcurrencia] = useState(() => {
+    const guardado = Number(localStorage.getItem('sakura_download_concurrency') ?? 2);
+    return Number.isFinite(guardado) ? Math.min(4, Math.max(1, guardado)) : 2;
+  });
   const [generadorAbierto, setGeneradorAbierto] = useState(false);
   const libraryScrollRef = useRef<HTMLDivElement>(null);
   const [customThemes, setCustomThemes] = useState(() => temasPersonalizados());
@@ -286,6 +290,31 @@ export default function App() {
     setDownloadFolderError(null);
   };
   const playbackQueueRef = useRef<ScannedTrack[]>([]);
+  useEffect(() => {
+    let activo = true;
+    let parar: (() => void) | undefined;
+    listen<ScannedTrack>('library-track-added', ({ payload }) => {
+      setTracks((actuales) =>
+        actuales.some((pista) => pista.id === payload.id) ? actuales : [payload, ...actuales],
+      );
+    })
+      .then((stopListening) => {
+        if (activo) parar = stopListening;
+        else stopListening();
+      })
+      .catch((error) => console.error('No se pudo escuchar pistas descargadas:', error));
+    return () => {
+      activo = false;
+      parar?.();
+    };
+  }, []);
+
+  useEffect(() => {
+    invoke('set_download_concurrency', { max: concurrencia }).catch((error) =>
+      console.error('No se pudo ajustar la concurrencia:', error),
+    );
+  }, [concurrencia]);
+
   const {
     audioRef,
     isPlaying,
@@ -1482,6 +1511,12 @@ export default function App() {
                 remoteEnabled={controlRemoto.enabled}
                 remoteIp={controlRemoto.ip}
                 onToggleRemote={controlRemoto.alternar}
+                concurrencia={concurrencia}
+                onSetConcurrencia={(n) => {
+                  const valor = Math.min(4, Math.max(1, n));
+                  localStorage.setItem('sakura_download_concurrency', String(valor));
+                  setConcurrencia(valor);
+                }}
                 onSetTheme={handleSetTheme}
                 accentGradient={worldStyle.accentGradient}
                 accentBadge={worldStyle.accentBadge}

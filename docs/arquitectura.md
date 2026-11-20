@@ -35,8 +35,8 @@ flowchart TB
     end
 
     subgraph IPC["IPC Tauri"]
-        CMD["invoke(): 46 comandos<br/>(43 lib.rs + 3 catalog.rs)"]
-        EVT["6 eventos de progreso y resultados"]
+        CMD["invoke(): 47 comandos<br/>(44 lib.rs + 3 catalog.rs)"]
+        EVT["7 eventos de progreso y resultados"]
     end
 
     subgraph CORE["src-tauri/src/ · backend Rust"]

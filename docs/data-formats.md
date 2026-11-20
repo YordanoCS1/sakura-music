@@ -129,6 +129,13 @@ Array JSON con una foto de la cola. Se escribe de forma atómica (temporal + `re
 - Al arrancar, los estados activos se reconcilian como `interrumpida`: `yt-dlp` no retoma el mismo punto, así que el frontend relanza la fila con el mismo `id`, destino y formato. El comando incluye `--continue`, que permite reutilizar el archivo parcial cuando el servidor lo soporta.
 - `terminada`, `fallida`, `cancelada` se conservan tal cual hasta que el usuario limpie la cola.
 
+## `download_archive.txt`
+
+Una línea por video (`youtube <id>`) escrita por `yt-dlp --download-archive`.
+Evita volver a bajar una pista aunque se limpien las terminadas de la cola o se
+reinicie la app. `start_download` chequea este archivo antes de encolar y
+devuelve un aviso si el video ya está descargado.
+
 ## `covers/`
 
 Carátulas extraídas de los tags o de archivos sueltos. El nombre se deriva de un hash del contenido y la extensión se decide por la firma real de los bytes (JPG, PNG, WebP, GIF, BMP o TIFF), no por lo que diga el tag. Las temporales `temp_*` se borran al abrir la app y antes de guardar una nueva.
@@ -159,5 +166,6 @@ Ubicación preferida para `yt-dlp.exe` y `ffmpeg.exe`. Si no están ahí, se bus
 | `sakura_temas_personalizados` | Array JSON de temas importados o generados en runtime |
 | `sakura_current_folder` | Última carpeta de biblioteca usada |
 | `sakura_download_folder` | Última carpeta de descarga elegida |
+| `sakura_download_concurrency` | Descargas en paralelo (1–4, por defecto 2) |
 
 `sakura.log` redacta tokens y claves (`token=`, `api_key=`, `password=`) antes de escribir, porque es un archivo de texto plano. Los efectos (`glass_*`, partículas, resplandor) se escriben al cambiarlos. La carpeta de biblioteca se guarda además en `library_state.root_path` para que el backend sepa qué vigilar apenas arranca.

@@ -1,6 +1,6 @@
 # Contrato IPC (frontend ↔ Rust)
 
-Toda la comunicación entre React y el núcleo Rust pasa por `invoke()` y por eventos de Tauri. Este documento es la lista canonical de los **46 comandos** y los **6 eventos**. Si agregás uno, actualizá este archivo en el mismo commit.
+Toda la comunicación entre React y el núcleo Rust pasa por `invoke()` y por eventos de Tauri. Este documento es la lista canonical de los **47 comandos** y los **7 eventos**. Si agregás uno, actualizá este archivo en el mismo commit.
 
 Los tipos (`ScannedTrack`, `PersistedDownload`, etc.) están en [`src/types.ts`](../src/types.ts) y su contrato Rust en los módulos indicados. Los formatos persistidos están en [data-formats.md](data-formats.md).
 
@@ -60,6 +60,7 @@ Fuentes: `itunes`, `deezer` y `musicbrainz`. Estas consultas viven en Rust porqu
 | `start_download` | `job_id`, `url`, `format`, `output_dir?` | `boolean` | `lib.rs` |
 | `cancel_download` | `job_id: string` | `boolean` | `lib.rs` |
 | `cancel_all_downloads` | — | `boolean` | `lib.rs` |
+| `set_download_concurrency` | `max: number` | `number` (1–4) | `lib.rs` |
 | `get_download_queue` | — | `PersistedDownload[]` | `lib.rs` |
 | `save_download_queue` | `items: PersistedDownload[]` | `boolean` | `lib.rs` |
 | `tools_status` | — | `ToolStatus[]` | `lib.rs` |
@@ -113,15 +114,16 @@ sobrescribe un binario que ya esté en el PATH.
 | `playlist-item` | `{ request_id, title, uploader, item: OnlineSearchResult }` | Cada pista resuelta al abrir una playlist con `--flat-playlist`. |
 | `download-progress` | `{ id, progress, speed, eta, status, file_path? }` | Progreso de una descarga en curso (porcentaje, velocidad, ETA y ruta final). |
 | `tools-download-progress` | `{ tool, descargado, total, estado }` | Bytes descargados al instalar yt-dlp o FFmpeg; `estado` es `descargando` o `listo`. |
+| `library-track-added` | `ScannedTrack` | Una descarga terminó y se indexó sola en la biblioteca. |
 | `remote-command` | `{ action, ... }` | Orden del servidor HTTP local: `play_pause`, `pause`, `next`, `previous`, `play_track`, `set_volume`, `seek`. |
 
 El frontend filtra `library-changed` comparando la ruta con la carpeta activa, para no recargar si cambia otra biblioteca. Los eventos de búsqueda se descartan si su `request_id` no corresponde a la petición vigente.
 
-Además de estos eventos, los plugins `updater` y `process` tienen sus propios canales (`plugin:updater|*`, `plugin:process|*`) y se consumen con las APIs `@tauri-apps/plugin-updater` y `@tauri-apps/plugin-process`, no con `invoke()` directo. Por eso no cuentan en la tabla de 46 comandos. La búsqueda de actualizaciones y el reinicio viven en `SystemPanel.tsx`.
+Además de estos eventos, los plugins `updater` y `process` tienen sus propios canales (`plugin:updater|*`, `plugin:process|*`) y se consumen con las APIs `@tauri-apps/plugin-updater` y `@tauri-apps/plugin-process`, no con `invoke()` directo. Por eso no cuentan en la tabla de 47 comandos. La búsqueda de actualizaciones y el reinicio viven en `SystemPanel.tsx`.
 
 ## Registro de comandos
 
-Los 46 comandos están registrados en el `invoke_handler` de `lib.rs` (43 definidos ahí y 3 en `catalog.rs`). Si agregás uno nuevo:
+Los 47 comandos están registrados en el `invoke_handler` de `lib.rs` (44 definidos ahí y 3 en `catalog.rs`). Si agregás uno nuevo:
 
 1. Definilo con `#[tauri::command]` y devolvé `Result<_, String>` cuando pueda fallar.
 2. Registralo en `generate_handler!`.
