@@ -7140,3 +7140,24 @@ html[data-theme-transition='kawaii'] #theme-panel.panel-enter { animation: t-kaw
   .np-panel-body { grid-template-columns:1fr; }
   .np-panel-art-col { max-width:300px; margin:0 auto; }
 }
+
+
+/* ========================================================= */
+/* HANDOFF SPLASH -> NAV (glifo compartido)                    */
+/* ========================================================= */
+html.splash-handoff .theme-nav-glifo,
+html.splash-handoff .zen-topnav-brand-mark { view-transition-name: sakura-glifo; }
+
+html.splash-handoff .theme-nav-name,
+html.splash-handoff .zen-topnav-brand-copy { animation: nav-aparecer 520ms 180ms ease both; }
+@keyframes nav-aparecer { from { opacity:0; transform:translateX(-6px); } }
+
+html.splash-handoff .theme-nav-tabs,
+html.splash-handoff .zen-topnav-tabs,
+html.splash-handoff .main-scroll-region,
+html.splash-handoff .player-dock { animation: contenido-aparecer 460ms 120ms ease both; }
+@keyframes contenido-aparecer { from { opacity:0; transform:translateY(10px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  html.splash-handoff *, html.splash-handoff *::before, html.splash-handoff *::after { animation:none !important; }
+}

@@ -123,6 +123,7 @@
         border: 1px solid rgba(255,255,255,.07);
       }
       .splash-label {
+        view-transition-name: sakura-glifo;
         position: relative; z-index: 1;
         width: 74px; height: 74px; border-radius: var(--sp-radio);
         background: linear-gradient(135deg, var(--sp-accent), var(--sp-accent2));
@@ -194,6 +195,18 @@
       html[data-splash='moonlit'] .splash-label,
       html[data-splash='swiss'] .splash-label,
       html[data-splash='hanabi'] .splash-label { animation: none; }
+
+      /* Handoff splash -> nav: solo se anima el glifo, sin crossfade de pagina */
+      ::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+      ::view-transition-old(sakura-glifo), ::view-transition-new(sakura-glifo) {
+        animation-duration: 720ms;
+        animation-timing-function: cubic-bezier(.22, 1, .36, 1);
+        mix-blend-mode: normal;
+      }
+      ::view-transition-old(sakura-glifo) { animation-name: glifo-salir; }
+      ::view-transition-new(sakura-glifo) { animation-name: glifo-entrar; }
+      @keyframes glifo-salir { to { opacity: 0; transform: scale(.6); } }
+      @keyframes glifo-entrar { from { opacity: 0; transform: scale(1.4); } }
 
       @keyframes sakura-spin { to { transform: rotate(360deg); } }
       @keyframes sakura-counter { to { transform: rotate(-360deg); } }

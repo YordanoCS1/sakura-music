@@ -14,17 +14,42 @@ root.render(
   </React.StrictMode>,
 );
 
-// Oculta el splash de index.html. La animación de entrada la hace CSS, así
-// que no hace falta añadir clases al body desde JavaScript.
+// Oculta el splash de index.html. Si el navegador soporta View Transitions,
+// el glifo del splash "vuela" hasta el logo de la nav en un solo movimiento.
 const splash = document.getElementById('sakura-splash');
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const minSplashMs = reduceMotion ? 250 : 1100;
 const startedAt = performance.now();
 
 function dismissSplash() {
-  if (splash) {
+  if (!splash) return;
+
+  const finalizar = () => {
+    splash.remove();
+    document.documentElement.classList.remove('splash-handoff');
+  };
+
+  const conTransiciones = typeof document.startViewTransition === 'function' && !reduceMotion;
+
+  if (!conTransiciones) {
     splash.classList.add('is-hidden');
-    window.setTimeout(() => splash.remove(), reduceMotion ? 200 : 500);
+    window.setTimeout(finalizar, reduceMotion ? 200 : 500);
+    return;
+  }
+
+  try {
+    const transicion = document.startViewTransition(() => {
+      splash.remove();
+      // En el estado "nuevo", el receptor del glifo es el logo de la nav.
+      document.documentElement.classList.add('splash-handoff');
+    });
+    void transicion.finished.finally(() => {
+      document.documentElement.classList.remove('splash-handoff');
+    });
+  } catch {
+    // Si falla (p. ej. nombre duplicado), caemos al fundido simple.
+    splash.classList.add('is-hidden');
+    window.setTimeout(finalizar, 500);
   }
 }
 

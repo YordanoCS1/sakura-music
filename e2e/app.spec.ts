@@ -506,6 +506,27 @@ test('cada tema usa sus propios iconos de navegacion', async ({ page }) => {
   expect(await page.locator('.theme-nav').getAttribute('data-icon-style')).toBe('mono');
 });
 
+test('el glifo del splash hace handoff continuo con la navegacion', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('sakura_theme', 'shonen'));
+  await page.goto('/');
+
+  await expect(page.locator('#sakura-splash')).toBeVisible();
+  const nombre = await page
+    .locator('.splash-label')
+    .evaluate((el) => getComputedStyle(el).viewTransitionName);
+  expect(nombre).toBe('sakura-glifo');
+
+  await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });
+  await expect(page.locator('.theme-nav-glifo')).toHaveText('⚡');
+
+  // La clase de handoff se limpia al terminar la transición.
+  await expect
+    .poll(async () =>
+      page.evaluate(() => document.documentElement.classList.contains('splash-handoff')),
+    )
+    .toBe(false);
+});
+
 test('el splash de arranque adopta el tema guardado', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('sakura_theme', 'shonen'));
   await page.goto('/');
