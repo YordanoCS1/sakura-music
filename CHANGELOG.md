@@ -44,6 +44,7 @@ Todos los cambios destacables de este proyecto se registran acá. El formato sig
 - **`npm run pipeline`** como comando único para todo lo que corre el CI: 58 unitarios Vitest, 32 E2E Playwright y 43 tests Rust.
 
 ### Cambiado
+- Los archivos descargados se nombran sólo con el título (`Canción.opus`), sin el `[IDdeYouTube]` que se agregaba antes.
 - La biblioteca de **Estudio** pasó de una fila de datos a una **mesa de mezcla**: canales verticales con EQ de 3 bandas, fader con escala dB, medidor VU, pan, transporte y bus master, con las acciones rápidas visibles en cada canal.
 - El tema por defecto M3 Zen fue rediseñado como Estudio, con vistas propias de consola de mezcla; dejó de ser el tema genérico. Mantiene el id interno `space` y `data-theme="space"` fijo, y ahora también aplica `data-skin="space"`: los 14 temas oficiales son propios y la vista genérica queda sólo como fallback para temas importados.
 - La identidad de los temas dejó de ser sólo de paleta: navegación, tarjetas, reproductor, tipografía y sombras cambian según el tema; ~200 superficies hardcodeadas se tokenizaron para que los 14 temas apliquen de verdad. Sumi-e incorpora textura washi, sellos hanko, ensō y trazos de pincel; los 14 temas oficiales suman estructura completa, con el selector base fijo en `data-theme='space'` y `data-skin` para cada uno.

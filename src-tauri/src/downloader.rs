@@ -773,7 +773,7 @@ fn run_download(
     let _ = std::fs::create_dir_all(out_dir);
 
     let out_template = out_dir
-        .join("%(title)s [%(id)s].%(ext)s")
+        .join("%(title)s.%(ext)s")
         .to_string_lossy()
         .to_string();
 
