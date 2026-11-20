@@ -95,3 +95,12 @@ Desde cualquier pestaña podés apretar `Ctrl+K` / `⌘K` para abrir la **paleta
 comandos**: navegación, cambio de tema, reproducción y búsqueda de pistas con
 **↑↓**, **↵** y **esc**. Está disponible en los 14 temas y se detalla en
 [apariencia.md](apariencia.md).
+
+
+## Cómo se nombran los archivos
+
+Las descargas se guardan como `Artista - Título.opus` (o `.flac`/`.m4a`/`.mp3`
+según el formato elegido), sin el ID de YouTube. Si ya existe un archivo con
+ese nombre, se agrega `(2)`, `(3)` y así sucesivamente: las dos canciones se
+descargan igual, ninguna se saltea. La única excepción es la **misma URL** dos
+veces en la cola: se rechaza con un aviso para no duplicar el archivo.

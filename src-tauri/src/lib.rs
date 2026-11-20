@@ -53,6 +53,7 @@ fn search_online(
 }
 
 #[tauri::command]
+#[allow(clippy::too_many_arguments)]
 fn start_download(
     app: tauri::AppHandle,
     manager: State<'_, Arc<DownloadManager>>,
@@ -60,8 +61,12 @@ fn start_download(
     url: String,
     format: String,
     output_dir: Option<String>,
+    title: Option<String>,
+    artist: Option<String>,
 ) -> Result<bool, String> {
     val::texto(&job_id, 64, "Identificador de descarga")?;
+    val::texto_opcional(&title, 200, "Título")?;
+    val::texto_opcional(&artist, 200, "Artista")?;
     val::texto(&url, 2048, "URL")?;
     val::texto(&format, 64, "Formato")?;
     if let Some(dir) = &output_dir {
@@ -74,7 +79,16 @@ fn start_download(
             .unwrap_or_else(|_| ".".to_string())
     });
 
-    downloader::execute_download(app, Arc::clone(manager.inner()), job_id, url, format, out)?;
+    downloader::execute_download(
+        app,
+        Arc::clone(manager.inner()),
+        job_id,
+        url,
+        format,
+        out,
+        title,
+        artist,
+    )?;
     Ok(true)
 }
 

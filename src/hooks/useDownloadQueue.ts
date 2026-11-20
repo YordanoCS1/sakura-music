@@ -149,6 +149,8 @@ export function useDownloadQueue({
         url,
         format: downloadFormat,
         outputDir: destFolder,
+        title,
+        artist,
       });
     } catch (err) {
       console.error('Error al iniciar descarga:', err);

@@ -705,6 +705,7 @@ fn emit_progress(
     );
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn execute_download(
     app: tauri::AppHandle,
     manager: Arc<DownloadManager>,
@@ -712,6 +713,8 @@ pub fn execute_download(
     url: String,
     format_opt: String,
     output_folder: String,
+    title: Option<String>,
+    artist: Option<String>,
 ) -> Result<(), String> {
     if !manager.register_job(&job_id, &url, &output_folder, &format_opt) {
         return Err("Ya existe una descarga activa para esta pista y carpeta.".to_string());
@@ -723,7 +726,16 @@ pub fn execute_download(
             return;
         }
 
-        run_download(&app, &manager, &job_id, &url, &format_opt, &output_folder);
+        run_download(
+            &app,
+            &manager,
+            &job_id,
+            &url,
+            &format_opt,
+            &output_folder,
+            title,
+            artist,
+        );
 
         manager.release();
         manager.finish(&job_id);
@@ -731,6 +743,57 @@ pub fn execute_download(
     Ok(())
 }
 
+/// Arma `Artista - Título` (o sólo `Título`) limpiando caracteres de Windows.
+/// Si el nombre está vacío o viene del fallback de enlaces, dejamos que yt-dlp
+/// use el título real de sus metadatos con `%(title)s`.
+fn nombre_descarga(out_dir: &Path, title: Option<&str>, artist: Option<&str>) -> String {
+    let limpiar = |valor: &str| -> String {
+        let temporal: String = valor
+            .chars()
+            .map(|c| {
+                if matches!(c, '<' | '>' | ':' | '"' | '/' | '\\' | '|' | '?' | '*') {
+                    '_'
+                } else {
+                    c
+                }
+            })
+            .collect();
+        temporal.split_whitespace().collect::<Vec<_>>().join(" ")
+    };
+    let titulo = title.map(limpiar).unwrap_or_default().trim().to_string();
+    if titulo.is_empty() || titulo == "Enlace Web" {
+        return "%(title)s.%(ext)s".to_string();
+    }
+    let artista = artist.map(limpiar).unwrap_or_default().trim().to_string();
+    let artista_valido =
+        !artista.is_empty() && artista != "Procesando metadatos..." && artista.len() < 120;
+    let base = if artista_valido {
+        format!("{artista} - {titulo}")
+    } else {
+        titulo
+    };
+    let base: String = base.chars().take(140).collect();
+    let base = base.trim_end_matches(['.', ' ']).to_string();
+    // Buscamos el primer sufijo libre para no sobrescribir ni saltear.
+    let extensiones = ["opus", "flac", "m4a", "mp3", "webm"];
+    let existe = |nombre: &str| {
+        extensiones
+            .iter()
+            .any(|ext| out_dir.join(format!("{nombre}.{ext}")).exists())
+    };
+    if !existe(&base) {
+        return format!("{base}.%(ext)s");
+    }
+    for intento in 2..=99 {
+        let candidato = format!("{base} ({intento})");
+        if !existe(&candidato) {
+            return format!("{candidato}.%(ext)s");
+        }
+    }
+    format!("{base} (%Y%m%d%H%M%S).%(ext)s")
+}
+
+#[allow(clippy::too_many_arguments)]
 fn run_download(
     app: &tauri::AppHandle,
     manager: &DownloadManager,
@@ -738,6 +801,8 @@ fn run_download(
     url: &str,
     format_opt: &str,
     output_folder: &str,
+    title: Option<String>,
+    artist: Option<String>,
 ) {
     let ytdlp = match find_ytdlp_binary() {
         Some(path) => path,
@@ -772,10 +837,8 @@ fn run_download(
     let out_dir = Path::new(output_folder);
     let _ = std::fs::create_dir_all(out_dir);
 
-    let out_template = out_dir
-        .join("%(title)s.%(ext)s")
-        .to_string_lossy()
-        .to_string();
+    let plantilla = nombre_descarga(out_dir, title.as_deref(), artist.as_deref());
+    let out_template = out_dir.join(&plantilla).to_string_lossy().to_string();
 
     cmd.arg(url);
     cmd.args(["-o", &out_template]);
@@ -901,6 +964,50 @@ fn run_download(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn nombres_de_descarga_limpios_y_con_sufijo() {
+        let dir = std::env::current_dir()
+            .unwrap()
+            .join("target")
+            .join("test-tmp")
+            .join(format!("sakura-nombres-{}", std::process::id()));
+        let _ = std::fs::create_dir_all(&dir);
+        assert_eq!(
+            nombre_descarga(&dir, Some("Gurenge"), Some("LiSA")),
+            "LiSA - Gurenge.%(ext)s"
+        );
+        std::fs::write(dir.join("LiSA - Gurenge.opus"), b"x").unwrap();
+        assert_eq!(
+            nombre_descarga(&dir, Some("Gurenge"), Some("LiSA")),
+            "LiSA - Gurenge (2).%(ext)s"
+        );
+        std::fs::write(dir.join("LiSA - Gurenge (2).flac"), b"x").unwrap();
+        assert_eq!(
+            nombre_descarga(&dir, Some("Gurenge"), Some("LiSA")),
+            "LiSA - Gurenge (3).%(ext)s"
+        );
+        let _ = std::fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn nombres_sanitizan_y_ignoran_placeholders() {
+        let dir = std::env::current_dir()
+            .unwrap()
+            .join("target")
+            .join("test-tmp")
+            .join(format!("sakura-nombres2-{}", std::process::id()));
+        let _ = std::fs::create_dir_all(&dir);
+        assert_eq!(
+            nombre_descarga(&dir, Some("A/B:C?"), Some("Procesando metadatos...")),
+            "A_B_C_.%(ext)s"
+        );
+        assert_eq!(
+            nombre_descarga(&dir, Some("Enlace Web"), Some("Canal")),
+            "%(title)s.%(ext)s"
+        );
+        let _ = std::fs::remove_dir_all(dir);
+    }
 
     #[test]
     fn lee_lineas_con_bytes_no_utf8() {
