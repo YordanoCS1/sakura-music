@@ -872,14 +872,27 @@ export default function ThemeLibrary({
                   </div>
                   <div className="estudio-strip-acc">{acciones(track)}</div>
 
-                  <button
-                    type="button"
-                    className="estudio-strip-tapa"
-                    onClick={() => onPlayTrack(track)}
-                    aria-label={`Reproducir ${track.title}`}
+                  <div
+                    className={`estudio-sleeve ${
+                      activeTrack?.id === track.id ? 'is-activa' : ''
+                    } ${isPlaying && activeTrack?.id === track.id ? 'is-girando' : ''}`}
                   >
-                    {portadaDe(track)}
-                  </button>
+                    <span className="estudio-sleeve-disco" aria-hidden="true">
+                      <i />
+                    </span>
+                    <button
+                      type="button"
+                      className="estudio-strip-tapa"
+                      onClick={() => onPlayTrack(track)}
+                      aria-label={`Reproducir ${track.title}`}
+                      title={track.title}
+                    >
+                      {portadaDe(track)}
+                    </button>
+                    <span className="estudio-sleeve-etiqueta" aria-hidden="true">
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                  </div>
 
                   <div className="estudio-strip-info">
                     <strong title={track.title}>{track.title}</strong>
