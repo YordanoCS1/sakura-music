@@ -3,6 +3,19 @@ use std::collections::{HashMap, HashSet};
 use std::io::{BufRead, BufReader};
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
+/// En Windows los procesos hijos sin consola propia abren una ventana CMD
+/// aunque la app sea de escritorio sin terminal. CREATE_NO_WINDOW lo evita.
+fn nueva_command<S: AsRef<std::ffi::OsStr>>(programa: S) -> Command {
+    let mut cmd = std::process::Command::new(programa);
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        const CREATE_NO_WINDOW: u32 = 0x0800_0000;
+        cmd.creation_flags(CREATE_NO_WINDOW);
+    }
+    cmd
+}
+
 use std::sync::Arc;
 
 use serde::{Deserialize, Serialize};
@@ -233,7 +246,7 @@ impl DownloadManager {
 
 #[cfg(windows)]
 fn kill_pid(pid: u32) {
-    let _ = Command::new("taskkill")
+    let _ = nueva_command("taskkill")
         .args(["/PID", &pid.to_string(), "/T", "/F"])
         .stdout(Stdio::null())
         .stderr(Stdio::null())
@@ -242,7 +255,7 @@ fn kill_pid(pid: u32) {
 
 #[cfg(not(windows))]
 fn kill_pid(pid: u32) {
-    let _ = Command::new("kill")
+    let _ = nueva_command("kill")
         .args(["-9", &pid.to_string()])
         .stdout(Stdio::null())
         .stderr(Stdio::null())
@@ -251,7 +264,7 @@ fn kill_pid(pid: u32) {
 
 #[cfg(windows)]
 fn which_binary(name: &str) -> Option<PathBuf> {
-    let output = Command::new("where.exe").arg(name).output().ok()?;
+    let output = nueva_command("where.exe").arg(name).output().ok()?;
     if !output.status.success() {
         return None;
     }
@@ -265,7 +278,7 @@ fn which_binary(name: &str) -> Option<PathBuf> {
 
 #[cfg(not(windows))]
 fn which_binary(name: &str) -> Option<PathBuf> {
-    let output = Command::new("which").arg(name).output().ok()?;
+    let output = nueva_command("which").arg(name).output().ok()?;
     if !output.status.success() {
         return None;
     }
@@ -418,7 +431,7 @@ pub fn search_youtube(
         format!("ytsearch10:{}", query)
     };
 
-    let mut cmd = Command::new(ytdlp);
+    let mut cmd = nueva_command(ytdlp);
     configure_ytdlp_temp_dir(&mut cmd)?;
     cmd.args([
         "--flat-playlist",
@@ -496,7 +509,7 @@ pub fn resolve_playlist(
         "yt-dlp no encontrado. Instalalo desde Ajustes > Herramientas de descarga.".to_string()
     })?;
 
-    let mut cmd = Command::new(ytdlp);
+    let mut cmd = nueva_command(ytdlp);
     configure_ytdlp_temp_dir(&mut cmd)
         .map_err(|error| format!("Error al resolver playlist: {}", error))?;
     cmd.args([
@@ -742,7 +755,7 @@ fn run_download(
         }
     };
 
-    let mut cmd = Command::new(ytdlp);
+    let mut cmd = nueva_command(ytdlp);
     if let Err(error) = configure_ytdlp_temp_dir(&mut cmd) {
         emit_progress(
             app,

@@ -62,6 +62,7 @@ Todos los cambios destacables de este proyecto se registran acá. El formato sig
 - Las galerías de diseño decorativas de Ajustes (`SakuraDesignGallery`, `LibraryDesignGallery` y `LibraryConceptsGallery`) y su CSS (~830 líneas).
 
 ### Corregido
+- Las descargas ya no abren una ventana CMD: los procesos yt-dlp/	askkill/where.exe se lanzan con CREATE_NO_WINDOW en Windows.
 - Comentarios en inglés, obsoletos o huérfanos dejados por la limpieza anterior.
 - Dependencias de desarrollo obsoletas y el `@ts-expect-error` de `vite.config.ts` (ya está `@types/node`).
 - El doc de `paths.rs` describía `app_local_data_dir` cuando el código usa `.tauri_data` dentro del directorio de trabajo.
