@@ -15,7 +15,7 @@ const ICONOS = {
 };
 
 /**
- * Estado vacío con la identidad M3 Zen: una sola marca, jerarquía clara y una
+ * Estado vacío con la identidad Estudio: una sola marca, jerarquía clara y una
  * acción concreta. Reemplaza los carteles sueltos que no invitaban a hacer nada.
  */
 export default function EmptyState({

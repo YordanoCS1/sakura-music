@@ -1,6 +1,6 @@
 # 0019. Temas propios con identidad estructural
 
-- **Estado:** Aceptada (2026-11-19); ampliada el 2026-11-20 con `manga`
+- **Estado:** Aceptada (2026-11-19); ampliada el 2026-11-20 con `manga` y con el rediseño de `space` como Estudio
 - **Completa a:** ADR 0012 (temas múltiples)
 
 ## Contexto
@@ -15,8 +15,10 @@ paleta no era suficiente.
 > revista, `ThemeLibrary` de páginas de viñetas, cabecera con glifo 漫 y
 > transición `t-manga`, sobre papel `#fbfaf7`, tinta `#101010` y rojo
 > `#d62828`. Las cifras "doce" de más abajo son las originales de la decisión;
-> hoy son 13 propios + 1 genérico = 14 temas, tras retirar Yoru, Hanabi y
-> Aizuri (variantes de paleta sin vistas estructurales propias).
+> hoy son **14 propios**, tras retirar Yoru, Hanabi y Aizuri (variantes de
+> paleta sin vistas estructurales propias) y rediseñar el ex genérico `space`
+> como **Estudio**, con consola de mezcla, medidores VU, `data-skin="space"` y
+> transición `t-estudio`.
 
 ## Decisión
 
@@ -27,7 +29,9 @@ splash y panel “Ahora suena” propios. El atributo `data-theme` del HTML qued
 fijo en `space` para no romper los selectores históricos; el tema elegido se
 aplica con `data-skin={tema}` y la clase `tema-{tema}`. Los 4 temas genéricos
 de la decisión original (`space`, `yoru`, `hanabi`, `aizuri`) conservaban
-`LibraryTab` con sus 9 vistas; hoy queda sólo `space`.
+`LibraryTab` con sus 9 vistas; hoy ninguno lo es: `space` es Estudio, con
+vistas propias y `data-skin="space"`, y `LibraryTab`/`ZenTopNav` sobreviven
+sólo como fallback para temas importados.
 
 El glifo del splash y el logo de la nav comparten
 `view-transition-name: sakura-glifo`, así el arranque es un solo movimiento.
@@ -49,5 +53,6 @@ El glifo del splash y el logo de la nav comparten
 
 `src/App.css` (bloque `data-skin='manga'`, `t-manga`), `ThemeHome.tsx`,
 `ThemeLibrary.tsx`, `ThemeNav.tsx`, `src/themes/themeIcons.ts`, `index.html`,
-`src/main.tsx`, más los snapshots `manga-home-win32.png` y
-`manga-library-win32.png` de `e2e/visuals.spec.ts`.
+`src/main.tsx`, más los snapshots `manga-home-win32.png`,
+`manga-library-win32.png`, `space-home-win32.png` y `space-library-win32.png` de
+`e2e/visuals.spec.ts` (el loop visual pasó de 7 a 8 temas).

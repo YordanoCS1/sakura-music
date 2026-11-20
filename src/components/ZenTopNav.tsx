@@ -34,7 +34,7 @@ export default function ZenTopNav({
   onNavigate,
   trackCount,
   downloads,
-  nombreTema = 'M3 Zen',
+  nombreTema = 'Estudio',
 }: ZenTopNavProps) {
   const tabsRef = useRef<HTMLDivElement>(null);
   const btnRefs = useRef<Record<string, HTMLButtonElement | null>>({});

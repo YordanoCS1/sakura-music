@@ -8,11 +8,11 @@ Todos los cambios destacables de este proyecto se registran acá. El formato sig
 - **Portada giratoria**: la tapa del reproductor y del panel "Ahora suena" gira mientras suena y se frena al pausar, con forma y velocidad propias por tema (círculo en Moonlit, cuadrado en Swiss, viñeta en Manga).
 - **Iconos animados por tema**: chispa en Shōnen, niebla en Fantasmas, pétalo en Sakura, tinta en Sumi-e, tramado en Manga; CSS puro y `prefers-reduced-motion`.
 - **Pestaña de estadísticas**: duración, géneros, artistas top, décadas, formatos y cobertura de portadas con gráficos adaptados a cada tema.
-- **Galería de temas**: vista museo con las 14 apariencias, miniatura, preview en vivo y aplicación con un clic; se abre desde Ajustes → Apariencia.
+- **Galería de temas**: vista museo con las 14 apariencias —14 con identidad propia, todas con badge **PROPIO**—, miniatura, preview en vivo y aplicación con un clic; se abre desde Ajustes → Apariencia.
 - **Estados de carga temáticos**: indicadores con 14 variantes (pétalo, ensō, pincel, barras, chispa, tramado, etc.) en escaneo, búsqueda, letras y guardado de metadatos.
 - **Auditoría de contraste**: corrección AA en Origami, Swiss y Kawaii, texto sobre acento por tema y test guardian en `src/lib/contraste.test.ts` (informe en `docs/contraste.md`).
 - El tema **Manga** también cubre Buscar, Cola y el editor de metadatos con viñetas, cabeceras de capítulo y superficies blanco/negro con acento rojo; las portadas de la biblioteca se muestran a color con marco y sombra dura.
-- **Tema Manga** (`manga`, "Viñetas, tinta y screentone"): el decimotercer tema propio con identidad estructural. Home con portada de revista (`第 01 話`, globo de diálogo, sello 開 y línea de tiempo), biblioteca en páginas de viñetas (panel halftone, globo con el título, tag **GO!**, portadas en blanco y negro), cabecera negra con el glifo 漫, navegación con kanji sobre cuadrado rojo, estilo propio en Ajustes, panel "Ahora suena", playlists, paleta ⌘K, modales de metadatos, splash y transición `t-manga`. Paleta papel `#fbfaf7`, tinta `#101010` y acento rojo `#d62828`; usa `data-theme="space"` fijo y `data-skin="manga"`. Quedó como arquetipo del generador de temas y sumó snapshots `manga-home-win32.png` y `manga-library-win32.png` (el loop visual pasó a 7 temas). Total: **14 temas** (13 propios + 1 genérico).
+- **Tema Manga** (`manga`, "Viñetas, tinta y screentone"): el decimotercer tema propio con identidad estructural. Home con portada de revista (`第 01 話`, globo de diálogo, sello 開 y línea de tiempo), biblioteca en páginas de viñetas (panel halftone, globo con el título, tag **GO!**, portadas en blanco y negro), cabecera negra con el glifo 漫, navegación con kanji sobre cuadrado rojo, estilo propio en Ajustes, panel "Ahora suena", playlists, paleta ⌘K, modales de metadatos, splash y transición `t-manga`. Paleta papel `#fbfaf7`, tinta `#101010` y acento rojo `#d62828`; usa `data-theme="space"` fijo y `data-skin="manga"`. Quedó como arquetipo del generador de temas y sumó snapshots `manga-home-win32.png` y `manga-library-win32.png` (el loop visual pasó a 7 temas y hoy cubre 8 con Estudio). Total: **14 temas** (13 propios en ese momento; hoy los 14 son propios).
 - **Búsqueda online de letras** en LRCLIB desde el panel “Ahora suena”, con resultados SINC/PLANA, botón *Aplicar* que escribe el `.lrc` al lado de la pista y *Quitar .lrc*. Tres comandos IPC nuevos y CSP actualizada.
 - Catálogo de metadatos con **MusicBrainz** y **Cover Art Archive**, además de iTunes y Deezer. Las consultas pasan por `src-tauri/src/catalog.rs` por CORS y por el User-Agent que exige MusicBrainz.
 - Exploración de álbumes del catálogo: se abren sus pistas y se aplica la que corresponda a la canción en edición.
@@ -28,7 +28,7 @@ Todos los cambios destacables de este proyecto se registran acá. El formato sig
 - **Mini reproductor**: tercer estilo que reduce la ventana, la fija siempre encima y muestra controles compactos; al salir se restaura el tamaño.
 - **Sistema de diseño**: escala tipográfica con mínimo de 12 px (131 tamaños arbitrarios reemplazados), neutros semánticos `ink-*` (217 usos de `gray-*` centralizados), tres tokens de movimiento y componente `EmptyState` para biblioteca y cola.
 - Tests E2E con Playwright sobre Vite con IPC simulado (29 pruebas) y guía de release con firma de bundles.
-- **14 temas seleccionables:** 1 genérico (**M3 Zen**/`space`) con `LibraryTab` y sus 9 vistas, y 13 temas propios (**Sumi-e, Byōbu, Shoji, Origami, Swiss, Sumi Ink, Moonlit, Ledger, Shōnen, Fantasmas, Samurái, Kawaii y Manga**) con Home, biblioteca, cabecera, Buscar, Cola, ajustes, diálogos y transiciones propios. El selector `data-theme='space'` queda fijo y los propios usan `data-skin`.
+- **14 temas seleccionables, todos con identidad propia:** **Estudio** (`space`, "Consola de mezcla y medidores VU"), **Sumi-e, Byōbu, Shoji, Origami, Swiss, Sumi Ink, Moonlit, Ledger, Shōnen, Fantasmas, Samurái, Kawaii y Manga** tienen Home, biblioteca, cabecera, Buscar, Cola, ajustes, diálogos y transiciones propios, no sólo otra paleta. El selector `data-theme='space'` queda fijo y todos aplican además `data-skin` (también `space`). `LibraryTab` y `ZenTopNav` se conservan en el código sólo como fallback para temas importados.
 - **Generador de temas** para crear variantes a partir de un arquetipo estructural, con CSS inyectado en runtime y persistencia en `localStorage`.
 - **Panel “Ahora suena” ampliado** con pestañas Detalles, Letras, Álbum y Artista, color dominante de la carátula y transición continua del glifo del splash a la navegación con View Transitions.
 - **Playlists persistentes** en las tablas `playlists` y `playlist_tracks` de SQLite: pestaña Listas con crear, renombrar, borrar, agregar pistas, quitarlas y reordenarlas, con estilo propio por tema.
@@ -40,10 +40,11 @@ Todos los cambios destacables de este proyecto se registran acá. El formato sig
 - **Actualizaciones automáticas firmadas** con minisign e instaladores NSIS/MSI; clave pública en `src-tauri/updater.key.pub`, privada ignorada por git y endpoint a configurar al publicar (`REPLACE_OWNER/REPLACE_REPO` en `tauri.conf.json`).
 - **Migraciones versionadas** con `PRAGMA user_version=2` (1 = FTS5 y disparadores, 2 = índices en artista/álbum/año/genero), respaldo automático `VACUUM INTO` con retención de 3 y PRAGMAs WAL + `synchronous=NORMAL` + `temp_store=MEMORY` + `foreign_keys=ON`.
 - **Benchmark de escaneo** `node scripts/benchmark_scan.mjs [cantidad]`: 10.000 pistas tardaron ~12,6 s en release en esta máquina; el CLI `scan` imprime los milisegundos.
-- **`npm run pipeline`** como comando único para todo lo que corre el CI: 58 unitarios Vitest, 31 E2E Playwright y 43 tests Rust.
+- **`npm run pipeline`** como comando único para todo lo que corre el CI: 58 unitarios Vitest, 32 E2E Playwright y 43 tests Rust.
 
 ### Cambiado
-- La identidad de los temas dejó de ser sólo de paleta: navegación, tarjetas, reproductor, tipografía y sombras cambian según el tema; ~200 superficies hardcodeadas se tokenizaron para que los 14 temas apliquen de verdad. Sumi-e incorpora textura washi, sellos hanko, ensō y trazos de pincel; los 13 temas propios suman estructura completa, con el selector base fijo en `data-theme='space'` y `data-skin` para cada uno.
+- El tema por defecto M3 Zen fue rediseñado como Estudio, con vistas propias de consola de mezcla; dejó de ser el tema genérico. Mantiene el id interno `space` y `data-theme="space"` fijo, y ahora también aplica `data-skin="space"`: los 14 temas oficiales son propios y la vista genérica queda sólo como fallback para temas importados.
+- La identidad de los temas dejó de ser sólo de paleta: navegación, tarjetas, reproductor, tipografía y sombras cambian según el tema; ~200 superficies hardcodeadas se tokenizaron para que los 14 temas apliquen de verdad. Sumi-e incorpora textura washi, sellos hanko, ensō y trazos de pincel; los 14 temas oficiales suman estructura completa, con el selector base fijo en `data-theme='space'` y `data-skin` para cada uno.
 - Todos los comentarios del código están en español rioplatense y explican decisiones no obvias.
 - La documentación se actualizó para reflejar 46 comandos Tauri, 6 eventos, 43 tests Rust y 9 vistas.
 - Código Rust y frontend formateados con `rustfmt` y Prettier; clippy pasa con `-D warnings`.
@@ -76,7 +77,7 @@ Versión actual del proyecto, todavía sin publicar como versión oficial.
 - Reproducción desde Blob URL para no bloquear archivos en Windows.
 - Editor de metadatos individual y en lote con escritura atómica y errores parciales visibles.
 - Búsqueda y descarga con `yt-dlp`, cola persistente de hasta 100 trabajos, 2 descargas en paralelo y progreso por eventos.
-- Interfaz M3 Zen en React 19 + TypeScript + Tailwind, con virtualización y `content-visibility`.
+- Interfaz inicial (entonces M3 Zen, hoy **Estudio**) en React 19 + TypeScript + Tailwind, con virtualización y `content-visibility`.
 
 ### Corregido
 - Renombrar, retiquetar o cambiar la carátula de una pista mientras suena, sin `os error 5`.

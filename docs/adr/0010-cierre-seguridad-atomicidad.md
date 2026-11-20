@@ -47,9 +47,9 @@ consultaba iTunes.
 6. **Temas que sí cambian (superado).** Los 4 temas definen `--accent-200…950`
    en `src/App.css` y Tailwind mapea `accent-*` a esas variables. Cambiar de tema
    recolorea toda la UI y se persiste en `localStorage` (`sakura_theme`).
-   Nota: hubo una etapa de tema único `space` (M3 Zen) basada en tokens `--m3-*`.
+   Nota: hubo una etapa de tema único `space` (entonces M3 Zen, hoy **Estudio**) basada en tokens `--m3-*`.
    El selector de paletas se reincorporó con seis temas en [ADR 0012](0012-temas-multiples.md) y hoy ofrece 14 ([ADR 0019](0019-temas-propios-estructurales.md)).
-   **Nota de retirada (2026-11-20):** Yoru, Hanabi y Aizuri se retiraron por ser variantes de paleta sin vistas estructurales propias; el estado actual es **14 temas (1 genérico + 13 propios)**. Las cifras de cuatro, seis y 17 de arriba son las de la decisión original y sus actualizaciones.
+   **Nota de retirada (2026-11-20):** Yoru, Hanabi y Aizuri se retiraron por ser variantes de paleta sin vistas estructurales propias; el estado actual es **14 temas propios**, con Estudio (`space`) convertido en tema propio y `LibraryTab`/`ZenTopNav` como fallback para importados. Las cifras de cuatro, seis y 17 de arriba son las de la decisión original y sus actualizaciones.
 7. **Deezer real.** La opción "Deezer" consulta `api.deezer.com/search`
    (`data[].artist.name`, `album.cover_xl`) en vez de iTunes.
 8. **CSP y scope acotados.** `tauri.conf.json` pasa de `csp: null` y scope `**`
@@ -74,7 +74,7 @@ consultaba iTunes.
 - Ninguna escritura deja un archivo a medio escribir; ningún lote miente éxito.
 - La cola se puede cancelar y reintentar de verdad; no quedan procesos huérfanos.
 - La superficie de ataque del WebView se recorta (CSP + scope mínimo + runtime).
-- Los 4 temas recolorean la UI completa (superado: hoy hay 14 temas, 13 con identidad estructural, ver [ADR 0019](0019-temas-propios-estructurales.md)); Deezer consulta Deezer.
+- Los 4 temas recolorean la UI completa (superado: hoy hay 14 temas, todos con identidad estructural, ver [ADR 0019](0019-temas-propios-estructurales.md)); Deezer consulta Deezer.
 - Datos técnicos siempre reales y repo sin restos de v1 en la raíz.
 
 ### Negativas / deuda que queda

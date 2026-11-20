@@ -9,7 +9,7 @@ interface TitleBarProps {
 // Barra de título personalizada de la ventana (la nativa de Windows se ocultó
 // con `decorations: false` en Rust). Toda la barra es zona de arrastre salvo
 // los botones; los pétalos y el fondo siguen el tema activo.
-export default function TitleBar({ nombreTema = 'M3 Zen' }: TitleBarProps) {
+export default function TitleBar({ nombreTema = 'Estudio' }: TitleBarProps) {
   const [isMax, setIsMax] = useState(false);
 
   useEffect(() => {

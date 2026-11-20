@@ -1,3 +1,4 @@
+import { useRef, type KeyboardEvent } from 'react';
 import { Search, X } from 'lucide-react';
 import type { AppTab, ThemeMode } from '../types';
 import { estiloIconos, iconosDe } from '../themes/themeIcons';
@@ -22,6 +23,7 @@ const ITEMS: { id: AppTab; label: string }[] = [
 ];
 
 const GLIFOS: Partial<Record<ThemeMode, string>> = {
+  space: '◎',
   sumie: '墨',
   byobu: '屏',
   shoji: '障',
@@ -49,6 +51,20 @@ export default function ThemeNav({
   searchQuery,
   onSearchChange,
 }: ThemeNavProps) {
+  const btnRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const alNavegarConTeclado = (evento: KeyboardEvent<HTMLButtonElement>, id: AppTab) => {
+    const indice = ITEMS.findIndex((item) => item.id === id);
+    let siguiente = indice;
+    if (evento.key === 'ArrowRight') siguiente = (indice + 1) % ITEMS.length;
+    else if (evento.key === 'ArrowLeft') siguiente = (indice - 1 + ITEMS.length) % ITEMS.length;
+    else if (evento.key === 'Home') siguiente = 0;
+    else if (evento.key === 'End') siguiente = ITEMS.length - 1;
+    else return;
+    evento.preventDefault();
+    const destino = ITEMS[siguiente]!.id;
+    onNavigate(destino);
+    btnRefs.current[destino]?.focus();
+  };
   const iconos = iconosDe(theme);
   const estilo = estiloIconos(theme);
 
@@ -74,8 +90,12 @@ export default function ThemeNav({
             aria-selected={activeTab === item.id}
             aria-controls={`panel-${item.id}`}
             tabIndex={activeTab === item.id ? 0 : -1}
+            ref={(el) => {
+              btnRefs.current[item.id] = el;
+            }}
             className={activeTab === item.id ? 'is-active' : ''}
             onClick={() => onNavigate(item.id)}
+            onKeyDown={(evento) => alNavegarConTeclado(evento, item.id)}
           >
             <span className="theme-nav-tab-icon" aria-hidden="true">
               {iconos[item.id]}

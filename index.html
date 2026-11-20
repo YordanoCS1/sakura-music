@@ -30,6 +30,11 @@
         --sp-font:"Plus Jakarta Sans","Segoe UI",system-ui,sans-serif;
         --sp-glifo:"桜"; --sp-radio:50%;
       }
+      html[data-splash='space'] {
+        --sp-bg:#15181a; --sp-fg:#f2ede6; --sp-accent:#f0a23c; --sp-accent2:#7ee081;
+        --sp-glow:rgba(240,162,60,.18); --sp-shape:#1d2226;
+        --sp-font:'JetBrains Mono',Consolas,monospace; --sp-radio:2%;
+      }
       html[data-splash='sumie'], html[data-splash='sumiink'] {
         --sp-bg:#0c0c0c; --sp-fg:#e8e5dd; --sp-accent:#e8e5dd; --sp-accent2:#9a968c;
         --sp-glow:rgba(232,229,221,.12); --sp-shape:#1a1a1a;
@@ -139,6 +144,11 @@
         animation: sakura-fill 900ms cubic-bezier(.22,1,.36,1) 120ms forwards;
       }
 
+      html[data-splash='space'] .splash-vinyl { border:3px solid #f0a23c; border-radius:2px; background:#1d2226; box-shadow:6px 6px 0 rgba(0,0,0,.5); }
+      html[data-splash='space'] .splash-vinyl::before,
+      html[data-splash='space'] .splash-vinyl::after { display:none; }
+      html[data-splash='space'] .splash-label { background:#f0a23c; color:#15181a; animation:none; }
+
       /* Variantes estructurales por tema */
       html[data-splash='shonen'] .splash-word { font-style: italic; transform: skewX(-6deg); text-shadow: 4px 4px 0 var(--sp-accent2); }
       html[data-splash='manga'] .splash-word { font-weight:900; text-transform:uppercase; letter-spacing:-.03em; text-shadow:3px 3px 0 var(--sp-accent); }
@@ -163,7 +173,7 @@
 
       /* ---- Figuras propias por tema (sin el 桜 genérico) ---- */
       .splash-label::after { font-family:"Hiragino Kaku Gothic","Yu Gothic","Meiryo",sans-serif; line-height:1; }
-      html[data-splash='space'] .splash-label::after { content:"桜"; }
+      html[data-splash='space'] .splash-label::after { content:"◎"; font-size:40px; }
       html[data-splash='sumie'] .splash-label::after,
       html[data-splash='sumiink'] .splash-label::after { content:"墨"; font-family:Georgia,serif; font-size:36px; }
       html[data-splash='byobu'] .splash-label::after { content:"屏"; font-family:Georgia,serif; font-size:32px; }

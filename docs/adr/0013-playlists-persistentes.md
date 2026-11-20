@@ -35,8 +35,9 @@ manda como un array ordenado de rutas (`playlist_reorder`).
   `src/lib/ipc-contract.test.ts`.
 - La pestaña nueva cambia los iconos de los 17 temas y los snapshots visuales.
   **Nota (2026-11-20):** la cifra es la de la decisión original; en su momento
-  fueron 17 temas y hoy son 14 (1 genérico + 13 propios), tras retirar Yoru,
-  Hanabi y Aizuri. La pestaña Listas también tiene estilo propio en `manga`.
+  fueron 17 temas y hoy son 14 propios, tras retirar Yoru, Hanabi y Aizuri.
+  La pestaña Listas tiene estilo propio en `manga` y en el rediseño de `space`
+  como **Estudio**.
 
 ## Reflejo en el código
 

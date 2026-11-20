@@ -1,28 +1,20 @@
 # Sistema de diseño
 
-Sakura Music usa **14 temas**: 1 genérico y 13 propios. El genérico usa
-la escala de tokens y las 9 vistas de `LibraryTab.tsx`; los 13 propios redefinen
-la estructura completa con `ThemeLibrary`/`ThemeHome`/`ThemeNav`. Prototipos de
-referencia en `docs/prototipos/` (históricos) y `docs/temas/` (propuestas). La
+Sakura Music usa **14 temas, todos propios**: ningún tema oficial es genérico.
+Cada uno redefine la estructura completa con `ThemeLibrary`/`ThemeHome`/
+`ThemeNav`. El tema por defecto es **Estudio** (`space`), una consola de mezcla
+con medidores VU. La vista genérica `LibraryTab`/`ZenTopNav` sigue en el código
+sólo como fallback para temas importados; ningún tema oficial la usa. Prototipos
+de referencia en `docs/prototipos/` (históricos) y `docs/temas/` (propuestas). La
 fuente de verdad son `tailwind.config.js` y `App.css`.
 
 ## Temas disponibles
 
-### Genérico (1)
+### Propios (14)
 
 | Id | Nombre | Personalidad |
 |---|---|---|
-| `space` | M3 Zen | Superficies marfil, acento rosa sakura, redondeado suave (por defecto) |
-
-Este fija `data-theme="space"` y usa `LibraryTab.tsx` con sus **9
-vistas** (Carpetas, Cuadrícula, Lista, Álbumes, Pared, CDs, 3D, Luz y
-Portadas), con `VirtualizedGrid` y `content-visibility` condicional cuando la
-biblioteca pasa de 60 pistas.
-
-### Propios (13)
-
-| Id | Nombre | Personalidad |
-|---|---|---|
+| `space` | Estudio | **Consola de mezcla y medidores VU**: grafito `#15181a`, panel `#1d2226`, ámbar `#f0a23c`, verde LED `#7ee081`, texto `#f2ede6` y tipografía monospace (por defecto) |
 | `sumie` | Sumi-e | **Pergamino**: nav kanji flotante a la derecha, columna central, dock circular y ensō sobre tinta |
 | `byobu` | Byōbu | **Díptico editorial**: panel izquierdo de álbum con kanji monumental y reproductor, panel derecho con la lista de pistas |
 | `shoji` | Shōji | Paneles de papel translúcido, líneas de madera, luz difusa |
@@ -40,8 +32,11 @@ biblioteca pasa de 60 pistas.
 Cada tema propio fija `data-theme="space"` y usa `data-skin={tema}` con
 `ThemeLibrary`, `ThemeHome` y `ThemeNav` propios: cabecera, Buscar, Cola,
 ajustes, diálogos y transiciones propios, además de iconos y splash propios.
-**No usan las 9 vistas genéricas**: `ThemeLibrary.tsx` dibuja una biblioteca
-propia (hojas washi, díptico, retícula, etc.).
+**Ninguno usa las 9 vistas genéricas**: `ThemeLibrary.tsx` dibuja una biblioteca
+propia (rack de canales con fader y VU en Estudio, hojas washi, díptico,
+retícula, etc.). `LibraryTab`/`ZenTopNav` se conservan como fallback para temas
+importados, que sí pueden caer en las 9 vistas con `VirtualizedGrid` y
+`content-visibility` condicional pasado el umbral de 60 pistas.
 
 Todos los temas definen `--m3-*`, `--space-*`, `--accent-*` y `--theme-*` en su
 bloque `.app-shell[data-skin='id']`, y además reescriben la estructura:
@@ -54,12 +49,26 @@ el encabezado `IDENTIDAD POR TEMA`.
 
 | Familia | Cantidad | Biblioteca | Navegación | Superficies |
 |---|---|---|---|---|
-| Genérico (`space`) | 1 | `LibraryTab` con 9 vistas + `VirtualizedGrid` | `ZenTopNav` | Tokens + `App.css` |
-| Propios (`sumie`, `byobu`, `shoji`, `origami`, `swiss`, `sumiink`, `moonlit`, `ledger`, `shonen`, `ghost`, `samurai`, `kawaii`, `manga`) | 13 | `ThemeLibrary` propio | `ThemeHome` + `ThemeNav` propios | `data-skin={tema}`, estilos, iconos y splash propios |
+| Propios (`space`, `sumie`, `byobu`, `shoji`, `origami`, `swiss`, `sumiink`, `moonlit`, `ledger`, `shonen`, `ghost`, `samurai`, `kawaii`, `manga`) | 14 | `ThemeLibrary` propio | `ThemeHome` + `ThemeNav` propios | `data-skin={tema}`, estilos, iconos y splash propios |
+| Fallback (temas importados) | — | `LibraryTab` con 9 vistas + `VirtualizedGrid` | `ZenTopNav` | Tokens + `App.css`; ningún tema oficial la usa |
+
+### Notas visuales de Estudio
+
+`space` dejó de ser el tema genérico M3 Zen: hoy es **Estudio**, "Consola de
+mezcla y medidores VU", con identidad estructural completa. El Home arma una
+**consola de mezcla** con la marca `EST·01`, un medidor VU y un rack de canales
+con faders; la biblioteca muestra cada canal con su fader y su VU. La navegación
+es negra con el glifo ◎ y acento ámbar `#f0a23c`. La paleta es grafito
+`#15181a`, panel `#1d2226`, ámbar `#f0a23c`, verde LED `#7ee081` y texto
+`#f2ede6`, con tipografía monospace. Estudio tiene estilo propio en Buscar,
+Cola, Ajustes, panel "Ahora suena", playlists, paleta ⌘K, estadísticas, modales
+de metadatos, splash y la transición `t-estudio`. Conserva `data-theme="space"`
+fijo y suma `data-skin="space"`; en la galería figura con badge **PROPIO**.
 
 ### Notas visuales de Manga
 
-`manga` es el tema propio más nuevo y se aparta de `shonen` (que es naranja y
+`manga` fue el último tema propio incorporado (después se rediseñó el ex
+genérico `space` como Estudio) y se aparta de `shonen` (que es naranja y
 de ritmo de cómic) por una paleta estricta: papel `#fbfaf7`, tinta `#101010` y
 un único acento rojo `#d62828`, con tramado screentone como textura de fondo.
 El `ThemeHome` arma una **portada de revista**: número `第 01 話`, globo de
@@ -100,7 +109,7 @@ No se usan `gray-*` de Tailwind: los neutros salen de `ink-*` para que un cambio
 ### Paleta por tema
 
 La paleta de cada tema es un conjunto de variables, no una lista de clases: los
-13 temas propios pueden cambiar fondo, tipografía, borde y sombra además del
+14 temas propios pueden cambiar fondo, tipografía, borde y sombra además del
 acento. Por eso las superficies se leen siempre desde `--m3-*` y `--theme-*`, y
 los componentes usan `accent-*` para seguir el tema sin duplicar estilos. La
 paleta de comandos (`CommandPalette`, ⌘K) y los diálogos se estilizan con esos
@@ -117,8 +126,8 @@ teclado.
 
 Siempre se respeta `prefers-reduced-motion`. El glifo del splash hace un
 handoff continuo al logo de la navegación con
-`view-transition-name: sakura-glifo`, aplicable a los 14 temas (Manga usa
-además la transición de página `t-manga`).
+`view-transition-name: sakura-glifo`, aplicable a los 14 temas (Estudio usa
+`t-estudio` y Manga la transición de página `t-manga`).
 
 ## Forma y elevación
 
@@ -139,7 +148,7 @@ identidad) y usa `asset:` + Blob URL para no bloquear el archivo.
 `PlaylistsPanel.tsx` vive en la pestaña **Listas** (sexta pestaña de `AppTab`,
 también accesible desde ⌘K). Cada lista se crea, renombra, borra y reordena con
 las flechas; las pistas se cargan desde la biblioteca. Visualmente usa las
-tarjetas y los bordes del tema: los arquetipos Swiss, Shōnen, Kawaii,
+tarjetas y los bordes del tema: los arquetipos Estudio, Swiss, Shōnen, Kawaii,
 Fantasmas, Luna, Samurái y Manga tienen variantes explícitas y el resto hereda
 las variables del tema.
 

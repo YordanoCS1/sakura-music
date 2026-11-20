@@ -31,7 +31,7 @@ flowchart TB
         TABS["7 pestañas (AppTab):<br/>home · library · search · queue<br/>playlists · settings"]
         PLAYER["PlayerBar + NowPlayingPanel<br/>Detalles · Letras · Álbum · Artista<br/>asset: + Blob URL"]
         PANEL["PlaylistsPanel · CommandPalette ⌘K<br/>UndoToast · SystemPanel<br/>VirtualizedGrid en LibraryTab"]
-        THEME["1 genérico (LibraryTab, 9 vistas)<br/>+ 13 propios (ThemeLibrary/Home/Nav)<br/>data-theme=space · data-skin={tema}"]
+        THEME["14 propios (ThemeLibrary/Home/Nav)<br/>Estudio = space · data-skin={tema}<br/>LibraryTab/ZenTopNav: fallback importados"]
     end
 
     subgraph IPC["IPC Tauri"]
@@ -75,7 +75,7 @@ flowchart TB
 | Capa | Responsabilidad | No debe |
 |---|---|---|
 | `src/App.tsx` | Seis pestañas (`AppTab`), reproductor, editor, cola, temas. Lee `localStorage` para preferencias. | Leer tags ni lanzar `yt-dlp` directamente |
-| Componentes `src/components/` | `NowPlayingPanel` (Detalles/Letras/Álbum/Artista), `PlaylistsPanel`, `CommandPalette` (⌘K), `UndoToast`, `SystemPanel`, `VirtualizedGrid`; `ThemeLibrary`/`ThemeHome`/`ThemeNav` para los 13 temas propios. | Hablar directo con Rust: todo pasa por `invoke`/eventos |
+| Componentes `src/components/` | `NowPlayingPanel` (Detalles/Letras/Álbum/Artista), `PlaylistsPanel`, `CommandPalette` (⌘K), `UndoToast`, `SystemPanel`, `VirtualizedGrid`; `ThemeLibrary`/`ThemeHome`/`ThemeNav` para los 14 temas propios. | Hablar directo con Rust: todo pasa por `invoke`/eventos |
 | `lib.rs` | Registrar los 40 comandos propios, inicializar carpeta de datos, autorizar carpetas en el scope `asset:`, cancelar descargas al salir. | Contener lógica de parsing o pesos |
 | `catalog.rs` | Consultar iTunes, Deezer y MusicBrainz (con portadas de Cover Art Archive) vía `reqwest`, con User-Agent propio, y exponer 3 comandos Tauri. | Hacer `fetch` desde el frontend (CORS/User-Agent) ni pintar UI |
 | `validacion.rs` | Validar en la frontera IPC (longitudes, caracteres de control, rutas y lotes) y exigir scope canónico para escrituras. | Confiar en lo que manda el frontend |
@@ -88,9 +88,11 @@ flowchart TB
 
 > Nota: las vistas genéricas viven en `LibraryTab.tsx` (9 vistas) y usan
 > `VirtualizedGrid` con `content-visibility` condicional en bibliotecas de más
-> de 60 pistas; los 13 temas propios tienen `ThemeLibrary`/`ThemeHome`/`ThemeNav`
-> y sus propios diálogos, iconos y splash. `App.tsx` conserva el estado raíz y el
-> player; las piezas grandes nuevas se separan en `src/components/`.
+> de 60 pistas, pero hoy son sólo fallback para temas importados: ningún tema
+> oficial las usa. Los 14 temas propios, incluido Estudio (`space`), tienen
+> `ThemeLibrary`/`ThemeHome`/`ThemeNav` y sus propios diálogos, iconos y splash.
+> `App.tsx` conserva el estado raíz y el player; las piezas grandes nuevas se
+> separan en `src/components/`.
 
 ## Modelo de hilos
 
@@ -268,12 +270,17 @@ sequenceDiagram
 
 ## Tema visual
 
-La app usa **14 temas**, divididos en dos familias:
+La app usa **14 temas, todos propios**: ningún tema oficial es genérico.
 
-- **1 genérico:** `space` (M3 Zen, por defecto).
-  Usa `LibraryTab.tsx` con sus 9 vistas y se identifica con
-  `data-theme="space"` fijo en el contenedor raíz.
-- **13 propios:** `sumie`, `byobu`, `shoji`, `origami`, `swiss`, `sumiink`,
+- **Estudio** (`space`, por defecto): "Consola de mezcla y medidores VU". Home
+  con `EST·01`, medidor VU y rack de canales con faders; biblioteca en canales
+  con fader y VU; navegación negra con glifo ◎ y acento ámbar `#f0a23c`. Paleta
+  grafito `#15181a`, panel `#1d2226`, verde LED `#7ee081`, texto `#f2ede6` y
+  tipografía monospace; estilo propio en Buscar, Cola, Ajustes, panel "Ahora
+  suena", playlists, paleta ⌘K, estadísticas, modales de metadatos, splash y
+  transición `t-estudio`. Fija `data-theme="space"` y aplica además
+  `data-skin="space"`.
+- **Los otros trece:** `sumie`, `byobu`, `shoji`, `origami`, `swiss`, `sumiink`,
   `moonlit`, `ledger`, `shonen`, `ghost`, `samurai`, `kawaii` y `manga`. Cada uno
   fija `data-theme="space"` y usa `data-skin={tema}`, con `ThemeLibrary`,
   `ThemeHome` y `ThemeNav` propios: cabecera, Buscar, Cola, ajustes, diálogos,
@@ -282,12 +289,15 @@ La app usa **14 temas**, divididos en dos familias:
   portada de revista en Home y páginas de viñetas en biblioteca, con cabecera
   negra y glifo 漫; es además arquetipo del generador de temas.
 
+`LibraryTab`/`ZenTopNav` se conservan en el código únicamente como fallback para
+temas importados; ningún tema oficial cae en la vista genérica de 9 vistas.
+
 Los tokens semánticos `--m3-*`, `--space-*`, `--accent-*` y `--theme-*` viven en
 `App.css`. Tailwind mapea `accent-*` a esas variables, así que
 `from-accent-500` o `text-accent-300` siguen al tema sin duplicar clases. El
 glifo del splash hace un handoff continuo al logo de la navegación mediante
-`view-transition-name: sakura-glifo`; Manga suma la transición de página
-`t-manga`. La preferencia se persiste en
+`view-transition-name: sakura-glifo`; Estudio suma `t-estudio` y Manga la
+transición de página `t-manga`. La preferencia se persiste en
 `localStorage` (`sakura_theme`). Ver [ADR 0012](adr/0012-temas-multiples.md) y
 [diseno.md](diseno.md).
 
@@ -355,7 +365,7 @@ instaladores se generan como NSIS/MSI. Ver [release.md](release.md).
 |---|---|---|
 | Un comando Tauri | `src-tauri/src/lib.rs` + `App.tsx` (`invoke`) | Registrarlo en `invoke_handler!` y mapear errores como `String` |
 | Un formato de descarga | `src-tauri/src/downloader.rs` (rama `fmt_lower` en `run_download`) | Agregar tests de parsing si cambia el progreso |
-| Un tema genérico nuevo | `src/App.css` (tokens bajo `[data-skin='id']`) + `ThemeMode` en `src/types.ts` | Reutiliza `LibraryTab` de 9 vistas; mantiene `data-theme="space"` fijo |
+| Un tema importado nuevo (fallback genérico) | `src/App.css` (tokens bajo `[data-skin='id']`) + `ThemeMode` en `src/types.ts` | Reutiliza `LibraryTab` de 9 vistas; mantiene `data-theme="space"` fijo. Los temas oficiales no usan este camino |
 | Un tema propio nuevo | Bloques `.app-shell[data-skin='id']` en `App.css` + `ThemeLibrary`/`ThemeHome`/`ThemeNav` nuevos | Debe proveer cabecera, Buscar, Cola, ajustes, diálogos, transiciones, iconos y splash propios |
 | Una vista nueva | `src/components/LibraryTab.tsx` (ramas `viewMode`) y `src/components/LibraryShowcase.tsx` | El tipo `ViewMode`, el switcher en `LibraryToolbar.tsx`, las 9 vistas existentes y `VirtualizedGrid` si pasa de 60 pistas |
 | Una fuente de catálogo | `src-tauri/src/catalog.rs` (comandos `search_catalog_songs`, `search_catalog_albums` y `open_catalog_album`) | Respetar el CSP: están permitidos `itunes.apple.com`, `api.deezer.com`, `musicbrainz.org` y `coverartarchive.org` (`ws://localhost:1420` solo en dev) |

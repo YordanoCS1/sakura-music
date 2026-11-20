@@ -31,13 +31,13 @@ Sakura_Music/
 │   ├── types.ts                  # tipos compartidos (ScannedTrack, ViewMode, AppTab, ThemeMode, …)
 │   ├── components/
 │   │   ├── ZenTopNav.tsx         # navegación superior (pestañas + indicador)
-│   │   ├── ThemeNav.tsx          # navegación de los 13 temas propios
+│   │   ├── ThemeNav.tsx          # navegación de los 14 temas propios
 │   │   ├── ThemeHome.tsx         # inicio de los temas propios
 │   │   ├── ThemeLibrary.tsx      # biblioteca propia (no usa las 9 vistas genéricas)
 │   │   ├── ThemeQueue.tsx        # cola propia
 │   │   ├── ThemeSearch.tsx       # búsqueda propia
 │   │   ├── HomeTab.tsx
-│   │   ├── LibraryTab.tsx        # 9 vistas: Carpetas/Cuadrícula/Lista/Álbumes/Pared/CDs/3D/Luz/Portadas
+│   │   ├── LibraryTab.tsx        # 9 vistas (Carpetas/Cuadrícula/Lista/Álbumes/Pared/CDs/3D/Luz/Portadas); fallback de importados
 │   │   ├── VirtualizedGrid.tsx   # grid virtualizado + content-visibility (>60 pistas)
 │   │   ├── LibraryShowcase.tsx   # vista Pared (mosaico de portadas)
 │   │   ├── LibraryToolbar.tsx    # cabecera y switcher de vistas
@@ -80,7 +80,7 @@ Sakura_Music/
 │   └── capabilities/default.json # permisos: core, dialog, updater, process
 ├── scripts/
 │   └── benchmark_scan.mjs        # benchmark de escaneo (10k pistas ≈ 12,6 s en release)
-├── e2e/                          # suites Playwright (30 tests)
+├── e2e/                          # suites Playwright (32 tests)
 ├── docs/                         # esta documentación
 ├── legacy_python/                # v1.0 histórica (Python + PySide6), no se toca
 ├── iniciar_sakura.bat            # npm run tauri dev en Windows
@@ -103,7 +103,7 @@ npm run typecheck       # solo tsc --noEmit
 npm run lint            # ESLint sobre src/
 npm run format          # Prettier sobre TS/TSX/JS/JSON/YAML
 npm run test            # Vitest (58 tests unitarios del frontend)
-npm run test:e2e        # Playwright (31 tests E2E)
+npm run test:e2e        # Playwright (32 tests E2E)
 npm run pipeline        # check + E2E + fmt + clippy + cargo test → pasa en verde
 cargo test --manifest-path src-tauri/Cargo.toml   # 43 tests Rust
 cargo fmt --check --manifest-path src-tauri/Cargo.toml
@@ -117,8 +117,8 @@ cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings
 ### Integración continua
 
 `.github/workflows/ci.yml` ejecuta en Windows, macOS y Linux (matriz de 3 SO) las
-mismas comprobaciones: `npm ci`, `npm run pipeline` (tipos, lint, formato, 29
-unitarios, 31 E2E, build del frontend, `cargo fmt --check`, `cargo clippy -D
+mismas comprobaciones: `npm ci`, `npm run pipeline` (tipos, lint, formato, 58
+unitarios, 32 E2E, build del frontend, `cargo fmt --check`, `cargo clippy -D
 warnings` y los 43 tests Rust). La auditoría de npm (`npm run audit`) corre como
 paso informativo: hoy hay un aviso *high* de `picomatch` que afecta solo a
 dependencias de desarrollo y todavía no tiene corrección; no bloquea el pipeline.
@@ -168,9 +168,9 @@ tiempos de disco y del binario release.
 
 ## Casos de uso de desarrollo
 
-Los tests del frontend (`src/**/*.test.ts` y `.test.tsx`, 29 en total) cubren
+Los tests del frontend (`src/**/*.test.ts` y `.test.tsx`, 58 en total) cubren
 la conversión entre el ítem de UI y el formato persistido de la cola, el toast
-de deshacer y el fallback del `ErrorBoundary`; los 31 tests E2E de `e2e/`
+de deshacer y el fallback del `ErrorBoundary`; los 32 tests E2E de `e2e/`
 verifican arranque, splash, las 7 pestañas, paleta ⌘K y teclado. Todo lo demás
 se verifica a mano: búsqueda real en YouTube, descarga en los 4 formatos,
 playlist completa, edición individual y en lote (incluido el mensaje de fallos
@@ -191,19 +191,21 @@ sus efectos, cancelación/reintento de filas y búsqueda de actualizaciones.
 
 ### Agregar un tema
 
-**Genérico:** sumá el id a `ThemeMode` en `src/types.ts` y un bloque
-`.app-shell[data-skin='id']` en `src/App.css` con `--m3-*`, `--space-*`,
-`--accent-*` y `--theme-*`. Mantiene `data-theme="space"` fijo y reutiliza
-`LibraryTab` de 9 vistas.
+**Sólo para temas importados:** sumá el id a `ThemeMode` en `src/types.ts` y un
+bloque `.app-shell[data-skin='id']` en `src/App.css` con `--m3-*`, `--space-*`,
+`--accent-*` y `--theme-*`. Mantiene `data-theme="space"` fijo y cae en
+`LibraryTab` de 9 vistas. Es el único camino genérico que queda: ningún tema
+oficial lo usa.
 
-**Propio:** además de lo anterior, creá sus `ThemeLibrary`/`ThemeHome`/`ThemeNav`
-según corresponda, con cabecera, Buscar, Cola, ajustes, diálogos y transiciones
-propios, más iconos y splash propios. Revisá `ViewMode` y el switcher si
-agregás vistas. Verificá el handoff del glifo con
-`view-transition-name: sakura-glifo`.
+**Propio (los 14 oficiales, incluido Estudio):** además de lo anterior, creá sus
+`ThemeLibrary`/`ThemeHome`/`ThemeNav` según corresponda, con cabecera, Buscar,
+Cola, ajustes, diálogos y transiciones propios, más iconos y splash propios.
+Revisá `ViewMode` y el switcher si agregás vistas. Verificá el handoff del glifo
+con `view-transition-name: sakura-glifo`. Si el tema es `space`, recordá aplicar
+también `data-skin="space"` y sumar su transición (`t-estudio`).
 
 Corré `npm run build` para validar tipos y clases Tailwind. Los cambios
-limitados a la paleta usan `accent-*`; los 13 temas propios requieren estilos de
+limitados a la paleta usan `accent-*`; los 14 temas propios requieren estilos de
 superficie además de los tokens de color. Ver [ADR 0012](adr/0012-temas-multiples.md).
 
 ### Agregar una playlist o una operación de papelera
@@ -252,7 +254,7 @@ superficie además de los tokens de color. Ver [ADR 0012](adr/0012-temas-multipl
 | Rutas | `paths.rs` es el único lugar que conoce la carpeta de datos; nunca hay rutas hardcodeadas de usuario |
 | Escrituras | Siempre `write_atomic` para tags, caché y portadas |
 | Colores | Solo `accent-*` (variables `--accent-*`) fuera de `App.css`; el resto es rosa de apoyo (status) |
-| Tests | Un `#[test]` por comportamiento puro en su módulo (43 Rust); el frontend con 58 unitarios Vitest + 31 E2E Playwright, más `tsc` + build |
+| Tests | Un `#[test]` por comportamiento puro en su módulo (43 Rust); el frontend con 58 unitarios Vitest + 32 E2E Playwright, más `tsc` + build |
 
 ## Documentación
 

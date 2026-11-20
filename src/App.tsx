@@ -60,6 +60,7 @@ import {
 } from './themes/customThemes';
 
 const TEMAS_CON_VISTAS_PROPIAS: ThemeMode[] = [
+  'space',
   'sumie',
   'byobu',
   'shoji',
@@ -76,7 +77,7 @@ const TEMAS_CON_VISTAS_PROPIAS: ThemeMode[] = [
 ];
 
 const TEMAS_DISPONIBLES: ThemeOption[] = [
-  { id: 'space', nombre: 'M3 Zen', descripcion: 'Marfil y rosa sakura' },
+  { id: 'space', nombre: 'Estudio', descripcion: 'Consola de mezcla y medidores VU' },
   { id: 'sumie', nombre: 'Sumi-e', descripcion: 'Pergamino flotante y tinta' },
   { id: 'byobu', nombre: 'Byōbu', descripcion: 'Pantalla dividida de tinta' },
   { id: 'shoji', nombre: 'Shoji', descripcion: 'Biombo de papel y madera' },
@@ -120,7 +121,7 @@ export default function App() {
   const temaBase = baseDelTema(theme, customThemes) as ThemeMode;
   const esTemaPropio =
     TEMAS_CON_VISTAS_PROPIAS.includes(temaBase) || esTemaPersonalizado(theme, customThemes);
-  const nombreTema = todosLosTemas.find((t) => t.id === theme)?.nombre ?? 'M3 Zen';
+  const nombreTema = todosLosTemas.find((t) => t.id === theme)?.nombre ?? 'Estudio';
 
   useEffect(() => inyectarEstilos(customThemes), [customThemes]);
 
@@ -1002,7 +1003,7 @@ export default function App() {
   return (
     <div
       data-theme="space"
-      data-skin={theme === 'space' ? undefined : theme}
+      data-skin={theme}
       className={`app-shell relative w-screen h-screen flex flex-col overflow-hidden ${worldStyle.bgClass} font-sans text-ink-100 select-none`}
       style={
         {

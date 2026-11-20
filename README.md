@@ -60,12 +60,12 @@ Gestor, reproductor, descargador y etiquetador de música para escritorio, const
 - yt-dlp/ffmpeg se buscan en: carpeta de datos de la app (`bin/`), instalación histórica de la v1 (`%APPDATA%/LOCALAPPDATA`), enlaces de winget y `PATH`. Nunca hay rutas hardcodeadas de un usuario.
 - Timeouts y reintentos de red: `--socket-timeout 30`, `--retries 3`, `--fragment-retries 3`, `--windows-filenames`.
 
-### 🎨 14 temas (Material 3 + calma japonesa)
-- **14 temas seleccionables en Ajustes → Diseño Visual:** el **1 genérico** (**M3 Zen**/`space`, marfil y rosa sakura) usa `LibraryTab` con las 9 vistas clásicas. Los **13 temas propios** (**Sumi-e**, **Byōbu**, **Shoji**, **Origami**, **Swiss**, **Sumi Ink**, **Moonlit**, **Ledger**, **Shōnen**, **Fantasmas**, **Samurái**, **Kawaii** y **Manga**) tienen vistas estructurales completas: Inicio, biblioteca, cabecera, Buscar, Cola, ajustes, diálogos y transiciones propios, no sólo otra paleta. **Manga** ("Viñetas, tinta y screentone") trae portada de revista con `第 01 話`, globos de diálogo, sello 開 y línea de tiempo; en biblioteca muestra páginas de viñetas con tramado halftone, tag **GO!** y carátulas en blanco y negro. Su paleta es papel `#fbfaf7`, tinta `#101010` y rojo `#d62828`. El cambio es instantáneo y se guarda en `sakura_theme`.
-- **Selector:** el tema base queda fijo en `data-theme='space'`; los temas propios se aplican con `data-skin`, con transición continua del glifo del splash a la navegación mediante View Transitions.
-- **Navegación superior:** barra de pestañas con indicador deslizante animado y emblema de vinilo con el kanji 桜.
-- **7 pestañas:** Inicio, Biblioteca, Buscar, Cola, **Listas** (playlists) y Ajustes.
-- **9 vistas de biblioteca** (en el tema genérico): Carpetas (con breadcrumbs), Cuadrícula, Lista (tabla), Álbumes, **Pared** (mosaico de portadas con el título y artista de cada canción, filtrado por la carpeta seleccionada), **CDs**, **3D (Tilt)**, **Luz (Glow)** y **Portadas**.
+### 🎨 14 temas (consola de mezcla, tinta y calma japonesa)
+- **14 temas seleccionables en Ajustes → Diseño Visual, todos con identidad propia:** **Estudio** (`space`, "Consola de mezcla y medidores VU") trae Home tipo consola con `EST·01`, medidor VU y rack de canales con faders; la biblioteca muestra canales con fader y VU, la navegación es negra con el glifo ◎ y acento ámbar `#f0a23c`, y tiene estilo propio en Buscar, Cola, Ajustes, panel "Ahora suena", playlists, paleta ⌘K, estadísticas, modales de metadatos, splash y transición `t-estudio`. Su paleta es grafito `#15181a`, panel `#1d2226`, ámbar `#f0a23c`, verde LED `#7ee081` y texto `#f2ede6`, con tipografía monospace. Los otros trece —**Sumi-e**, **Byōbu**, **Shoji**, **Origami**, **Swiss**, **Sumi Ink**, **Moonlit**, **Ledger**, **Shōnen**, **Fantasmas**, **Samurái**, **Kawaii** y **Manga**— también tienen vistas estructurales completas: Inicio, biblioteca, cabecera, Buscar, Cola, ajustes, diálogos y transiciones propios, no sólo otra paleta. **Manga** ("Viñetas, tinta y screentone") trae portada de revista con `第 01 話`, globos de diálogo, sello 開 y línea de tiempo; en biblioteca muestra páginas de viñetas con tramado halftone, tag **GO!** y carátulas en blanco y negro. Su paleta es papel `#fbfaf7`, tinta `#101010` y rojo `#d62828`. El cambio es instantáneo y se guarda en `sakura_theme`.
+- **Selector:** el tema base queda fijo en `data-theme='space'` y todos los temas oficiales aplican `data-skin` (incluido `data-skin="space"` en Estudio), con transición continua del glifo del splash a la navegación mediante View Transitions. La vista genérica `LibraryTab`/`ZenTopNav` sigue en el código sólo como fallback para temas importados; ningún tema oficial la usa.
+- **Navegación superior:** barra de pestañas con indicador deslizante animado y emblema propio por tema (en Estudio, glifo ◎ sobre navegación negra con acento ámbar).
+- **7 pestañas:** Inicio, Biblioteca, Buscar, Cola, **Listas** (playlists), **Datos** (estadísticas) y Ajustes.
+- **9 vistas de biblioteca** (vista genérica, hoy sólo fallback para temas importados): Carpetas (con breadcrumbs), Cuadrícula, Lista (tabla), Álbumes, **Pared** (mosaico de portadas con el título y artista de cada canción, filtrado por la carpeta seleccionada), **CDs**, **3D (Tilt)**, **Luz (Glow)** y **Portadas**.
 - Opacidad y blur del vidrio, resplandor ambiental, partículas, estilo de reproductor (flotante/fijo/mini) y favoritos persistentes.
 - Datos técnicos reales: versión de `rustc` (inyectada en `build.rs`) y memoria del proceso en Windows (via `windows-sys`), nunca literales de ejemplo.
 
@@ -82,7 +82,7 @@ Gestor, reproductor, descargador y etiquetador de música para escritorio, const
 │     SettingsTab, …)                                         │
 │   • src/hooks/ (usePlayer, useDownloadQueue, useOnlineSearch, │
 │     useFolderExplorer, useMetadataEditor, useBatchEditor)    │
-│   • Tailwind 3 + variables --accent-* del tema M3 Zen        │
+│   • Tailwind 3 + variables --accent-* (tema base Estudio)    │
 │   • Audio vía asset: + Blob URL (sin bloqueo en Windows)     │
 └──────────────────────────────┬──────────────────────────────┘
                                │ IPC invoke + eventos (download-progress, library-changed)
@@ -140,7 +140,7 @@ npm run tauri build   # instalador .exe / .msi
 Checks de código:
 
 ```powershell
-npm run pipeline                                  # tipos, lint, formato, 58 unitarios, 31 E2E, build, fmt/clippy y 43 tests Rust
+npm run pipeline                                  # tipos, lint, formato, 58 unitarios, 32 E2E, build, fmt/clippy y 43 tests Rust
 cargo test --manifest-path src-tauri/Cargo.toml   # 43 tests Rust
 node node_modules/typescript/bin/tsc --noEmit     # tipos del frontend
 ```
@@ -156,12 +156,12 @@ Sakura_Music/
 ├── src/                          # Frontend (React + TypeScript)
 │   ├── App.tsx                   # UI y estado: pestañas, player, editor, cola
 │   ├── main.tsx                  # entrada de React
-│   ├── App.css                   # Tailwind + variables --accent-* (tema M3 Zen)
+│   ├── App.css                   # Tailwind + variables --accent-* (tema Estudio y los 13 restantes)
 │   ├── types.ts                  # tipos compartidos
 │   ├── components/
-│   │   ├── ZenTopNav.tsx         # navegación superior (7 pestañas)
+│   │   ├── ZenTopNav.tsx         # navegación superior (7 pestañas; fallback para temas importados)
 │   │   ├── HomeTab.tsx           # inicio
-│   │   ├── LibraryTab.tsx        # biblioteca (9 vistas del tema genérico)
+│   │   ├── LibraryTab.tsx        # biblioteca (9 vistas; fallback para temas importados)
 │   │   ├── LibraryShowcase.tsx  # vista Pared (mosaico de portadas)
 │   │   ├── NovelLibraryViews.tsx # vistas CDs/3D/Luz/Portadas
 │   │   ├── LibraryToolbar.tsx    # cabecera y switcher de vistas

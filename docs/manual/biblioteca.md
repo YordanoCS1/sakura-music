@@ -34,11 +34,12 @@ escaneo lo reconstruye desde los archivos. No se pierde música ni tags.
 > La música no vive en la carpeta de datos: vive en la carpeta que elegiste
 > como biblioteca.
 
-## Las nueve vistas (tema genérico)
+## Las nueve vistas (vista genérica, fallback para importados)
 
-Estas nueve vistas son las de `LibraryTab`, usadas por el **tema genérico**
-(M3 Zen). Los **13 temas propios** tienen una biblioteca
-estructural propia en lugar de este switcher.
+Estas nueve vistas son las de `LibraryTab`. Hoy ningún tema oficial las usa:
+quedan como **fallback para temas importados**. Los **14 temas propios** tienen
+una biblioteca estructural propia en lugar de este switcher; en Estudio, los
+canales llevan fader y medidor VU.
 
 | Vista | Ideal para |
 |---|---|
@@ -94,7 +95,7 @@ La pestaña **Listas** de la navegación guarda tus listas en SQLite (tablas
 `playlists` y `playlist_tracks`). Podés **crear**, renombrar y borrar listas,
 agregar pistas desde la biblioteca, quitarlas y reordenarlas con las flechas.
 Cada lista se persiste entre sesiones y cada tema le da su propio estilo al
-panel (los 13 temas propios tienen variantes explícitas).
+panel (los 14 temas propios tienen variantes explícitas).
 
 ## Borrado con Deshacer
 

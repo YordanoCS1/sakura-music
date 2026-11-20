@@ -32,7 +32,23 @@ acento rojo `#d62828`, con tramado screentone. Fija `data-theme="space"` y usa
 `data-skin="manga"`, y está disponible como arquetipo en
 `ThemeGeneratorModal`/`customThemes.ts`. Sumó los snapshots
 `manga-home-win32.png` y `manga-library-win32.png`; el loop de
-`visuals.spec.ts` cubre 7 temas.
+`visuals.spec.ts` cubre hoy 8 temas, con `space-home-win32.png` y
+`space-library-win32.png` para Estudio.
+
+## Tema Estudio
+
+`space` dejó de ser el tema genérico M3 Zen y pasó a ser **Estudio** ("Consola
+de mezcla y medidores VU"), con identidad estructural completa: Home tipo
+consola de mezcla con `EST·01`, medidor VU y rack de canales con faders;
+biblioteca en canales con fader y VU; navegación negra con el glifo ◎ y acento
+ámbar `#f0a23c`. Tiene estilo propio en Buscar, Cola, Ajustes, panel "Ahora
+suena", playlists, paleta ⌘K, estadísticas, modales de metadatos, splash y la
+transición `t-estudio`. Paleta: grafito `#15181a`, panel `#1d2226`, ámbar
+`#f0a23c`, verde LED `#7ee081` y texto `#f2ede6`, con tipografía monospace.
+Mantiene `data-theme="space"` fijo y aplica también `data-skin="space"`. Sumó
+los snapshots `space-home-win32.png` y `space-library-win32.png` y el badge
+**PROPIO** en la galería. Los 14 temas oficiales son propios: `LibraryTab` y
+`ZenTopNav` quedan como fallback para temas importados.
 
 ## Paleta de comandos
 
@@ -70,13 +86,14 @@ El tema Manga extiende su identidad a las pestañas **Buscar** y **Cola** y al
 **editor de metadatos**: cabeceras de capítulo, viñetas screentone, botones de
 borde grueso con sombra roja y portadas en color. El editor agrega una cinta
 `第 01 話 · EDICIÓN DE METADATOS` y fuerza superficies blancas sobre el diseño
-genérico.
+base.
 
 
 ## Galería de temas y estados de carga
 
-La **galería de temas** muestra las 14 apariencias como miniaturas con preview
-en vivo y aplicación directa. Los **estados de carga** tienen 14 variantes (un
+La **galería de temas** muestra las 14 apariencias · 14 con identidad propia como
+miniaturas con preview en vivo y aplicación directa (todas con badge **PROPIO**).
+Los **estados de carga** tienen 14 variantes (un
 indicador distinto por tema) y aparecen en escaneo, búsqueda online, letras y
 guardado de metadatos. Ver [contraste.md](contraste.md) para la auditoría AA.
 
@@ -88,4 +105,4 @@ estilo por tema. Los glifos de la navegación tienen animación CSS propia:
 chispa, niebla, pétalo, tinta o tramado según el tema, y se desactivan con
 `prefers-reduced-motion`. La nueva pestaña **Datos** resume la biblioteca con
 duración, géneros, artistas, décadas, formatos y portadas, con gráficos que
-cambian de lenguaje visual en Swiss, Ledger y Manga.
+cambian de lenguaje visual en Estudio, Swiss, Ledger y Manga.

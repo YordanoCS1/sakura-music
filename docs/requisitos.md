@@ -11,7 +11,7 @@ este documento (con fecha y motivo). **No se renumeran.**
 
 - **Criterio:** qué tiene que pasar para considerar el requisito cumplido.
 - **Test:** `npm test` (Vitest, **58 tests** del frontend), `npm run test:e2e`
-  (Playwright, **31 tests**), `cargo test` (Rust, **43 tests**) o `tsc --noEmit`
+  (Playwright, **32 tests**), `cargo test` (Rust, **43 tests**) o `tsc --noEmit`
   (tipos). `npm run pipeline` corre todo en orden y pasa en verde.
 - Si un requisito depende de red o de un binario externo, no se testea en la
   suite: se verifica a mano con `yt-dlp`/`ffmpeg` reales.
@@ -181,12 +181,21 @@ guardado. La carpeta `covers/` no crece sin control entre sesiones.
 
 #### RF-17 · Temas visuales seleccionables
 
-**Criterio:** la app ofrece **14 temas**: 1 genérico (`space`/M3 Zen) con
-`LibraryTab` de 9 vistas y `data-theme="space"` fijo, y
-13 propios (`sumie`, `byobu`, `shoji`, `origami`, `swiss`, `sumiink`, `moonlit`,
-`ledger`, `shonen`, `ghost`, `samurai`, `kawaii`, `manga`) con `data-skin={tema}` y
+**Criterio:** la app ofrece **14 temas, todos propios**: ningún tema oficial es
+genérico. El por defecto es **Estudio** (`space`, "Consola de mezcla y medidores
+VU"): Home tipo consola con `EST·01`, medidor VU y rack de canales con faders;
+biblioteca en canales con fader y VU; navegación negra con glifo ◎ y acento
+ámbar `#f0a23c`; estilo propio en Buscar, Cola, Ajustes, panel "Ahora suena",
+playlists, paleta ⌘K, estadísticas, modales de metadatos, splash y transición
+`t-estudio`. Su paleta es grafito `#15181a`, panel `#1d2226`, ámbar `#f0a23c`,
+verde LED `#7ee081` y texto `#f2ede6`, con tipografía monospace. Los otros trece
+(`sumie`, `byobu`, `shoji`, `origami`, `swiss`, `sumiink`, `moonlit`, `ledger`,
+`shonen`, `ghost`, `samurai`, `kawaii`, `manga`) usan `data-skin={tema}` y
 `ThemeLibrary`/`ThemeHome`/`ThemeNav` propios (cabecera, Buscar, Cola, ajustes,
-diálogos, transiciones, iconos y splash propios). `manga` ("Viñetas, tinta y
+diálogos, transiciones, iconos y splash propios). Estudio fija
+`data-theme="space"` y aplica además `data-skin="space"`; la vista genérica
+`LibraryTab`/`ZenTopNav` queda sólo como fallback para temas importados. `manga`
+("Viñetas, tinta y
 screentone") identifica su Home como portada de revista (`第 01 話`, globo de
 diálogo, sello 開, línea de tiempo) y su biblioteca como páginas de viñetas con
 panel halftone, tag **GO!** y carátulas en blanco y negro; paleta papel
@@ -199,8 +208,9 @@ el glifo del splash hace handoff al logo de la nav con
 
 **Test:** `tsc --noEmit` + `npm run build` (Tailwind genera las clases
 `accent-*`); snapshots E2E de `e2e/` cubren las 7 pestañas por tema, con el loop
-visual de `visuals.spec.ts` extendido a 7 temas (incluye `manga-home-win32.png`
-y `manga-library-win32.png`).
+visual de `visuals.spec.ts` extendido a 8 temas (incluye
+`space-home-win32.png`, `space-library-win32.png`, `manga-home-win32.png` y
+`manga-library-win32.png`).
 
 #### RF-18 · Navegación superior y vista Pared
 
@@ -382,10 +392,10 @@ enlaza a `docs/`.
 | Biblioteca y reproducción | RF-08 … RF-12 | `cargo test` (`scanner`, `library_db`), manual |
 | Metadatos y catálogo | RF-13 … RF-16 | `cargo test` + `tsc`, manual |
 | Apariencia y navegación | RF-17 … RF-18 | Vitest + E2E + `npm run build`, manual |
-| Playlists, papelera, letras, paleta, BD y updater | RF-20 … RF-25 | Vitest (58), E2E (31), `cargo test` (43), manual |
+| Playlists, papelera, letras, paleta, BD y updater | RF-20 … RF-25 | Vitest (58), E2E (32), `cargo test` (43), manual |
 | Transversales | RNF-01 … RNF-08 | `npm run pipeline` completo |
 
-**Totales:** 58 tests unitarios Vitest, 31 tests E2E Playwright y **43 tests
+**Totales:** 58 tests unitarios Vitest, 32 tests E2E Playwright y **43 tests
 Rust** (`downloader`, `queue`, `scanner`, `library_db`, `tools`, migraciones,
 playlists y lyrics). `npm run pipeline` pasa en verde.
 

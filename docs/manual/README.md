@@ -22,7 +22,7 @@ descargar, ordenar, etiquetar, personalizar y, si algo falla, arreglarlo.
 2. [buscar-y-descargar.md](buscar-y-descargar.md) — bajá tu primera canción y mirala en Cola.
 3. [biblioteca.md](biblioteca.md) — elegí tu carpeta y una vista que te guste.
 4. [metadatos-y-letras.md](metadatos-y-letras.md) — arreglá los tags y sumá letras `.lrc`.
-5. [apariencia.md](apariencia.md) — elegí entre los 14 temas (incluido Manga) y probá la paleta ⌘K.
+5. [apariencia.md](apariencia.md) — elegí entre los 14 temas (incluidos Estudio y Manga) y probá la paleta ⌘K.
 6. [problemas.md](problemas.md) — guardalo para cuando algo falle.
 
 ## Novedades que conviene conocer

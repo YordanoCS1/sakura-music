@@ -4,7 +4,7 @@ Esta carpeta contiene la documentación técnica y de referencia del proyecto Sa
 
 > [!NOTE]
 > **Sakura Music 2.0:** el proyecto fue reescrito de Python/PySide6 a **Tauri 2.0 (Rust) + React 19 + TypeScript + Tailwind CSS**.
-> El código fuente de la versión 1.0 en Python se conserva íntegro en `legacy_python/` como referencia histórica. Ver [ADR 0009](adr/0009-migracion-tauri-2-rust.md) para el contexto de la migración, [ADR 0010](adr/0010-cierre-seguridad-atomicidad.md) para lo que se corrigió después y [ADR 0012](adr/0012-temas-multiples.md) para el sistema de 14 temas (13 propios + 1 genérico) y [ADR 0019](adr/0019-temas-propios-estructurales.md) para la identidad estructural de los propios.
+> El código fuente de la versión 1.0 en Python se conserva íntegro en `legacy_python/` como referencia histórica. Ver [ADR 0009](adr/0009-migracion-tauri-2-rust.md) para el contexto de la migración, [ADR 0010](adr/0010-cierre-seguridad-atomicidad.md) para lo que se corrigió después y [ADR 0012](adr/0012-temas-multiples.md) para el sistema de 14 temas (todos propios, incluido Estudio) y [ADR 0019](adr/0019-temas-propios-estructurales.md) para la identidad estructural de cada uno.
 
 ## Por dónde empezar
 
@@ -20,7 +20,7 @@ Esta carpeta contiene la documentación técnica y de referencia del proyecto Sa
 | Auditoría de contraste de los 14 temas | [contraste.md](contraste.md) |
 | Tokens y reglas visuales | [diseno.md](diseno.md) |
 | Comandos y eventos disponibles | [ipc-contract.md](ipc-contract.md) (46 comandos / 6 eventos) |
-| Funciones nuevas (playlists, deshacer, letras, updater, tema Manga) | [nuevas-funciones.md](nuevas-funciones.md) |
+| Funciones nuevas (playlists, deshacer, letras, updater, temas Manga y Estudio) | [nuevas-funciones.md](nuevas-funciones.md) |
 | Dónde y cómo se guardan los datos | [data-formats.md](data-formats.md) |
 | Buscar, descargar y entender la cola | [manual/buscar-y-descargar.md](manual/buscar-y-descargar.md) |
 | Escaneo, ordenar y filtrar biblioteca | [manual/biblioteca.md](manual/biblioteca.md) |
@@ -40,8 +40,8 @@ docs/
   desarrollo.md              setup, tests, tipos, benchmark y recetas
   nuevas-funciones.md         playlists, deshacer, letras, paleta y updater
   release.md                 versionado, build, firma y publicación
-  pipeline.md                diagrama y etapas del CI (58/31/43 tests)
-  diseno.md                  tokens y los 14 temas (13 propios + 1 genérico)
+  pipeline.md                diagrama y etapas del CI (58/32/43 tests)
+  diseno.md                  tokens y los 14 temas propios (incluido Estudio)
   ipc-contract.md            46 comandos Tauri y 6 eventos (contrato frontend/Rust)
   data-formats.md            SQLite, download_queue.json y preferencias
   manual/
@@ -65,7 +65,7 @@ docs/
     0009-migracion-tauri-2-rust.md
     0010-cierre-seguridad-atomicidad.md
     0011-cola-persistente.md
-    0012-temas-multiples.md  14 temas: 13 propios + 1 genérico (ver también 0019)
+    0012-temas-multiples.md  14 temas propios, incluido Estudio (ver también 0019)
     0013-playlists-persistentes.md
     0014-papelera-y-deshacer.md
     0015-letras-lrc-y-panel-detalle.md
@@ -113,7 +113,7 @@ docs/
   nombra el archivo.
 - **Casos de uso:** `CU-01`…`CU-17`, cada uno con flujo principal, alternativos
   y "dónde está" en el código.
-- **Tests:** 58 unitarios Vitest, 31 E2E Playwright y 43 Rust; `npm run pipeline`
+- **Tests:** 58 unitarios Vitest, 32 E2E Playwright y 43 Rust; `npm run pipeline`
   pasa en verde.
 - **Diagramas:** Mermaid embebido en Markdown. GitHub, GitLab y la vista previa
   de VS Code lo renderizan sin instalar nada. No hay build ni sitio aparte.
@@ -126,13 +126,13 @@ docs/
 | Documento | Última revisión | Fuente principal |
 |---|---|---|
 | `casos-de-uso.md` | 2026-11-20 | `src/App.tsx`, `src-tauri/src/` |
-| `requisitos.md` | 2026-11-20 | código + `npm test` (29) + E2E (31) + `cargo test` (43) + `tsc` |
+| `requisitos.md` | 2026-11-20 | código + `npm test` (58) + E2E (32) + `cargo test` (43) + `tsc` |
 | `arquitectura.md` | 2026-11-20 | `src-tauri/src/`, `src/App.tsx`, `tauri.conf.json` |
 | `ipc-contract.md` | 2026-11-19 | `lib.rs` (40), `catalog.rs` (3), eventos (6) |
 | `data-formats.md` | 2026-11-19 | `library_db.rs`, `playlists.rs`, `queue.rs`, `paths.rs`, `localStorage` |
 | `diseno.md` | 2026-11-20 | `App.css`, `ThemeLibrary/ThemeHome/ThemeNav`, `tailwind.config.js` |
 | `desarrollo.md` | 2026-11-20 | `package.json`, `src-tauri/Cargo.toml`, `scripts/benchmark_scan.mjs` |
-| `nuevas-funciones.md` | 2026-11-20 | playlists, papelera, letras, paleta, updater y tema Manga |
+| `nuevas-funciones.md` | 2026-11-20 | playlists, papelera, letras, paleta, updater y temas Manga y Estudio |
 | `pipeline.md` | 2026-11-19 | `.github/workflows/ci.yml` + `npm run pipeline` |
 | `manual/` | 2026-11-20 | interfaz real + `tauri.conf.json` |
 | `adr/` | 2026-11-20 | 0009 (migración) + 0010 (cierre) + 0011 (cola) + 0012 (temas) + 0013…0021 (nuevas funciones) |

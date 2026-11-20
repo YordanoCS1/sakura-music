@@ -1,7 +1,7 @@
 /** Metadatos visuales de los temas, compartidos por Ajustes y la galería. */
 
 export const SWATCHES: Partial<Record<string, string>> = {
-  space: '#f472b6',
+  space: '#f0a23c',
   sumie: '#b23a2b',
   byobu: '#8c3b2e',
   shoji: '#a8442f',
@@ -18,7 +18,7 @@ export const SWATCHES: Partial<Record<string, string>> = {
 };
 
 export const PREVIEWS: Partial<Record<string, [string, string, string]>> = {
-  space: ['#fff7f4', '#d13f87', '#b5126a'],
+  space: ['#15181a', '#f0a23c', '#8d9498'],
   sumie: ['#0c0c0c', '#e8e5dd', '#9a968c'],
   byobu: ['#1a1210', '#8c3b2e', '#e8dcc8'],
   shoji: ['#f3ebd9', '#a8442f', '#c9b28a'],
@@ -35,7 +35,7 @@ export const PREVIEWS: Partial<Record<string, [string, string, string]>> = {
 };
 
 export const GLIFOS: Partial<Record<string, string>> = {
-  space: '桜',
+  space: '◎',
   sumie: '墨',
   byobu: '屏',
   shoji: '障',
@@ -51,8 +51,9 @@ export const GLIFOS: Partial<Record<string, string>> = {
   manga: '漫',
 };
 
-/** Los temos con vistas estructurales propias. `space` es el único genérico. */
+/** Los 14 temas oficiales, todos con vistas estructurales propias. */
 export const TEMAS_PROPIOS = new Set([
+  'space',
   'sumie',
   'byobu',
   'shoji',

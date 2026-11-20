@@ -49,6 +49,7 @@ interface NowPlayingPanelProps {
 type Vista = 'detalles' | 'letras' | 'album' | 'artista';
 
 const GLIFOS: Partial<Record<ThemeMode, string>> = {
+  space: '◎',
   sumie: '墨',
   byobu: '屏',
   shoji: '障',

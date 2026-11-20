@@ -68,7 +68,16 @@ test.beforeEach(async ({ page }) => {
 
 const opciones = { animations: 'disabled' as const, caret: 'hide' as const };
 
-for (const tema of ['shoji', 'origami', 'swiss', 'sumiink', 'moonlit', 'ledger', 'manga']) {
+for (const tema of [
+  'space',
+  'shoji',
+  'origami',
+  'swiss',
+  'sumiink',
+  'moonlit',
+  'ledger',
+  'manga',
+]) {
   test(`${tema}: home y biblioteca`, async ({ page }) => {
     await page.addInitScript((t) => localStorage.setItem('sakura_theme', t), tema);
     await page.goto('/');

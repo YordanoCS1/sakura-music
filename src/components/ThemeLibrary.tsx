@@ -60,7 +60,8 @@ export default function ThemeLibrary({
     theme !== 'ghost' &&
     theme !== 'samurai' &&
     theme !== 'kawaii' &&
-    theme !== 'manga'
+    theme !== 'manga' &&
+    theme !== 'space'
   ) {
     return null;
   }
@@ -213,6 +214,20 @@ export default function ThemeLibrary({
             <span className="manga-cab-count">{total} VIÑETAS</span>
           </header>
         );
+      case 'space':
+        return (
+          <header className="estudio-cab-lib">
+            <span className="estudio-cab-lib-glifo" aria-hidden="true">
+              ◎
+            </span>
+            <div className="estudio-cab-lib-tit">
+              <small>RACK · BIBLIOTECA</small>
+              <h1>Biblioteca</h1>
+            </div>
+            {navCarpetas}
+            <span className="estudio-cab-lib-count">{total} CANALES</span>
+          </header>
+        );
       case 'ghost':
         return (
           <header className="ghost-cab">
@@ -277,6 +292,7 @@ export default function ThemeLibrary({
     samurai: 'Formas',
     kawaii: 'Amigos',
     manga: 'Capítulos',
+    space: 'Canales',
   };
   const subcarpetas = folderExplorerData.subfolders.slice(0, 12);
   const selectorCarpetas = subcarpetas.length > 0 && (
@@ -792,6 +808,52 @@ export default function ThemeLibrary({
                 </article>
               ))}
             </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (theme === 'space') {
+    return (
+      <div className="estudio-library space-library">
+        {encabezado}
+        {selectorCarpetas}
+        {vistaTracks.length === 0 ? (
+          vacio
+        ) : (
+          <div className="estudio-canales-lista">
+            {vistaTracks.map((track, i) => (
+              <article
+                key={track.id}
+                className={`estudio-canal ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+              >
+                <span className="estudio-canal-num">{String(i + 1).padStart(2, '0')}</span>
+                <button
+                  type="button"
+                  className="estudio-canal-tapa"
+                  onClick={() => onPlayTrack(track)}
+                  aria-label={`Reproducir ${track.title}`}
+                >
+                  {portadaDe(track)}
+                </button>
+                <span className="estudio-canal-copy">
+                  <strong>{track.title}</strong>
+                  <small>{track.artist}</small>
+                </span>
+                <span className="estudio-canal-fader" aria-hidden="true">
+                  <i style={{ top: `${18 + (i % 7) * 10}%` }} />
+                </span>
+                <span className="estudio-canal-vu" aria-hidden="true">
+                  <i />
+                  <i />
+                  <i />
+                  <i />
+                  <i />
+                </span>
+                <span className="estudio-canal-acc">{acciones(track)}</span>
+              </article>
+            ))}
           </div>
         )}
       </div>

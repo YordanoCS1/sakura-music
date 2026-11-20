@@ -24,22 +24,27 @@ canciones, Now Playing y Cola.**
 
 ## Estado actual de la implementación
 
-La app **no usa seis temas ni estos ocho prototipos**: implementa **14 temas**,
-divididos en dos familias:
+La app **no usa seis temas ni estos ocho prototipos**: implementa **14 temas,
+todos propios**:
 
-- **1 genérico** (`space`/M3 Zen): usa `LibraryTab.tsx` con 9 vistas y fija
-  `data-theme="space"`.
-- **13 propios** (`sumie`, `byobu`, `shoji`, `origami`, `swiss`, `sumiink`,
+- **Estudio** (`space`, antes M3 Zen y hoy tema propio): fija
+  `data-theme="space"` y aplica también `data-skin="space"`. Es una consola de
+  mezcla con medidores VU, Home con `EST·01`, biblioteca en canales con fader y
+  VU y navegación negra con glifo ◎ sobre acento ámbar `#f0a23c`.
+- **Los otros trece** (`sumie`, `byobu`, `shoji`, `origami`, `swiss`, `sumiink`,
   `moonlit`, `ledger`, `shonen`, `ghost`, `samurai`, `kawaii`, `manga`): usan
   `data-skin={tema}` y tienen `ThemeLibrary`, `ThemeHome` y `ThemeNav` propios,
   con cabecera, Buscar, Cola, ajustes, diálogos, transiciones, iconos y splash
   propios.
 
+`LibraryTab.tsx` con sus 9 vistas y `ZenTopNav` siguen en el código como fallback
+para temas importados; ningún tema oficial los usa.
+
 > **Nota (2026-11-20):** ninguno de los ocho prototipos de este informe se
 > implementó como tema. Los temas `yoru`, `hanabi` y `aizuri` no salieron de acá:
 > fueron variantes de paleta de una etapa posterior y también se retiraron por
-> no tener vistas estructurales propias. El estado actual es **14 temas
-> (1 genérico + 13 propios)**.
+> no tener vistas estructurales propias. El estado actual es **14 temas propios**
+> (incluido Estudio, el ex `space` genérico).
 
 Algunos prototipos de este informe inspiraron temas propios (por ejemplo,
 *Bambú Minimal* → `sumie`/`shoji`, *Noche Estrellada* → `moonlit`,

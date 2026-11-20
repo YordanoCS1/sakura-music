@@ -1,7 +1,7 @@
 import type { ThemeMode } from '../types';
 
 /** Arquetipo estructural que replica un tema propio ya implementado. */
-export type Arquetipo = Exclude<ThemeMode, 'space'>;
+export type Arquetipo = Exclude<ThemeMode, never>;
 
 export interface TemaPersonalizado {
   id: string;

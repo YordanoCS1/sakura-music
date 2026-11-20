@@ -304,6 +304,7 @@ test('los temas propios usan vistas propias sin el selector de 9 vistas', async 
   await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });
 
   const temas = [
+    { id: 'space', nombre: 'Estudio' },
     { id: 'shoji', nombre: 'Shoji' },
     { id: 'origami', nombre: 'Origami' },
     { id: 'swiss', nombre: 'Swiss' },
@@ -922,6 +923,6 @@ test('se pueden borrar temas personalizados', async ({ page }) => {
 
   // El tema activo se puede borrar y vuelve al tema base.
   await page.getByRole('button', { name: 'Borrar tema Tema Temporal' }).click();
-  await expect(page.locator('.app-shell')).not.toHaveAttribute('data-skin');
+  await expect(page.locator('.app-shell')).toHaveAttribute('data-skin', 'space');
   await expect(page.getByRole('button', { name: /Tema Temporal/ })).toHaveCount(0);
 });

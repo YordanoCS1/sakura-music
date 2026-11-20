@@ -14,11 +14,11 @@ flowchart TD
       S2 --> S3["lint · ESLint"]
       S3 --> S4["formato · Prettier"]
       S4 --> S5["tests unitarios · Vitest (58)"]
-      S5 --> S6["tests E2E · Playwright (26)"]
+      S5 --> S6["tests E2E · Playwright (32)"]
       S6 --> S7["build · vite"]
       S7 --> S8["cargo fmt --check"]
       S8 --> S9["cargo clippy -D warnings"]
-      S9 --> S10["cargo test (42)"]
+      S9 --> S10["cargo test (43)"]
       S10 --> S11["npm audit · informativo"]
     end
 
@@ -42,8 +42,8 @@ flowchart TD
 | 2 | Tipos | `npm run typecheck` | sí | `strict` + `noUnusedLocals` del frontend |
 | 3 | Lint | `npm run lint` | sí | React Hooks y reglas de TypeScript |
 | 4 | Formato | `npm run format:check` | sí | Prettier en TS/TSX/JS/JSON/YAML |
-| 5 | Unitarios | `npm test` | sí | 30 tests: cola persistida, toast de deshacer y `ErrorBoundary` |
-| 6 | E2E | `npm run test:e2e` | sí | 30 tests: arranque, splash, 7 pestañas, paleta ⌘K y teclado |
+| 5 | Unitarios | `npm test` | sí | 58 tests: cola persistida, toast de deshacer y `ErrorBoundary` |
+| 6 | E2E | `npm run test:e2e` | sí | 32 tests: arranque, splash, 7 pestañas, paleta ⌘K, teclado y snapshots de los 8 temas del loop visual |
 | 7 | Build | `npm run build` | sí | `tsc` + bundle de producción |
 | 8 | Formato Rust | `cargo fmt --check` | sí | `rustfmt.toml` |
 | 9 | Lint Rust | `cargo clippy -D warnings` | sí | 0 avisos |

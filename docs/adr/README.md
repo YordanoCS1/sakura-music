@@ -12,8 +12,10 @@ adelante rigen la v2.
 
 > **Nota (2026-11-20):** los temas Yoru, Hanabi y Aizuri se retiraron por ser
 > variantes de paleta sin vistas estructurales propias. El estado actual es
-> **14 temas (1 genérico + 13 propios)**. Los ADRs 0009, 0010, 0012, 0013, 0019
-> y 0020 conservan sus cifras originales y aclaran el retiro en una nota.
+> **14 temas propios**: el ex genérico `space` (antes M3 Zen) fue rediseñado como
+> **Estudio** y ningún tema oficial es genérico. Los ADRs 0009, 0010, 0012,
+> 0013, 0019 y 0020 conservan sus cifras originales y aclaran el retiro y el
+> cambio de nombre en notas históricas.
 
 ## Reglas
 
@@ -46,7 +48,7 @@ adelante rigen la v2.
 | [0016](0016-migraciones-y-hardening-bd.md) | Migraciones versionadas, backups y PRAGMAs | Vigente |
 | [0017](0017-validacion-ipc-y-scope.md) | Validación de parámetros IPC y scope de paths | Vigente |
 | [0018](0018-updater-firmado-e-instaladores.md) | Actualizaciones firmadas e instaladores | Vigente |
-| [0019](0019-temas-propios-estructurales.md) | Temas propios con identidad estructural | Vigente (amplía 0012; hoy 13 propios + 1 genérico = 14, incluido Manga) |
+| [0019](0019-temas-propios-estructurales.md) | Temas propios con identidad estructural | Vigente (amplía 0012; hoy 14 propios, incluidos Manga y Estudio) |
 | [0020](0020-paleta-de-comandos.md) | Paleta de comandos y navegación de seis pestañas | Vigente |
 | [0021](0021-busqueda-de-letras-online.md) | Búsqueda de letras online con LRCLIB | Vigente (amplía 0015) |
 

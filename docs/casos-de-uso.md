@@ -302,15 +302,22 @@ Tabla).
 
 **Flujo principal**
 
-1. La app ofrece **14 temas**: 1 genérico (**M3 Zen**/`space`) y 13 propios
-   (Sumi-e, Byōbu, Shōji, Origami, Swiss, Sumi Ink,
-   Moonlit, Ledger, Shōnen, Fantasmas, Samurái, Kawaii y **Manga**). En Ajustes
-   se elige uno. El genérico fija `data-theme="space"` y usa `LibraryTab` de
-   9 vistas; los propios usan `data-skin={tema}` con `ThemeLibrary`/`ThemeHome`/
-   `ThemeNav` propios. Manga ("Viñetas, tinta y screentone") muestra una portada
-   de revista en Inicio y páginas de viñetas en biblioteca, con papel
+1. La app ofrece **14 temas, todos propios**: **Estudio** (`space`, "Consola de
+   mezcla y medidores VU") y Sumi-e, Byōbu, Shōji, Origami, Swiss, Sumi Ink,
+   Moonlit, Ledger, Shōnen, Fantasmas, Samurái, Kawaii y **Manga**. En Ajustes
+   se elige uno. Estudio fija `data-theme="space"` y aplica además
+   `data-skin="space"`: muestra Home tipo consola (`EST·01`, medidor VU, rack de
+   canales con faders), biblioteca en canales con fader y VU, navegación negra
+   con glifo ◎ y acento ámbar `#f0a23c`, y estilo propio en Buscar, Cola,
+   Ajustes, panel "Ahora suena", playlists, paleta ⌘K, estadísticas, modales de
+   metadatos, splash y transición `t-estudio`. Su paleta es grafito `#15181a`,
+   panel `#1d2226`, verde LED `#7ee081` y texto `#f2ede6`, con tipografía
+   monospace. Los otros temas usan `data-skin={tema}` con `ThemeLibrary`/
+   `ThemeHome`/`ThemeNav` propios. Manga ("Viñetas, tinta y screentone") muestra
+   una portada de revista en Inicio y páginas de viñetas en biblioteca, con papel
    `#fbfaf7`, tinta `#101010` y acento rojo `#d62828`. El valor se persiste en
-   `sakura_theme`; `ThemeMode` reúne los 14 identificadores.
+   `sakura_theme`; `ThemeMode` reúne los 14 identificadores. `LibraryTab` y
+   `ZenTopNav` siguen en el código sólo como fallback para temas importados.
 2. Los valores de superficie (`--m3-surface`, `--m3-primary`, etc.) y los
    `--accent-*` de `App.css` definen la paleta; Tailwind mapea `accent-*` a esas
    variables, así que toda la UI usa la misma identidad. Cada tema propio
@@ -378,11 +385,12 @@ Ajustes).
 2. Para un **comando** nuevo, agregalo en `src-tauri/src/lib.rs`, registralo en
    `invoke_handler!` y consumilo con `invoke` desde `App.tsx`. Mapeá errores
    como `String`.
-3. Para un **tema genérico** nuevo, agregá su bloque `[data-skin='...']` y sus
-   tokens `--m3-*` en `App.css` y el valor en `ThemeMode` (`src/types.ts`);
-   reutiliza `LibraryTab`. Para un **tema propio**, además creá sus
-   `ThemeLibrary`/`ThemeHome`/`ThemeNav` con diálogos, transiciones, iconos y
-   splash propios (hoy son 13 propios + 1 genérico); `manga` es arquetipo disponible en
+3. Para un **tema importado** (único caso genérico), agregá su bloque
+   `[data-skin='...']` y sus tokens `--m3-*` en `App.css` y el valor en
+   `ThemeMode` (`src/types.ts`); reutiliza `LibraryTab`. Para un **tema propio**,
+   además creá sus `ThemeLibrary`/`ThemeHome`/`ThemeNav` con diálogos,
+   transiciones, iconos y splash propios (los 14 oficiales lo son, incluido
+   Estudio); `manga` es arquetipo disponible en
    `ThemeGeneratorModal`/`customThemes.ts`.
 4. Para una **vista** nueva, agregá `ViewMode` y una rama en `LibraryTab.tsx` sin
    antiparse con las otras vistas.
@@ -394,7 +402,7 @@ Ajustes).
 
 **Dónde está:** `docs/desarrollo.md`.
 
-**Tests:** `npm test` (29 Vitest), `npm run test:e2e` (28 Playwright),
+**Tests:** `npm test` (58 Vitest), `npm run test:e2e` (32 Playwright),
 `cargo test` (43 Rust) y `npm run pipeline` (pasa en verde).
 
 ---

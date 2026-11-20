@@ -10,9 +10,11 @@ navegación.
 
 > Nota (2026-11-20): la cifra de 16 es la del momento de la decisión. En su
 > momento se pasó a **17 temas** (13 propios + 4 genéricos, con `manga` entre
-> los propios); hoy son **14 (13 propios + 1 genérico)**, tras retirar Yoru,
-> Hanabi y Aizuri por ser variantes de paleta sin vistas estructurales propias.
-> La paleta de comandos y la sexta pestaña cubren también el tema nuevo.
+> los propios); hoy son **14 propios**, tras retirar Yoru, Hanabi y Aizuri por
+> ser variantes de paleta sin vistas estructurales propias y rediseñar `space`
+> (antes M3 Zen, el genérico) como **Estudio**. La paleta de comandos y la sexta
+> pestaña cubren también el tema nuevo, con estilo y transición `t-estudio`
+> propios.
 
 ## Decisión
 

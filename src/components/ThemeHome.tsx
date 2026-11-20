@@ -40,7 +40,8 @@ export default function ThemeHome({
     theme !== 'ghost' &&
     theme !== 'samurai' &&
     theme !== 'kawaii' &&
-    theme !== 'manga'
+    theme !== 'manga' &&
+    theme !== 'space'
   ) {
     return null;
   }
@@ -423,6 +424,71 @@ export default function ThemeHome({
           </div>
           <p className="samurai-dato">{trackCount} formas · lacado y oro</p>
         </div>
+      </div>
+    );
+  }
+
+  if (theme === 'space') {
+    const canales = [
+      { id: 'entrada', etiqueta: 'ENTRADA', valor: 'FUENTE' },
+      { id: 'ganancia', etiqueta: 'GANANCIA', valor: '+6 dB' },
+      { id: 'ecualizador', etiqueta: 'ECUALIZADOR', valor: 'PLANO' },
+      { id: 'salida', etiqueta: 'SALIDA', valor: 'MASTER' },
+    ];
+    return (
+      <div className="estudio-home space-home">
+        <div className="estudio-rejilla" aria-hidden="true" />
+        <section className="estudio-consola">
+          <div className="estudio-cabecera">
+            <span>EST · 01</span>
+            <small>SAKURA MUSIC · ESTUDIO LOCAL</small>
+          </div>
+          <p className="estudio-kicker">MEZCLA · BIBLIOTECA · MASTER</p>
+          <h1>
+            EST<span>DIO</span>
+          </h1>
+          <p className="estudio-copy">
+            Tu biblioteca en la consola. Cada pista es un canal, cada álbum una sesión, y el máster
+            suena como vos quieras.
+          </p>
+          <div className="estudio-medidor" aria-hidden="true">
+            {[72, 84, 58, 91, 66, 78, 48, 88, 62, 74, 55, 80].map((nivel, i) => (
+              <i key={i} style={{ height: `${nivel}%` }} />
+            ))}
+          </div>
+          <div className="estudio-acciones">
+            <button type="button" onClick={() => onNavigate('library')}>
+              Abrir biblioteca <ArrowRight className="w-4 h-4" />
+            </button>
+            <button type="button" onClick={() => onNavigate('search')}>
+              <Search className="w-4 h-4" /> Buscar música
+            </button>
+          </div>
+          <p className="estudio-dato">
+            {trackCount} CANALES LISTOS · 48 kHz · 24 BIT · SIN CONEXIÓN
+          </p>
+        </section>
+        <aside className="estudio-panel">
+          <div className="estudio-panel-head">
+            <span>RACK · 01</span>
+            <strong>CANALES</strong>
+          </div>
+          {canales.map((canal, i) => (
+            <div key={canal.id} className="estudio-strip">
+              <span className="estudio-strip-num">{String(i + 1).padStart(2, '0')}</span>
+              <span className="estudio-strip-nombre">{canal.etiqueta}</span>
+              <span className="estudio-strip-fader" aria-hidden="true">
+                <i style={{ top: `${12 + i * 14}%` }} />
+              </span>
+              <small>{canal.valor}</small>
+            </div>
+          ))}
+          <div className="estudio-leds" aria-hidden="true">
+            {[0, 1, 2, 3, 4, 5].map((i) => (
+              <i key={i} />
+            ))}
+          </div>
+        </aside>
       </div>
     );
   }
