@@ -412,6 +412,84 @@ test('el generador integrado aplica un tema con su arquetipo', async ({ page }) 
   );
 });
 
+test('el panel ahora suena muestra detalles, album y artista', async ({ page }) => {
+  await page.addInitScript(() => {
+    const tracks = Array.from({ length: 6 }, (_, i) => ({
+      id: 'p' + i,
+      path: `Disco\\p${i}.flac`,
+      title: 'Pista ' + i,
+      artist: i < 3 ? 'Artista A' : 'Artista B',
+      album: i < 3 ? 'Álbum Uno' : 'Álbum Dos',
+      album_artist: 'Artista A',
+      track_number: i + 1,
+      duration: 200,
+      duration_str: '3:20',
+      format: 'FLAC',
+      bitrate_kbps: 912,
+      cover_url: null,
+      year: 2024,
+      genre: 'Jazz',
+      file_size: 1000,
+    }));
+    const respuestas: Record<string, unknown> = {
+      check_downloader_tools: {
+        ytdlp_available: false,
+        ffmpeg_available: false,
+        ytdlp_path: null,
+        ffmpeg_path: null,
+      },
+      get_cached_library: tracks,
+      search_library_fts: [],
+      remote_is_enabled: false,
+      remote_local_ip: '127.0.0.1',
+      remote_set_enabled: true,
+      remote_update_state: null,
+      search_catalog_songs: [],
+      search_catalog_albums: [],
+      get_app_info: {
+        engine: 'Tauri 2.0',
+        rust_version: 'rustc',
+        memory_usage: '—',
+        tracks_loaded: tracks.length,
+      },
+      get_default_music_dir: null,
+      get_download_queue: [],
+      tools_status: [],
+    };
+    const w = window as unknown as {
+      __TAURI_INTERNALS__: Record<string, unknown>;
+      __TAURI_EVENT_PLUGIN_INTERNALS__: Record<string, unknown>;
+    };
+    w.__TAURI_EVENT_PLUGIN_INTERNALS__ = { unregisterListener: () => {} };
+    w.__TAURI_INTERNALS__ = {
+      metadata: { currentWindow: { label: 'main' } },
+      invoke: async (cmd: string) => respuestas[cmd] ?? null,
+      transformCallback: () => 1,
+      unregisterCallback: () => {},
+      convertFileSrc: (p: string) => p,
+    };
+    localStorage.setItem('sakura_theme', 'shonen');
+  });
+  await page.goto('/');
+  await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });
+  await page.getByRole('tab', { name: /Biblioteca/ }).click();
+  await page
+    .getByRole('button', { name: /Reproducir/ })
+    .first()
+    .click();
+  await page.locator('.npr-cover').click();
+
+  const panel = page.getByRole('dialog', { name: 'Ahora reproduciendo' });
+  await expect(panel).toBeVisible();
+  await expect(panel.locator('.np-specs')).toContainText('FLAC');
+  await expect(page.locator('.np-panel.tema-shonen')).toHaveCount(1);
+
+  await panel.getByRole('tab', { name: /Álbum/ }).click();
+  await expect(panel.locator('.np-lista-item')).toHaveCount(3);
+  await panel.getByRole('tab', { name: /Artista/ }).click();
+  await expect(panel.locator('.np-lista-item')).toHaveCount(3);
+});
+
 test('cada tema usa sus propios iconos de navegacion', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('sakura_theme', 'samurai'));
   await page.goto('/');

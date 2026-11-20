@@ -1476,6 +1476,9 @@ export default function App() {
           {/* REPRODUCTOR TEMÁTICO (DOCK FLOTANTE / BARRA FIJA)         */}
           {/* ========================================================= */}
           <PlayerBar
+            theme={temaBase}
+            tracks={tracks}
+            onPlayTrackFromPanel={handlePlayTrack}
             playerStyle={playerStyle}
             onSetPlayerStyle={handleSetPlayerStyle}
             activeTrack={activeTrack}

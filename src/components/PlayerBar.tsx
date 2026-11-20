@@ -14,13 +14,16 @@ import {
   Volume2,
   VolumeX,
 } from 'lucide-react';
-import type { PlayerStyle, ScannedTrack } from '../types';
+import type { PlayerStyle, ScannedTrack, ThemeMode } from '../types';
+import NowPlayingPanel from './NowPlayingPanel';
 
 interface PlayerBarProps {
+  theme: ThemeMode;
+  tracks: ScannedTrack[];
+  favorites: string[];
   playerStyle: PlayerStyle;
   onSetPlayerStyle: (style: PlayerStyle) => void;
   activeTrack: ScannedTrack | null;
-  favorites: string[];
   isPlaying: boolean;
   isShuffle: boolean;
   repeatMode: 'off' | 'all' | 'one';
@@ -39,13 +42,16 @@ interface PlayerBarProps {
   onToggleMute: () => void;
   onVolumeChange: (v: number) => void;
   onToggleFavorite: (id: string, e: React.MouseEvent) => void;
+  onPlayTrackFromPanel: (track: ScannedTrack) => void;
 }
 
 export default function PlayerBar({
+  theme,
+  tracks,
+  favorites,
   playerStyle,
   onSetPlayerStyle,
   activeTrack,
-  favorites,
   isPlaying,
   isShuffle,
   repeatMode,
@@ -64,6 +70,7 @@ export default function PlayerBar({
   onToggleMute,
   onVolumeChange,
   onToggleFavorite,
+  onPlayTrackFromPanel,
 }: PlayerBarProps) {
   const [currentTime, setCurrentTime] = useState(0);
 
@@ -90,11 +97,11 @@ export default function PlayerBar({
   };
 
   const [expanded, setExpanded] = useState(false);
-  const [dominantColor, setDominantColor] = useState<string>('180, 26, 90');
+  const [dominantColor, setDominantColor] = useState<[number, number, number]>([180, 26, 90]);
 
   useEffect(() => {
     if (!activeTrack?.cover_url) {
-      setDominantColor('180, 26, 90');
+      setDominantColor([180, 26, 90]);
       return;
     }
     const img = new Image();
@@ -123,7 +130,7 @@ export default function PlayerBar({
           r = Math.round(r / n);
           g = Math.round(g / n);
           b = Math.round(b / n);
-          setDominantColor(`${r}, ${g}, ${b}`);
+          setDominantColor([r, g, b]);
         }
       } catch {
         /* cross-origin ignorado */
@@ -349,104 +356,32 @@ export default function PlayerBar({
         </div>
       )}
 
-      {expanded && (
-        <div
-          className="player-nowplaying"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Ahora reproduciendo"
-          tabIndex={-1}
-          onClick={() => setExpanded(false)}
-          onKeyDown={(event) => {
-            if (event.key === 'Escape') setExpanded(false);
+      {expanded && activeTrack && (
+        <NowPlayingPanel
+          theme={theme}
+          activeTrack={activeTrack}
+          tracks={tracks}
+          favorites={favorites}
+          isPlaying={isPlaying}
+          isShuffle={isShuffle}
+          repeatMode={repeatMode}
+          currentTime={currentTime}
+          duration={duration}
+          dominantColor={dominantColor}
+          getCoverSrc={getCoverSrc}
+          formatTime={formatTime}
+          onClose={() => setExpanded(false)}
+          onTogglePlay={onTogglePlay}
+          onNext={onNext}
+          onPrevious={onPrevious}
+          onSeek={handleSeek}
+          onToggleShuffle={onToggleShuffle}
+          onCycleRepeat={onCycleRepeat}
+          onToggleFavorite={onToggleFavorite}
+          onPlayTrack={(track) => {
+            onPlayTrackFromPanel(track);
           }}
-          style={{
-            background: `linear-gradient(160deg, rgba(${dominantColor}, 0.94), rgba(28, 12, 20, 0.97))`,
-          }}
-        >
-          <div className="np-sheen" aria-hidden="true" />
-          <button
-            type="button"
-            onClick={() => setExpanded(false)}
-            className="np-close"
-            aria-label="Cerrar vista inmersiva"
-          >
-            ×
-          </button>
-          <div className="np-stage">
-            <div className="np-art">
-              {activeTrack?.cover_url ? (
-                <img src={getCoverSrc(activeTrack.cover_url)} alt={activeTrack?.title ?? ''} />
-              ) : (
-                <div className="np-art-fallback">
-                  <Music2 />
-                </div>
-              )}
-            </div>
-            <div className="np-copy">
-              <small>AHORA REPRODUCIENDO</small>
-              <h2>{activeTrack?.title ?? 'Sin pista'}</h2>
-              <p>
-                {activeTrack?.artist ?? ''}
-                {activeTrack?.album ? ` · ${activeTrack.album}` : ''}
-              </p>
-            </div>
-            <div className="np-controls">
-              <button
-                onClick={onToggleShuffle}
-                className={`np-ctl ${isShuffle ? 'is-on' : ''}`}
-                aria-label="Reproducción aleatoria"
-                title="Aleatorio"
-              >
-                <Shuffle />
-              </button>
-              <button
-                onClick={onPrevious}
-                className="np-ctl"
-                aria-label="Pista anterior"
-                title="Anterior"
-              >
-                <SkipBack />
-              </button>
-              <button
-                onClick={onTogglePlay}
-                className="np-play"
-                aria-label={isPlaying ? 'Pausar' : 'Reproducir'}
-              >
-                {isPlaying ? <Pause /> : <Play />}
-              </button>
-              <button
-                onClick={onNext}
-                className="np-ctl"
-                aria-label="Pista siguiente"
-                title="Siguiente"
-              >
-                <SkipForward />
-              </button>
-              <button
-                onClick={onCycleRepeat}
-                className={`np-ctl ${repeatMode !== 'off' ? 'is-on' : ''}`}
-                aria-label={`Repetición: ${repeatMode}`}
-                title={`Repetición: ${repeatMode}`}
-              >
-                {repeatMode === 'one' ? <Repeat1 /> : <Repeat />}
-              </button>
-            </div>
-            <div className="np-seek">
-              <span>{formatTime(currentTime)}</span>
-              <input
-                type="range"
-                min={0}
-                max={duration || 100}
-                value={currentTime}
-                onChange={handleSeek}
-                className="np-seekbar"
-                aria-label="Progreso de reproducción"
-              />
-              <span>{formatTime(duration || (activeTrack?.duration ?? 0))}</span>
-            </div>
-          </div>
-        </div>
+        />
       )}
     </div>
   );
