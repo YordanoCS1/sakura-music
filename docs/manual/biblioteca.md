@@ -34,10 +34,10 @@ escaneo lo reconstruye desde los archivos. No se pierde música ni tags.
 > La música no vive en la carpeta de datos: vive en la carpeta que elegiste
 > como biblioteca.
 
-## Las nueve vistas (temas genéricos)
+## Las nueve vistas (tema genérico)
 
-Estas nueve vistas son las de `LibraryTab`, usadas por los **4 temas genéricos**
-(M3 Zen, Yoru, Hanabi y Aizuri). Los **13 temas propios** tienen una biblioteca
+Estas nueve vistas son las de `LibraryTab`, usadas por el **tema genérico**
+(M3 Zen). Los **13 temas propios** tienen una biblioteca
 estructural propia en lugar de este switcher.
 
 | Vista | Ideal para |

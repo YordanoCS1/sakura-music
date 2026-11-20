@@ -1,20 +1,17 @@
 # Apariencia
 
-Sakura Music 2.0 ofrece **17 temas visuales**: **4 genéricos** y **13 propios con
+Sakura Music 2.0 ofrece **14 temas visuales**: **1 genérico** y **13 propios con
 estructura completa**. Elegí el que quieras en **Ajustes → Diseño Visual**; el
 cambio es inmediato y se recuerda al reabrir la app.
 
-## Los 4 temas genéricos
+## El tema genérico
 
-Usan la biblioteca clásica (`LibraryTab`) con sus **9 vistas** y comparten la
-misma estructura, con paleta y detalles propios.
+Usa la biblioteca clásica (`LibraryTab`) con sus **9 vistas** y la escala de
+tokens base, con paleta y detalles propios.
 
 | Tema | Cómo se ve |
 |---|---|
 | **M3 Zen** (`space`) | Marfil y rosa sakura. El tema clásico de la app. |
-| **Yoru** | Noche cálida, grafito y ámbar. Oscuro pero sin neón. |
-| **Hanabi** | Azul noche con cian y magenta, tipografía monoespacio y esquinas vivas. |
-| **Aizuri** | Índigo profundo, blanco hueso y cian, con serif. |
 
 ## Los 13 temas propios
 
@@ -64,9 +61,9 @@ Todas viven en `localStorage` y se restauran al reabrir la app:
 
 | Clave | Qué guarda |
 |---|---|
-| `sakura_theme` | Tema visual: `space`, `yoru`, `hanabi`, `aizuri` (genéricos) o `sumie`, `byobu`, `shoji`, `origami`, `swiss`, `sumiink`, `moonlit`, `ledger`, `shonen`, `ghost`, `samurai`, `kawaii`, `manga` (propios) |
+| `sakura_theme` | Tema visual: `space` (genérico) o `sumie`, `byobu`, `shoji`, `origami`, `swiss`, `sumiink`, `moonlit`, `ledger`, `shonen`, `ghost`, `samurai`, `kawaii`, `manga` (propios) |
 | `sakura_temas_personalizados` | Temas creados con el generador (arquetipo + CSS) |
-| `sakura_view_mode` | Vista de biblioteca activa en los temas genéricos (`folders`, `grid`, `table`, `albums`, `mosaic`, `cds`, `tilt`, `glow`, `portadas`) |
+| `sakura_view_mode` | Vista de biblioteca activa en el tema genérico (`folders`, `grid`, `table`, `albums`, `mosaic`, `cds`, `tilt`, `glow`, `portadas`) |
 | `sakura_player_style` | Estilo del reproductor (`floating` / `fixed` / `mini`) |
 | `sakura_glass_opacity` | Opacidad del vidrio |
 | `sakura_glass_blur` | Desenfoque (backdrop blur) |
@@ -114,7 +111,7 @@ tema activo, incluidos los 13 propios.
 
 ## Vistas de biblioteca
 
-En los **4 temas genéricos**, **Biblioteca** ofrece nueve vistas en el switcher
+En el **tema genérico**, **Biblioteca** ofrece nueve vistas en el switcher
 del toolbar:
 
 | Vista | Qué muestra |
@@ -135,7 +132,7 @@ Home, cabecera, Buscar, Cola, ajustes y diálogos a juego.
 
 ## Qué cambia y qué no
 
-Con 17 temas, al cambiar de tema cambian la paleta, la tipografía, los componentes
+Con 14 temas, al cambiar de tema cambian la paleta, la tipografía, los componentes
 y —en los 13 propios— la estructura completa de cada pantalla. Aun así:
 
 | Sí | No |
@@ -152,7 +149,7 @@ y —en los 13 propios— la estructura completa de cada pantalla. Aun así:
 | La preferencia no se guarda | `localStorage` bloqueado por el WebView | Limpiá los datos del sitio en WebView2 y volvé a elegir |
 | Las partículas no aparecen | Están apagadas en Ajustes | Activá **Efectos atmosféricos de partículas** |
 | Texto poco legible en algún modal | Superficie heredada de estilos viejos | Reportalo: los modales nuevos usan las superficies claras del tema activo |
-| Un tema propio no cambia la estructura | Estás en un tema genérico (`space`, `yoru`, `hanabi` o `aizuri`) | Elegí uno de los 13 temas propios: son los que traen Home, biblioteca y diálogos propios |
+| Un tema propio no cambia la estructura | Estás en el tema genérico (`space`) | Elegí uno de los 13 temas propios: son los que traen Home, biblioteca y diálogos propios |
 
 Más en [problemas.md](problemas.md) y en [../nuevas-funciones.md](../nuevas-funciones.md).
 

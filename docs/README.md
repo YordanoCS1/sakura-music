@@ -4,7 +4,7 @@ Esta carpeta contiene la documentación técnica y de referencia del proyecto Sa
 
 > [!NOTE]
 > **Sakura Music 2.0:** el proyecto fue reescrito de Python/PySide6 a **Tauri 2.0 (Rust) + React 19 + TypeScript + Tailwind CSS**.
-> El código fuente de la versión 1.0 en Python se conserva íntegro en `legacy_python/` como referencia histórica. Ver [ADR 0009](adr/0009-migracion-tauri-2-rust.md) para el contexto de la migración, [ADR 0010](adr/0010-cierre-seguridad-atomicidad.md) para lo que se corrigió después y [ADR 0012](adr/0012-temas-multiples.md) para el sistema de 17 temas (13 propios + 4 genéricos) y [ADR 0019](adr/0019-temas-propios-estructurales.md) para la identidad estructural de los propios.
+> El código fuente de la versión 1.0 en Python se conserva íntegro en `legacy_python/` como referencia histórica. Ver [ADR 0009](adr/0009-migracion-tauri-2-rust.md) para el contexto de la migración, [ADR 0010](adr/0010-cierre-seguridad-atomicidad.md) para lo que se corrigió después y [ADR 0012](adr/0012-temas-multiples.md) para el sistema de 14 temas (13 propios + 1 genérico) y [ADR 0019](adr/0019-temas-propios-estructurales.md) para la identidad estructural de los propios.
 
 ## Por dónde empezar
 
@@ -40,7 +40,7 @@ docs/
   nuevas-funciones.md         playlists, deshacer, letras, paleta y updater
   release.md                 versionado, build, firma y publicación
   pipeline.md                diagrama y etapas del CI (29/29/43 tests)
-  diseno.md                  tokens y los 17 temas (13 propios + 4 genéricos)
+  diseno.md                  tokens y los 14 temas (13 propios + 1 genérico)
   ipc-contract.md            46 comandos Tauri y 6 eventos (contrato frontend/Rust)
   data-formats.md            SQLite, download_queue.json y preferencias
   manual/
@@ -64,7 +64,7 @@ docs/
     0009-migracion-tauri-2-rust.md
     0010-cierre-seguridad-atomicidad.md
     0011-cola-persistente.md
-    0012-temas-multiples.md  17 temas: 13 propios + 4 genéricos (ver también 0019)
+    0012-temas-multiples.md  14 temas: 13 propios + 1 genérico (ver también 0019)
     0013-playlists-persistentes.md
     0014-papelera-y-deshacer.md
     0015-letras-lrc-y-panel-detalle.md

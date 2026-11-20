@@ -88,9 +88,6 @@ const TEMAS_DISPONIBLES: ThemeOption[] = [
   { id: 'samurai', nombre: 'Samurái', descripcion: 'Lacado rojo, acero y oro' },
   { id: 'kawaii', nombre: 'Kawaii', descripcion: 'Pastel, ternura y caritas' },
   { id: 'manga', nombre: 'Manga', descripcion: 'Viñetas, tinta y screentone' },
-  { id: 'yoru', nombre: 'Yoru', descripcion: 'Noche cálida y ámbar' },
-  { id: 'hanabi', nombre: 'Hanabi', descripcion: 'Neón cian y magenta' },
-  { id: 'aizuri', nombre: 'Aizuri', descripcion: 'Índigo teñido y cian' },
 ];
 
 export default function App() {
@@ -989,24 +986,6 @@ export default function App() {
       glow2: 'bg-stone-500/15',
       accent: 'from-red-800 to-amber-800',
       badge: 'bg-red-800/10 text-red-900 border-red-800/30',
-    },
-    yoru: {
-      glow1: 'bg-amber-500/20',
-      glow2: 'bg-orange-900/25',
-      accent: 'from-amber-500 to-orange-700',
-      badge: 'bg-amber-500/15 text-amber-100 border-amber-500/30',
-    },
-    hanabi: {
-      glow1: 'bg-cyan-400/25',
-      glow2: 'bg-fuchsia-600/20',
-      accent: 'from-cyan-400 to-fuchsia-500',
-      badge: 'bg-cyan-400/15 text-cyan-100 border-cyan-400/30',
-    },
-    aizuri: {
-      glow1: 'bg-sky-400/20',
-      glow2: 'bg-blue-900/25',
-      accent: 'from-sky-400 to-blue-600',
-      badge: 'bg-sky-400/15 text-sky-100 border-sky-400/30',
     },
   };
 

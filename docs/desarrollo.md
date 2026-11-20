@@ -27,7 +27,7 @@ Sakura_Music/
 ├── src/                          # Frontend (React 19 + TypeScript)
 │   ├── App.tsx                   # estado raíz: 6 pestañas (AppTab), player, editor, cola
 │   ├── main.tsx                  # entrada de React
-│   ├── App.css                   # Tailwind + tokens --m3-* / --accent-* / --theme-* de los 17 temas
+│   ├── App.css                   # Tailwind + tokens --m3-* / --accent-* / --theme-* de los 14 temas
 │   ├── types.ts                  # tipos compartidos (ScannedTrack, ViewMode, AppTab, ThemeMode, …)
 │   ├── components/
 │   │   ├── ZenTopNav.tsx         # navegación superior (pestañas + indicador)
@@ -174,7 +174,7 @@ de deshacer y el fallback del `ErrorBoundary`; los 29 tests E2E de `e2e/`
 verifican arranque, splash, las 6 pestañas, paleta ⌘K y teclado. Todo lo demás
 se verifica a mano: búsqueda real en YouTube, descarga en los 4 formatos,
 playlist completa, edición individual y en lote (incluido el mensaje de fallos
-parciales), iTunes/Deezer/MusicBrainz, letras `.lrc`, playlists, los 17 temas y
+parciales), iTunes/Deezer/MusicBrainz, letras `.lrc`, playlists, los 14 temas y
 sus efectos, cancelación/reintento de filas y búsqueda de actualizaciones.
 
 ## Recetas para extender

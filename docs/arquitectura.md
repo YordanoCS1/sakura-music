@@ -31,7 +31,7 @@ flowchart TB
         TABS["6 pestañas (AppTab):<br/>home · library · search · queue<br/>playlists · settings"]
         PLAYER["PlayerBar + NowPlayingPanel<br/>Detalles · Letras · Álbum · Artista<br/>asset: + Blob URL"]
         PANEL["PlaylistsPanel · CommandPalette ⌘K<br/>UndoToast · SystemPanel<br/>VirtualizedGrid en LibraryTab"]
-        THEME["4 genéricos (LibraryTab, 9 vistas)<br/>+ 13 propios (ThemeLibrary/Home/Nav)<br/>data-theme=space · data-skin={tema}"]
+        THEME["1 genérico (LibraryTab, 9 vistas)<br/>+ 13 propios (ThemeLibrary/Home/Nav)<br/>data-theme=space · data-skin={tema}"]
     end
 
     subgraph IPC["IPC Tauri"]
@@ -268,10 +268,10 @@ sequenceDiagram
 
 ## Tema visual
 
-La app usa **17 temas**, divididos en dos familias:
+La app usa **14 temas**, divididos en dos familias:
 
-- **4 genéricos:** `space` (M3 Zen, por defecto), `yoru`, `hanabi` y `aizuri`.
-  Comparten `LibraryTab.tsx` con sus 9 vistas y se identifican con
+- **1 genérico:** `space` (M3 Zen, por defecto).
+  Usa `LibraryTab.tsx` con sus 9 vistas y se identifica con
   `data-theme="space"` fijo en el contenedor raíz.
 - **13 propios:** `sumie`, `byobu`, `shoji`, `origami`, `swiss`, `sumiink`,
   `moonlit`, `ledger`, `shonen`, `ghost`, `samurai`, `kawaii` y `manga`. Cada uno

@@ -181,8 +181,8 @@ guardado. La carpeta `covers/` no crece sin control entre sesiones.
 
 #### RF-17 · Temas visuales seleccionables
 
-**Criterio:** la app ofrece **17 temas**: 4 genéricos (`space`/M3 Zen, `yoru`,
-`hanabi`, `aizuri`) con `LibraryTab` de 9 vistas y `data-theme="space"` fijo, y
+**Criterio:** la app ofrece **14 temas**: 1 genérico (`space`/M3 Zen) con
+`LibraryTab` de 9 vistas y `data-theme="space"` fijo, y
 13 propios (`sumie`, `byobu`, `shoji`, `origami`, `swiss`, `sumiink`, `moonlit`,
 `ledger`, `shonen`, `ghost`, `samurai`, `kawaii`, `manga`) con `data-skin={tema}` y
 `ThemeLibrary`/`ThemeHome`/`ThemeNav` propios (cabecera, Buscar, Cola, ajustes,

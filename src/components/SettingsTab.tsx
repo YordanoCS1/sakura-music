@@ -36,9 +36,6 @@ const SWATCHES: Partial<Record<string, string>> = {
   samurai: '#c9a961',
   kawaii: '#ff9ec4',
   manga: '#d62828',
-  yoru: '#f59e0b',
-  hanabi: '#22d3ee',
-  aizuri: '#38bdf8',
 };
 
 const PREVIEWS: Partial<Record<string, [string, string, string]>> = {
@@ -56,9 +53,6 @@ const PREVIEWS: Partial<Record<string, [string, string, string]>> = {
   samurai: ['#1a1512', '#c9a961', '#b7352a'],
   kawaii: ['#fff7fb', '#ff9ec4', '#9ee0c8'],
   manga: ['#fbfaf7', '#101010', '#d62828'],
-  yoru: ['#1a1008', '#f59e0b', '#fbbf24'],
-  hanabi: ['#0a0a1a', '#22d3ee', '#d946ef'],
-  aizuri: ['#0b2340', '#38bdf8', '#1e3a8a'],
 };
 
 const GLIFOS: Partial<Record<string, string>> = {
@@ -76,9 +70,6 @@ const GLIFOS: Partial<Record<string, string>> = {
   samurai: '侍',
   kawaii: '♡',
   manga: '漫',
-  yoru: '夜',
-  hanabi: '花',
-  aizuri: '藍',
 };
 
 interface SettingsTabProps {

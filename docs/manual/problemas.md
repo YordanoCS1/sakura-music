@@ -103,7 +103,7 @@ No perdés tags ni portadas: todo eso vive en los archivos de audio.
 |---|---|---|
 | El tema no cambia un color de estado | Los estados (rojo error, verde éxito) no siguen el tema | Es intencional |
 | El tema no se guarda | `localStorage` bloqueado | Limpiá los datos del WebView2 y volvé a abrir la app |
-| Cambié de tema y la biblioteca no cambia de vista | Elegiste uno de los 4 temas genéricos | Los 13 temas propios son los que traen biblioteca, cabecera y diálogos propios |
+| Cambié de tema y la biblioteca no cambia de vista | Elegiste el tema genérico (`space`) | Los 13 temas propios son los que traen biblioteca, cabecera y diálogos propios |
 | La paleta `⌘K` no abre | El atajo no llegó al WebView | Probá `Ctrl+K` en Windows/Linux; tocá la lupa de la cabecera como alternativa |
 
 ## Actualizaciones y papelera

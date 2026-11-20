@@ -165,10 +165,7 @@ export type ThemeMode =
   | 'ghost'
   | 'samurai'
   | 'kawaii'
-  | 'manga'
-  | 'yoru'
-  | 'hanabi'
-  | 'aizuri';
+  | 'manga';
 
 export interface ThemeOption {
   id: string;

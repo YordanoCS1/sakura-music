@@ -24,21 +24,27 @@ canciones, Now Playing y Cola.**
 
 ## Estado actual de la implementación
 
-La app **no usa seis temas ni estos ocho prototipos**: implementa **17 temas**,
+La app **no usa seis temas ni estos ocho prototipos**: implementa **14 temas**,
 divididos en dos familias:
 
-- **4 genéricos** (`space`/M3 Zen, `yoru`, `hanabi`, `aizuri`): comparten
-  `LibraryTab.tsx` con 9 vistas y fijan `data-theme="space"`.
+- **1 genérico** (`space`/M3 Zen): usa `LibraryTab.tsx` con 9 vistas y fija
+  `data-theme="space"`.
 - **13 propios** (`sumie`, `byobu`, `shoji`, `origami`, `swiss`, `sumiink`,
   `moonlit`, `ledger`, `shonen`, `ghost`, `samurai`, `kawaii`, `manga`): usan
   `data-skin={tema}` y tienen `ThemeLibrary`, `ThemeHome` y `ThemeNav` propios,
   con cabecera, Buscar, Cola, ajustes, diálogos, transiciones, iconos y splash
   propios.
 
+> **Nota (2026-11-20):** ninguno de los ocho prototipos de este informe se
+> implementó como tema. Los temas `yoru`, `hanabi` y `aizuri` no salieron de acá:
+> fueron variantes de paleta de una etapa posterior y también se retiraron por
+> no tener vistas estructurales propias. El estado actual es **14 temas
+> (1 genérico + 13 propios)**.
+
 Algunos prototipos de este informe inspiraron temas propios (por ejemplo,
-*Bambú Minimal* → `sumie`/`shoji`, *Noche Estrellada* → `moonlit`/`yoru`,
-*Puesta de Sol* → `hanabi`, *Neón Rosa* → `kawaii`/`ghost`), pero las paletas y
-la estructura final son las de `App.css`, no las de este HTML. El prototipo
+*Bambú Minimal* → `sumie`/`shoji`, *Noche Estrellada* → `moonlit`,
+*Neón Rosa* → `kawaii`/`ghost`), pero las paletas y la estructura final son las
+de `App.css`, no las de este HTML. El prototipo
 **Neón Rosa** es el antecedente más cercano del tema implementado `manga`
 (viñetas, rojo y negro), aunque `manga` no existía en este HTML: se diseñó
 después con papel `#fbfaf7`, tinta `#101010`, acento `#d62828` y tramado
@@ -138,6 +144,6 @@ viñetas en la biblioteca.
 
 Esta sección se conserva tal cual porque documenta el proceso de diseño original:
 "abrí el HTML, mirá cada tema en sus 5 pantallas y decí cuál te gusta". Hoy esos
-pasos ya no están pendientes: la app implementa los 17 temas descriptos arriba
+pasos ya no están pendientes: la app implementa los 14 temas descriptos arriba
 (incluido `manga`, que se sumó después de este informe).
 Para temas nuevos, seguí la receta de [desarrollo.md](../desarrollo.md).

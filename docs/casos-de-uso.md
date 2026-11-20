@@ -302,15 +302,15 @@ Tabla).
 
 **Flujo principal**
 
-1. La app ofrece **17 temas**: 4 genéricos (**M3 Zen**/`space`, Yoru, Hanabi y
-   Aizuri) y 13 propios (Sumi-e, Byōbu, Shōji, Origami, Swiss, Sumi Ink,
+1. La app ofrece **14 temas**: 1 genérico (**M3 Zen**/`space`) y 13 propios
+   (Sumi-e, Byōbu, Shōji, Origami, Swiss, Sumi Ink,
    Moonlit, Ledger, Shōnen, Fantasmas, Samurái, Kawaii y **Manga**). En Ajustes
-   se elige uno. Los genéricos fijan `data-theme="space"` y usan `LibraryTab` de
+   se elige uno. El genérico fija `data-theme="space"` y usa `LibraryTab` de
    9 vistas; los propios usan `data-skin={tema}` con `ThemeLibrary`/`ThemeHome`/
    `ThemeNav` propios. Manga ("Viñetas, tinta y screentone") muestra una portada
    de revista en Inicio y páginas de viñetas en biblioteca, con papel
    `#fbfaf7`, tinta `#101010` y acento rojo `#d62828`. El valor se persiste en
-   `sakura_theme`; `ThemeMode` reúne los 17 identificadores.
+   `sakura_theme`; `ThemeMode` reúne los 14 identificadores.
 2. Los valores de superficie (`--m3-surface`, `--m3-primary`, etc.) y los
    `--accent-*` de `App.css` definen la paleta; Tailwind mapea `accent-*` a esas
    variables, así que toda la UI usa la misma identidad. Cada tema propio
@@ -382,7 +382,7 @@ Ajustes).
    tokens `--m3-*` en `App.css` y el valor en `ThemeMode` (`src/types.ts`);
    reutiliza `LibraryTab`. Para un **tema propio**, además creá sus
    `ThemeLibrary`/`ThemeHome`/`ThemeNav` con diálogos, transiciones, iconos y
-   splash propios (hoy son 13 propios + 4 genéricos); `manga` es arquetipo disponible en
+   splash propios (hoy son 13 propios + 1 genérico); `manga` es arquetipo disponible en
    `ThemeGeneratorModal`/`customThemes.ts`.
 4. Para una **vista** nueva, agregá `ViewMode` y una rama en `LibraryTab.tsx` sin
    antiparse con las otras vistas.

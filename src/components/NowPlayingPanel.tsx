@@ -61,9 +61,6 @@ const GLIFOS: Partial<Record<ThemeMode, string>> = {
   samurai: '侍',
   kawaii: '♡',
   manga: '漫',
-  yoru: '夜',
-  hanabi: '花',
-  aizuri: '藍',
 };
 
 /** Panel "Ahora suena" ampliado, con identidad visual por tema. */

@@ -15,7 +15,8 @@ paleta no era suficiente.
 > revista, `ThemeLibrary` de páginas de viñetas, cabecera con glifo 漫 y
 > transición `t-manga`, sobre papel `#fbfaf7`, tinta `#101010` y rojo
 > `#d62828`. Las cifras "doce" de más abajo son las originales de la decisión;
-> hoy son 13 propios + 4 genéricos = 17 temas.
+> hoy son 13 propios + 1 genérico = 14 temas, tras retirar Yoru, Hanabi y
+> Aizuri (variantes de paleta sin vistas estructurales propias).
 
 ## Decisión
 
@@ -25,7 +26,8 @@ diálogos y transiciones, además de iconos,
 splash y panel “Ahora suena” propios. El atributo `data-theme` del HTML queda
 fijo en `space` para no romper los selectores históricos; el tema elegido se
 aplica con `data-skin={tema}` y la clase `tema-{tema}`. Los 4 temas genéricos
-(`space`, `yoru`, `hanabi`, `aizuri`) conservan `LibraryTab` con sus 9 vistas.
+de la decisión original (`space`, `yoru`, `hanabi`, `aizuri`) conservaban
+`LibraryTab` con sus 9 vistas; hoy queda sólo `space`.
 
 El glifo del splash y el logo de la nav comparten
 `view-transition-name: sakura-glifo`, así el arranque es un solo movimiento.

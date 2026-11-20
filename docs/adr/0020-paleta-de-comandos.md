@@ -8,9 +8,11 @@ Con 16 temas, seis pestañas y cientos de pistas, cambiar de sección o de tema
 recorriendo Ajustes era lento. Los atajos existentes cubrían reproducción, no
 navegación.
 
-> Nota (2026-11-20): la cifra de 16 es la del momento de la decisión. Hoy son
-> **17 temas** (13 propios + 4 genéricos, con `manga` entre los propios). La
-> paleta de comandos y la sexta pestaña cubren también el tema nuevo.
+> Nota (2026-11-20): la cifra de 16 es la del momento de la decisión. En su
+> momento se pasó a **17 temas** (13 propios + 4 genéricos, con `manga` entre
+> los propios); hoy son **14 (13 propios + 1 genérico)**, tras retirar Yoru,
+> Hanabi y Aizuri por ser variantes de paleta sin vistas estructurales propias.
+> La paleta de comandos y la sexta pestaña cubren también el tema nuevo.
 
 ## Decisión
 

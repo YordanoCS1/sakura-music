@@ -1,6 +1,6 @@
 # Sistema de diseño
 
-Sakura Music usa **17 temas**: 4 genéricos y 13 propios. Los genéricos comparten
+Sakura Music usa **14 temas**: 1 genérico y 13 propios. El genérico usa
 la escala de tokens y las 9 vistas de `LibraryTab.tsx`; los 13 propios redefinen
 la estructura completa con `ThemeLibrary`/`ThemeHome`/`ThemeNav`. Prototipos de
 referencia en `docs/prototipos/` (históricos) y `docs/temas/` (propuestas). La
@@ -8,16 +8,13 @@ fuente de verdad son `tailwind.config.js` y `App.css`.
 
 ## Temas disponibles
 
-### Genéricos (4)
+### Genérico (1)
 
 | Id | Nombre | Personalidad |
 |---|---|---|
 | `space` | M3 Zen | Superficies marfil, acento rosa sakura, redondeado suave (por defecto) |
-| `yoru` | Yoru | Noche cálida, grafito y ámbar, sans geométrica |
-| `hanabi` | Hanabi | Azul noche, cian y magenta, monoespacio, esquinas vivas |
-| `aizuri` | Aizuri | Índigo teñido, blanco hueso y cian, serif |
 
-Estos cuatro fijan `data-theme="space"` y usan `LibraryTab.tsx` con sus **9
+Este fija `data-theme="space"` y usa `LibraryTab.tsx` con sus **9
 vistas** (Carpetas, Cuadrícula, Lista, Álbumes, Pared, CDs, 3D, Luz y
 Portadas), con `VirtualizedGrid` y `content-visibility` condicional cuando la
 biblioteca pasa de 60 pistas.
@@ -57,7 +54,7 @@ el encabezado `IDENTIDAD POR TEMA`.
 
 | Familia | Cantidad | Biblioteca | Navegación | Superficies |
 |---|---|---|---|---|
-| Genéricos (`space`, `yoru`, `hanabi`, `aizuri`) | 4 | `LibraryTab` con 9 vistas + `VirtualizedGrid` | `ZenTopNav` | Tokens + `App.css` |
+| Genérico (`space`) | 1 | `LibraryTab` con 9 vistas + `VirtualizedGrid` | `ZenTopNav` | Tokens + `App.css` |
 | Propios (`sumie`, `byobu`, `shoji`, `origami`, `swiss`, `sumiink`, `moonlit`, `ledger`, `shonen`, `ghost`, `samurai`, `kawaii`, `manga`) | 13 | `ThemeLibrary` propio | `ThemeHome` + `ThemeNav` propios | `data-skin={tema}`, estilos, iconos y splash propios |
 
 ### Notas visuales de Manga
@@ -120,7 +117,7 @@ teclado.
 
 Siempre se respeta `prefers-reduced-motion`. El glifo del splash hace un
 handoff continuo al logo de la navegación con
-`view-transition-name: sakura-glifo`, aplicable a los 17 temas (Manga usa
+`view-transition-name: sakura-glifo`, aplicable a los 14 temas (Manga usa
 además la transición de página `t-manga`).
 
 ## Forma y elevación
