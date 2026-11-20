@@ -49,6 +49,116 @@ export default function ThemeQueue({
   const terminadas = downloads.filter((d) => d.status.startsWith('completado')).length;
   const conError = downloads.filter((d) => d.status.includes('error')).length;
 
+  if (theme === 'manga') {
+    return (
+      <div className="manga-queue">
+        <header className="manga-queue-cab">
+          <span className="manga-queue-glifo" aria-hidden="true">
+            列
+          </span>
+          <div>
+            <small>CAPÍTULO · COLA DE DESCARGA</small>
+            <h1>La Cola</h1>
+          </div>
+          <div className="manga-queue-stats">
+            <span>{activas} EN CURSO</span>
+            <span>{terminadas} LISTAS</span>
+            {conError > 0 && <span>{conError} ERROR</span>}
+          </div>
+        </header>
+
+        {restoredNotice && (
+          <div className="manga-queue-notice">
+            <span>{restoredNotice}</span>
+            <button type="button" onClick={onClearNotice}>
+              Entendido
+            </button>
+          </div>
+        )}
+
+        {downloads.length > 0 && (
+          <div className="manga-queue-acciones">
+            {activas > 0 && (
+              <button type="button" onClick={onCancelAll}>
+                Cancelar todo
+              </button>
+            )}
+            <button type="button" onClick={onClearFinished}>
+              Limpiar terminadas
+            </button>
+          </div>
+        )}
+
+        {downloads.length === 0 ? (
+          <div className="manga-queue-vacio">
+            <span aria-hidden="true">…</span>
+            <h2>ESTA PÁGINA ESTÁ EN BLANCO</h2>
+            <p>Buscá canciones o pegá un enlace para llenar la cola.</p>
+            <button type="button" onClick={onGoSearch}>
+              Buscar música →
+            </button>
+          </div>
+        ) : (
+          <ol className="manga-queue-lista">
+            {downloads.map((item, i) => {
+              const done = item.status.startsWith('completado');
+              const error = item.status.includes('error');
+              const cancelled = item.status === 'cancelado';
+              return (
+                <li
+                  key={item.id}
+                  className={`manga-queue-pagina ${done ? 'is-done' : ''} ${error ? 'is-error' : ''}`}
+                >
+                  <span className="manga-queue-num">{String(i + 1).padStart(2, '0')}</span>
+                  {item.thumbnail ? (
+                    <img className="manga-queue-thumb" src={item.thumbnail} alt="" />
+                  ) : (
+                    <span className="manga-queue-thumb" aria-hidden="true">
+                      ♪
+                    </span>
+                  )}
+                  <div className="manga-queue-copy">
+                    <strong>{item.title}</strong>
+                    <small>
+                      {item.artist} · {item.format}
+                    </small>
+                    <div className="manga-queue-barra">
+                      <i style={{ width: `${Math.min(100, Math.max(0, item.progress))}%` }} />
+                    </div>
+                    <span className="manga-queue-meta">
+                      {item.progress.toFixed(0)}%
+                      {item.speed && item.speed !== '--' ? ` · ${item.speed}` : ''}
+                      {item.eta && item.eta !== '--' && item.eta !== '00:00'
+                        ? ` · ETA ${item.eta}`
+                        : ''}
+                    </span>
+                  </div>
+                  <span className="manga-queue-estado">{item.status}</span>
+                  <div className="manga-queue-item-acc">
+                    {error && (
+                      <button type="button" onClick={() => onRetry(item)} aria-label="Reintentar">
+                        <RotateCcw className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                    {!done && !cancelled && (
+                      <button
+                        type="button"
+                        onClick={() => onCancel(item.id)}
+                        aria-label="Cancelar descarga"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                </li>
+              );
+            })}
+          </ol>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className={`tqueue tema-${theme}`}>
       <header className="tqueue-hero">

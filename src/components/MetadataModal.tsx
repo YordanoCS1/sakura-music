@@ -168,6 +168,16 @@ export default function MetadataModal({
         className={`glass-card theme-modal tema-${theme} rounded-3xl border border-white/10 w-full max-w-4xl shadow-2xl flex flex-col overflow-hidden max-h-[92vh] animate-in fade-in zoom-in-95 duration-base`}
         onClick={(e) => e.stopPropagation()}
       >
+        {theme === 'manga' && (
+          <div className="manga-modal-ribbon" aria-hidden="true">
+            <span>第 01 話</span>
+            <strong>EDICIÓN DE METADATOS</strong>
+            <small>
+              SAKURA · CAPÍTULO {String(editingTrack.track_number ?? 1).padStart(2, '0')}
+            </small>
+          </div>
+        )}
+
         {/* Cabecera con pestañas de navegación */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between px-6 py-4 border-b border-white/10 bg-white/[0.03] gap-3">
           <div className="flex items-center gap-3 min-w-0">

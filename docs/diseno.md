@@ -162,3 +162,8 @@ Todo estado vacío usa el componente `EmptyState.tsx`: una marca (sakura, descar
 2. ¿Respeta `prefers-reduced-motion`?
 3. ¿El estado vacío tiene acción?
 4. ¿El foco con teclado sigue siendo visible?
+
+
+**Manga en Buscar/Cola/editor:** las tres vistas comparten la mismas reglas que
+la biblioteca (papel `#fbfaf7`, tinta `#101010`, acento `#d62828`, screentone).
+El editor fuerza sus superficies internas porque usa clases Tailwind propias.

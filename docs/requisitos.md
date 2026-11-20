@@ -11,7 +11,7 @@ este documento (con fecha y motivo). **No se renumeran.**
 
 - **Criterio:** qué tiene que pasar para considerar el requisito cumplido.
 - **Test:** `npm test` (Vitest, **29 tests** del frontend), `npm run test:e2e`
-  (Playwright, **28 tests**), `cargo test` (Rust, **43 tests**) o `tsc --noEmit`
+  (Playwright, **29 tests**), `cargo test` (Rust, **43 tests**) o `tsc --noEmit`
   (tipos). `npm run pipeline` corre todo en orden y pasa en verde.
 - Si un requisito depende de red o de un binario externo, no se testea en la
   suite: se verifica a mano con `yt-dlp`/`ffmpeg` reales.
@@ -382,10 +382,10 @@ enlaza a `docs/`.
 | Biblioteca y reproducción | RF-08 … RF-12 | `cargo test` (`scanner`, `library_db`), manual |
 | Metadatos y catálogo | RF-13 … RF-16 | `cargo test` + `tsc`, manual |
 | Apariencia y navegación | RF-17 … RF-18 | Vitest + E2E + `npm run build`, manual |
-| Playlists, papelera, letras, paleta, BD y updater | RF-20 … RF-25 | Vitest (29), E2E (28), `cargo test` (43), manual |
+| Playlists, papelera, letras, paleta, BD y updater | RF-20 … RF-25 | Vitest (29), E2E (29), `cargo test` (43), manual |
 | Transversales | RNF-01 … RNF-08 | `npm run pipeline` completo |
 
-**Totales:** 29 tests unitarios Vitest, 28 tests E2E Playwright y **43 tests
+**Totales:** 29 tests unitarios Vitest, 29 tests E2E Playwright y **43 tests
 Rust** (`downloader`, `queue`, `scanner`, `library_db`, `tools`, migraciones,
 playlists y lyrics). `npm run pipeline` pasa en verde.
 

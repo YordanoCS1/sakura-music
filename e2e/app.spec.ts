@@ -337,9 +337,9 @@ test('los temas propios usan vistas propias sin el selector de 9 vistas', async 
     await expect(page.getByRole('button', { name: /Edición en lote/ })).toBeVisible();
 
     await page.getByRole('tab', { name: /Buscar/ }).click();
-    await expect(page.locator('.tsearch')).toBeVisible();
+    await expect(page.locator(tema.id === 'manga' ? '.manga-search' : '.tsearch')).toBeVisible();
     await page.getByRole('tab', { name: /Cola/ }).click();
-    await expect(page.locator('.tqueue')).toBeVisible();
+    await expect(page.locator(tema.id === 'manga' ? '.manga-queue' : '.tqueue')).toBeVisible();
   }
 });
 
@@ -614,6 +614,54 @@ test('se pueden buscar letras online y aplicarlas a la pista', async ({ page }) 
   await resultado.click();
   await expect(panel.locator('.np-letra-linea')).toHaveCount(2);
   await expect(panel.locator('.np-letra-linea').first()).toContainText('Línea bajada');
+});
+
+test('Manga tiene Buscar, Cola y editor de metadatos propios', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('sakura_theme', 'manga');
+    const tracks = [
+      {
+        id: 'p0',
+        path: 'Disco\\p0.flac',
+        title: 'Pista 0',
+        artist: 'Artista A',
+        album: 'Álbum Uno',
+        album_artist: null,
+        track_number: 1,
+        duration: 200,
+        duration_str: '3:20',
+        format: 'FLAC',
+        bitrate_kbps: 900,
+        cover_url: null,
+        year: 2024,
+        genre: 'Jazz',
+        file_size: 1000,
+      },
+    ];
+    const w = window as unknown as {
+      __TAURI_INTERNALS__: { invoke: (cmd: string) => Promise<unknown> };
+    };
+    const anterior = w.__TAURI_INTERNALS__.invoke;
+    w.__TAURI_INTERNALS__.invoke = async (cmd: string, args?: unknown) =>
+      cmd === 'get_cached_library' ? tracks : anterior(cmd, args);
+  });
+  await page.goto('/');
+  await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });
+
+  await page.getByRole('tab', { name: /Buscar/ }).click();
+  await expect(page.locator('.manga-search')).toBeVisible();
+  await expect(page.locator('.manga-search-cab h1')).toHaveText('Buscador');
+  await expect(page.locator('.manga-search-card').first()).toBeVisible();
+
+  await page.getByRole('tab', { name: /Cola/ }).click();
+  await expect(page.locator('.manga-queue')).toBeVisible();
+  await expect(page.locator('.manga-queue-vacio h2')).toHaveText('ESTA PÁGINA ESTÁ EN BLANCO');
+
+  await page.getByRole('tab', { name: /Biblioteca/ }).click();
+  await page.getByRole('button', { name: 'Editar metadatos' }).first().click();
+  const editor = page.locator('.theme-modal.tema-manga');
+  await expect(editor).toBeVisible();
+  await expect(editor.locator('.manga-modal-ribbon')).toContainText('EDICIÓN DE METADATOS');
 });
 
 test('Ajustes → Sistema muestra la salud de la base y los registros', async ({ page }) => {

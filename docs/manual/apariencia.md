@@ -155,3 +155,12 @@ y —en los 13 propios— la estructura completa de cada pantalla. Aun así:
 | Un tema propio no cambia la estructura | Estás en un tema genérico (`space`, `yoru`, `hanabi` o `aizuri`) | Elegí uno de los 13 temas propios: son los que traen Home, biblioteca y diálogos propios |
 
 Más en [problemas.md](problemas.md) y en [../nuevas-funciones.md](../nuevas-funciones.md).
+
+
+### Buscar y Cola en Manga
+
+En Manga, **Buscar** muestra el formulario dentro de una viñeta con el sello
+`¡BUSCA!` y los resultados como páginas de cómic. **Cola** presenta cada
+descarga como una página numerada con barra de progreso roja. El editor de
+metadatos abre con una cinta `第 01 話 · EDICIÓN DE METADATOS` y campos sobre
+papel blanco con borde negro.

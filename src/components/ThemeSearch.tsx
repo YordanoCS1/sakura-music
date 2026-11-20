@@ -65,6 +65,7 @@ const GLIFOS: Partial<Record<ThemeMode, string>> = {
   ghost: '☻',
   samurai: '侍',
   kawaii: '♡',
+  manga: '漫',
 };
 
 const SUGERENCIAS = [
@@ -118,6 +119,232 @@ export default function ThemeSearch({
     : onlineQuery.startsWith('http')
       ? 'Descargar enlace'
       : 'Buscar';
+
+  if (theme === 'manga') {
+    return (
+      <div className="manga-search">
+        <header className="manga-search-cab">
+          <span className="manga-search-glifo" aria-hidden="true">
+            探
+          </span>
+          <div>
+            <small>CAPÍTULO · BÚSQUEDA</small>
+            <h1>Buscador</h1>
+          </div>
+          <span className="manga-search-sello" aria-hidden="true">
+            ¡BUSCA!
+          </span>
+        </header>
+
+        <section className="manga-search-vineta">
+          <form onSubmit={onSearchSubmit} className="manga-search-form">
+            <label htmlFor="manga-search-input">ESCRIBÍ EL TÍTULO O PEGÁ UN ENLACE</label>
+            <div className="manga-search-row">
+              <Search className="w-4 h-4" aria-hidden="true" />
+              <input
+                id="manga-search-input"
+                type="text"
+                value={onlineQuery}
+                onChange={(e) => onQueryChange(e.target.value)}
+                placeholder="LiSA Gurenge · YouTube playlist · enlace directo"
+              />
+              <button
+                type="submit"
+                disabled={isSearchingOnline || isResolvingPlaylist || !onlineQuery.trim()}
+              >
+                {isSearchingOnline || isResolvingPlaylist ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  textoBoton
+                )}
+              </button>
+            </div>
+            <div className="manga-search-calidad">
+              <label htmlFor="manga-search-format">CALIDAD DE AUDIO</label>
+              <select
+                id="manga-search-format"
+                value={downloadFormat}
+                onChange={(e) => onFormatChange(e.target.value)}
+              >
+                <option value="OPUS">Opus · original</option>
+                <option value="M4A">M4A · AAC 192 kbps</option>
+                <option value="MP3">MP3 · 320 kbps</option>
+                <option value="FLAC">FLAC · sin pérdida</option>
+              </select>
+              <div className="manga-search-herramientas">
+                <span className={toolsStatus?.ytdlp_available ? 'is-ok' : 'is-bad'}>
+                  yt-dlp {toolsStatus?.ytdlp_available ? 'LISTO' : 'AUSENTE'}
+                </span>
+                <span className={toolsStatus?.ffmpeg_available ? 'is-ok' : 'is-bad'}>
+                  ffmpeg {toolsStatus?.ffmpeg_available ? 'LISTO' : 'AUSENTE'}
+                </span>
+              </div>
+            </div>
+          </form>
+        </section>
+
+        {(onlineSearchError || playlistSearchError) && (
+          <div className="manga-search-error" role="alert">
+            {onlineSearchError || playlistSearchError}
+          </div>
+        )}
+        {isResolvingPlaylist && (
+          <div className="manga-search-cargando">
+            <Loader2 className="w-5 h-5 animate-spin" /> Extrayendo pistas de la playlist…
+          </div>
+        )}
+
+        {activas.length > 0 && (
+          <section className="manga-search-bloque">
+            <div className="manga-search-titulo">
+              <h2>DESCARGAS EN CURSO</h2>
+              <button type="button" onClick={onGoQueue}>
+                Ver cola →
+              </button>
+            </div>
+            <div className="manga-search-lista">
+              {activas.slice(0, 3).map((item) => (
+                <div key={item.id} className="manga-search-fila">
+                  <div className="manga-search-thumb">
+                    {item.thumbnail ? (
+                      <img src={item.thumbnail} alt="" />
+                    ) : (
+                      <Music2 className="w-4 h-4" />
+                    )}
+                  </div>
+                  <div className="manga-search-copy">
+                    <strong>{item.title}</strong>
+                    <small>
+                      {item.artist} · {item.format}
+                    </small>
+                    <div className="manga-search-barra">
+                      <i style={{ width: `${Math.max(0, item.progress)}%` }} />
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => onCancelDownload(item.id)}
+                    aria-label="Cancelar descarga"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {playlistInfo && (
+          <section className="manga-search-bloque">
+            <div className="manga-search-titulo">
+              <h2>{playlistInfo.title}</h2>
+              <button type="button" onClick={onClosePlaylist} aria-label="Cerrar playlist">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <small className="manga-search-sub">
+              {playlistInfo.uploader || 'YouTube'} · {playlistInfo.track_count} pistas
+            </small>
+            <label className="manga-search-check">
+              <input
+                type="checkbox"
+                checked={createAlbumFolder}
+                onChange={(e) => onCreateFolderChange(e.target.checked)}
+              />
+              Organizar en subcarpeta
+            </label>
+            <div className="manga-search-lista">
+              {playlistInfo.items.map((it) => (
+                <button
+                  key={it.id}
+                  type="button"
+                  className={`manga-search-fila ${selectedPlaylistItems.has(it.id) ? 'is-selected' : ''}`}
+                  onClick={() => onTogglePlaylistItem(it.id)}
+                >
+                  {selectedPlaylistItems.has(it.id) ? (
+                    <CheckSquare className="w-3.5 h-3.5" />
+                  ) : (
+                    <Square className="w-3.5 h-3.5" />
+                  )}
+                  <span className="manga-search-thumb">
+                    {it.thumbnail ? (
+                      <img src={it.thumbnail} alt="" />
+                    ) : (
+                      <Music2 className="w-3 h-3" />
+                    )}
+                  </span>
+                  <span className="manga-search-copy">
+                    <strong>{it.title}</strong>
+                  </span>
+                </button>
+              ))}
+            </div>
+            <div className="manga-search-acciones">
+              <button
+                type="button"
+                onClick={
+                  selectedPlaylistItems.size === playlistInfo.items.length
+                    ? onClearPlaylist
+                    : onSelectAllPlaylist
+                }
+              >
+                {selectedPlaylistItems.size === playlistInfo.items.length
+                  ? 'Deseleccionar todas'
+                  : 'Seleccionar todas'}
+              </button>
+              <button
+                type="button"
+                onClick={onDownloadSelectedPlaylist}
+                disabled={selectedPlaylistItems.size === 0}
+              >
+                <ArrowDownToLine className="w-3.5 h-3.5" /> Añadir {selectedPlaylistItems.size} a la
+                cola
+              </button>
+            </div>
+          </section>
+        )}
+
+        <section className="manga-search-bloque">
+          <div className="manga-search-titulo">
+            <h2>{onlineResults.length > 0 ? 'RESULTADOS' : 'SUGERENCIAS'}</h2>
+          </div>
+          <div className="manga-search-cards">
+            {onlineResults.length > 0
+              ? onlineResults.map((r, i) => (
+                  <article key={i} className="manga-search-card">
+                    <span className="manga-search-num">{String(i + 1).padStart(2, '0')}</span>
+                    <div className="manga-search-card-thumb">
+                      {r.thumbnail ? (
+                        <img src={r.thumbnail} alt="" />
+                      ) : (
+                        <Music2 className="w-4 h-4" />
+                      )}
+                    </div>
+                    <strong>{r.title}</strong>
+                    <small>{r.uploader}</small>
+                    <button
+                      type="button"
+                      onClick={() => onTriggerDownload(r.title, r.uploader, r.url, r.thumbnail)}
+                    >
+                      <ArrowDownToLine className="w-3.5 h-3.5" /> Descargar
+                    </button>
+                  </article>
+                ))
+              : SUGERENCIAS.map((s, i) => (
+                  <article key={i} className="manga-search-card">
+                    <span className="manga-search-num">{String(i + 1).padStart(2, '0')}</span>
+                    <strong>{s.titulo}</strong>
+                    <small>{s.detalle}</small>
+                    <button type="button" onClick={() => onSuggestionSearch(s.titulo)}>
+                      Buscar →
+                    </button>
+                  </article>
+                ))}
+          </div>
+        </section>
+      </div>
+    );
+  }
 
   return (
     <div className={`tsearch tema-${theme}`}>

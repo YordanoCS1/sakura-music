@@ -62,3 +62,12 @@ patrón del editor de metadatos: Rust consulta el servicio (sin clave, User-Agen
 identificado), el frontend muestra resultados con badge SINC/PLANA y *Aplicar*
 guarda el `.lrc` al lado de la pista con escritura atómica. No se agregó caché:
 el `.lrc` local ya es la persistencia. Ver [ADR 0021](adr/0021-busqueda-de-letras-online.md).
+
+
+## Buscar y Cola en Manga
+
+El tema Manga extiende su identidad a las pestañas **Buscar** y **Cola** y al
+**editor de metadatos**: cabeceras de capítulo, viñetas screentone, botones de
+borde grueso con sombra roja y portadas en color. El editor agrega una cinta
+`第 01 話 · EDICIÓN DE METADATOS` y fuerza superficies blancas sobre el diseño
+genérico.
