@@ -17,6 +17,7 @@ Esta carpeta contiene la documentación técnica y de referencia del proyecto Sa
 | Setup, tests y recetas | [desarrollo.md](desarrollo.md) |
 | Versionar, firmar y publicar | [release.md](release.md) |
 | Ver el pipeline de CI | [pipeline.md](pipeline.md) |
+| Auditoría de contraste de los 14 temas | [contraste.md](contraste.md) |
 | Tokens y reglas visuales | [diseno.md](diseno.md) |
 | Comandos y eventos disponibles | [ipc-contract.md](ipc-contract.md) (46 comandos / 6 eventos) |
 | Funciones nuevas (playlists, deshacer, letras, updater, tema Manga) | [nuevas-funciones.md](nuevas-funciones.md) |
@@ -39,7 +40,7 @@ docs/
   desarrollo.md              setup, tests, tipos, benchmark y recetas
   nuevas-funciones.md         playlists, deshacer, letras, paleta y updater
   release.md                 versionado, build, firma y publicación
-  pipeline.md                diagrama y etapas del CI (29/29/43 tests)
+  pipeline.md                diagrama y etapas del CI (58/30/43 tests)
   diseno.md                  tokens y los 14 temas (13 propios + 1 genérico)
   ipc-contract.md            46 comandos Tauri y 6 eventos (contrato frontend/Rust)
   data-formats.md            SQLite, download_queue.json y preferencias
@@ -112,7 +113,7 @@ docs/
   nombra el archivo.
 - **Casos de uso:** `CU-01`…`CU-17`, cada uno con flujo principal, alternativos
   y "dónde está" en el código.
-- **Tests:** 29 unitarios Vitest, 29 E2E Playwright y 43 Rust; `npm run pipeline`
+- **Tests:** 58 unitarios Vitest, 30 E2E Playwright y 43 Rust; `npm run pipeline`
   pasa en verde.
 - **Diagramas:** Mermaid embebido en Markdown. GitHub, GitLab y la vista previa
   de VS Code lo renderizan sin instalar nada. No hay build ni sitio aparte.
@@ -125,7 +126,7 @@ docs/
 | Documento | Última revisión | Fuente principal |
 |---|---|---|
 | `casos-de-uso.md` | 2026-11-20 | `src/App.tsx`, `src-tauri/src/` |
-| `requisitos.md` | 2026-11-20 | código + `npm test` (29) + E2E (29) + `cargo test` (43) + `tsc` |
+| `requisitos.md` | 2026-11-20 | código + `npm test` (29) + E2E (30) + `cargo test` (43) + `tsc` |
 | `arquitectura.md` | 2026-11-20 | `src-tauri/src/`, `src/App.tsx`, `tauri.conf.json` |
 | `ipc-contract.md` | 2026-11-19 | `lib.rs` (40), `catalog.rs` (3), eventos (6) |
 | `data-formats.md` | 2026-11-19 | `library_db.rs`, `playlists.rs`, `queue.rs`, `paths.rs`, `localStorage` |

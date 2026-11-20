@@ -20,6 +20,7 @@ import {
   X,
 } from 'lucide-react';
 import type { LyricLine, LyricsSearchResult, ScannedTrack, ThemeMode } from '../types';
+import ThemedLoader from './ThemedLoader';
 
 interface NowPlayingPanelProps {
   theme: ThemeMode;
@@ -500,7 +501,11 @@ export default function NowPlayingPanel(props: NowPlayingPanelProps) {
                   )}
 
                   <div className="np-letras" ref={letrasRef}>
-                    {cargandoLetras && <p className="np-letra-nota">Buscando letras…</p>}
+                    {cargandoLetras && (
+                      <p className="np-letra-nota">
+                        <ThemedLoader theme={theme} pequeno etiqueta="Buscando letras…" />
+                      </p>
+                    )}
                     {!cargandoLetras && letras.length === 0 && (
                       <>
                         <div className="np-letra-line is-current">♪</div>

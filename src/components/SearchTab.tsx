@@ -5,12 +5,12 @@ import {
   DownloadCloud,
   FolderCheck,
   ListMusic,
-  Loader2,
   Music2,
   Search,
   Square,
   X,
 } from 'lucide-react';
+import ThemedLoader from './ThemedLoader';
 import type {
   DownloadItem,
   DownloaderStatus,
@@ -149,7 +149,7 @@ export default function SearchTab({
             >
               {isSearchingOnline || isResolvingPlaylist ? (
                 <>
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <ThemedLoader theme={theme} pequeno />
                   <span>{isResolvingPlaylist ? 'Cargando Lista...' : 'Buscando...'}</span>
                 </>
               ) : (
@@ -302,7 +302,7 @@ export default function SearchTab({
       {/* Estado de carga de playlist */}
       {isResolvingPlaylist && (
         <div className="flex flex-col items-center justify-center p-8 rounded-3xl glass-card border border-accent-500/20 text-center animate-pulse">
-          <Loader2 className="w-8 h-8 text-accent-400 animate-spin mb-3" />
+          <ThemedLoader theme={theme} etiqueta="Buscando…" />
           <h4 className="text-sm font-bold text-white mb-1">
             Extrayendo pistas de la Playlist / Álbum...
           </h4>

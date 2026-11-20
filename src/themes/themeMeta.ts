@@ -1,0 +1,69 @@
+/** Metadatos visuales de los temas, compartidos por Ajustes y la galería. */
+
+export const SWATCHES: Partial<Record<string, string>> = {
+  space: '#f472b6',
+  sumie: '#b23a2b',
+  byobu: '#8c3b2e',
+  shoji: '#a8442f',
+  origami: '#d9547f',
+  swiss: '#111111',
+  sumiink: '#e8e5dd',
+  moonlit: '#8fb6e8',
+  ledger: '#a33a2a',
+  shonen: '#ff6b1a',
+  ghost: '#67e8f9',
+  samurai: '#c9a961',
+  kawaii: '#ff9ec4',
+  manga: '#d62828',
+};
+
+export const PREVIEWS: Partial<Record<string, [string, string, string]>> = {
+  space: ['#fff7f4', '#d13f87', '#b5126a'],
+  sumie: ['#0c0c0c', '#e8e5dd', '#9a968c'],
+  byobu: ['#1a1210', '#8c3b2e', '#e8dcc8'],
+  shoji: ['#f3ebd9', '#a8442f', '#c9b28a'],
+  origami: ['#fff8fa', '#d9547f', '#f3c9d8'],
+  swiss: ['#ffffff', '#111111', '#f2f2f0'],
+  sumiink: ['#0c0c0c', '#e8e5dd', '#9a968c'],
+  moonlit: ['#0b1324', '#8fb6e8', '#dfe8f7'],
+  ledger: ['#f4eddc', '#a33a2a', '#c9b99a'],
+  shonen: ['#fff6e8', '#ff6b1a', '#ffb800'],
+  ghost: ['#0a1018', '#67e8f9', '#7a9ba8'],
+  samurai: ['#1a1512', '#c9a961', '#b7352a'],
+  kawaii: ['#fff7fb', '#ff9ec4', '#9ee0c8'],
+  manga: ['#fbfaf7', '#101010', '#d62828'],
+};
+
+export const GLIFOS: Partial<Record<string, string>> = {
+  space: '桜',
+  sumie: '墨',
+  byobu: '屏',
+  shoji: '障',
+  origami: '折',
+  swiss: '＋',
+  sumiink: '墨',
+  moonlit: '月',
+  ledger: '帳',
+  shonen: '⚡',
+  ghost: '☻',
+  samurai: '侍',
+  kawaii: '♡',
+  manga: '漫',
+};
+
+/** Los temos con vistas estructurales propias. `space` es el único genérico. */
+export const TEMAS_PROPIOS = new Set([
+  'sumie',
+  'byobu',
+  'shoji',
+  'origami',
+  'swiss',
+  'sumiink',
+  'moonlit',
+  'ledger',
+  'shonen',
+  'ghost',
+  'samurai',
+  'kawaii',
+  'manga',
+]);

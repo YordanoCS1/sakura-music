@@ -7,6 +7,9 @@ export default defineConfig({
   timeout: 30_000,
   expect: { timeout: 7_000 },
   fullyParallel: true,
+  // Dos workers: con más, el dev server de Vite se satura en esta máquina y
+  // los tests empiezan a caer por timeouts que no son fallos de la app.
+  workers: 2,
   reporter: 'list',
   use: {
     baseURL: 'http://127.0.0.1:1420',

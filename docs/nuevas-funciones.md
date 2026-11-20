@@ -71,3 +71,11 @@ El tema Manga extiende su identidad a las pestañas **Buscar** y **Cola** y al
 borde grueso con sombra roja y portadas en color. El editor agrega una cinta
 `第 01 話 · EDICIÓN DE METADATOS` y fuerza superficies blancas sobre el diseño
 genérico.
+
+
+## Galería de temas y estados de carga
+
+La **galería de temas** muestra las 14 apariencias como miniaturas con preview
+en vivo y aplicación directa. Los **estados de carga** tienen 14 variantes (un
+indicador distinto por tema) y aparecen en escaneo, búsqueda online, letras y
+guardado de metadatos. Ver [contraste.md](contraste.md) para la auditoría AA.

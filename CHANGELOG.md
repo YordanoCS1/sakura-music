@@ -5,6 +5,9 @@ Todos los cambios destacables de este proyecto se registran acá. El formato sig
 ## [Sin publicar]
 
 ### Agregado
+- **Galería de temas**: vista museo con las 14 apariencias, miniatura, preview en vivo y aplicación con un clic; se abre desde Ajustes → Apariencia.
+- **Estados de carga temáticos**: indicadores con 14 variantes (pétalo, ensō, pincel, barras, chispa, tramado, etc.) en escaneo, búsqueda, letras y guardado de metadatos.
+- **Auditoría de contraste**: corrección AA en Origami, Swiss y Kawaii, texto sobre acento por tema y test guardian en `src/lib/contraste.test.ts` (informe en `docs/contraste.md`).
 - El tema **Manga** también cubre Buscar, Cola y el editor de metadatos con viñetas, cabeceras de capítulo y superficies blanco/negro con acento rojo; las portadas de la biblioteca se muestran a color con marco y sombra dura.
 - **Tema Manga** (`manga`, "Viñetas, tinta y screentone"): el decimotercer tema propio con identidad estructural. Home con portada de revista (`第 01 話`, globo de diálogo, sello 開 y línea de tiempo), biblioteca en páginas de viñetas (panel halftone, globo con el título, tag **GO!**, portadas en blanco y negro), cabecera negra con el glifo 漫, navegación con kanji sobre cuadrado rojo, estilo propio en Ajustes, panel "Ahora suena", playlists, paleta ⌘K, modales de metadatos, splash y transición `t-manga`. Paleta papel `#fbfaf7`, tinta `#101010` y acento rojo `#d62828`; usa `data-theme="space"` fijo y `data-skin="manga"`. Quedó como arquetipo del generador de temas y sumó snapshots `manga-home-win32.png` y `manga-library-win32.png` (el loop visual pasó a 7 temas). Total: **14 temas** (13 propios + 1 genérico).
 - **Búsqueda online de letras** en LRCLIB desde el panel “Ahora suena”, con resultados SINC/PLANA, botón *Aplicar* que escribe el `.lrc` al lado de la pista y *Quitar .lrc*. Tres comandos IPC nuevos y CSP actualizada.
@@ -34,7 +37,7 @@ Todos los cambios destacables de este proyecto se registran acá. El formato sig
 - **Actualizaciones automáticas firmadas** con minisign e instaladores NSIS/MSI; clave pública en `src-tauri/updater.key.pub`, privada ignorada por git y endpoint a configurar al publicar (`REPLACE_OWNER/REPLACE_REPO` en `tauri.conf.json`).
 - **Migraciones versionadas** con `PRAGMA user_version=2` (1 = FTS5 y disparadores, 2 = índices en artista/álbum/año/genero), respaldo automático `VACUUM INTO` con retención de 3 y PRAGMAs WAL + `synchronous=NORMAL` + `temp_store=MEMORY` + `foreign_keys=ON`.
 - **Benchmark de escaneo** `node scripts/benchmark_scan.mjs [cantidad]`: 10.000 pistas tardaron ~12,6 s en release en esta máquina; el CLI `scan` imprime los milisegundos.
-- **`npm run pipeline`** como comando único para todo lo que corre el CI: 29 unitarios Vitest, 29 E2E Playwright y 43 tests Rust.
+- **`npm run pipeline`** como comando único para todo lo que corre el CI: 58 unitarios Vitest, 30 E2E Playwright y 43 tests Rust.
 
 ### Cambiado
 - La identidad de los temas dejó de ser sólo de paleta: navegación, tarjetas, reproductor, tipografía y sombras cambian según el tema; ~200 superficies hardcodeadas se tokenizaron para que los 14 temas apliquen de verdad. Sumi-e incorpora textura washi, sellos hanko, ensō y trazos de pincel; los 13 temas propios suman estructura completa, con el selector base fijo en `data-theme='space'` y `data-skin` para cada uno.

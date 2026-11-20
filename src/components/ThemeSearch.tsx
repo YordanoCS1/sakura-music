@@ -17,6 +17,7 @@ import type {
   PlaylistInfo,
   ThemeMode,
 } from '../types';
+import ThemedLoader from './ThemedLoader';
 
 interface ThemeSearchProps {
   theme: ThemeMode;
@@ -153,7 +154,7 @@ export default function ThemeSearch({
                 disabled={isSearchingOnline || isResolvingPlaylist || !onlineQuery.trim()}
               >
                 {isSearchingOnline || isResolvingPlaylist ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <ThemedLoader theme={theme} pequeno />
                 ) : (
                   textoBoton
                 )}
@@ -190,7 +191,7 @@ export default function ThemeSearch({
         )}
         {isResolvingPlaylist && (
           <div className="manga-search-cargando">
-            <Loader2 className="w-5 h-5 animate-spin" /> Extrayendo pistas de la playlist…
+            <ThemedLoader theme={theme} pequeno etiqueta="Extrayendo pistas de la playlist…" />
           </div>
         )}
 

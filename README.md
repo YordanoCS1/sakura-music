@@ -140,7 +140,7 @@ npm run tauri build   # instalador .exe / .msi
 Checks de código:
 
 ```powershell
-npm run pipeline                                  # tipos, lint, formato, 29 unitarios, 29 E2E, build, fmt/clippy y 43 tests Rust
+npm run pipeline                                  # tipos, lint, formato, 58 unitarios, 30 E2E, build, fmt/clippy y 43 tests Rust
 cargo test --manifest-path src-tauri/Cargo.toml   # 43 tests Rust
 node node_modules/typescript/bin/tsc --noEmit     # tipos del frontend
 ```

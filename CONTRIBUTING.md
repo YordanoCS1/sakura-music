@@ -40,8 +40,8 @@ npm run pipeline        # todo lo que corre el CI, en orden
 O, si querés correr las etapas por separado:
 
 ```powershell
-npm run check                                   # tipos + lint + formato + 29 unitarios + build
-npm run test:e2e                                # navegador + arranque de la UI (29 E2E)
+npm run check                                   # tipos + lint + formato + 58 unitarios + build
+npm run test:e2e                                # navegador + arranque de la UI (30 E2E)
 cargo test --manifest-path src-tauri/Cargo.toml  # 43 tests Rust
 cargo fmt --check --manifest-path src-tauri/Cargo.toml
 cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings

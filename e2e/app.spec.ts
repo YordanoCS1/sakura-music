@@ -664,6 +664,20 @@ test('Manga tiene Buscar, Cola y editor de metadatos propios', async ({ page }) 
   await expect(editor.locator('.manga-modal-ribbon')).toContainText('EDICIÓN DE METADATOS');
 });
 
+test('la galería de temas aplica una apariencia', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });
+  await page.getByRole('tab', { name: /Ajustes/ }).click();
+  await page.getByRole('button', { name: /Abrir galería de temas/ }).click();
+
+  const galeria = page.getByRole('dialog', { name: 'Galería de temas' });
+  await expect(galeria).toBeVisible();
+  await expect(galeria.locator('.galeria-tema')).toHaveCount(14);
+  await galeria.locator('.galeria-tema', { hasText: 'Manga' }).click();
+  await expect(page.locator('.app-shell')).toHaveAttribute('data-skin', 'manga');
+  await expect(galeria).toHaveCount(0);
+});
+
 test('Ajustes → Sistema muestra la salud de la base y los registros', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });

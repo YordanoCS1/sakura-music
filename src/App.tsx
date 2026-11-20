@@ -3,7 +3,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { convertFileSrc } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { open } from '@tauri-apps/plugin-dialog';
-import { Search, Heart, Sparkles, X, AudioLines, Music2 } from 'lucide-react';
+import { Search, Heart, X, AudioLines, Music2 } from 'lucide-react';
 
 import type {
   ScannedTrack,
@@ -26,6 +26,7 @@ import HomeTab from './components/HomeTab';
 import SettingsTab from './components/SettingsTab';
 import PlayerBar from './components/PlayerBar';
 import UndoToast from './components/UndoToast';
+import ThemedLoader from './components/ThemedLoader';
 import PlaylistsPanel from './components/PlaylistsPanel';
 import CommandPalette from './components/CommandPalette';
 import SearchTab from './components/SearchTab';
@@ -1208,8 +1209,7 @@ export default function App() {
           {scanMessage && (
             <div className="bg-accent-500/10 border-b border-accent-500/20 px-6 py-2 flex items-center justify-between text-xs text-accent-300">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-accent-400 animate-spin" />
-                <span>{scanMessage}</span>
+                <ThemedLoader theme={temaBase} pequeno etiqueta={scanMessage} />
               </div>
             </div>
           )}

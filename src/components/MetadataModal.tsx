@@ -7,7 +7,6 @@ import {
   ImagePlus,
   Layers,
   Link2,
-  Loader2,
   ListMusic,
   Music2,
   Pencil,
@@ -21,6 +20,7 @@ import {
 } from 'lucide-react';
 import { useFocusTrap } from '../hooks/useFocusTrap';
 import { convertFileSrc } from '@tauri-apps/api/core';
+import ThemedLoader from './ThemedLoader';
 import type {
   CatalogAlbum,
   CatalogAlbumTrack,
@@ -744,7 +744,7 @@ export default function MetadataModal({
               >
                 {isSearchingCatalog ? (
                   <>
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <ThemedLoader theme={theme} pequeno />
                     <span>Buscando...</span>
                   </>
                 ) : (
@@ -786,7 +786,7 @@ export default function MetadataModal({
                     className="px-4 py-2 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-200 text-xs font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-1.5"
                   >
                     {isOpeningAlbum ? (
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <ThemedLoader theme={theme} pequeno />
                     ) : (
                       <Link2 className="w-3.5 h-3.5" />
                     )}
@@ -819,7 +819,7 @@ export default function MetadataModal({
                     className="px-4 py-2 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-200 text-xs font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-1.5"
                   >
                     {isOpeningSong ? (
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <ThemedLoader theme={theme} pequeno />
                     ) : (
                       <Link2 className="w-3.5 h-3.5" />
                     )}
@@ -881,7 +881,7 @@ export default function MetadataModal({
 
                 {isOpeningAlbum ? (
                   <div className="flex items-center justify-center gap-2 py-8 text-ink-400 text-xs">
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <ThemedLoader theme={theme} pequeno />
                     Cargando pistas del álbum...
                   </div>
                 ) : catalogAlbumTracks.length > 0 ? (
@@ -1078,7 +1078,7 @@ export default function MetadataModal({
             >
               {isSavingMetadata ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <ThemedLoader theme={theme} pequeno />
                   <span>Guardando en archivo...</span>
                 </>
               ) : (
