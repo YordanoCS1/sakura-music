@@ -140,8 +140,8 @@ npm run tauri build   # instalador .exe / .msi
 Checks de código:
 
 ```powershell
-npm run pipeline                                  # tipos, lint, formato, 58 unitarios, 32 E2E, build, fmt/clippy y 46 tests Rust
-cargo test --manifest-path src-tauri/Cargo.toml   # 46 tests Rust
+npm run pipeline                                  # tipos, lint, formato, 60 unitarios, 32 E2E, build, fmt/clippy y 47 tests Rust
+cargo test --manifest-path src-tauri/Cargo.toml   # 47 tests Rust
 node node_modules/typescript/bin/tsc --noEmit     # tipos del frontend
 ```
 
@@ -227,7 +227,7 @@ Todo el detalle vivido en `docs/`, en Markdown plano con Mermaid, sin MkDocs:
 - [Requisitos](docs/requisitos.md) — promesas verificables con su criterio.
 - [Casos de uso](docs/casos-de-uso.md) — actores y flujos contra el código real.
 - [Desarrollo](docs/desarrollo.md) — setup, tests y recetas.
-- [Contrato IPC](docs/ipc-contract.md) — los 47 comandos Tauri y los 7 eventos.
+- [Contrato IPC](docs/ipc-contract.md) — los 51 comandos Tauri y los 7 eventos.
 - [Formatos de datos](docs/data-formats.md) — SQLite, cola persistente y preferencias.
 - [Manual de usuario](docs/manual/README.md) — instalación, buscar/descargar, biblioteca, playlists, deshacer, letras, metadatos y resolución de problemas.
 - [Funciones nuevas](docs/nuevas-funciones.md) — playlists, deshacer, letras LRC, paleta ⌘K, actualizaciones y benchmarks.

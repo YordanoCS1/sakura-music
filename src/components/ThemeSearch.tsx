@@ -17,6 +17,8 @@ import type {
   PlaylistInfo,
   ThemeMode,
 } from '../types';
+import { useState } from 'react';
+import { pasaFiltroDuracion } from '../lib/duracion';
 import ThemedLoader from './ThemedLoader';
 
 interface ThemeSearchProps {
@@ -107,6 +109,12 @@ export default function ThemeSearch({
   onTriggerDownload,
   onSuggestionSearch,
 }: ThemeSearchProps) {
+  const [filtroDuracion, setFiltroDuracion] = useState<'todas' | 'cortas' | 'medianas' | 'largas'>(
+    'todas',
+  );
+  const resultadosVisibles = onlineResults.filter((r) =>
+    pasaFiltroDuracion(r.duration, filtroDuracion),
+  );
   const activas = downloads.filter(
     (d) =>
       !d.status.startsWith('completado') && !d.status.includes('error') && d.status !== 'cancelado',
@@ -307,11 +315,23 @@ export default function ThemeSearch({
 
         <section className="manga-search-bloque">
           <div className="manga-search-titulo">
-            <h2>{onlineResults.length > 0 ? 'RESULTADOS' : 'SUGERENCIAS'}</h2>
+            <h2>{resultadosVisibles.length > 0 ? 'RESULTADOS' : 'SUGERENCIAS'}</h2>
+            <div className="tsearch-duracion">
+              <select
+                value={filtroDuracion}
+                onChange={(e) => setFiltroDuracion(e.target.value as typeof filtroDuracion)}
+                aria-label="Filtrar por duración"
+              >
+                <option value="todas">Cualquier duración</option>
+                <option value="cortas">Menos de 5 min</option>
+                <option value="medianas">5 a 10 min</option>
+                <option value="largas">Más de 10 min</option>
+              </select>
+            </div>
           </div>
           <div className="manga-search-cards">
-            {onlineResults.length > 0
-              ? onlineResults.map((r, i) => (
+            {resultadosVisibles.length > 0
+              ? resultadosVisibles.map((r, i) => (
                   <article key={i} className="manga-search-card">
                     <span className="manga-search-num">{String(i + 1).padStart(2, '0')}</span>
                     <div className="manga-search-card-thumb">
@@ -535,11 +555,11 @@ export default function ThemeSearch({
 
       <section className="tsearch-resultados">
         <div className="tsearch-subhead">
-          <h3>{onlineResults.length > 0 ? 'Resultados' : 'Búsquedas sugeridas'}</h3>
+          <h3>{resultadosVisibles.length > 0 ? 'Resultados' : 'Búsquedas sugeridas'}</h3>
         </div>
         <div className="tsearch-cards">
-          {onlineResults.length > 0
-            ? onlineResults.map((r, i) => (
+          {resultadosVisibles.length > 0
+            ? resultadosVisibles.map((r, i) => (
                 <article key={i} className="tsearch-card">
                   <div className="tsearch-card-thumb">
                     {r.thumbnail ? (

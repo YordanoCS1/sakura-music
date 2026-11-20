@@ -4,6 +4,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
+import { notificarDescarga } from '../lib/notificaciones';
 import type { DownloadItem, DownloadProgressEvent } from '../types';
 import type { PersistedDownload } from '../lib/queue';
 import { toPersisted, fromPersisted } from '../lib/queue';
@@ -22,6 +23,7 @@ export function useDownloadQueue({
   rescanAfterDownload,
 }: UseDownloadQueueDeps) {
   const [downloads, setDownloads] = useState<DownloadItem[]>([]);
+  const downloadsRef = useRef<DownloadItem[]>([]);
   const [downloadFormat, setDownloadFormat] = useState('FLAC');
   const [restoredNotice, setRestoredNotice] = useState<string | null>(null);
   const queueRestoredRef = useRef(false);
@@ -74,6 +76,10 @@ export function useDownloadQueue({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    downloadsRef.current = downloads;
+  }, [downloads]);
+
   // Escuchar eventos en vivo emitidos desde el motor Rust
   useEffect(() => {
     const unlistenPromise = listen<DownloadProgressEvent>('download-progress', (event) => {
@@ -97,6 +103,8 @@ export function useDownloadQueue({
       // Si terminó de descargar y convertir, re-escanear para actualizar biblioteca en vivo
       if (payload.status === 'completado') {
         rescanAfterDownload();
+        const terminada = downloadsRef.current.find((item) => item.id === payload.id);
+        notificarDescarga(terminada?.title ?? 'Pista');
       }
     });
 
@@ -123,6 +131,7 @@ export function useDownloadQueue({
     thumbnail?: string | null,
     customFolder?: string,
   ) => {
+    void import('../lib/notificaciones').then((m) => m.pedirPermisoNotificaciones());
     const jobId = `dl-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
     const destFolder = customFolder || downloadFolder || currentFolder || defaultMusicDir || '.';
     const newJob: DownloadItem = {
@@ -192,6 +201,18 @@ export function useDownloadQueue({
     }
   };
 
+  // Mover una fila arriba/abajo para cambiar su prioridad visual.
+  const moveDownload = (id: string, delta: number) => {
+    setDownloads((prev) => {
+      const indice = prev.findIndex((item) => item.id === id);
+      const destino = indice + delta;
+      if (indice === -1 || destino < 0 || destino >= prev.length) return prev;
+      const copia = [...prev];
+      [copia[indice], copia[destino]] = [copia[destino]!, copia[indice]!];
+      return copia;
+    });
+  };
+
   // Reintentar una descarga con los mismos datos (mismo destino si lo tenía)
   const retryDownload = (item: DownloadItem) => {
     triggerDownload(item.title, item.artist, item.url, item.thumbnail, item.outputDir ?? undefined);
@@ -208,5 +229,6 @@ export function useDownloadQueue({
     cancelDownload,
     cancelAllDownloads,
     retryDownload,
+    moveDownload,
   };
 }

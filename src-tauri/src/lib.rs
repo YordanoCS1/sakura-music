@@ -112,6 +112,16 @@ fn cancel_all_downloads(manager: State<'_, Arc<DownloadManager>>) -> bool {
 /// Foto persistida de la cola. Al arrancar, las filas activas vuelven como
 /// `interrumpida` para que el frontend las relance.
 #[tauri::command]
+fn list_download_history() -> Result<Vec<library_db::DownloadHistoryItem>, String> {
+    library_db::list_download_history()
+}
+
+#[tauri::command]
+fn clear_download_history() -> Result<(), String> {
+    library_db::clear_download_history()
+}
+
+#[tauri::command]
 fn get_download_queue() -> Vec<PersistedDownload> {
     queue::load_queue()
 }
@@ -165,6 +175,37 @@ fn get_app_info(tracks_count: Option<usize>) -> AppInfo {
         memory_usage: current_memory_usage(),
         tracks_loaded: tracks_count.unwrap_or(0),
     }
+}
+
+#[tauri::command]
+fn library_scan_needed(folder: String) -> Result<bool, String> {
+    val::ruta(&folder, "Carpeta de biblioteca")?;
+    library_db::scan_needed(&folder)
+}
+
+/// Sólo registra el vigilante y el scope sin re-leer los tags de los archivos.
+#[tauri::command]
+fn prepare_library_watch(
+    app: tauri::AppHandle,
+    watcher: State<'_, library_watcher::LibraryWatcher>,
+    folder_path: String,
+) -> Result<bool, String> {
+    val::ruta(&folder_path, "Carpeta de biblioteca")?;
+    let ruta = Path::new(&folder_path);
+    if !ruta.is_dir() {
+        return Err(format!(
+            "La carpeta de biblioteca no existe: {}",
+            folder_path
+        ));
+    }
+    watcher.watch(app.clone(), ruta)?;
+    let canonica = ruta
+        .canonicalize()
+        .map_err(|error| format!("No se pudo resolver la carpeta elegida: {}", error))?;
+    app.asset_protocol_scope()
+        .allow_directory(&canonica, true)
+        .map_err(|error| format!("No se pudo autorizar la carpeta elegida: {}", error))?;
+    Ok(true)
 }
 
 #[tauri::command]
@@ -799,6 +840,8 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             get_app_info,
             get_default_music_dir,
+            library_scan_needed,
+            prepare_library_watch,
             get_cached_library,
             search_library_fts,
             remote_set_enabled,
@@ -817,6 +860,8 @@ pub fn run() {
             cancel_all_downloads,
             set_download_concurrency,
             get_download_queue,
+            list_download_history,
+            clear_download_history,
             save_download_queue,
             update_track_metadata,
             update_batch_metadata,

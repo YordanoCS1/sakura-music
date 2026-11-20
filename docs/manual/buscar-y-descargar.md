@@ -113,3 +113,13 @@ veces en la cola: se rechaza con un aviso para no duplicar el archivo.
 - **Portada HD**: antes de descargar se busca carátula en iTunes; si hay, se usa en vez de la miniatura de YouTube. Si falla, se usa la de siempre.
 - **Errores claros**: en vez del texto crudo de yt-dlp, la cola dice cosas como "El video es privado", "Sin conexión a internet" o "YouTube pidió verificación".
 - **Paralelismo configurable**: Ajustes → Sistema → *Descargas en paralelo* permite elegir entre 1 y 4.
+
+
+## Reintentos, errores de formato y filtros
+
+- **Reintentos automáticos**: los errores transitorios (429, sin conexión, timeout) se reintentan hasta 3 veces con esperas de 2 y 4 segundos; la cola muestra "Reintentando en…".
+- **Fallback de formato**: si el formato pedido no existe (por ejemplo FLAC), se prueba OPUS, M4A y MP3 automáticamente.
+- **Aviso al terminar**: notificación de Windows y un tono breve que cambia según el tema. Si el navegador bloquea las notificaciones, el sonido sigue funcionando.
+- **Prioridad y filtro en la cola**: cada fila tiene botones para subir/bajar y el encabezado permite filtrar por *En curso*, *Terminadas* o *Con error*.
+- **Filtro de duración en la búsqueda**: *Menos de 5 min*, *5 a 10 min* o *Más de 10 min*, usando la duración que reporta YouTube.
+- **Arranque rápido (opcional)**: en Ajustes → Sistema podés evitar el reescaneo automático al abrir. Si cambiás archivos con la app cerrada, tocá *Actualizar biblioteca*.

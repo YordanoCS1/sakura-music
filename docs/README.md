@@ -20,7 +20,7 @@ Esta carpeta contiene la documentación técnica y de referencia del proyecto Sa
 | Ver el pipeline de CI | [pipeline.md](pipeline.md) |
 | Auditoría de contraste de los 14 temas | [contraste.md](contraste.md) |
 | Tokens y reglas visuales | [diseno.md](diseno.md) |
-| Comandos y eventos disponibles | [ipc-contract.md](ipc-contract.md) (47 comandos / 7 eventos) |
+| Comandos y eventos disponibles | [ipc-contract.md](ipc-contract.md) (51 comandos / 7 eventos) |
 | Funciones nuevas (playlists, deshacer, letras, updater, temas Manga y Estudio) | [nuevas-funciones.md](nuevas-funciones.md) |
 | Dónde y cómo se guardan los datos | [data-formats.md](data-formats.md) |
 | Buscar, descargar y entender la cola | [manual/buscar-y-descargar.md](manual/buscar-y-descargar.md) |
@@ -41,9 +41,9 @@ docs/
   desarrollo.md              setup, tests, tipos, benchmark y recetas
   nuevas-funciones.md         playlists, deshacer, letras, paleta y updater
   release.md                 versionado, build, firma y publicación
-  pipeline.md                diagrama y etapas del CI (58/32/46 tests)
+  pipeline.md                diagrama y etapas del CI (58/32/47 tests)
   diseno.md                  tokens y los 14 temas propios (incluido Estudio)
-  ipc-contract.md            47 comandos Tauri y 7 eventos (contrato frontend/Rust)
+  ipc-contract.md            51 comandos Tauri y 7 eventos (contrato frontend/Rust)
   data-formats.md            SQLite, download_queue.json y preferencias
   manual/
     README.md                índice del manual
@@ -114,7 +114,7 @@ docs/
   nombra el archivo.
 - **Casos de uso:** `CU-01`…`CU-17`, cada uno con flujo principal, alternativos
   y "dónde está" en el código.
-- **Tests:** 58 unitarios Vitest, 32 E2E Playwright y 46 Rust; `npm run pipeline`
+- **Tests:** 60 unitarios Vitest, 32 E2E Playwright y 47 Rust; `npm run pipeline`
   pasa en verde.
 - **Diagramas:** Mermaid embebido en Markdown. GitHub, GitLab y la vista previa
   de VS Code lo renderizan sin instalar nada. No hay build ni sitio aparte.

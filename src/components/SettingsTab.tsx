@@ -17,7 +17,7 @@ import {
   Database,
   Link2,
 } from 'lucide-react';
-import type { AppInfo, PlayerStyle, ThemeOption } from '../types';
+import type { AppInfo, DownloadHistoryItem, PlayerStyle, ThemeOption } from '../types';
 import { GLIFOS, PREVIEWS, SWATCHES } from '../themes/themeMeta';
 import ThemeGallery from './ThemeGallery';
 import ToolsPanel from './ToolsPanel';
@@ -52,6 +52,10 @@ interface SettingsTabProps {
   onToggleRemote: () => void;
   concurrencia: number;
   onSetConcurrencia: (n: number) => void;
+  historialDescargas: DownloadHistoryItem[];
+  onClearHistorial: () => void;
+  skipStartupScan: boolean;
+  onSetSkipStartupScan: (valor: boolean) => void;
   onAbrirGenerador: () => void;
   onBorrarTema: (id: string) => void;
   temasPersonalizadosIds: string[];
@@ -91,6 +95,10 @@ export default function SettingsTab(props: SettingsTabProps) {
     onToggleRemote,
     concurrencia,
     onSetConcurrencia,
+    historialDescargas,
+    onClearHistorial,
+    skipStartupScan,
+    onSetSkipStartupScan,
     onAbrirGenerador,
     onBorrarTema,
     temasPersonalizadosIds,
@@ -491,6 +499,61 @@ export default function SettingsTab(props: SettingsTabProps) {
           <p className="set-note">
             Más descargas simultáneas son más rápidas, pero pueden saturar la conexión.
           </p>
+        </Tarjeta>
+        <Tarjeta
+          n="07c"
+          titulo="Historial de descargas"
+          desc="Lo que ya bajaste, aunque limpies la cola"
+          icono={Download}
+          ancha
+        >
+          {historialDescargas.length === 0 ? (
+            <p className="set-note">Todavía no hay descargas terminadas.</p>
+          ) : (
+            <div className="set-historial">
+              {historialDescargas.slice(0, 12).map((item) => (
+                <div key={item.id} className="set-historial-item">
+                  <strong>{item.title}</strong>
+                  <small>
+                    {item.artist} · {item.format}
+                  </small>
+                </div>
+              ))}
+            </div>
+          )}
+          {historialDescargas.length > 0 && (
+            <div className="set-actions">
+              <button type="button" onClick={onClearHistorial} className="set-btn-danger">
+                <Trash2 className="w-3.5 h-3.5" /> Limpiar historial
+              </button>
+            </div>
+          )}
+        </Tarjeta>
+        <Tarjeta
+          n="07d"
+          titulo="Arranque rápido"
+          desc="Omitir el reescaneo al abrir la app"
+          icono={Cpu}
+          ancha
+        >
+          <div className="set-toggle-row">
+            <div>
+              <strong>No reescanear al iniciar</strong>
+              <small>
+                Ahorra tiempo con bibliotecas grandes. Si cambiaste archivos con la app cerrada, usá
+                el botón <b>Actualizar biblioteca</b>.
+              </small>
+            </div>
+            <button
+              type="button"
+              className="set-switch"
+              aria-pressed={skipStartupScan}
+              aria-label="Omitir reescaneo al iniciar"
+              onClick={() => onSetSkipStartupScan(!skipStartupScan)}
+            >
+              <span />
+            </button>
+          </div>
         </Tarjeta>
         <Tarjeta n="08" titulo="Motor nativo" desc="Tauri 2 + Rust" icono={Cpu} ancha>
           <dl className="set-specs">

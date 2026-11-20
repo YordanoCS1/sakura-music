@@ -5,6 +5,7 @@ Todos los cambios destacables de este proyecto se registran acá. El formato sig
 ## [Sin publicar]
 
 ### Agregado
+- **Descargas más resilient**: reintentos automáticos con backoff, fallback de formato, notificación y sonido al terminar, historial persistente, filtro de duración, reorden y filtro de la cola, y opción de arranque rápido sin reescaneo.
 - **Mejoras de descarga**: archivo persistente de IDs para no repetir pistas, indexación automática al terminar, portada HD del catálogo, errores traducidos y concurrencia configurable (1–4) en Ajustes → Sistema.
 - **Instalador personalizado** con marca Estudio: cabecera y barra lateral propias, selector de idioma, página de elección de carpeta, menú Inicio, acceso al escritorio y hooks que documentan la ruta de datos y limpian al desinstalar.
 - **Portada giratoria**: la tapa del reproductor y del panel "Ahora suena" gira mientras suena y se frena al pausar, con forma y velocidad propias por tema (círculo en Moonlit, cuadrado en Swiss, viñeta en Manga).
@@ -42,7 +43,7 @@ Todos los cambios destacables de este proyecto se registran acá. El formato sig
 - **Actualizaciones automáticas firmadas** con minisign e instaladores NSIS/MSI; clave pública en `src-tauri/updater.key.pub`, privada ignorada por git y endpoint a configurar al publicar (`REPLACE_OWNER/REPLACE_REPO` en `tauri.conf.json`).
 - **Migraciones versionadas** con `PRAGMA user_version=2` (1 = FTS5 y disparadores, 2 = índices en artista/álbum/año/genero), respaldo automático `VACUUM INTO` con retención de 3 y PRAGMAs WAL + `synchronous=NORMAL` + `temp_store=MEMORY` + `foreign_keys=ON`.
 - **Benchmark de escaneo** `node scripts/benchmark_scan.mjs [cantidad]`: 10.000 pistas tardaron ~12,6 s en release en esta máquina; el CLI `scan` imprime los milisegundos.
-- **`npm run pipeline`** como comando único para todo lo que corre el CI: 58 unitarios Vitest, 32 E2E Playwright y 46 tests Rust.
+- **`npm run pipeline`** como comando único para todo lo que corre el CI: 60 unitarios Vitest, 32 E2E Playwright y 47 tests Rust.
 
 ### Cambiado
 - Los archivos descargados se nombran `Artista - Canción.opus`, sin el `[IDdeYouTube]`. Si ya existe, se agrega `(2)`, `(3)`… en vez de saltear la descarga; la misma URL repetida en la cola sí se rechaza con un aviso.
@@ -50,7 +51,7 @@ Todos los cambios destacables de este proyecto se registran acá. El formato sig
 - El tema por defecto M3 Zen fue rediseñado como Estudio, con vistas propias de consola de mezcla; dejó de ser el tema genérico. Mantiene el id interno `space` y `data-theme="space"` fijo, y ahora también aplica `data-skin="space"`: los 14 temas oficiales son propios y la vista genérica queda sólo como fallback para temas importados.
 - La identidad de los temas dejó de ser sólo de paleta: navegación, tarjetas, reproductor, tipografía y sombras cambian según el tema; ~200 superficies hardcodeadas se tokenizaron para que los 14 temas apliquen de verdad. Sumi-e incorpora textura washi, sellos hanko, ensō y trazos de pincel; los 14 temas oficiales suman estructura completa, con el selector base fijo en `data-theme='space'` y `data-skin` para cada uno.
 - Todos los comentarios del código están en español rioplatense y explican decisiones no obvias.
-- La documentación se actualizó para reflejar 47 comandos Tauri, 7 eventos, 46 tests Rust y 9 vistas.
+- La documentación se actualizó para reflejar 51 comandos Tauri, 7 eventos, 47 tests Rust y 9 vistas.
 - Código Rust y frontend formateados con `rustfmt` y Prettier; clippy pasa con `-D warnings`.
 - La ventana se declara sin decoraciones también en `tauri.conf.json`, igual que en `lib.rs`.
 - `DownloadManager` usa `parking_lot`: un panic en un hilo de descarga ya no envenena un mutex y, con `panic = "abort"`, no se lleva la app por delante.

@@ -706,6 +706,47 @@ fn ya_descargado(url: &str) -> bool {
         .unwrap_or(false)
 }
 
+/// Errores transitorios que vale la pena reintentar.
+fn es_transitorio(detalle: &str) -> bool {
+    let bajo = detalle.to_lowercase();
+    bajo.contains("429")
+        || bajo.contains("temporary failure")
+        || bajo.contains("connection refused")
+        || bajo.contains("network is unreachable")
+        || bajo.contains("timed out")
+        || bajo.contains("unable to download webpage")
+        || bajo.contains("http error 5")
+}
+
+fn es_error_formato(detalle: &str) -> bool {
+    let bajo = detalle.to_lowercase();
+    bajo.contains("requested format") || bajo.contains("unsupported format")
+}
+
+fn guardar_historial(titulo: &str, artista: &str, url: &str, formato: &str, archivo: Option<&str>) {
+    let conexion = match library_db::open_connection() {
+        Ok(conexion) => conexion,
+        Err(_) => return,
+    };
+    let id = format!("hist-{}-{}", std::process::id(), url);
+    let _ = conexion.execute(
+        "INSERT OR REPLACE INTO download_history
+         (id, title, artist, url, format, file_path, completed_at) VALUES (?1,?2,?3,?4,?5,?6,?7)",
+        rusqlite::params![
+            id,
+            titulo,
+            artista,
+            url,
+            formato,
+            archivo,
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .map(|d| d.as_secs() as i64)
+                .unwrap_or(0),
+        ],
+    );
+}
+
 /// Traduce los errores típicos de yt-dlp a mensajes que se entienden.
 fn mensaje_error(detalle: &str) -> String {
     let bajo = detalle.to_lowercase();
@@ -806,18 +847,79 @@ pub fn execute_download(
             manager.finish(&job_id);
             return;
         }
-
-        run_download(
-            &app,
-            &manager,
-            &job_id,
-            &url,
-            &format_opt,
-            &output_folder,
-            title,
-            artist,
-        );
-
+        let formatos = ["FLAC", "OPUS", "M4A", "MP3"];
+        let mut formato = format_opt.clone();
+        let mut ultimo = String::new();
+        for intento in 0..3 {
+            if manager.is_cancelled(&job_id) {
+                ultimo = "cancelado".to_string();
+                break;
+            }
+            match run_download(
+                &app,
+                &manager,
+                &job_id,
+                &url,
+                &formato,
+                &output_folder,
+                title.clone(),
+                artist.clone(),
+            ) {
+                Ok(()) => {
+                    manager.release();
+                    manager.finish(&job_id);
+                    return;
+                }
+                Err(error) => {
+                    ultimo = error;
+                    if manager.is_cancelled(&job_id) {
+                        break;
+                    }
+                    if es_error_formato(&ultimo)
+                        && intento < 2
+                        && let Some(siguiente) = formatos.iter().find(|f| f != &&formato)
+                    {
+                        formato = siguiente.to_string();
+                        emit_progress(
+                            &app,
+                            &job_id,
+                            0.0,
+                            "--",
+                            "--",
+                            "Probando otro formato…",
+                            None,
+                        );
+                        continue;
+                    }
+                    if es_transitorio(&ultimo) && intento < 2 {
+                        let espera = (intento + 1) * 2;
+                        emit_progress(
+                            &app,
+                            &job_id,
+                            0.0,
+                            "--",
+                            "--",
+                            &format!("Reintentando en {espera} s…"),
+                            None,
+                        );
+                        std::thread::sleep(std::time::Duration::from_secs(espera));
+                        continue;
+                    }
+                    break;
+                }
+            }
+        }
+        if ultimo != "cancelado" {
+            emit_progress(
+                &app,
+                &job_id,
+                0.0,
+                "--",
+                "--",
+                &mensaje_error(&ultimo),
+                None,
+            );
+        }
         manager.release();
         manager.finish(&job_id);
     });
@@ -884,40 +986,13 @@ fn run_download(
     output_folder: &str,
     title: Option<String>,
     artist: Option<String>,
-) {
-    let ytdlp = match find_ytdlp_binary() {
-        Some(path) => path,
-        None => {
-            emit_progress(
-                app,
-                job_id,
-                0.0,
-                "--",
-                "--",
-                "error: yt-dlp no encontrado",
-                None,
-            );
-            return;
-        }
-    };
-
+) -> Result<(), String> {
+    let ytdlp = find_ytdlp_binary().ok_or_else(|| "yt-dlp no encontrado".to_string())?;
     let mut cmd = nueva_command(ytdlp);
-    if let Err(error) = configure_ytdlp_temp_dir(&mut cmd) {
-        emit_progress(
-            app,
-            job_id,
-            0.0,
-            "--",
-            "--",
-            &format!("error: {}", error),
-            None,
-        );
-        return;
-    }
+    configure_ytdlp_temp_dir(&mut cmd)?;
 
     let out_dir = Path::new(output_folder);
     let _ = std::fs::create_dir_all(out_dir);
-
     let plantilla = nombre_descarga(out_dir, title.as_deref(), artist.as_deref());
     let out_template = out_dir.join(&plantilla).to_string_lossy().to_string();
 
@@ -936,23 +1011,23 @@ fn run_download(
     }
 
     cmd.arg(url);
-    cmd.args(["-o", &out_template]);
-    cmd.arg("--extract-audio");
-    cmd.arg("--continue");
-
-    let fmt_lower = format_opt.to_lowercase();
-    if fmt_lower.contains("flac") {
+    cmd.args(["-o", &out_template, "--extract-audio", "--continue"]);
+    let fmt = format_opt.to_lowercase();
+    if fmt.contains("flac") {
         cmd.args(["--audio-format", "flac", "--audio-quality", "0"]);
-    } else if fmt_lower.contains("opus") {
+    } else if fmt.contains("opus") {
         cmd.args(["--audio-format", "opus", "--audio-quality", "0"]);
-    } else if fmt_lower.contains("m4a") || fmt_lower.contains("aac") {
+    } else if fmt.contains("m4a") || fmt.contains("aac") {
         cmd.args(["--audio-format", "m4a", "--audio-quality", "192k"]);
     } else {
         cmd.args(["--audio-format", "mp3", "--audio-quality", "320k"]);
     }
-
-    cmd.args(["--embed-thumbnail", "--add-metadata"]);
-    cmd.args(["--no-playlist", "--windows-filenames"]);
+    cmd.args([
+        "--embed-thumbnail",
+        "--add-metadata",
+        "--no-playlist",
+        "--windows-filenames",
+    ]);
     cmd.args([
         "--socket-timeout",
         "30",
@@ -966,34 +1041,18 @@ fn run_download(
         "--progress-template",
         "sakuradl|%(progress._percent_str)s|%(progress._speed_str)s|%(progress._eta_str)s|%(progress.status)s",
     ]);
-    // yt-dlp imprime la ruta final; así el frontend sabe qué archivo quedó.
     cmd.args(["--print", "after_move:filepath", "--no-simulate"]);
-
     if let Some(ffmpeg) = find_ffmpeg_binary()
         && let Some(parent) = ffmpeg.parent()
     {
         cmd.args(["--ffmpeg-location", &parent.to_string_lossy()]);
     }
-
     cmd.stdout(Stdio::piped());
     cmd.stderr(Stdio::piped());
 
-    let mut child = match cmd.spawn() {
-        Ok(child) => child,
-        Err(err) => {
-            emit_progress(
-                app,
-                job_id,
-                0.0,
-                "--",
-                "--",
-                &mensaje_error(&format!("al iniciar: {err}")),
-                None,
-            );
-            return;
-        }
-    };
-
+    let mut child = cmd
+        .spawn()
+        .map_err(|error| format!("al iniciar: {error}"))?;
     manager.register_pid(job_id, child.id());
 
     let stderr = child.stderr.take();
@@ -1016,28 +1075,28 @@ fn run_download(
             if let Some((pct, speed, eta, status)) = parse_progress_line(&line) {
                 emit_progress(app, job_id, pct, &speed, &eta, &status, None);
             } else {
-                let trimmed = line.trim();
-                if trimmed.contains(":\\") || trimmed.starts_with('/') {
-                    final_path = Some(trimmed.to_string());
+                let cortado = line.trim();
+                if cortado.contains(":\\") || cortado.starts_with('/') {
+                    final_path = Some(cortado.to_string());
                 }
             }
         }
     }
 
-    let status = child.wait();
+    let estado = child.wait();
     if let Some(portada) = &portada {
         let _ = std::fs::remove_file(portada);
     }
     manager.unregister_pid(job_id);
-    let stderr_text = stderr_thread.join().unwrap_or_default();
+    let stderr_texto = stderr_thread.join().unwrap_or_default();
 
     if manager.is_cancelled(job_id) {
         emit_progress(app, job_id, 0.0, "--", "--", "cancelado", None);
-        return;
+        return Err("cancelado".to_string());
     }
 
-    match status {
-        Ok(status) if status.success() => {
+    match estado {
+        Ok(estado) if estado.success() => {
             let file_path = final_path.or_else(|| find_downloaded_file(out_dir, url));
             if let Some(ruta) = &file_path
                 && let Some(track) = scanner::scan_audio_file(Path::new(ruta))
@@ -1045,22 +1104,29 @@ fn run_download(
             {
                 let _ = app.emit("library-track-added", track);
             }
+            guardar_historial(
+                title.as_deref().unwrap_or(""),
+                artist.as_deref().unwrap_or(""),
+                url,
+                format_opt,
+                file_path.as_deref(),
+            );
             emit_progress(app, job_id, 100.0, "--", "00:00", "completado", file_path);
+            Ok(())
         }
         _ => {
-            let detail = stderr_text
+            let detalle = stderr_texto
                 .lines()
                 .rev()
-                .find(|line| !line.trim().is_empty())
+                .find(|linea| !linea.trim().is_empty())
                 .unwrap_or("")
                 .trim()
                 .to_string();
-            let status = if detail.is_empty() {
-                "No se pudo procesar la descarga.".to_string()
+            Err(if detalle.is_empty() {
+                "No se pudo procesar la descarga".to_string()
             } else {
-                mensaje_error(&detail)
-            };
-            emit_progress(app, job_id, 0.0, "--", "--", &status, None);
+                detalle
+            })
         }
     }
 }
@@ -1068,6 +1134,15 @@ fn run_download(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn detecta_erros_transitorios_y_de_formato() {
+        assert!(es_transitorio("HTTP Error 429: Too Many Requests"));
+        assert!(es_transitorio("Temporary failure in name resolution"));
+        assert!(!es_transitorio("ERROR: Private video"));
+        assert!(es_error_formato("ERROR: requested format not available"));
+        assert!(!es_error_formato("ERROR: Video unavailable"));
+    }
 
     #[test]
     fn errores_de_yt_dlp_se_traducen() {

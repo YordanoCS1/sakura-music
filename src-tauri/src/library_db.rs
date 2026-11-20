@@ -107,6 +107,15 @@ pub(crate) fn create_schema(connection: &Connection) -> Result<(), String> {
               CREATE INDEX IF NOT EXISTS playlist_tracks_orden
                  ON playlist_tracks(playlist_id, position);
               -- Papelera: guarda el archivo y los datos de la pista para Deshacer.
+              CREATE TABLE IF NOT EXISTS download_history (
+                  id TEXT PRIMARY KEY NOT NULL,
+                  title TEXT NOT NULL,
+                  artist TEXT NOT NULL,
+                  url TEXT NOT NULL,
+                  format TEXT NOT NULL,
+                  file_path TEXT,
+                  completed_at INTEGER NOT NULL
+              );
               CREATE TABLE IF NOT EXISTS deleted_tracks (
                  token TEXT PRIMARY KEY NOT NULL,
                  original_path TEXT NOT NULL,
@@ -465,6 +474,22 @@ fn sync_scan_on(
             [&root_path],
         )
         .map_err(|error| format!("No se pudo guardar la carpeta de biblioteca: {}", error))?;
+    let ahora = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_nanos() as i64)
+        .unwrap_or(0)
+        .to_string();
+    for (clave, valor) in [
+        ("last_scan_folder", root_path.as_str()),
+        ("last_scan_ns", ahora.as_str()),
+    ] {
+        transaction
+            .execute(
+                "INSERT OR REPLACE INTO library_state (key, value) VALUES (?1, ?2)",
+                [clave, valor],
+            )
+            .map_err(|error| format!("No se pudo registrar el escaneo: {}", error))?;
+    }
     transaction
         .commit()
         .map_err(|error| format!("No se pudo confirmar el escaneo: {}", error))
@@ -1277,4 +1302,65 @@ mod tests {
 
         std::fs::remove_dir_all(test_dir).unwrap();
     }
+}
+
+#[derive(Serialize)]
+pub struct DownloadHistoryItem {
+    pub id: String,
+    pub title: String,
+    pub artist: String,
+    pub url: String,
+    pub format: String,
+    pub file_path: Option<String>,
+    pub completed_at: i64,
+}
+
+pub fn list_download_history() -> Result<Vec<DownloadHistoryItem>, String> {
+    let connection = open_connection()?;
+    let mut sentencia = connection
+        .prepare(
+            "SELECT id, title, artist, url, format, file_path, completed_at
+             FROM download_history ORDER BY completed_at DESC LIMIT 200",
+        )
+        .map_err(|error| format!("No se pudo leer el historial: {}", error))?;
+    sentencia
+        .query_map([], |fila| {
+            Ok(DownloadHistoryItem {
+                id: fila.get(0)?,
+                title: fila.get(1)?,
+                artist: fila.get(2)?,
+                url: fila.get(3)?,
+                format: fila.get(4)?,
+                file_path: fila.get(5)?,
+                completed_at: fila.get(6)?,
+            })
+        })
+        .map_err(|error| format!("No se pudo leer el historial: {}", error))?
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|error| format!("No se pudo leer el historial: {}", error))
+}
+
+pub fn clear_download_history() -> Result<(), String> {
+    let connection = open_connection()?;
+    connection
+        .execute("DELETE FROM download_history", [])
+        .map_err(|error| format!("No se pudo limpiar el historial: {}", error))?;
+    Ok(())
+}
+
+/// `true` si nunca se escaneó esa carpeta o cambió la raíz.
+pub fn scan_needed(folder: &str) -> Result<bool, String> {
+    let connection = open_connection()?;
+    let leer = |clave: &str| -> Option<String> {
+        connection
+            .query_row(
+                "SELECT value FROM library_state WHERE key = ?1",
+                [clave],
+                |fila| fila.get(0),
+            )
+            .optional()
+            .ok()
+            .flatten()
+    };
+    Ok(leer("last_scan_folder").as_deref() != Some(folder) || leer("last_scan_ns").is_none())
 }

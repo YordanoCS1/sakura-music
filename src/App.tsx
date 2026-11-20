@@ -10,6 +10,7 @@ import type {
   OnlineSearchResult,
   DownloaderStatus,
   AppInfo,
+  DownloadHistoryItem,
   ThemeMode,
   ThemeOption,
   PlayerStyle,
@@ -96,6 +97,7 @@ const TEMAS_DISPONIBLES: ThemeOption[] = [
 export default function App() {
   const [activeTab, setActiveTabRaw] = useState<AppTab>('library');
   const [paletaAbierta, setPaletaAbierta] = useState(false);
+  const [historialDescargas, setHistorialDescargas] = useState<DownloadHistoryItem[]>([]);
   const [concurrencia, setConcurrencia] = useState(() => {
     const guardado = Number(localStorage.getItem('sakura_download_concurrency') ?? 2);
     return Number.isFinite(guardado) ? Math.min(4, Math.max(1, guardado)) : 2;
@@ -310,6 +312,12 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    invoke<DownloadHistoryItem[]>('list_download_history')
+      .then((historial) => setHistorialDescargas(historial ?? []))
+      .catch((error) => console.error('No se pudo cargar el historial:', error));
+  }, []);
+
+  useEffect(() => {
     invoke('set_download_concurrency', { max: concurrencia }).catch((error) =>
       console.error('No se pudo ajustar la concurrencia:', error),
     );
@@ -401,6 +409,7 @@ export default function App() {
     cancelDownload,
     cancelAllDownloads,
     retryDownload,
+    moveDownload,
   } = useDownloadQueue({
     currentFolder,
     defaultMusicDir,
@@ -562,15 +571,22 @@ export default function App() {
           setActiveTrack(cached[0]);
         }
         if (savedFolder) {
-          const refreshed = await invoke<ScannedTrack[]>('scan_library', {
-            folderPath: savedFolder,
-          });
-          setTracks(refreshed);
-          setActiveTrack((current) =>
-            current
-              ? (refreshed.find((track) => track.id === current.id) ?? current)
-              : (refreshed[0] ?? null),
-          );
+          const omitir =
+            localStorage.getItem('sakura_skip_startup_scan') === 'true' &&
+            !(await invoke<boolean>('library_scan_needed', { folder: savedFolder }));
+          if (omitir) {
+            await invoke('prepare_library_watch', { folderPath: savedFolder });
+          } else {
+            const refreshed = await invoke<ScannedTrack[]>('scan_library', {
+              folderPath: savedFolder,
+            });
+            setTracks(refreshed);
+            setActiveTrack((current) =>
+              current
+                ? (refreshed.find((track) => track.id === current.id) ?? current)
+                : (refreshed[0] ?? null),
+            );
+          }
         }
       })
       .catch((err) => console.error('Error al cargar o actualizar biblioteca:', err));
@@ -1438,6 +1454,7 @@ export default function App() {
                 onCancelAll={cancelAllDownloads}
                 onCancel={cancelDownload}
                 onRetry={retryDownload}
+                onMoveDownload={moveDownload}
                 onClearFinished={() =>
                   setDownloads((prev) =>
                     prev.filter(
@@ -1512,6 +1529,19 @@ export default function App() {
                 remoteIp={controlRemoto.ip}
                 onToggleRemote={controlRemoto.alternar}
                 concurrencia={concurrencia}
+                skipStartupScan={localStorage.getItem('sakura_skip_startup_scan') === 'true'}
+                onSetSkipStartupScan={(valor) =>
+                  localStorage.setItem('sakura_skip_startup_scan', String(valor))
+                }
+                historialDescargas={historialDescargas}
+                onClearHistorial={async () => {
+                  try {
+                    await invoke('clear_download_history');
+                    setHistorialDescargas([]);
+                  } catch (error) {
+                    console.error('No se pudo limpiar el historial:', error);
+                  }
+                }}
                 onSetConcurrencia={(n) => {
                   const valor = Math.min(4, Math.max(1, n));
                   localStorage.setItem('sakura_download_concurrency', String(valor));

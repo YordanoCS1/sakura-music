@@ -1,6 +1,6 @@
 # Contrato IPC (frontend ↔ Rust)
 
-Toda la comunicación entre React y el núcleo Rust pasa por `invoke()` y por eventos de Tauri. Este documento es la lista canonical de los **47 comandos** y los **7 eventos**. Si agregás uno, actualizá este archivo en el mismo commit.
+Toda la comunicación entre React y el núcleo Rust pasa por `invoke()` y por eventos de Tauri. Este documento es la lista canonical de los **51 comandos** y los **7 eventos**. Si agregás uno, actualizá este archivo en el mismo commit.
 
 Los tipos (`ScannedTrack`, `PersistedDownload`, etc.) están en [`src/types.ts`](../src/types.ts) y su contrato Rust en los módulos indicados. Los formatos persistidos están en [data-formats.md](data-formats.md).
 
@@ -20,6 +20,8 @@ Los tipos (`ScannedTrack`, `PersistedDownload`, etc.) están en [`src/types.ts`]
 |---|---|---|---|
 | `get_app_info` | `tracks_count?: number` | `AppInfo` (`engine`, `rust_version`, `memory_usage`, `tracks_loaded`) | `lib.rs` |
 | `get_default_music_dir` | — | `string \| null` | `lib.rs` |
+| `library_scan_needed` | `folder: string` | `boolean` | `lib.rs` |
+| `prepare_library_watch` | `folder_path: string` | `boolean` | `lib.rs` |
 | `get_cached_library` | — | `ScannedTrack[]` | `lib.rs` |
 | `scan_library` | `folder_path: string` | `ScannedTrack[]` | `lib.rs` |
 | `clear_library_cache` | — | `boolean` | `lib.rs` |
@@ -119,11 +121,11 @@ sobrescribe un binario que ya esté en el PATH.
 
 El frontend filtra `library-changed` comparando la ruta con la carpeta activa, para no recargar si cambia otra biblioteca. Los eventos de búsqueda se descartan si su `request_id` no corresponde a la petición vigente.
 
-Además de estos eventos, los plugins `updater` y `process` tienen sus propios canales (`plugin:updater|*`, `plugin:process|*`) y se consumen con las APIs `@tauri-apps/plugin-updater` y `@tauri-apps/plugin-process`, no con `invoke()` directo. Por eso no cuentan en la tabla de 47 comandos. La búsqueda de actualizaciones y el reinicio viven en `SystemPanel.tsx`.
+Además de estos eventos, los plugins `updater` y `process` tienen sus propios canales (`plugin:updater|*`, `plugin:process|*`) y se consumen con las APIs `@tauri-apps/plugin-updater` y `@tauri-apps/plugin-process`, no con `invoke()` directo. Por eso no cuentan en la tabla de 51 comandos. La búsqueda de actualizaciones y el reinicio viven en `SystemPanel.tsx`.
 
 ## Registro de comandos
 
-Los 47 comandos están registrados en el `invoke_handler` de `lib.rs` (44 definidos ahí y 3 en `catalog.rs`). Si agregás uno nuevo:
+Los 51 comandos están registrados en el `invoke_handler` de `lib.rs` (48 definidos ahí y 3 en `catalog.rs`). Si agregás uno nuevo:
 
 1. Definilo con `#[tauri::command]` y devolvé `Result<_, String>` cuando pueda fallar.
 2. Registralo en `generate_handler!`.

@@ -18,6 +18,8 @@ import type {
   PlaylistInfo,
   ThemeMode,
 } from '../types';
+import { useState } from 'react';
+import { pasaFiltroDuracion } from '../lib/duracion';
 
 const GLIFOS: Partial<Record<ThemeMode, string>> = {
   sumie: '墨',
@@ -92,6 +94,12 @@ export default function SearchTab({
   onTriggerDownload,
   onSuggestionSearch,
 }: SearchTabProps) {
+  const [filtroDuracion, setFiltroDuracion] = useState<'todas' | 'cortas' | 'medianas' | 'largas'>(
+    'todas',
+  );
+  const resultadosVisibles = onlineResults.filter((r) =>
+    pasaFiltroDuracion(r.duration, filtroDuracion),
+  );
   const activeDownloads = downloads.filter(
     (item) =>
       !item.status.startsWith('completado') &&
@@ -468,14 +476,26 @@ export default function SearchTab({
       )}
 
       {/* Resultados de búsqueda en línea en vivo */}
-      {onlineResults.length > 0 && (
+      {resultadosVisibles.length > 0 && (
         <div>
           <h3 className="text-xs font-semibold text-ink-400 uppercase tracking-wider mb-3">
-            Resultados en YouTube ({onlineResults.length})
+            Resultados en YouTube ({resultadosVisibles.length})
           </h3>
+          <div className="tsearch-duracion">
+            <select
+              value={filtroDuracion}
+              onChange={(e) => setFiltroDuracion(e.target.value as typeof filtroDuracion)}
+              aria-label="Filtrar por duración"
+            >
+              <option value="todas">Cualquier duración</option>
+              <option value="cortas">Menos de 5 min</option>
+              <option value="medianas">5 a 10 min</option>
+              <option value="largas">Más de 10 min</option>
+            </select>
+          </div>
 
           <div className="space-y-2.5">
-            {onlineResults.map((item) => (
+            {resultadosVisibles.map((item) => (
               <div
                 key={item.id}
                 className="flex items-center justify-between gap-4 p-3.5 rounded-2xl glass-card hover:bg-white/5 border border-white/5 transition-all group"
@@ -526,7 +546,7 @@ export default function SearchTab({
       )}
 
       {/* Sugerencias compactas */}
-      {onlineResults.length === 0 && !isSearchingOnline && (
+      {resultadosVisibles.length === 0 && !isSearchingOnline && (
         <div className="space-y-2">
           <h3 className="text-2xs font-semibold text-ink-500 uppercase tracking-wider">
             Búsquedas sugeridas

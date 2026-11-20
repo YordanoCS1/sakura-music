@@ -13,7 +13,7 @@ flowchart TD
       S1["npm ci"] --> S2["typecheck · tsc --noEmit"]
       S2 --> S3["lint · ESLint"]
       S3 --> S4["formato · Prettier"]
-      S4 --> S5["tests unitarios · Vitest (58)"]
+      S4 --> S5["tests unitarios · Vitest (60)"]
       S5 --> S6["tests E2E · Playwright (32)"]
       S6 --> S7["build · vite"]
       S7 --> S8["cargo fmt --check"]

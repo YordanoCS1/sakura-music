@@ -1,4 +1,5 @@
-import { RotateCcw, X } from 'lucide-react';
+import { useState } from 'react';
+import { ArrowDown, ArrowUp, RotateCcw, X } from 'lucide-react';
 import type { DownloadItem, ThemeMode } from '../types';
 
 interface ThemeQueueProps {
@@ -12,6 +13,7 @@ interface ThemeQueueProps {
   onCancel: (jobId: string) => void;
   onRetry: (item: DownloadItem) => void;
   onClearFinished: () => void;
+  onMoveDownload: (id: string, delta: number) => void;
 }
 
 const GLIFOS: Partial<Record<ThemeMode, string>> = {
@@ -41,6 +43,7 @@ export default function ThemeQueue({
   onCancel,
   onRetry,
   onClearFinished,
+  onMoveDownload,
 }: ThemeQueueProps) {
   const activas = downloads.filter(
     (d) =>
@@ -48,6 +51,33 @@ export default function ThemeQueue({
   ).length;
   const terminadas = downloads.filter((d) => d.status.startsWith('completado')).length;
   const conError = downloads.filter((d) => d.status.includes('error')).length;
+  const [filtro, setFiltro] = useState<'todas' | 'activas' | 'terminadas' | 'errores'>('todas');
+  const visibles = downloads.filter((item) => {
+    if (filtro === 'activas')
+      return (
+        !item.status.startsWith('completado') &&
+        !item.status.includes('error') &&
+        item.status !== 'cancelado'
+      );
+    if (filtro === 'terminadas') return item.status.startsWith('completado');
+    if (filtro === 'errores') return item.status.includes('error');
+    return true;
+  });
+  const selectorFiltro = (
+    <div className="tqueue-filtros">
+      <label htmlFor="tqueue-filtro">Filtrar</label>
+      <select
+        id="tqueue-filtro"
+        value={filtro}
+        onChange={(evento) => setFiltro(evento.target.value as typeof filtro)}
+      >
+        <option value="todas">Todas</option>
+        <option value="activas">En curso ({activas})</option>
+        <option value="terminadas">Terminadas ({terminadas})</option>
+        <option value="errores">Con error ({conError})</option>
+      </select>
+    </div>
+  );
 
   if (theme === 'manga') {
     return (
@@ -89,7 +119,7 @@ export default function ThemeQueue({
           </div>
         )}
 
-        {downloads.length === 0 ? (
+        {visibles.length === 0 ? (
           <div className="manga-queue-vacio">
             <span aria-hidden="true">…</span>
             <h2>ESTA PÁGINA ESTÁ EN BLANCO</h2>
@@ -99,61 +129,78 @@ export default function ThemeQueue({
             </button>
           </div>
         ) : (
-          <ol className="manga-queue-lista">
-            {downloads.map((item, i) => {
-              const done = item.status.startsWith('completado');
-              const error = item.status.includes('error');
-              const cancelled = item.status === 'cancelado';
-              return (
-                <li
-                  key={item.id}
-                  className={`manga-queue-pagina ${done ? 'is-done' : ''} ${error ? 'is-error' : ''}`}
-                >
-                  <span className="manga-queue-num">{String(i + 1).padStart(2, '0')}</span>
-                  {item.thumbnail ? (
-                    <img className="manga-queue-thumb" src={item.thumbnail} alt="" />
-                  ) : (
-                    <span className="manga-queue-thumb" aria-hidden="true">
-                      ♪
-                    </span>
-                  )}
-                  <div className="manga-queue-copy">
-                    <strong>{item.title}</strong>
-                    <small>
-                      {item.artist} · {item.format}
-                    </small>
-                    <div className="manga-queue-barra">
-                      <i style={{ width: `${Math.min(100, Math.max(0, item.progress))}%` }} />
-                    </div>
-                    <span className="manga-queue-meta">
-                      {item.progress.toFixed(0)}%
-                      {item.speed && item.speed !== '--' ? ` · ${item.speed}` : ''}
-                      {item.eta && item.eta !== '--' && item.eta !== '00:00'
-                        ? ` · ETA ${item.eta}`
-                        : ''}
-                    </span>
-                  </div>
-                  <span className="manga-queue-estado">{item.status}</span>
-                  <div className="manga-queue-item-acc">
-                    {error && (
-                      <button type="button" onClick={() => onRetry(item)} aria-label="Reintentar">
-                        <RotateCcw className="w-3.5 h-3.5" />
-                      </button>
+          <>
+            {selectorFiltro}
+            <ol className="manga-queue-lista">
+              {downloads.map((item, i) => {
+                const done = item.status.startsWith('completado');
+                const error = item.status.includes('error');
+                const cancelled = item.status === 'cancelado';
+                return (
+                  <li
+                    key={item.id}
+                    className={`manga-queue-pagina ${done ? 'is-done' : ''} ${error ? 'is-error' : ''}`}
+                  >
+                    <span className="manga-queue-num">{String(i + 1).padStart(2, '0')}</span>
+                    {item.thumbnail ? (
+                      <img className="manga-queue-thumb" src={item.thumbnail} alt="" />
+                    ) : (
+                      <span className="manga-queue-thumb" aria-hidden="true">
+                        ♪
+                      </span>
                     )}
-                    {!done && !cancelled && (
+                    <div className="manga-queue-copy">
+                      <strong>{item.title}</strong>
+                      <small>
+                        {item.artist} · {item.format}
+                      </small>
+                      <div className="manga-queue-barra">
+                        <i style={{ width: `${Math.min(100, Math.max(0, item.progress))}%` }} />
+                      </div>
+                      <span className="manga-queue-meta">
+                        {item.progress.toFixed(0)}%
+                        {item.speed && item.speed !== '--' ? ` · ${item.speed}` : ''}
+                        {item.eta && item.eta !== '--' && item.eta !== '00:00'
+                          ? ` · ETA ${item.eta}`
+                          : ''}
+                      </span>
+                    </div>
+                    <span className="manga-queue-estado">{item.status}</span>
+                    <div className="manga-queue-item-acc">
                       <button
                         type="button"
-                        onClick={() => onCancel(item.id)}
-                        aria-label="Cancelar descarga"
+                        onClick={() => onMoveDownload(item.id, -1)}
+                        aria-label="Subir prioridad"
                       >
-                        <X className="w-3.5 h-3.5" />
+                        <ArrowUp className="w-3.5 h-3.5" />
                       </button>
-                    )}
-                  </div>
-                </li>
-              );
-            })}
-          </ol>
+                      <button
+                        type="button"
+                        onClick={() => onMoveDownload(item.id, 1)}
+                        aria-label="Bajar prioridad"
+                      >
+                        <ArrowDown className="w-3.5 h-3.5" />
+                      </button>
+                      {error && (
+                        <button type="button" onClick={() => onRetry(item)} aria-label="Reintentar">
+                          <RotateCcw className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                      {!done && !cancelled && (
+                        <button
+                          type="button"
+                          onClick={() => onCancel(item.id)}
+                          aria-label="Cancelar descarga"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
+                  </li>
+                );
+              })}
+            </ol>
+          </>
         )}
       </div>
     );
@@ -199,7 +246,7 @@ export default function ThemeQueue({
         </div>
       )}
 
-      {downloads.length === 0 ? (
+      {visibles.length === 0 ? (
         <div className="tqueue-empty">
           <span className="tqueue-empty-mark" aria-hidden="true">
             桜
@@ -211,57 +258,74 @@ export default function ThemeQueue({
           </button>
         </div>
       ) : (
-        <ol className="tqueue-lista">
-          {downloads.map((item, i) => {
-            const done = item.status.startsWith('completado');
-            const error = item.status.includes('error');
-            const cancelled = item.status === 'cancelado';
-            return (
-              <li
-                key={item.id}
-                className={`tqueue-item ${done ? 'is-done' : ''} ${error ? 'is-error' : ''}`}
-              >
-                <span className="tqueue-num">{String(i + 1).padStart(2, '0')}</span>
-                <div className="tqueue-thumb">
-                  {item.thumbnail ? <img src={item.thumbnail} alt="" /> : <span>♪</span>}
-                </div>
-                <div className="tqueue-info">
-                  <strong>{item.title}</strong>
-                  <small>
-                    {item.artist} · {item.format}
-                  </small>
-                  <div className="tqueue-bar">
-                    <i style={{ width: `${Math.min(100, Math.max(0, item.progress))}%` }} />
+        <>
+          {selectorFiltro}
+          <ol className="tqueue-lista">
+            {visibles.map((item, i) => {
+              const done = item.status.startsWith('completado');
+              const error = item.status.includes('error');
+              const cancelled = item.status === 'cancelado';
+              return (
+                <li
+                  key={item.id}
+                  className={`tqueue-item ${done ? 'is-done' : ''} ${error ? 'is-error' : ''}`}
+                >
+                  <span className="tqueue-num">{String(i + 1).padStart(2, '0')}</span>
+                  <div className="tqueue-thumb">
+                    {item.thumbnail ? <img src={item.thumbnail} alt="" /> : <span>♪</span>}
                   </div>
-                  <span className="tqueue-meta">
-                    {item.progress.toFixed(0)}%{' '}
-                    {item.speed && item.speed !== '--' ? ` · ${item.speed}` : ''}
-                    {item.eta && item.eta !== '--' && item.eta !== '00:00'
-                      ? ` · ETA ${item.eta}`
-                      : ''}
-                  </span>
-                </div>
-                <span className="tqueue-status">{item.status}</span>
-                <div className="tqueue-item-acc">
-                  {error && (
-                    <button type="button" onClick={() => onRetry(item)} aria-label="Reintentar">
-                      <RotateCcw className="w-3.5 h-3.5" />
-                    </button>
-                  )}
-                  {!done && !cancelled && (
+                  <div className="tqueue-info">
+                    <strong>{item.title}</strong>
+                    <small>
+                      {item.artist} · {item.format}
+                    </small>
+                    <div className="tqueue-bar">
+                      <i style={{ width: `${Math.min(100, Math.max(0, item.progress))}%` }} />
+                    </div>
+                    <span className="tqueue-meta">
+                      {item.progress.toFixed(0)}%{' '}
+                      {item.speed && item.speed !== '--' ? ` · ${item.speed}` : ''}
+                      {item.eta && item.eta !== '--' && item.eta !== '00:00'
+                        ? ` · ETA ${item.eta}`
+                        : ''}
+                    </span>
+                  </div>
+                  <span className="tqueue-status">{item.status}</span>
+                  <div className="tqueue-item-acc">
                     <button
                       type="button"
-                      onClick={() => onCancel(item.id)}
-                      aria-label="Cancelar descarga"
+                      onClick={() => onMoveDownload(item.id, -1)}
+                      aria-label="Subir prioridad"
                     >
-                      <X className="w-3.5 h-3.5" />
+                      <ArrowUp className="w-3.5 h-3.5" />
                     </button>
-                  )}
-                </div>
-              </li>
-            );
-          })}
-        </ol>
+                    <button
+                      type="button"
+                      onClick={() => onMoveDownload(item.id, 1)}
+                      aria-label="Bajar prioridad"
+                    >
+                      <ArrowDown className="w-3.5 h-3.5" />
+                    </button>
+                    {error && (
+                      <button type="button" onClick={() => onRetry(item)} aria-label="Reintentar">
+                        <RotateCcw className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                    {!done && !cancelled && (
+                      <button
+                        type="button"
+                        onClick={() => onCancel(item.id)}
+                        aria-label="Cancelar descarga"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                </li>
+              );
+            })}
+          </ol>
+        </>
       )}
     </div>
   );

@@ -10,8 +10,8 @@ este documento (con fecha y motivo). **No se renumeran.**
 ## Cómo leer la trazabilidad
 
 - **Criterio:** qué tiene que pasar para considerar el requisito cumplido.
-- **Test:** `npm test` (Vitest, **58 tests** del frontend), `npm run test:e2e`
-  (Playwright, **32 tests**), `cargo test` (Rust, **46 tests**) o `tsc --noEmit`
+- **Test:** `npm test` (Vitest, **60 tests** del frontend), `npm run test:e2e`
+  (Playwright, **32 tests**), `cargo test` (Rust, **47 tests**) o `tsc --noEmit`
   (tipos). `npm run pipeline` corre todo en orden y pasa en verde.
 - Si un requisito depende de red o de un binario externo, no se testea en la
   suite: se verifica a mano con `yt-dlp`/`ffmpeg` reales.
@@ -261,7 +261,7 @@ muestra **Deshacer** durante 9 segundos; `restore_deleted_track` recupera el
 archivo y la fila, `empty_trash` borra definitivamente y `trash_count` informa
 el contador de Ajustes → Sistema (`SystemPanel`).
 
-**Test:** `UndoToast.test.tsx` (58 unitarios Vitest) + `library_db.rs` (tests de
+**Test:** `UndoToast.test.tsx` (60 unitarios Vitest) + `library_db.rs` (tests de
 la migración y las consultas de la papelera).
 
 #### RF-22 · Letras sincronizadas
@@ -392,10 +392,10 @@ enlaza a `docs/`.
 | Biblioteca y reproducción | RF-08 … RF-12 | `cargo test` (`scanner`, `library_db`), manual |
 | Metadatos y catálogo | RF-13 … RF-16 | `cargo test` + `tsc`, manual |
 | Apariencia y navegación | RF-17 … RF-18 | Vitest + E2E + `npm run build`, manual |
-| Playlists, papelera, letras, paleta, BD y updater | RF-20 … RF-25 | Vitest (58), E2E (32), `cargo test` (43), manual |
+| Playlists, papelera, letras, paleta, BD y updater | RF-20 … RF-25 | Vitest (60), E2E (32), `cargo test` (43), manual |
 | Transversales | RNF-01 … RNF-08 | `npm run pipeline` completo |
 
-**Totales:** 58 tests unitarios Vitest, 32 tests E2E Playwright y **46 tests
+**Totales:** 60 tests unitarios Vitest, 32 tests E2E Playwright y **47 tests
 Rust** (`downloader`, `queue`, `scanner`, `library_db`, `tools`, migraciones,
 playlists y lyrics). `npm run pipeline` pasa en verde.
 

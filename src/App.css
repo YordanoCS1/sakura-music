@@ -8149,3 +8149,14 @@ html[data-theme-transition='space'] #theme-panel.panel-enter { animation:t-estud
 
 .set-opcion { padding:7px 11px; border:1px solid var(--set-linea, rgba(120,100,90,.25)); border-radius:8px; background:var(--set-superficie, rgba(127,127,127,.06)); color:inherit; cursor:pointer; font-size:11px; }
 .set-opcion.is-active { background:var(--set-acento, #a8442f); border-color:var(--set-acento, #a8442f); color:#fff; }
+
+
+.set-historial { display:flex; flex-direction:column; gap:4px; margin-bottom:10px; max-height:220px; overflow-y:auto; }
+.set-historial-item { display:flex; flex-direction:column; gap:1px; padding:7px 9px; border:1px solid var(--set-linea, rgba(120,100,90,.2)); border-radius:7px; background:var(--set-superficie, rgba(127,127,127,.06)); }
+.set-historial-item strong { font-size:11px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.set-historial-item small { font-size:9px; opacity:.7; }
+.tqueue-filtros { display:flex; align-items:center; gap:8px; margin:10px 0; }
+.tqueue-filtros label { font:9px 'JetBrains Mono',monospace; letter-spacing:.12em; opacity:.7; }
+.tqueue-filtros select { padding:6px 9px; border:1px solid var(--set-linea, rgba(127,127,127,.3)); border-radius:7px; background:var(--set-panel-base, inherit); color:inherit; font-size:11px; }
+.tsearch-duracion { display:flex; align-items:center; gap:7px; }
+.tsearch-duracion select { padding:6px 9px; border:1px solid rgba(127,127,127,.3); border-radius:8px; background:rgba(127,127,127,.07); color:inherit; font-size:11px; }

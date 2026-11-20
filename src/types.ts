@@ -90,6 +90,16 @@ export interface OnlineSearchResult {
   url: string;
 }
 
+export interface DownloadHistoryItem {
+  id: string;
+  title: string;
+  artist: string;
+  url: string;
+  format: string;
+  file_path: string | null;
+  completed_at: number;
+}
+
 export interface DownloaderStatus {
   ytdlp_available: boolean;
   ffmpeg_available: boolean;
