@@ -1,9 +1,10 @@
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::time::Duration;
 
 use rusqlite::{Connection, OptionalExtension, Row, params};
+use serde::Serialize;
 
-use crate::{paths, scanner::ScannedTrack};
+use crate::{logging, paths, scanner::ScannedTrack};
 
 #[derive(Clone)]
 pub struct ScanEntry {
@@ -17,6 +18,10 @@ const TRACK_COLUMNS: &str = "id, path, title, artist, album, album_artist, track
 /// Carpeta raíz de la biblioteca activa, usada para validar scope y borrados.
 pub fn root_path() -> Result<String, String> {
     let connection = open_connection()?;
+    root_desde(&connection)
+}
+
+fn root_desde(connection: &Connection) -> Result<String, String> {
     connection
         .query_row(
             "SELECT value FROM library_state WHERE key = 'root_path'",
@@ -43,6 +48,14 @@ fn open_connection() -> Result<Connection, String> {
     connection
         .busy_timeout(Duration::from_secs(5))
         .map_err(|error| format!("No se pudo configurar SQLite: {}", error))?;
+    // WAL (que se fija al crear el esquema) + synchronous=NORMAL es la
+    // combinación recomendada para una app local: sigue siendo durable ante
+    // un cierre de la app, pero no espera un fsync en cada escritura.
+    // temp_store=MEMORY evita archivos temporales en las ordenaciones grandes.
+    connection
+        .pragma_update(None, "synchronous", "NORMAL")
+        .and_then(|_| connection.pragma_update(None, "temp_store", "MEMORY"))
+        .map_err(|error| format!("No se pudo optimizar SQLite: {}", error))?;
     Ok(connection)
 }
 
@@ -97,7 +110,17 @@ fn create_schema(connection: &Connection) -> Result<(), String> {
                  VALUES ('delete', old.rowid, old.title, old.artist, old.album);
                  INSERT INTO library_fts(rowid, title, artist, album)
                  VALUES (new.rowid, new.title, new.artist, new.album);
-             END;",
+             END;
+             -- Índices para los filtros y agrupaciones de la biblioteca; sin
+             -- ellos cada cambio de artista o álbum recorre toda la tabla.
+             CREATE INDEX IF NOT EXISTS library_idx_artist
+                 ON library_tracks(artist COLLATE NOCASE);
+             CREATE INDEX IF NOT EXISTS library_idx_album
+                 ON library_tracks(album COLLATE NOCASE);
+             CREATE INDEX IF NOT EXISTS library_idx_year
+                 ON library_tracks(year);
+             CREATE INDEX IF NOT EXISTS library_idx_genre
+                 ON library_tracks(genre COLLATE NOCASE);",
         )
         .map_err(|error| format!("No se pudo inicializar SQLite: {}", error))
 }
@@ -231,8 +254,27 @@ fn insert_legacy_cache(connection: &mut Connection) -> Result<(), String> {
     Ok(())
 }
 
+/// Versión del esquema. Cada cambio estructural sube este número y se
+/// documenta en `MIGRACIONES`; `PRAGMA user_version` lo persiste en la base.
+const USER_VERSION_ACTUAL: i32 = 2;
+
+/// 1: tablas base + índice FTS5 + disparadores de mantenimiento.
+/// 2: índices en artista, álbum, año y género.
+const MIGRACIONES: &str = "1=FTS5 y disparadores · 2=índices de filtro";
+
 pub fn initialize() -> Result<(), String> {
     let mut connection = open_connection()?;
+    let version: i32 = connection
+        .query_row("PRAGMA user_version", [], |fila| fila.get(0))
+        .map_err(|error| format!("No se pudo leer la versión de la base: {}", error))?;
+
+    // Antes de tocar nada se guarda una copia consistente. VACUUM INTO funciona
+    // con WAL activo: a diferencia de copiar el archivo, incluye los últimos
+    // commits. Si algo sale mal en una migración, el usuario tiene una copia.
+    if version < USER_VERSION_ACTUAL {
+        crear_backup(&connection, "auto")?;
+    }
+
     let tenia_fts: bool = connection
         .query_row(
             "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'library_fts'",
@@ -248,6 +290,14 @@ pub fn initialize() -> Result<(), String> {
             .execute("INSERT INTO library_fts(library_fts) VALUES('rebuild')", [])
             .map_err(|error| format!("No se pudo construir el indice de busqueda: {}", error))?;
     }
+
+    connection
+        .pragma_update(None, "user_version", USER_VERSION_ACTUAL)
+        .map_err(|error| format!("No se pudo registrar la migración: {}", error))?;
+    logging::info(
+        "library_db",
+        &format!("Base lista: versión {version} → {USER_VERSION_ACTUAL} ({MIGRACIONES})"),
+    );
     insert_legacy_cache(&mut connection)
 }
 
@@ -444,18 +494,7 @@ fn delete_track_on(connection: &Connection, path: &str) -> Result<(), String> {
     // no permita borrar un archivo de fuera de ella.
     match std::fs::symlink_metadata(file_path) {
         Ok(_) => {
-            let canonical_root = Path::new(&root_path).canonicalize().map_err(|error| {
-                format!("No se pudo validar la carpeta de biblioteca: {}", error)
-            })?;
-            let canonical_file = file_path
-                .canonicalize()
-                .map_err(|error| format!("No se pudo validar el archivo: {}", error))?;
-            if !canonical_file.starts_with(&canonical_root) {
-                return Err("El archivo está fuera de la carpeta de biblioteca activa".to_string());
-            }
-            if !canonical_file.is_file() {
-                return Err("La ruta seleccionada no es un archivo de audio".to_string());
-            }
+            validar_scope(&root_path, file_path)?;
             std::fs::remove_file(file_path)
                 .map_err(|error| format!("No se pudo borrar el archivo: {}", error))?;
         }
@@ -533,6 +572,261 @@ pub fn clear() -> Result<(), String> {
                 error
             )
         })
+}
+
+/* ======================================================================== */
+/* BACKUPS, DIAGNÓSTICO Y VALIDACIÓN DE SCOPE                                */
+/* ======================================================================== */
+
+/// Copia consistente de la base: `VACUUM INTO` incluye los últimos commits
+/// aunque haya WAL activo, algo que no pasa con una copia del archivo.
+fn crear_backup(connection: &Connection, etiqueta: &str) -> Result<String, String> {
+    let version: i32 = connection
+        .query_row("PRAGMA user_version", [], |fila| fila.get(0))
+        .map_err(|error| format!("No se pudo leer la versión de la base: {}", error))?;
+    const NANOS: u128 = 1_000_000_000;
+    let stamp = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_nanos() / NANOS)
+        .unwrap_or(0);
+    let destino = paths::data_dir().join(format!("library-{etiqueta}-v{version}-{stamp}.bak"));
+    let nombre = destino.to_string_lossy().to_string();
+    connection
+        .execute("VACUUM INTO ?1", params![nombre])
+        .map_err(|error| format!("No se pudo crear el respaldo: {}", error))?;
+    podar_backups()?;
+    logging::info(
+        "library_db",
+        &format!("Respaldo creado: {}", destino.display()),
+    );
+    Ok(nombre)
+}
+
+/// Sólo se conservan los tres respaldos más recientes para no llenar el disco.
+fn podar_backups() -> Result<(), String> {
+    let mut respaldos: Vec<PathBuf> = std::fs::read_dir(paths::data_dir())
+        .map_err(|error| format!("No se pudo listar los respaldos: {}", error))?
+        .flatten()
+        .map(|entrada| entrada.path())
+        .filter(|ruta| {
+            ruta.file_name()
+                .and_then(|nombre| nombre.to_str())
+                .is_some_and(|nombre| nombre.starts_with("library-") && nombre.ends_with(".bak"))
+        })
+        .collect();
+    respaldos.sort();
+    while respaldos.len() > 3 {
+        let viejo = respaldos.remove(0);
+        let _ = std::fs::remove_file(viejo);
+    }
+    Ok(())
+}
+
+pub fn backup_database() -> Result<String, String> {
+    let connection = open_connection()?;
+    crear_backup(&connection, "manual")
+}
+
+fn tamano_base() -> Result<u64, String> {
+    std::fs::metadata(paths::library_db_file())
+        .map(|datos| datos.len())
+        .map_err(|error| format!("No se pudo medir la base: {}", error))
+}
+
+pub fn vacuum_database() -> Result<String, String> {
+    let connection = open_connection()?;
+    let antes = tamano_base()? / 1024;
+    connection
+        .execute("VACUUM", [])
+        .map_err(|error| format!("No se pudo compactar la base: {}", error))?;
+    let despues = tamano_base()? / 1024;
+    Ok(format!("Base compactada: {antes} KB → {despues} KB"))
+}
+
+#[derive(Serialize)]
+pub struct DatabaseInfo {
+    pub integridad: String,
+    pub pistas: i64,
+    pub entradas_fts: i64,
+    pub version_esquema: i32,
+    pub tamano_bytes: u64,
+    pub ultimo_backup: Option<String>,
+    pub migraciones: &'static str,
+}
+
+pub fn database_info() -> Result<DatabaseInfo, String> {
+    let connection = open_connection()?;
+    let integridad: String = connection
+        .query_row("PRAGMA integrity_check", [], |fila| fila.get(0))
+        .map_err(|error| format!("No se pudo verificar la base: {}", error))?;
+    let pistas: i64 = connection
+        .query_row("SELECT COUNT(*) FROM library_tracks", [], |fila| {
+            fila.get(0)
+        })
+        .map_err(|error| format!("No se pudo contar las pistas: {}", error))?;
+    let entradas_fts: i64 = connection
+        .query_row("SELECT COUNT(*) FROM library_fts", [], |fila| fila.get(0))
+        .unwrap_or(0);
+    let version_esquema: i32 = connection
+        .query_row("PRAGMA user_version", [], |fila| fila.get(0))
+        .map_err(|error| format!("No se pudo leer la versión de la base: {}", error))?;
+    let ultimo_backup = std::fs::read_dir(paths::data_dir())
+        .ok()
+        .into_iter()
+        .flatten()
+        .flatten()
+        .filter_map(|entrada| {
+            let nombre = entrada.file_name().to_string_lossy().to_string();
+            (nombre.starts_with("library-") && nombre.ends_with(".bak")).then_some(nombre)
+        })
+        .max();
+    Ok(DatabaseInfo {
+        integridad,
+        pistas,
+        entradas_fts,
+        version_esquema,
+        tamano_bytes: tamano_base()?,
+        ultimo_backup,
+        migraciones: MIGRACIONES,
+    })
+}
+
+#[derive(Serialize)]
+pub struct DoctorResultado {
+    pub mensaje: String,
+    pub info: DatabaseInfo,
+}
+
+/// Verificación completa que expone Ajustes → Sistema. El `doctor()` del CLI
+/// sigue devolviendo una línea de texto para no romper el comando existente.
+pub fn doctor_detallado() -> Result<DoctorResultado, String> {
+    let mensaje = doctor()?;
+    Ok(DoctorResultado {
+        mensaje,
+        info: database_info()?,
+    })
+}
+
+/// Compara la ruta canónica contra la raíz de la biblioteca. Los enlaces
+/// simbólicos se resuelven antes, así un `.lnk` interno no puede apuntar a un
+/// archivo de fuera. Es la misma comprobación que ya protegía los borrados;
+/// ahora la usan también las escrituras de etiquetas.
+fn validar_scope(root: &str, archivo: &Path) -> Result<PathBuf, String> {
+    let canonica_raiz = Path::new(root)
+        .canonicalize()
+        .map_err(|error| format!("No se pudo validar la carpeta de biblioteca: {}", error))?;
+    let canonica = archivo
+        .canonicalize()
+        .map_err(|error| format!("No se pudo validar el archivo: {}", error))?;
+    if !canonica.starts_with(&canonica_raiz) {
+        return Err("El archivo está fuera de la carpeta de biblioteca activa".to_string());
+    }
+    if !canonica.is_file() {
+        return Err("La ruta seleccionada no es un archivo de audio".to_string());
+    }
+    Ok(canonica)
+}
+
+/// Para los comandos IPC que escriben tags. Rechaza cualquier ruta que no
+/// esté dentro de la raíz activa, aunque viniera de un `invoke` manipulado.
+pub fn validar_archivo_de_biblioteca(path: &str) -> Result<PathBuf, String> {
+    let connection = open_connection()?;
+    // Primero, que la pista figure en la biblioteca: un invoke manipulado no
+    // puede escribir tags de un archivo que la app nunca escaneó.
+    let indizada: bool = connection
+        .query_row(
+            "SELECT 1 FROM library_tracks WHERE path = ?1",
+            [path],
+            |_| Ok(true),
+        )
+        .optional()
+        .map_err(|error| format!("No se pudo verificar la pista: {}", error))?
+        .unwrap_or(false);
+    if !indizada {
+        return Err("La pista no pertenece a la biblioteca actual".to_string());
+    }
+    // Las pistas importadas por CLI no tienen raíz activa: para ésas alcanza
+    // con el chequeo de índice. Si hay raíz, se valida el scope canónico.
+    match root_desde(&connection).ok() {
+        Some(raiz) => validar_scope(&raiz, Path::new(path)),
+        None => {
+            let canonica = Path::new(path)
+                .canonicalize()
+                .map_err(|error| format!("No se pudo validar el archivo: {}", error))?;
+            if !canonica.is_file() {
+                return Err("La ruta seleccionada no es un archivo de audio".to_string());
+            }
+            Ok(canonica)
+        }
+    }
+}
+
+/// Las portadas temporales sólo pueden leerse de la carpeta `covers`.
+pub fn validar_portada_temporal(path: &str) -> Result<PathBuf, String> {
+    let dir = paths::covers_dir()
+        .canonicalize()
+        .map_err(|error| format!("No se pudo validar la carpeta de carátulas: {}", error))?;
+    let archivo = Path::new(path)
+        .canonicalize()
+        .map_err(|error| format!("No se pudo validar la portada: {}", error))?;
+    if !archivo.starts_with(&dir) || !archivo.is_file() {
+        return Err("La portada debe ser un archivo de la carpeta de carátulas".to_string());
+    }
+    Ok(archivo)
+}
+
+#[cfg(test)]
+mod tests_hardening {
+    use super::*;
+
+    #[test]
+    fn el_esquema_crea_los_indices_de_filtro() {
+        let connection = Connection::open_in_memory().unwrap();
+        create_schema(&connection).unwrap();
+        for nombre in [
+            "library_idx_artist",
+            "library_idx_album",
+            "library_idx_year",
+            "library_idx_genre",
+        ] {
+            let existe: bool = connection
+                .query_row(
+                    "SELECT 1 FROM sqlite_master WHERE type = 'index' AND name = ?1",
+                    [nombre],
+                    |_| Ok(true),
+                )
+                .optional()
+                .unwrap()
+                .unwrap_or(false);
+            assert!(existe, "falta el índice {nombre}");
+        }
+    }
+
+    #[test]
+    fn validar_scope_rechaza_archivos_fuera_de_la_raiz() {
+        const NANOS: u128 = 1_000_000_000;
+        let stamp = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+            / NANOS;
+        let base = std::env::current_dir()
+            .unwrap()
+            .join("target")
+            .join("test-tmp")
+            .join(format!("sakura-scope-{}-{stamp}", std::process::id()));
+        let raiz = base.join("library");
+        std::fs::create_dir_all(&raiz).unwrap();
+        let dentro = raiz.join("dentro.flac");
+        let fuera = base.join("fuera.flac");
+        std::fs::write(&dentro, b"audio").unwrap();
+        std::fs::write(&fuera, b"audio").unwrap();
+
+        assert!(validar_scope(&raiz.to_string_lossy(), &dentro).is_ok());
+        assert!(validar_scope(&raiz.to_string_lossy(), &fuera).is_err());
+
+        std::fs::remove_dir_all(base).unwrap();
+    }
 }
 
 #[cfg(test)]

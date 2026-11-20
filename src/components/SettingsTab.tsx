@@ -11,6 +11,7 @@ import {
   Music2,
   Trash2,
   Download,
+  Activity,
   Wand2,
   Wifi,
   Database,
@@ -18,6 +19,7 @@ import {
 } from 'lucide-react';
 import type { AppInfo, PlayerStyle, ThemeOption } from '../types';
 import ToolsPanel from './ToolsPanel';
+import SystemPanel from './SystemPanel';
 
 const SWATCHES: Partial<Record<string, string>> = {
   space: '#f472b6',
@@ -547,6 +549,15 @@ export default function SettingsTab(props: SettingsTabProps) {
               <Trash2 className="w-3.5 h-3.5" /> Limpiar caché
             </button>
           </div>
+        </Tarjeta>
+        <Tarjeta
+          n="10"
+          titulo="Salud de la base de datos"
+          desc="Verificación, compactado y registros"
+          icono={Activity}
+          ancha
+        >
+          <SystemPanel />
         </Tarjeta>
       </>
     ),

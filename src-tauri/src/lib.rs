@@ -14,9 +14,11 @@ pub mod queue;
 pub mod remote;
 pub mod scanner;
 pub mod tools;
+pub mod validacion;
 use downloader::{DownloadManager, DownloaderStatus, OnlineSearchResult};
 use queue::PersistedDownload;
 use scanner::{BatchUpdateResult, ScannedTrack};
+use validacion as val;
 
 #[tauri::command]
 fn check_downloader_tools() -> DownloaderStatus {
@@ -43,6 +45,8 @@ fn search_online(
     request_id: String,
     query: String,
 ) -> Result<Vec<OnlineSearchResult>, String> {
+    val::texto(&request_id, 64, "Identificador de petición")?;
+    val::texto(&query, val::MAX_CONSULTA, "Búsqueda")?;
     downloader::search_youtube(&app, &request_id, &query)
 }
 
@@ -55,6 +59,12 @@ fn start_download(
     format: String,
     output_dir: Option<String>,
 ) -> Result<bool, String> {
+    val::texto(&job_id, 64, "Identificador de descarga")?;
+    val::texto(&url, 2048, "URL")?;
+    val::texto(&format, 64, "Formato")?;
+    if let Some(dir) = &output_dir {
+        val::ruta(dir, "Carpeta de destino")?;
+    }
     let out = output_dir.unwrap_or_else(|| {
         app.path()
             .audio_dir()
@@ -203,7 +213,9 @@ fn get_cached_library(app: tauri::AppHandle) -> Result<Vec<ScannedTrack>, String
 /// Búsqueda full-text (FTS5) sobre título, artista y álbum.
 #[tauri::command]
 fn search_library_fts(query: String, limit: Option<usize>) -> Result<Vec<ScannedTrack>, String> {
-    let tracks = library_db::search_tracks(&query, limit.unwrap_or(300))?;
+    val::texto(&query, val::MAX_CONSULTA, "Búsqueda")?;
+    let limite = limit.unwrap_or(300).min(val::MAX_LIMITE);
+    let tracks = library_db::search_tracks(&query, limite)?;
     Ok(tracks)
 }
 
@@ -230,6 +242,10 @@ fn remote_local_ip() -> String {
 
 #[tauri::command]
 fn remote_update_state(title: String, artist: String, playing: bool, position: f64, duration: f64) {
+    // El estado del remoto no es crítico: si llega un texto desmedido se
+    // recorta en vez de tumbar el comando.
+    let title: String = title.chars().take(val::MAX_TEXTO).collect();
+    let artist: String = artist.chars().take(val::MAX_TEXTO).collect();
     *remote::remote().estado.lock() = remote::RemoteState {
         title,
         artist,
@@ -267,6 +283,7 @@ fn cleanup_temp_covers() {
 
 #[tauri::command]
 fn save_temp_cover(bytes: Vec<u8>) -> Result<String, String> {
+    val::cantidad(bytes.len(), val::MAX_IMAGEN_BYTES, "Imagen de portada")?;
     cleanup_temp_covers();
     let covers_dir = paths::covers_dir();
     let ext = scanner::detect_image_ext(&bytes);
@@ -295,6 +312,17 @@ fn update_track_metadata(
     cover_path: Option<String>,
     remove_cover: Option<bool>,
 ) -> Result<ScannedTrack, String> {
+    validar_edicion(
+        &path,
+        &title,
+        &artist,
+        &album,
+        &album_artist,
+        &genre,
+        &cover_path,
+        track_number,
+        year,
+    )?;
     let updated = scanner::update_track_tags(
         &path,
         title,
@@ -327,6 +355,20 @@ fn update_batch_metadata(
     cover_path: Option<String>,
     remove_cover: Option<bool>,
 ) -> BatchUpdateResult {
+    if let Err(error) = validar_lote(
+        &paths,
+        &artist,
+        &album,
+        &album_artist,
+        &genre,
+        &cover_path,
+        year,
+    ) {
+        return BatchUpdateResult {
+            updated: Vec::new(),
+            errors: vec![error],
+        };
+    }
     let mut result = scanner::update_batch_tags(
         paths,
         artist,
@@ -350,12 +392,93 @@ fn update_batch_metadata(
     result
 }
 
+/// Validación compartida por el editor individual y el lote. Además de los
+/// límites de tamaño, comprueba que el archivo esté dentro de la raíz activa:
+/// sin esto, un `invoke` manipulado podría escribir tags en cualquier archivo
+/// del disco al que el proceso tenga acceso.
+#[allow(clippy::too_many_arguments)]
+fn validar_edicion(
+    path: &str,
+    title: &str,
+    artist: &str,
+    album: &str,
+    album_artist: &Option<String>,
+    genre: &Option<String>,
+    cover_path: &Option<String>,
+    track_number: Option<u32>,
+    year: Option<u32>,
+) -> Result<(), String> {
+    val::ruta(path, "Ruta del archivo")?;
+    library_db::validar_archivo_de_biblioteca(path)?;
+    val::texto(title, val::MAX_TEXTO, "Título")?;
+    val::texto(artist, val::MAX_TEXTO, "Artista")?;
+    val::texto(album, val::MAX_TEXTO, "Álbum")?;
+    val::texto_opcional(album_artist, val::MAX_TEXTO, "Artista del álbum")?;
+    val::texto_opcional(genre, val::MAX_TEXTO, "Género")?;
+    val::texto_opcional(cover_path, val::MAX_RUTA, "Portada")?;
+    val::numero(track_number, val::MAX_PISTA, "Número de pista")?;
+    val::numero(year, val::MAX_ANIO, "Año")?;
+    if let Some(cover) = cover_path {
+        library_db::validar_portada_temporal(cover)?;
+    }
+    Ok(())
+}
+
+fn validar_lote(
+    paths: &[String],
+    artist: &Option<String>,
+    album: &Option<String>,
+    album_artist: &Option<String>,
+    genre: &Option<String>,
+    cover_path: &Option<String>,
+    year: Option<u32>,
+) -> Result<(), String> {
+    val::cantidad(paths.len(), val::MAX_LOTE, "Cantidad de pistas")?;
+    val::texto_opcional(artist, val::MAX_TEXTO, "Artista")?;
+    val::texto_opcional(album, val::MAX_TEXTO, "Álbum")?;
+    val::texto_opcional(album_artist, val::MAX_TEXTO, "Artista del álbum")?;
+    val::texto_opcional(genre, val::MAX_TEXTO, "Género")?;
+    val::texto_opcional(cover_path, val::MAX_RUTA, "Portada")?;
+    val::numero(year, val::MAX_ANIO, "Año")?;
+    for path in paths {
+        val::ruta(path, "Ruta del archivo")?;
+        library_db::validar_archivo_de_biblioteca(path)?;
+    }
+    if let Some(cover) = cover_path {
+        library_db::validar_portada_temporal(cover)?;
+    }
+    Ok(())
+}
+
+/// Panel de salud de la base de datos en Ajustes → Sistema.
+#[tauri::command]
+fn doctor_database() -> Result<library_db::DoctorResultado, String> {
+    library_db::doctor_detallado()
+}
+
+#[tauri::command]
+fn vacuum_database() -> Result<String, String> {
+    library_db::vacuum_database()
+}
+
+#[tauri::command]
+fn backup_database() -> Result<String, String> {
+    library_db::backup_database()
+}
+
+#[tauri::command]
+fn get_system_logs(limit: Option<usize>) -> Result<String, String> {
+    logging::read_logs(limit.unwrap_or(200).min(val::MAX_LOGS))
+}
+
 #[tauri::command]
 fn resolve_playlist(
     app: tauri::AppHandle,
     request_id: String,
     url: String,
 ) -> Result<downloader::PlaylistInfo, String> {
+    val::texto(&request_id, 64, "Identificador de petición")?;
+    val::texto(&url, 2048, "URL")?;
     downloader::resolve_playlist(&app, &request_id, &url)
 }
 
@@ -492,7 +615,11 @@ pub fn run() {
             resolve_playlist,
             catalog::search_catalog_songs,
             catalog::search_catalog_albums,
-            catalog::open_catalog_album
+            catalog::open_catalog_album,
+            doctor_database,
+            vacuum_database,
+            backup_database,
+            get_system_logs
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application");

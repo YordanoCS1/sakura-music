@@ -1,6 +1,6 @@
 # Contrato IPC (frontend ↔ Rust)
 
-Toda la comunicación entre React y el núcleo Rust pasa por `invoke()` y por eventos de Tauri. Este documento es la lista canonical de los **27 comandos** y los **6 eventos**. Si agregás uno, actualizá este archivo en el mismo commit.
+Toda la comunicación entre React y el núcleo Rust pasa por `invoke()` y por eventos de Tauri. Este documento es la lista canonical de los **31 comandos** y los **6 eventos**. Si agregás uno, actualizá este archivo en el mismo commit.
 
 Los tipos (`ScannedTrack`, `PersistedDownload`, etc.) están en [`src/types.ts`](../src/types.ts) y su contrato Rust en los módulos indicados. Los formatos persistidos están en [data-formats.md](data-formats.md).
 
@@ -10,6 +10,7 @@ Los tipos (`ScannedTrack`, `PersistedDownload`, etc.) están en [`src/types.ts`]
 - Los parámetros opcionales son `Option<T>` en Rust y `undefined`/`null` desde el frontend.
 - Las búsquedas largas usan un `request_id` para correlacionar la respuesta con la petición: el comando devuelve aceptación o error y los resultados llegan después por evento.
 - Las rutas de audio se entregan al frontend como rutas del sistema y se convierten con `convertFileSrc()` antes de usarlas en la UI.
+- Todo parámetro se valida en `validacion.rs` (longitud de textos, rutas y lotes; caracteres de control y NUL). Las escrituras de etiquetas, además, exigen que el archivo canónico esté dentro de la raíz de la biblioteca activa y que la portada venga de la carpeta `covers`.
 
 ## Comandos
 
@@ -66,6 +67,17 @@ Fuentes: `itunes`, `deezer` y `musicbrainz`. Estas consultas viven en Rust porqu
 
 `search_online` y `resolve_playlist` emiten resultados parciales por evento mientras `yt-dlp` va imprimiendo líneas; el array que devuelve el comando es el resultado final. La cola se persiste mandando el array completo a `save_download_queue` en cada cambio (no existe un comando para "vaciar" el archivo).
 
+### Mantenimiento y diagnóstico
+
+| Comando | Parámetros | Devuelve | Origen |
+|---|---|---|---|
+| `doctor_database` | — | `{ mensaje, info: DatabaseInfo }` | `lib.rs` |
+| `vacuum_database` | — | `string` (tamaños antes/después) | `lib.rs` |
+| `backup_database` | — | `string` (ruta del respaldo) | `lib.rs` |
+| `get_system_logs` | `limit?: number` | `string` | `lib.rs` |
+
+Estos cuatro alimentan Ajustes → Sistema. `doctor_database` corre `PRAGMA integrity_check`, reconstruye el índice FTS5 y devuelve métricas (pistas, entradas del índice, tamaño, versión de esquema, último respaldo). `backup_database` usa `VACUUM INTO` para una copia consistente con WAL activo y conserva los tres respaldos más recientes. Los respaldos automáticos se crean antes de subir `PRAGMA user_version`.
+
 Si faltan las herramientas, `tools_status` informa qué está disponible y
 `install_downloader_tools` las descarga a `bin/` con verificación SHA256. Nunca
 sobrescribe un binario que ya esté en el PATH.
@@ -85,7 +97,7 @@ El frontend filtra `library-changed` comparando la ruta con la carpeta activa, p
 
 ## Registro de comandos
 
-Los 27 comandos están registrados en el `invoke_handler` de `lib.rs` (24 definidos ahí y 3 en `catalog.rs`). Si agregás uno nuevo:
+Los 31 comandos están registrados en el `invoke_handler` de `lib.rs` (28 definidos ahí y 3 en `catalog.rs`). Si agregás uno nuevo:
 
 1. Definilo con `#[tauri::command]` y devolvé `Result<_, String>` cuando pueda fallar.
 2. Registralo en `generate_handler!`.

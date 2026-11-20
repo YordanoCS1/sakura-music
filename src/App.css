@@ -7161,3 +7161,52 @@ html.splash-handoff .player-dock { animation: contenido-aparecer 460ms 120ms eas
 @media (prefers-reduced-motion: reduce) {
   html.splash-handoff *, html.splash-handoff *::before, html.splash-handoff *::after { animation:none !important; }
 }
+
+
+/* ========================================================= */
+/* SISTEMA: salud de SQLite + visor de registros               */
+/* ========================================================= */
+.sys-panel { display:flex; flex-direction:column; gap:14px; }
+.sys-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:8px; }
+.sys-stat {
+  display:flex; flex-direction:column; gap:4px; padding:10px 12px;
+  border:1px solid var(--set-linea, rgba(120,100,90,.22)); border-radius:10px;
+  background:var(--set-superficie, rgba(127,127,127,.06));
+}
+.sys-stat svg { color:var(--set-acento, #a8442f); }
+.sys-stat small { font:9px 'JetBrains Mono',monospace; letter-spacing:.08em; opacity:.7; }
+.sys-stat strong { font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.sys-detalle { margin:0; font:10px 'JetBrains Mono',monospace; opacity:.72; line-height:1.6; }
+.sys-actions { display:flex; gap:8px; flex-wrap:wrap; }
+.sys-btn, .sys-copiar {
+  display:inline-flex; align-items:center; gap:6px; padding:7px 11px;
+  border:1px solid var(--set-linea, rgba(120,100,90,.25)); border-radius:8px;
+  background:var(--set-superficie, rgba(127,127,127,.06)); color:inherit;
+  cursor:pointer; font-size:11px;
+}
+.sys-btn:hover:not(:disabled), .sys-copiar:hover { border-color:var(--set-acento, #a8442f); }
+.sys-btn:disabled { opacity:.5; cursor:default; }
+.sys-estado {
+  margin:0; padding:8px 10px; border-left:2px solid var(--set-acento, #a8442f);
+  background:rgba(127,127,127,.08); font-size:11px;
+}
+.sys-log-head { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.sys-log-head > span { display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:600; }
+.sys-copiar { padding:4px 8px; font-size:10px; }
+.sys-log {
+  margin:0; max-height:190px; overflow:auto; padding:10px 12px;
+  border:1px solid var(--set-linea, rgba(120,100,90,.22)); border-radius:8px;
+  background:rgba(0,0,0,.12); color:inherit; opacity:.85;
+  font:10px/1.6 'JetBrains Mono',monospace; white-space:pre-wrap; word-break:break-word;
+}
+
+/* Las bibliotecas de los temos propios no están virtualizadas porque cada
+   tema dibuja una tarjeta distinta. `content-visibility` le dice al navegador
+   que no pinte lo que está fuera de pantalla: con miles de pistas evita
+   cientos de layouts sin cambiar ni una línea de React. */
+.biblioteca-muy-grande :is(.sumie-recortes, .shoji-panel-slats, .origami-abanico, .swiss-posters,
+    .sumiink-rollos, .moonlit-senda, .ledger-asientos, .shonen-ronda,
+    .ghost-cementerio, .samurai-tatami, .kawaii-jardin, .byobu-indice) > * {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 220px;
+}

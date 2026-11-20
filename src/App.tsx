@@ -1222,7 +1222,13 @@ export default function App() {
           )}
           <div
             ref={libraryScrollRef}
-            className="main-scroll-region flex-1 overflow-y-auto p-6 custom-scroll"
+            className={`main-scroll-region flex-1 overflow-y-auto p-6 custom-scroll ${
+              activeTab === 'library' &&
+              TEMAS_CON_VISTAS_PROPIAS.includes(temaBase) &&
+              filteredTracks.length > 60
+                ? 'biblioteca-muy-grande'
+                : ''
+            }`}
           >
             {/* TAB: BIBLIOTECA */}
             {activeTab === 'library' && TEMAS_CON_VISTAS_PROPIAS.includes(temaBase) && (

@@ -31,6 +31,21 @@ test.beforeEach(async ({ page }) => {
       get_default_music_dir: null,
       get_download_queue: [],
       tools_status: [],
+      doctor_database: {
+        mensaje: 'integrity=ok · pistas=0 · índice FTS reconstruido',
+        info: {
+          integridad: 'ok',
+          pistas: 0,
+          entradas_fts: 0,
+          version_esquema: 2,
+          tamano_bytes: 4096,
+          ultimo_backup: 'library-auto-v1-1.bak',
+          migraciones: '1=FTS5 · 2=índices',
+        },
+      },
+      get_system_logs: '00:00:01 [INFO] lib: Escaneo de prueba',
+      vacuum_database: 'Base compactada: 20 KB → 12 KB',
+      backup_database: 'Respaldo creado',
     };
     const internals = window as unknown as {
       __TAURI_INTERNALS__: {
@@ -410,6 +425,22 @@ test('el generador integrado aplica un tema con su arquetipo', async ({ page }) 
   expect(await page.evaluate(() => document.documentElement.dataset['themeTransition'])).toBe(
     'origami',
   );
+});
+
+test('Ajustes → Sistema muestra la salud de la base y los registros', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });
+  await page.getByRole('tab', { name: /Ajustes/ }).click();
+  await page.getByRole('button', { name: /Sistema/ }).click();
+
+  const panel = page.locator('.sys-panel');
+  await expect(panel).toBeVisible();
+  await expect(panel.locator('.sys-stat').first()).toContainText('ok');
+  await expect(panel.locator('.sys-stat')).toHaveCount(4);
+  await expect(panel.locator('.sys-log')).toContainText('Escaneo de prueba');
+
+  await panel.getByRole('button', { name: /Compactar/ }).click();
+  await expect(panel.locator('.sys-estado')).toContainText('Base compactada');
 });
 
 test('el panel ahora suena muestra detalles, album y artista', async ({ page }) => {
