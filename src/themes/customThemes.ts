@@ -28,6 +28,7 @@ const ARQUETIPOS: Arquetipo[] = [
   'ghost',
   'samurai',
   'kawaii',
+  'manga',
 ];
 
 function esValido(dato: unknown): dato is TemaPersonalizado {

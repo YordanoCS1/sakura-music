@@ -18,9 +18,25 @@ Pestaña **Listas** en la navegación (también accesible desde ⌘K). Las lista
 
 La pestaña **Letras** del panel “Ahora suena” busca un `.lrc` al lado del audio (también reconoce `.LRC`). El parser acepta varios timestamps por línea y metadatos `[ar:...]`. La línea activa se resalta y hace autoscroll con `currentTime`.
 
+## Tema Manga
+
+`manga` ("Viñetas, tinta y screentone") es el decimotercer tema propio y el
+decimoséptimo en total. Tiene identidad estructural completa: el Inicio es una
+portada de revista (`第 01 話`, globo de diálogo, sello 開 y línea de tiempo) y
+la biblioteca son páginas de viñetas con panel halftone, globo con el título,
+tag **GO!** y carátulas en blanco y negro. La cabecera es negra con el glifo 漫,
+la navegación lleva kanji sobre cuadrado rojo y el tema tiene estilo propio en
+Ajustes, panel "Ahora suena", playlists, paleta ⌘K, modales de metadatos, splash
+y transición de página `t-manga`. Paleta: papel `#fbfaf7`, tinta `#101010` y
+acento rojo `#d62828`, con tramado screentone. Fija `data-theme="space"` y usa
+`data-skin="manga"`, y está disponible como arquetipo en
+`ThemeGeneratorModal`/`customThemes.ts`. Sumó los snapshots
+`manga-home-win32.png` y `manga-library-win32.png`; el loop de
+`visuals.spec.ts` cubre 7 temas.
+
 ## Paleta de comandos
 
-`Ctrl+K` / `⌘K` abre una paleta para navegar, cambiar tema, controlar la reproducción y buscar pistas. ↑↓ navega, ↵ ejecuta, esc cierra. Está estilizada con el tema activo.
+`Ctrl+K` / `⌘K` abre una paleta para navegar, cambiar tema, controlar la reproducción y buscar pistas. ↑↓ navega, ↵ ejecuta, esc cierra. Está estilizada con el tema activo, incluido Manga.
 
 ## Actualizaciones e instaladores
 
@@ -36,7 +52,7 @@ La pestaña **Letras** del panel “Ahora suena” busca un `.lrc` al lado del a
 
 ## Pruebas
 
-Se agregaron tests de integración para la migración `user_version` con backup automático sobre una base en disco, del parser LRC, de las consultas de playlists y del toast de deshacer. Los snapshots visuales se actualizaron por la sexta pestaña de navegación.
+Se agregaron tests de integración para la migración `user_version` con backup automático sobre una base en disco, del parser LRC, de las consultas de playlists y del toast de deshacer. Los snapshots visuales se actualizaron por la sexta pestaña de navegación y por el tema Manga.
 
 
 ## Buscador de letras online

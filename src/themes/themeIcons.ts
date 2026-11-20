@@ -40,6 +40,7 @@ export const ICONOS_TEMA: Record<string, Record<AppTab, string>> = {
     playlists: '陣',
   },
   kawaii: { home: '♡', library: '✿', search: '⌕', queue: '☁', settings: '♡', playlists: '♬' },
+  manga: { home: '話', library: '巻', search: '探', queue: '列', settings: '設', playlists: '目' },
   yoru: { home: '夜', library: '灯', search: '探', queue: '列', settings: '設', playlists: '宵' },
   hanabi: { home: '✺', library: '▦', search: '⌕', queue: '☰', settings: '✧', playlists: '✿' },
   aizuri: { home: '藍', library: '巻', search: '探', queue: '列', settings: '設', playlists: '譜' },
@@ -61,6 +62,7 @@ export const ESTILO_ICONOS: Record<string, 'kanji' | 'symbol' | 'mono'> = {
   moonlit: 'symbol',
   shonen: 'symbol',
   kawaii: 'symbol',
+  manga: 'kanji',
   hanabi: 'symbol',
   space: 'symbol',
 };

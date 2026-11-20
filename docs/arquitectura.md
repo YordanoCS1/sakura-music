@@ -31,7 +31,7 @@ flowchart TB
         TABS["6 pestañas (AppTab):<br/>home · library · search · queue<br/>playlists · settings"]
         PLAYER["PlayerBar + NowPlayingPanel<br/>Detalles · Letras · Álbum · Artista<br/>asset: + Blob URL"]
         PANEL["PlaylistsPanel · CommandPalette ⌘K<br/>UndoToast · SystemPanel<br/>VirtualizedGrid en LibraryTab"]
-        THEME["4 genéricos (LibraryTab, 9 vistas)<br/>+ 12 propios (ThemeLibrary/Home/Nav)<br/>data-theme=space · data-skin={tema}"]
+        THEME["4 genéricos (LibraryTab, 9 vistas)<br/>+ 13 propios (ThemeLibrary/Home/Nav)<br/>data-theme=space · data-skin={tema}"]
     end
 
     subgraph IPC["IPC Tauri"]
@@ -75,7 +75,7 @@ flowchart TB
 | Capa | Responsabilidad | No debe |
 |---|---|---|
 | `src/App.tsx` | Seis pestañas (`AppTab`), reproductor, editor, cola, temas. Lee `localStorage` para preferencias. | Leer tags ni lanzar `yt-dlp` directamente |
-| Componentes `src/components/` | `NowPlayingPanel` (Detalles/Letras/Álbum/Artista), `PlaylistsPanel`, `CommandPalette` (⌘K), `UndoToast`, `SystemPanel`, `VirtualizedGrid`; `ThemeLibrary`/`ThemeHome`/`ThemeNav` para los 12 temas propios. | Hablar directo con Rust: todo pasa por `invoke`/eventos |
+| Componentes `src/components/` | `NowPlayingPanel` (Detalles/Letras/Álbum/Artista), `PlaylistsPanel`, `CommandPalette` (⌘K), `UndoToast`, `SystemPanel`, `VirtualizedGrid`; `ThemeLibrary`/`ThemeHome`/`ThemeNav` para los 13 temas propios. | Hablar directo con Rust: todo pasa por `invoke`/eventos |
 | `lib.rs` | Registrar los 40 comandos propios, inicializar carpeta de datos, autorizar carpetas en el scope `asset:`, cancelar descargas al salir. | Contener lógica de parsing o pesos |
 | `catalog.rs` | Consultar iTunes, Deezer y MusicBrainz (con portadas de Cover Art Archive) vía `reqwest`, con User-Agent propio, y exponer 3 comandos Tauri. | Hacer `fetch` desde el frontend (CORS/User-Agent) ni pintar UI |
 | `validacion.rs` | Validar en la frontera IPC (longitudes, caracteres de control, rutas y lotes) y exigir scope canónico para escrituras. | Confiar en lo que manda el frontend |
@@ -88,7 +88,7 @@ flowchart TB
 
 > Nota: las vistas genéricas viven en `LibraryTab.tsx` (9 vistas) y usan
 > `VirtualizedGrid` con `content-visibility` condicional en bibliotecas de más
-> de 60 pistas; los 12 temas propios tienen `ThemeLibrary`/`ThemeHome`/`ThemeNav`
+> de 60 pistas; los 13 temas propios tienen `ThemeLibrary`/`ThemeHome`/`ThemeNav`
 > y sus propios diálogos, iconos y splash. `App.tsx` conserva el estado raíz y el
 > player; las piezas grandes nuevas se separan en `src/components/`.
 
@@ -268,22 +268,26 @@ sequenceDiagram
 
 ## Tema visual
 
-La app usa **16 temas**, divididos en dos familias:
+La app usa **17 temas**, divididos en dos familias:
 
 - **4 genéricos:** `space` (M3 Zen, por defecto), `yoru`, `hanabi` y `aizuri`.
   Comparten `LibraryTab.tsx` con sus 9 vistas y se identifican con
   `data-theme="space"` fijo en el contenedor raíz.
-- **12 propios:** `sumie`, `byobu`, `shoji`, `origami`, `swiss`, `sumiink`,
-  `moonlit`, `ledger`, `shonen`, `ghost`, `samurai` y `kawaii`. Cada uno fija
-  `data-theme="space"` y usa `data-skin={tema}`, con `ThemeLibrary`,
+- **13 propios:** `sumie`, `byobu`, `shoji`, `origami`, `swiss`, `sumiink`,
+  `moonlit`, `ledger`, `shonen`, `ghost`, `samurai`, `kawaii` y `manga`. Cada uno
+  fija `data-theme="space"` y usa `data-skin={tema}`, con `ThemeLibrary`,
   `ThemeHome` y `ThemeNav` propios: cabecera, Buscar, Cola, ajustes, diálogos,
-  transiciones, iconos y splash propios.
+  transiciones, iconos y splash propios. `manga` ("Viñetas, tinta y screentone")
+  usa papel `#fbfaf7`, tinta `#101010` y rojo `#d62828` con tramado screentone:
+  portada de revista en Home y páginas de viñetas en biblioteca, con cabecera
+  negra y glifo 漫; es además arquetipo del generador de temas.
 
 Los tokens semánticos `--m3-*`, `--space-*`, `--accent-*` y `--theme-*` viven en
 `App.css`. Tailwind mapea `accent-*` a esas variables, así que
 `from-accent-500` o `text-accent-300` siguen al tema sin duplicar clases. El
 glifo del splash hace un handoff continuo al logo de la navegación mediante
-`view-transition-name: sakura-glifo`. La preferencia se persiste en
+`view-transition-name: sakura-glifo`; Manga suma la transición de página
+`t-manga`. La preferencia se persiste en
 `localStorage` (`sakura_theme`). Ver [ADR 0012](adr/0012-temas-multiples.md) y
 [diseno.md](diseno.md).
 

@@ -70,6 +70,7 @@ const TEMAS_CON_VISTAS_PROPIAS: ThemeMode[] = [
   'ghost',
   'samurai',
   'kawaii',
+  'manga',
 ];
 
 const TEMAS_DISPONIBLES: ThemeOption[] = [
@@ -82,10 +83,11 @@ const TEMAS_DISPONIBLES: ThemeOption[] = [
   { id: 'sumiink', nombre: 'Sumi Ink', descripcion: 'Pincelada blanca sobre negro' },
   { id: 'moonlit', nombre: 'Moonlit', descripcion: 'Noche azul y luna' },
   { id: 'ledger', nombre: 'Ledger', descripcion: 'Libro mayor y sellos rojos' },
-  { id: 'shonen', nombre: 'Shōnen', descripcion: 'Manga, energía y viñetas' },
+  { id: 'shonen', nombre: 'Shōnen', descripcion: 'Energía, combate y dramatismo' },
   { id: 'ghost', nombre: 'Fantasmas', descripcion: 'Espectros y niebla azul' },
   { id: 'samurai', nombre: 'Samurái', descripcion: 'Lacado rojo, acero y oro' },
   { id: 'kawaii', nombre: 'Kawaii', descripcion: 'Pastel, ternura y caritas' },
+  { id: 'manga', nombre: 'Manga', descripcion: 'Viñetas, tinta y screentone' },
   { id: 'yoru', nombre: 'Yoru', descripcion: 'Noche cálida y ámbar' },
   { id: 'hanabi', nombre: 'Hanabi', descripcion: 'Neón cian y magenta' },
   { id: 'aizuri', nombre: 'Aizuri', descripcion: 'Índigo teñido y cian' },
@@ -969,6 +971,12 @@ export default function App() {
       glow2: 'bg-amber-800/20',
       accent: 'from-red-700 to-amber-600',
       badge: 'bg-red-700/15 text-red-100 border-red-600/30',
+    },
+    manga: {
+      glow1: 'bg-neutral-300/20',
+      glow2: 'bg-red-700/15',
+      accent: 'from-neutral-900 to-red-700',
+      badge: 'bg-red-700/10 text-neutral-900 border-red-700/30',
     },
     kawaii: {
       glow1: 'bg-pink-300/25',

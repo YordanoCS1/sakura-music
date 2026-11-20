@@ -314,11 +314,14 @@ test('los temas propios usan vistas propias sin el selector de 9 vistas', async 
     { id: 'ghost', nombre: 'Fantasmas' },
     { id: 'samurai', nombre: 'Samurái' },
     { id: 'kawaii', nombre: 'Kawaii' },
+    { id: 'manga', nombre: 'Manga' },
   ];
 
   for (const tema of temas) {
     await page.getByRole('tab', { name: /Ajustes/ }).click();
-    await page.getByRole('button', { name: new RegExp(tema.nombre) }).click();
+    await page
+      .locator('.set-theme-copy strong', { hasText: new RegExp(`^${tema.nombre}$`) })
+      .click();
 
     await expect(page.locator('.app-shell')).toHaveAttribute('data-skin', tema.id);
     await expect(page.locator('.titlebar-brand-tag')).toHaveText(tema.nombre);

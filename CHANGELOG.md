@@ -5,6 +5,7 @@ Todos los cambios destacables de este proyecto se registran acá. El formato sig
 ## [Sin publicar]
 
 ### Agregado
+- **Tema Manga** (`manga`, "Viñetas, tinta y screentone"): el decimotercer tema propio con identidad estructural. Home con portada de revista (`第 01 話`, globo de diálogo, sello 開 y línea de tiempo), biblioteca en páginas de viñetas (panel halftone, globo con el título, tag **GO!**, portadas en blanco y negro), cabecera negra con el glifo 漫, navegación con kanji sobre cuadrado rojo, estilo propio en Ajustes, panel "Ahora suena", playlists, paleta ⌘K, modales de metadatos, splash y transición `t-manga`. Paleta papel `#fbfaf7`, tinta `#101010` y acento rojo `#d62828`; usa `data-theme="space"` fijo y `data-skin="manga"`. Quedó como arquetipo del generador de temas y sumó snapshots `manga-home-win32.png` y `manga-library-win32.png` (el loop visual pasó a 7 temas). Total: **17 temas**.
 - **Búsqueda online de letras** en LRCLIB desde el panel “Ahora suena”, con resultados SINC/PLANA, botón *Aplicar* que escribe el `.lrc` al lado de la pista y *Quitar .lrc*. Tres comandos IPC nuevos y CSP actualizada.
 - Catálogo de metadatos con **MusicBrainz** y **Cover Art Archive**, además de iTunes y Deezer. Las consultas pasan por `src-tauri/src/catalog.rs` por CORS y por el User-Agent que exige MusicBrainz.
 - Exploración de álbumes del catálogo: se abren sus pistas y se aplica la que corresponda a la canción en edición.
@@ -20,7 +21,7 @@ Todos los cambios destacables de este proyecto se registran acá. El formato sig
 - **Mini reproductor**: tercer estilo que reduce la ventana, la fija siempre encima y muestra controles compactos; al salir se restaura el tamaño.
 - **Sistema de diseño**: escala tipográfica con mínimo de 12 px (131 tamaños arbitrarios reemplazados), neutros semánticos `ink-*` (217 usos de `gray-*` centralizados), tres tokens de movimiento y componente `EmptyState` para biblioteca y cola.
 - Tests E2E con Playwright sobre Vite con IPC simulado (26 pruebas) y guía de release con firma de bundles.
-- **16 temas seleccionables:** 4 genéricos (**M3 Zen**/`space`, Yoru, Hanabi y Aizuri) con `LibraryTab` y sus 9 vistas, y 12 temas propios (**Sumi-e, Byōbu, Shoji, Origami, Swiss, Sumi Ink, Moonlit, Ledger, Shōnen, Fantasmas, Samurái y Kawaii**) con Home, biblioteca, cabecera, Buscar, Cola, ajustes, diálogos y transiciones propios. El selector `data-theme='space'` queda fijo y los propios usan `data-skin`.
+- **17 temas seleccionables:** 4 genéricos (**M3 Zen**/`space`, Yoru, Hanabi y Aizuri) con `LibraryTab` y sus 9 vistas, y 13 temas propios (**Sumi-e, Byōbu, Shoji, Origami, Swiss, Sumi Ink, Moonlit, Ledger, Shōnen, Fantasmas, Samurái, Kawaii y Manga**) con Home, biblioteca, cabecera, Buscar, Cola, ajustes, diálogos y transiciones propios. El selector `data-theme='space'` queda fijo y los propios usan `data-skin`.
 - **Generador de temas** para crear variantes a partir de un arquetipo estructural, con CSS inyectado en runtime y persistencia en `localStorage`.
 - **Panel “Ahora suena” ampliado** con pestañas Detalles, Letras, Álbum y Artista, color dominante de la carátula y transición continua del glifo del splash a la navegación con View Transitions.
 - **Playlists persistentes** en las tablas `playlists` y `playlist_tracks` de SQLite: pestaña Listas con crear, renombrar, borrar, agregar pistas, quitarlas y reordenarlas, con estilo propio por tema.
@@ -32,10 +33,10 @@ Todos los cambios destacables de este proyecto se registran acá. El formato sig
 - **Actualizaciones automáticas firmadas** con minisign e instaladores NSIS/MSI; clave pública en `src-tauri/updater.key.pub`, privada ignorada por git y endpoint a configurar al publicar (`REPLACE_OWNER/REPLACE_REPO` en `tauri.conf.json`).
 - **Migraciones versionadas** con `PRAGMA user_version=2` (1 = FTS5 y disparadores, 2 = índices en artista/álbum/año/genero), respaldo automático `VACUUM INTO` con retención de 3 y PRAGMAs WAL + `synchronous=NORMAL` + `temp_store=MEMORY` + `foreign_keys=ON`.
 - **Benchmark de escaneo** `node scripts/benchmark_scan.mjs [cantidad]`: 10.000 pistas tardaron ~12,6 s en release en esta máquina; el CLI `scan` imprime los milisegundos.
-- **`npm run pipeline`** como comando único para todo lo que corre el CI: 29 unitarios Vitest, 27 E2E Playwright y 43 tests Rust.
+- **`npm run pipeline`** como comando único para todo lo que corre el CI: 29 unitarios Vitest, 28 E2E Playwright y 43 tests Rust.
 
 ### Cambiado
-- La identidad de los temas dejó de ser sólo de paleta: navegación, tarjetas, reproductor, tipografía y sombras cambian según el tema; ~200 superficies hardcodeadas se tokenizaron para que los 16 temas apliquen de verdad. Sumi-e incorpora textura washi, sellos hanko, ensō y trazos de pincel; los 12 temas propios suman estructura completa, con el selector base fijo en `data-theme='space'` y `data-skin` para cada uno.
+- La identidad de los temas dejó de ser sólo de paleta: navegación, tarjetas, reproductor, tipografía y sombras cambian según el tema; ~200 superficies hardcodeadas se tokenizaron para que los 17 temas apliquen de verdad. Sumi-e incorpora textura washi, sellos hanko, ensō y trazos de pincel; los 13 temas propios suman estructura completa, con el selector base fijo en `data-theme='space'` y `data-skin` para cada uno.
 - Todos los comentarios del código están en español rioplatense y explican decisiones no obvias.
 - La documentación se actualizó para reflejar 46 comandos Tauri, 6 eventos, 43 tests Rust y 9 vistas.
 - Código Rust y frontend formateados con `rustfmt` y Prettier; clippy pasa con `-D warnings`.

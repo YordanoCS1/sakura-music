@@ -59,7 +59,8 @@ export default function ThemeLibrary({
     theme !== 'shonen' &&
     theme !== 'ghost' &&
     theme !== 'samurai' &&
-    theme !== 'kawaii'
+    theme !== 'kawaii' &&
+    theme !== 'manga'
   ) {
     return null;
   }
@@ -198,6 +199,20 @@ export default function ThemeLibrary({
             <span className="shonen-cab-count">{total} PISTAS</span>
           </header>
         );
+      case 'manga':
+        return (
+          <header className="manga-cab">
+            <span className="manga-cab-glifo" aria-hidden="true">
+              漫
+            </span>
+            <div className="manga-cab-tit">
+              <small>CAPÍTULO · BIBLIOTECA</small>
+              <h1>Biblioteca</h1>
+            </div>
+            {navCarpetas}
+            <span className="manga-cab-count">{total} VIÑETAS</span>
+          </header>
+        );
       case 'ghost':
         return (
           <header className="ghost-cab">
@@ -261,6 +276,7 @@ export default function ThemeLibrary({
     ghost: 'Ecos',
     samurai: 'Formas',
     kawaii: 'Amigos',
+    manga: 'Capítulos',
   };
   const subcarpetas = folderExplorerData.subfolders.slice(0, 12);
   const selectorCarpetas = subcarpetas.length > 0 && (
@@ -776,6 +792,47 @@ export default function ThemeLibrary({
                 </article>
               ))}
             </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (theme === 'manga') {
+    return (
+      <div className="manga-library">
+        {encabezado}
+        {selectorCarpetas}
+        {vistaTracks.length === 0 ? (
+          vacio
+        ) : (
+          <div className="manga-paginas">
+            {vistaTracks.map((track, i) => (
+              <article
+                key={track.id}
+                className={`manga-pagina ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+              >
+                <span className="manga-pagina-num" aria-hidden="true">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <span className="manga-pagina-go" aria-hidden="true">
+                  GO!
+                </span>
+                <button
+                  type="button"
+                  className="manga-pagina-play"
+                  onClick={() => onPlayTrack(track)}
+                  aria-label={`Reproducir ${track.title}`}
+                >
+                  <span className="manga-vineta-cover">{portadaDe(track)}</span>
+                </button>
+                <div className="manga-globo-titulo">
+                  <strong>{track.title}</strong>
+                </div>
+                <small className="manga-pagina-meta">{track.artist}</small>
+                <div className="manga-pagina-acciones">{acciones(track)}</div>
+              </article>
+            ))}
           </div>
         )}
       </div>

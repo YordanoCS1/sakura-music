@@ -24,13 +24,13 @@ canciones, Now Playing y Cola.**
 
 ## Estado actual de la implementación
 
-La app **no usa seis temas ni estos ocho prototipos**: implementa **16 temas**,
+La app **no usa seis temas ni estos ocho prototipos**: implementa **17 temas**,
 divididos en dos familias:
 
 - **4 genéricos** (`space`/M3 Zen, `yoru`, `hanabi`, `aizuri`): comparten
   `LibraryTab.tsx` con 9 vistas y fijan `data-theme="space"`.
-- **12 propios** (`sumie`, `byobu`, `shoji`, `origami`, `swiss`, `sumiink`,
-  `moonlit`, `ledger`, `shonen`, `ghost`, `samurai`, `kawaii`): usan
+- **13 propios** (`sumie`, `byobu`, `shoji`, `origami`, `swiss`, `sumiink`,
+  `moonlit`, `ledger`, `shonen`, `ghost`, `samurai`, `kawaii`, `manga`): usan
   `data-skin={tema}` y tienen `ThemeLibrary`, `ThemeHome` y `ThemeNav` propios,
   con cabecera, Buscar, Cola, ajustes, diálogos, transiciones, iconos y splash
   propios.
@@ -38,7 +38,12 @@ divididos en dos familias:
 Algunos prototipos de este informe inspiraron temas propios (por ejemplo,
 *Bambú Minimal* → `sumie`/`shoji`, *Noche Estrellada* → `moonlit`/`yoru`,
 *Puesta de Sol* → `hanabi`, *Neón Rosa* → `kawaii`/`ghost`), pero las paletas y
-la estructura final son las de `App.css`, no las de este HTML.
+la estructura final son las de `App.css`, no las de este HTML. El prototipo
+**Neón Rosa** es el antecedente más cercano del tema implementado `manga`
+(viñetas, rojo y negro), aunque `manga` no existía en este HTML: se diseñó
+después con papel `#fbfaf7`, tinta `#101010`, acento `#d62828` y tramado
+screentone, y es el único tema de la app con portada de revista y páginas de
+viñetas en la biblioteca.
 
 ---
 
@@ -133,5 +138,6 @@ la estructura final son las de `App.css`, no las de este HTML.
 
 Esta sección se conserva tal cual porque documenta el proceso de diseño original:
 "abrí el HTML, mirá cada tema en sus 5 pantallas y decí cuál te gusta". Hoy esos
-pasos ya no están pendientes: la app implementa los 16 temas descriptos arriba.
+pasos ya no están pendientes: la app implementa los 17 temas descriptos arriba
+(incluido `manga`, que se sumó después de este informe).
 Para temas nuevos, seguí la receta de [desarrollo.md](../desarrollo.md).

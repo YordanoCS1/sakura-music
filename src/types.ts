@@ -165,6 +165,7 @@ export type ThemeMode =
   | 'ghost'
   | 'samurai'
   | 'kawaii'
+  | 'manga'
   | 'yoru'
   | 'hanabi'
   | 'aizuri';

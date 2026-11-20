@@ -37,7 +37,7 @@ escaneo lo reconstruye desde los archivos. No se pierde música ni tags.
 ## Las nueve vistas (temas genéricos)
 
 Estas nueve vistas son las de `LibraryTab`, usadas por los **4 temas genéricos**
-(M3 Zen, Yoru, Hanabi y Aizuri). Los **12 temas propios** tienen una biblioteca
+(M3 Zen, Yoru, Hanabi y Aizuri). Los **13 temas propios** tienen una biblioteca
 estructural propia en lugar de este switcher.
 
 | Vista | Ideal para |
@@ -94,7 +94,7 @@ La pestaña **Listas** de la navegación guarda tus listas en SQLite (tablas
 `playlists` y `playlist_tracks`). Podés **crear**, renombrar y borrar listas,
 agregar pistas desde la biblioteca, quitarlas y reordenarlas con las flechas.
 Cada lista se persiste entre sesiones y cada tema le da su propio estilo al
-panel (los 12 temas propios tienen variantes explícitas).
+panel (los 13 temas propios tienen variantes explícitas).
 
 ## Borrado con Deshacer
 

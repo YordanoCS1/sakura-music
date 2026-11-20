@@ -8,6 +8,10 @@ Con 16 temas, seis pestañas y cientos de pistas, cambiar de sección o de tema
 recorriendo Ajustes era lento. Los atajos existentes cubrían reproducción, no
 navegación.
 
+> Nota (2026-11-20): la cifra de 16 es la del momento de la decisión. Hoy son
+> **17 temas** (13 propios + 4 genéricos, con `manga` entre los propios). La
+> paleta de comandos y la sexta pestaña cubren también el tema nuevo.
+
 ## Decisión
 
 `Ctrl+K` / `⌘K` abre un diálogo con búsqueda difusa simple sobre tres grupos:

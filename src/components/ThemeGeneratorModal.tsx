@@ -18,6 +18,7 @@ const ARQUETIPOS: { id: Arquetipo; nombre: string }[] = [
   { id: 'sumie', nombre: 'Sumi-e · pergamino' },
   { id: 'byobu', nombre: 'Byōbu · pantalla' },
   { id: 'shonen', nombre: 'Shōnen · manga' },
+  { id: 'manga', nombre: 'Manga · viñetas' },
   { id: 'ghost', nombre: 'Fantasmas · etéreo' },
   { id: 'samurai', nombre: 'Samurái · lacado' },
   { id: 'kawaii', nombre: 'Kawaii · pastel' },

@@ -1,7 +1,7 @@
 # Sistema de diseño
 
-Sakura Music usa **16 temas**: 4 genéricos y 12 propios. Los genéricos comparten
-la escala de tokens y las 9 vistas de `LibraryTab.tsx`; los 12 propios redefinen
+Sakura Music usa **17 temas**: 4 genéricos y 13 propios. Los genéricos comparten
+la escala de tokens y las 9 vistas de `LibraryTab.tsx`; los 13 propios redefinen
 la estructura completa con `ThemeLibrary`/`ThemeHome`/`ThemeNav`. Prototipos de
 referencia en `docs/prototipos/` (históricos) y `docs/temas/` (propuestas). La
 fuente de verdad son `tailwind.config.js` y `App.css`.
@@ -22,7 +22,7 @@ vistas** (Carpetas, Cuadrícula, Lista, Álbumes, Pared, CDs, 3D, Luz y
 Portadas), con `VirtualizedGrid` y `content-visibility` condicional cuando la
 biblioteca pasa de 60 pistas.
 
-### Propios (12)
+### Propios (13)
 
 | Id | Nombre | Personalidad |
 |---|---|---|
@@ -38,6 +38,7 @@ biblioteca pasa de 60 pistas.
 | `ghost` | Fantasmas | Neo-brutalismo nocturno, bordes duros y neón ácido |
 | `samurai` | Samurái | Lacado rojo/negro, textura de armadura, serif marcada |
 | `kawaii` | Kawaii | Pastel, redondeado extremo y detalles playful |
+| `manga` | Manga | **Revista de viñetas**: papel `#fbfaf7`, tinta `#101010`, tramado screentone y un solo acento rojo `#d62828` |
 
 Cada tema propio fija `data-theme="space"` y usa `data-skin={tema}` con
 `ThemeLibrary`, `ThemeHome` y `ThemeNav` propios: cabecera, Buscar, Cola,
@@ -57,7 +58,24 @@ el encabezado `IDENTIDAD POR TEMA`.
 | Familia | Cantidad | Biblioteca | Navegación | Superficies |
 |---|---|---|---|---|
 | Genéricos (`space`, `yoru`, `hanabi`, `aizuri`) | 4 | `LibraryTab` con 9 vistas + `VirtualizedGrid` | `ZenTopNav` | Tokens + `App.css` |
-| Propios (`sumie`, `byobu`, `shoji`, `origami`, `swiss`, `sumiink`, `moonlit`, `ledger`, `shonen`, `ghost`, `samurai`, `kawaii`) | 12 | `ThemeLibrary` propio | `ThemeHome` + `ThemeNav` propios | `data-skin={tema}`, estilos, iconos y splash propios |
+| Propios (`sumie`, `byobu`, `shoji`, `origami`, `swiss`, `sumiink`, `moonlit`, `ledger`, `shonen`, `ghost`, `samurai`, `kawaii`, `manga`) | 13 | `ThemeLibrary` propio | `ThemeHome` + `ThemeNav` propios | `data-skin={tema}`, estilos, iconos y splash propios |
+
+### Notas visuales de Manga
+
+`manga` es el tema propio más nuevo y se aparta de `shonen` (que es naranja y
+de ritmo de cómic) por una paleta estricta: papel `#fbfaf7`, tinta `#101010` y
+un único acento rojo `#d62828`, con tramado screentone como textura de fondo.
+El `ThemeHome` arma una **portada de revista**: número `第 01 話`, globo de
+diálogo, sello 開 y una línea de tiempo. El `ThemeLibrary` dibuja **páginas de
+viñetas**: panel con halftone, globo con el título de la pista, tag **GO!** y
+portadas en blanco y negro (`filter: grayscale(1)`).
+
+La identidad se completa con cabecera negra y glifo 漫, barra de navegación
+negra con kanji sobre cuadrado rojo, estilo propio en Ajustes, panel "Ahora
+suena", playlists y paleta ⌘K con tokens `--cmd-*`, modales de metadatos,
+splash y la transición de página `t-manga`. Mantiene `data-theme="space"` fijo
+y aplica `data-skin="manga"` para no romper los selectores históricos; también
+es arquetipo disponible en `ThemeGeneratorModal`/`customThemes.ts`.
 
 ## Tipografía
 
@@ -85,7 +103,7 @@ No se usan `gray-*` de Tailwind: los neutros salen de `ink-*` para que un cambio
 ### Paleta por tema
 
 La paleta de cada tema es un conjunto de variables, no una lista de clases: los
-12 temas propios pueden cambiar fondo, tipografía, borde y sombra además del
+13 temas propios pueden cambiar fondo, tipografía, borde y sombra además del
 acento. Por eso las superficies se leen siempre desde `--m3-*` y `--theme-*`, y
 los componentes usan `accent-*` para seguir el tema sin duplicar estilos. La
 paleta de comandos (`CommandPalette`, ⌘K) y los diálogos se estilizan con esos
@@ -102,7 +120,8 @@ teclado.
 
 Siempre se respeta `prefers-reduced-motion`. El glifo del splash hace un
 handoff continuo al logo de la navegación con
-`view-transition-name: sakura-glifo`, aplicable a los 16 temas.
+`view-transition-name: sakura-glifo`, aplicable a los 17 temas (Manga usa
+además la transición de página `t-manga`).
 
 ## Forma y elevación
 
@@ -124,8 +143,8 @@ identidad) y usa `asset:` + Blob URL para no bloquear el archivo.
 también accesible desde ⌘K). Cada lista se crea, renombra, borra y reordena con
 las flechas; las pistas se cargan desde la biblioteca. Visualmente usa las
 tarjetas y los bordes del tema: los arquetipos Swiss, Shōnen, Kawaii,
-Fantasmas, Luna y Samurái tienen variantes explícitas y el resto hereda las
-variables del tema.
+Fantasmas, Luna, Samurái y Manga tienen variantes explícitas y el resto hereda
+las variables del tema.
 
 ## Estados vacíos
 

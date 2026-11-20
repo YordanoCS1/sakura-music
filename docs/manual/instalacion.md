@@ -92,7 +92,7 @@ nuevo. No perdés tags ni audio.
    descargá tu primera canción en el formato que prefieras.
 4. En **Cola** mirá el porcentaje, velocidad y ETA; al terminar, la canción
    aparece sola en Biblioteca.
-5. En **Ajustes** elegí uno de los 16 temas y ajustá los efectos visuales; en
+5. En **Ajustes** elegí uno de los 17 temas y ajustá los efectos visuales; en
    **Ajustes → Sistema** podés verificar la base, vaciar la papelera y buscar
    actualizaciones.
 

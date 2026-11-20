@@ -33,7 +33,9 @@ manda como un array ordenado de rutas (`playlist_reorder`).
 - El backup de `library.sqlite3` incluye las playlists sin trabajo extra.
 - Hay ocho comandos IPC nuevos y su contrato se verifica en
   `src/lib/ipc-contract.test.ts`.
-- La pestaña nueva cambia los iconos de los 16 temas y los snapshots visuales.
+- La pestaña nueva cambia los iconos de los 17 temas y los snapshots visuales.
+  **Nota (2026-11-20):** la cifra es la de la decisión original; hoy son 17 temas
+  y la pestaña Listas también tiene estilo propio en `manga`.
 
 ## Reflejo en el código
 

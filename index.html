@@ -14,7 +14,7 @@
         var tema = 'space';
         try {
           var guardado = localStorage.getItem('sakura_theme');
-          var conocidos = ['space','sumie','byobu','shoji','origami','swiss','sumiink','moonlit','ledger','shonen','ghost','samurai','kawaii','yoru','hanabi','aizuri'];
+          var conocidos = ['space','sumie','byobu','shoji','origami','swiss','sumiink','moonlit','ledger','shonen','ghost','samurai','kawaii','manga','yoru','hanabi','aizuri'];
           if (guardado && conocidos.indexOf(guardado) !== -1) tema = guardado;
           else if (guardado) tema = 'custom';
         } catch (e) {}
@@ -63,6 +63,11 @@
         --sp-bg:#fff6e8; --sp-fg:#1c1c1c; --sp-accent:#ff6b1a; --sp-accent2:#ffb800;
         --sp-glow:rgba(255,107,26,.2); --sp-shape:#1c1c1c;
         --sp-radio:0%;
+      }
+      html[data-splash='manga'] {
+        --sp-bg:#fbfaf7; --sp-fg:#101010; --sp-accent:#d62828; --sp-accent2:#101010;
+        --sp-glow:rgba(214,40,40,.2); --sp-shape:#101010;
+        --sp-font:system-ui,sans-serif; --sp-radio:0%;
       }
       html[data-splash='samurai'] {
         --sp-bg:#1a1512; --sp-fg:#efe6d6; --sp-accent:#c9a961; --sp-accent2:#b7352a;
@@ -148,6 +153,18 @@
 
       /* Variantes estructurales por tema */
       html[data-splash='shonen'] .splash-word { font-style: italic; transform: skewX(-6deg); text-shadow: 4px 4px 0 var(--sp-accent2); }
+      html[data-splash='manga'] .splash-word { font-weight:900; text-transform:uppercase; letter-spacing:-.03em; text-shadow:3px 3px 0 var(--sp-accent); }
+      html[data-splash='manga'] #sakura-splash {
+        background:
+          radial-gradient(circle at 1px 1px,rgba(16,16,16,.16) 1px,transparent 0) 0 0/6px 6px,
+          var(--sp-bg);
+      }
+      html[data-splash='manga'] .splash-vinyl::before,
+      html[data-splash='manga'] .splash-vinyl::after { display:none; }
+      html[data-splash='manga'] .splash-vinyl {
+        border:5px solid #101010; box-shadow:8px 8px 0 #101010; background:#fff;
+      }
+      html[data-splash='manga'] .splash-label { background:#d62828; color:#fff; animation:none; }
       html[data-splash='samurai'] .splash-vinyl { width:140px; height:140px; border:4px solid var(--sp-accent); background:var(--sp-shape); }
       html[data-splash='kawaii'] .splash-vinyl { width:110px; height:110px; animation:sakura-latido 1.8s ease-in-out infinite; }
       html[data-splash='swiss'] .splash-vinyl { width:104px; height:104px; border:3px solid var(--sp-fg); }
@@ -168,6 +185,7 @@
       html[data-splash='moonlit'] .splash-label::after { content:"☾"; font-family:Georgia,serif; font-size:40px; }
       html[data-splash='ledger'] .splash-label::after { content:"帳"; font-family:"IBM Plex Mono",Consolas,monospace; font-size:30px; }
       html[data-splash='shonen'] .splash-label::after { content:"⚡"; font-size:38px; }
+      html[data-splash='manga'] .splash-label::after { content:"漫"; font-size:38px; font-weight:900; }
       html[data-splash='samurai'] .splash-label::after { content:"侍"; font-family:Georgia,serif; font-size:36px; }
       html[data-splash='kawaii'] .splash-label::after { content:"(◕‿◕)"; font-family:system-ui,sans-serif; font-size:16px; }
       html[data-splash='ghost'] .splash-label::after { content:"☻"; font-family:Georgia,serif; font-size:38px; }
@@ -189,6 +207,7 @@
 
       /* Las figuras con orientación no deben girar: se ven de cabeza. */
       html[data-splash='shonen'] .splash-vinyl,
+      html[data-splash='manga'] .splash-label,
       html[data-splash='shonen'] .splash-label,
       html[data-splash='kawaii'] .splash-label,
       html[data-splash='ghost'] .splash-label,

@@ -302,13 +302,15 @@ Tabla).
 
 **Flujo principal**
 
-1. La app ofrece **16 temas**: 4 genéricos (**M3 Zen**/`space`, Yoru, Hanabi y
-   Aizuri) y 12 propios (Sumi-e, Byōbu, Shōji, Origami, Swiss, Sumi Ink,
-   Moonlit, Ledger, Shōnen, Fantasmas, Samurái y Kawaii). En Ajustes se elige
-   uno. Los genéricos fijan `data-theme="space"` y usan `LibraryTab` de 9
-   vistas; los propios usan `data-skin={tema}` con `ThemeLibrary`/`ThemeHome`/
-   `ThemeNav` propios. El valor se persiste en `sakura_theme`; `ThemeMode` reúne
-   los 16 identificadores.
+1. La app ofrece **17 temas**: 4 genéricos (**M3 Zen**/`space`, Yoru, Hanabi y
+   Aizuri) y 13 propios (Sumi-e, Byōbu, Shōji, Origami, Swiss, Sumi Ink,
+   Moonlit, Ledger, Shōnen, Fantasmas, Samurái, Kawaii y **Manga**). En Ajustes
+   se elige uno. Los genéricos fijan `data-theme="space"` y usan `LibraryTab` de
+   9 vistas; los propios usan `data-skin={tema}` con `ThemeLibrary`/`ThemeHome`/
+   `ThemeNav` propios. Manga ("Viñetas, tinta y screentone") muestra una portada
+   de revista en Inicio y páginas de viñetas en biblioteca, con papel
+   `#fbfaf7`, tinta `#101010` y acento rojo `#d62828`. El valor se persiste en
+   `sakura_theme`; `ThemeMode` reúne los 17 identificadores.
 2. Los valores de superficie (`--m3-surface`, `--m3-primary`, etc.) y los
    `--accent-*` de `App.css` definen la paleta; Tailwind mapea `accent-*` a esas
    variables, así que toda la UI usa la misma identidad. Cada tema propio
@@ -380,7 +382,8 @@ Ajustes).
    tokens `--m3-*` en `App.css` y el valor en `ThemeMode` (`src/types.ts`);
    reutiliza `LibraryTab`. Para un **tema propio**, además creá sus
    `ThemeLibrary`/`ThemeHome`/`ThemeNav` con diálogos, transiciones, iconos y
-   splash propios (hoy son 12 propios + 4 genéricos).
+   splash propios (hoy son 13 propios + 4 genéricos); `manga` es arquetipo disponible en
+   `ThemeGeneratorModal`/`customThemes.ts`.
 4. Para una **vista** nueva, agregá `ViewMode` y una rama en `LibraryTab.tsx` sin
    antiparse con las otras vistas.
 5. Para un **formato** nuevo, sumá la rama en `run_download` (`downloader.rs`).
@@ -391,7 +394,7 @@ Ajustes).
 
 **Dónde está:** `docs/desarrollo.md`.
 
-**Tests:** `npm test` (29 Vitest), `npm run test:e2e` (26 Playwright),
+**Tests:** `npm test` (29 Vitest), `npm run test:e2e` (28 Playwright),
 `cargo test` (43 Rust) y `npm run pipeline` (pasa en verde).
 
 ---

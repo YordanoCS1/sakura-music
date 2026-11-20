@@ -11,7 +11,7 @@ este documento (con fecha y motivo). **No se renumeran.**
 
 - **Criterio:** qué tiene que pasar para considerar el requisito cumplido.
 - **Test:** `npm test` (Vitest, **29 tests** del frontend), `npm run test:e2e`
-  (Playwright, **27 tests**), `cargo test` (Rust, **43 tests**) o `tsc --noEmit`
+  (Playwright, **28 tests**), `cargo test` (Rust, **43 tests**) o `tsc --noEmit`
   (tipos). `npm run pipeline` corre todo en orden y pasa en verde.
 - Si un requisito depende de red o de un binario externo, no se testea en la
   suite: se verifica a mano con `yt-dlp`/`ffmpeg` reales.
@@ -181,19 +181,26 @@ guardado. La carpeta `covers/` no crece sin control entre sesiones.
 
 #### RF-17 · Temas visuales seleccionables
 
-**Criterio:** la app ofrece **16 temas**: 4 genéricos (`space`/M3 Zen, `yoru`,
+**Criterio:** la app ofrece **17 temas**: 4 genéricos (`space`/M3 Zen, `yoru`,
 `hanabi`, `aizuri`) con `LibraryTab` de 9 vistas y `data-theme="space"` fijo, y
-12 propios (`sumie`, `byobu`, `shoji`, `origami`, `swiss`, `sumiink`, `moonlit`,
-`ledger`, `shonen`, `ghost`, `samurai`, `kawaii`) con `data-skin={tema}` y
+13 propios (`sumie`, `byobu`, `shoji`, `origami`, `swiss`, `sumiink`, `moonlit`,
+`ledger`, `shonen`, `ghost`, `samurai`, `kawaii`, `manga`) con `data-skin={tema}` y
 `ThemeLibrary`/`ThemeHome`/`ThemeNav` propios (cabecera, Buscar, Cola, ajustes,
-diálogos, transiciones, iconos y splash propios). Cada tema define variables
+diálogos, transiciones, iconos y splash propios). `manga` ("Viñetas, tinta y
+screentone") identifica su Home como portada de revista (`第 01 話`, globo de
+diálogo, sello 開, línea de tiempo) y su biblioteca como páginas de viñetas con
+panel halftone, tag **GO!** y carátulas en blanco y negro; paleta papel
+`#fbfaf7`, tinta `#101010` y acento rojo `#d62828`, con navegación de kanji sobre
+cuadrado rojo y transición `t-manga`. Cada tema define variables
 `--m3-*`, `--space-*`, `--accent-*` y `--theme-*` bajo su `[data-skin='id']`. El
 elegido se persiste en `localStorage` (`sakura_theme`) y se aplica sin recargar;
 el glifo del splash hace handoff al logo de la nav con
 `view-transition-name: sakura-glifo`.
 
 **Test:** `tsc --noEmit` + `npm run build` (Tailwind genera las clases
-`accent-*`); snapshots E2E de `e2e/` cubren las 6 pestañas por tema.
+`accent-*`); snapshots E2E de `e2e/` cubren las 6 pestañas por tema, con el loop
+visual de `visuals.spec.ts` extendido a 7 temas (incluye `manga-home-win32.png`
+y `manga-library-win32.png`).
 
 #### RF-18 · Navegación superior y vista Pared
 
@@ -278,7 +285,7 @@ se crea un respaldo con `VACUUM INTO` (retención de 3). `doctor_detallado`
 se muestran en Ajustes → Sistema.
 
 **Test:** test de integración de la migración `user_version` con backup
-automático sobre una base en disco (`library_db.rs`) + `cargo test` (42).
+automático sobre una base en disco (`library_db.rs`) + `cargo test` (43).
 
 #### RF-25 · Actualizaciones e instaladores
 
@@ -375,10 +382,10 @@ enlaza a `docs/`.
 | Biblioteca y reproducción | RF-08 … RF-12 | `cargo test` (`scanner`, `library_db`), manual |
 | Metadatos y catálogo | RF-13 … RF-16 | `cargo test` + `tsc`, manual |
 | Apariencia y navegación | RF-17 … RF-18 | Vitest + E2E + `npm run build`, manual |
-| Playlists, papelera, letras, paleta, BD y updater | RF-20 … RF-25 | Vitest (29), E2E (27), `cargo test` (42), manual |
+| Playlists, papelera, letras, paleta, BD y updater | RF-20 … RF-25 | Vitest (29), E2E (28), `cargo test` (43), manual |
 | Transversales | RNF-01 … RNF-08 | `npm run pipeline` completo |
 
-**Totales:** 29 tests unitarios Vitest, 27 tests E2E Playwright y **43 tests
+**Totales:** 29 tests unitarios Vitest, 28 tests E2E Playwright y **43 tests
 Rust** (`downloader`, `queue`, `scanner`, `library_db`, `tools`, migraciones,
 playlists y lyrics). `npm run pipeline` pasa en verde.
 

@@ -60,6 +60,7 @@ const GLIFOS: Partial<Record<ThemeMode, string>> = {
   ghost: '☻',
   samurai: '侍',
   kawaii: '♡',
+  manga: '漫',
   yoru: '夜',
   hanabi: '花',
   aizuri: '藍',

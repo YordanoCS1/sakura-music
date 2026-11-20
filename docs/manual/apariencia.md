@@ -1,6 +1,6 @@
 # Apariencia
 
-Sakura Music 2.0 ofrece **16 temas visuales**: **4 genéricos** y **12 propios con
+Sakura Music 2.0 ofrece **17 temas visuales**: **4 genéricos** y **13 propios con
 estructura completa**. Elegí el que quieras en **Ajustes → Diseño Visual**; el
 cambio es inmediato y se recuerda al reabrir la app.
 
@@ -16,7 +16,7 @@ misma estructura, con paleta y detalles propios.
 | **Hanabi** | Azul noche con cian y magenta, tipografía monoespacio y esquinas vivas. |
 | **Aizuri** | Índigo profundo, blanco hueso y cian, con serif. |
 
-## Los 12 temas propios
+## Los 13 temas propios
 
 Cada uno tiene **Home, biblioteca, cabecera, Buscar, Cola, ajustes, diálogos y
 transiciones propios**: no se limitan a recolorear la interfaz. El selector base
@@ -36,11 +36,13 @@ queda fijo en `data-theme='space'` y cada tema propio se aplica con `data-skin`.
 | **Fantasmas** | Espectros y niebla azul, con transparencias y aire frío. |
 | **Samurái** | Lacado rojo, acero y oro, con líneas de armadura y sellos. |
 | **Kawaii** | Pastel, ternura y caritas, con formas redondeadas y colores dulces. |
+| **Manga** | Viñetas, tinta y screentone. Papel `#fbfaf7`, tinta `#101010` y un acento rojo `#d62828`. El Inicio es una portada de revista (`第 01 話`, globo de diálogo, sello 開 y línea de tiempo) y la biblioteca son páginas de viñetas con tramado halftone, globo con el título, tag **GO!** y carátulas en blanco y negro. La cabecera es negra con el glifo 漫 y la navegación lleva kanji sobre cuadrado rojo; también tiene estilo propio en Ajustes, panel "Ahora suena", playlists, paleta ⌘K, modales de metadatos, splash y transición de página `t-manga`. |
 
 También podés crear los tuyos con el **generador de temas**: elegís un
-arquetipo entre los 12 propios, ajustás colores y el CSS se inyecta en runtime
-sin tocar archivos del proyecto. Los temas generados se guardan en
-`localStorage` (`sakura_temas_personalizados`) y aparecen en el selector.
+arquetipo entre los 13 propios (Manga también está disponible), ajustás colores
+y el CSS se inyecta en runtime sin tocar archivos del proyecto. Los temas
+generados se guardan en `localStorage` (`sakura_temas_personalizados`) y aparecen
+en el selector.
 
 ## Identidad del tema M3 Zen
 
@@ -62,7 +64,7 @@ Todas viven en `localStorage` y se restauran al reabrir la app:
 
 | Clave | Qué guarda |
 |---|---|
-| `sakura_theme` | Tema visual: `space`, `yoru`, `hanabi`, `aizuri` (genéricos) o `sumie`, `byobu`, `shoji`, `origami`, `swiss`, `sumiink`, `moonlit`, `ledger`, `shonen`, `ghost`, `samurai`, `kawaii` (propios) |
+| `sakura_theme` | Tema visual: `space`, `yoru`, `hanabi`, `aizuri` (genéricos) o `sumie`, `byobu`, `shoji`, `origami`, `swiss`, `sumiink`, `moonlit`, `ledger`, `shonen`, `ghost`, `samurai`, `kawaii`, `manga` (propios) |
 | `sakura_temas_personalizados` | Temas creados con el generador (arquetipo + CSS) |
 | `sakura_view_mode` | Vista de biblioteca activa en los temas genéricos (`folders`, `grid`, `table`, `albums`, `mosaic`, `cds`, `tilt`, `glow`, `portadas`) |
 | `sakura_player_style` | Estilo del reproductor (`floating` / `fixed` / `mini`) |
@@ -108,7 +110,7 @@ entrar, el glifo del splash pasa a la navegación con una transición continua
 `Ctrl+K` / `⌘K` abre la paleta de comandos: sirve para navegar entre pestañas,
 cambiar de tema, controlar la reproducción y buscar pistas. Usá **↑↓** para
 moverte, **↵** para ejecutar y **esc** para cerrar. La paleta toma el estilo del
-tema activo, incluidos los 12 propios.
+tema activo, incluidos los 13 propios.
 
 ## Vistas de biblioteca
 
@@ -127,14 +129,14 @@ del toolbar:
 | **Luz (Glow)** | Portadas con resplandor ambiental |
 | **Portadas** | Galería de carátulas |
 
-La vista se persiste en `sakura_view_mode`. En los **12 temas propios** no hay
+La vista se persiste en `sakura_view_mode`. En los **13 temas propios** no hay
 switcher de nueve vistas: cada tema dibuja su propia biblioteca estructural, con
 Home, cabecera, Buscar, Cola, ajustes y diálogos a juego.
 
 ## Qué cambia y qué no
 
-Con 16 temas, al cambiar de tema cambian la paleta, la tipografía, los componentes
-y —en los 12 propios— la estructura completa de cada pantalla. Aun así:
+Con 17 temas, al cambiar de tema cambian la paleta, la tipografía, los componentes
+y —en los 13 propios— la estructura completa de cada pantalla. Aun así:
 
 | Sí | No |
 |---|---|
@@ -150,6 +152,6 @@ y —en los 12 propios— la estructura completa de cada pantalla. Aun así:
 | La preferencia no se guarda | `localStorage` bloqueado por el WebView | Limpiá los datos del sitio en WebView2 y volvé a elegir |
 | Las partículas no aparecen | Están apagadas en Ajustes | Activá **Efectos atmosféricos de partículas** |
 | Texto poco legible en algún modal | Superficie heredada de estilos viejos | Reportalo: los modales nuevos usan las superficies claras del tema activo |
-| Un tema propio no cambia la estructura | Estás en un tema genérico (`space`, `yoru`, `hanabi` o `aizuri`) | Elegí uno de los 12 temas propios: son los que traen Home, biblioteca y diálogos propios |
+| Un tema propio no cambia la estructura | Estás en un tema genérico (`space`, `yoru`, `hanabi` o `aizuri`) | Elegí uno de los 13 temas propios: son los que traen Home, biblioteca y diálogos propios |
 
 Más en [problemas.md](problemas.md) y en [../nuevas-funciones.md](../nuevas-funciones.md).

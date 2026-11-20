@@ -41,7 +41,7 @@ adelante rigen la v2.
 | [0016](0016-migraciones-y-hardening-bd.md) | Migraciones versionadas, backups y PRAGMAs | Vigente |
 | [0017](0017-validacion-ipc-y-scope.md) | Validación de parámetros IPC y scope de paths | Vigente |
 | [0018](0018-updater-firmado-e-instaladores.md) | Actualizaciones firmadas e instaladores | Vigente |
-| [0019](0019-temas-propios-estructurales.md) | Temas propios con identidad estructural | Vigente (amplía 0012) |
+| [0019](0019-temas-propios-estructurales.md) | Temas propios con identidad estructural | Vigente (amplía 0012; hoy 13 propios, incluido Manga) |
 | [0020](0020-paleta-de-comandos.md) | Paleta de comandos y navegación de seis pestañas | Vigente |
 | [0021](0021-busqueda-de-letras-online.md) | Búsqueda de letras online con LRCLIB | Vigente (amplía 0015) |
 

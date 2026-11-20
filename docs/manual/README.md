@@ -12,7 +12,7 @@ descargar, ordenar, etiquetar, personalizar y, si algo falla, arreglarlo.
 | Buscar, descargar y la cola | [buscar-y-descargar.md](buscar-y-descargar.md) |
 | Escanear, mantener y explorar la biblioteca; Listas y Deshacer | [biblioteca.md](biblioteca.md) |
 | Editar tags, portadas, lote, catálogo y letras `.lrc` | [metadatos-y-letras.md](metadatos-y-letras.md) |
-| Los 16 temas, efectos y paleta ⌘K | [apariencia.md](apariencia.md) |
+| Los 17 temas, efectos y paleta ⌘K | [apariencia.md](apariencia.md) |
 | Actualizaciones, primer arranque y datos | [instalacion.md](instalacion.md) |
 | Síntomas, causas y diagnóstico (incluido actualizador y papelera) | [problemas.md](problemas.md) |
 
@@ -22,7 +22,7 @@ descargar, ordenar, etiquetar, personalizar y, si algo falla, arreglarlo.
 2. [buscar-y-descargar.md](buscar-y-descargar.md) — bajá tu primera canción y mirala en Cola.
 3. [biblioteca.md](biblioteca.md) — elegí tu carpeta y una vista que te guste.
 4. [metadatos-y-letras.md](metadatos-y-letras.md) — arreglá los tags y sumá letras `.lrc`.
-5. [apariencia.md](apariencia.md) — elegí entre los 16 temas y probá la paleta ⌘K.
+5. [apariencia.md](apariencia.md) — elegí entre los 17 temas (incluido Manga) y probá la paleta ⌘K.
 6. [problemas.md](problemas.md) — guardalo para cuando algo falle.
 
 ## Novedades que conviene conocer

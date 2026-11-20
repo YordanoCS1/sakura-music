@@ -60,8 +60,8 @@ Gestor, reproductor, descargador y etiquetador de música para escritorio, const
 - yt-dlp/ffmpeg se buscan en: carpeta de datos de la app (`bin/`), instalación histórica de la v1 (`%APPDATA%/LOCALAPPDATA`), enlaces de winget y `PATH`. Nunca hay rutas hardcodeadas de un usuario.
 - Timeouts y reintentos de red: `--socket-timeout 30`, `--retries 3`, `--fragment-retries 3`, `--windows-filenames`.
 
-### 🎨 16 temas (Material 3 + calma japonesa)
-- **16 temas seleccionables en Ajustes → Diseño Visual:** los **4 genéricos** (**M3 Zen**/`space`, marfil y rosa sakura; **Yoru**, noche cálida y ámbar; **Hanabi**, neón cian y magenta; **Aizuri**, índigo teñido) usan `LibraryTab` con las 9 vistas clásicas. Los **12 temas propios** (**Sumi-e**, **Byōbu**, **Shoji**, **Origami**, **Swiss**, **Sumi Ink**, **Moonlit**, **Ledger**, **Shōnen**, **Fantasmas**, **Samurái** y **Kawaii**) tienen vistas estructurales completas: Inicio, biblioteca, cabecera, Buscar, Cola, ajustes, diálogos y transiciones propios, no sólo otra paleta. El cambio es instantáneo y se guarda en `sakura_theme`.
+### 🎨 17 temas (Material 3 + calma japonesa)
+- **17 temas seleccionables en Ajustes → Diseño Visual:** los **4 genéricos** (**M3 Zen**/`space`, marfil y rosa sakura; **Yoru**, noche cálida y ámbar; **Hanabi**, neón cian y magenta; **Aizuri**, índigo teñido) usan `LibraryTab` con las 9 vistas clásicas. Los **13 temas propios** (**Sumi-e**, **Byōbu**, **Shoji**, **Origami**, **Swiss**, **Sumi Ink**, **Moonlit**, **Ledger**, **Shōnen**, **Fantasmas**, **Samurái**, **Kawaii** y **Manga**) tienen vistas estructurales completas: Inicio, biblioteca, cabecera, Buscar, Cola, ajustes, diálogos y transiciones propios, no sólo otra paleta. **Manga** ("Viñetas, tinta y screentone") trae portada de revista con `第 01 話`, globos de diálogo, sello 開 y línea de tiempo; en biblioteca muestra páginas de viñetas con tramado halftone, tag **GO!** y carátulas en blanco y negro. Su paleta es papel `#fbfaf7`, tinta `#101010` y rojo `#d62828`. El cambio es instantáneo y se guarda en `sakura_theme`.
 - **Selector:** el tema base queda fijo en `data-theme='space'`; los temas propios se aplican con `data-skin`, con transición continua del glifo del splash a la navegación mediante View Transitions.
 - **Navegación superior:** barra de pestañas con indicador deslizante animado y emblema de vinilo con el kanji 桜.
 - **6 pestañas:** Inicio, Biblioteca, Buscar, Cola, **Listas** (playlists) y Ajustes.
@@ -140,7 +140,7 @@ npm run tauri build   # instalador .exe / .msi
 Checks de código:
 
 ```powershell
-npm run pipeline                                  # tipos, lint, formato, 29 unitarios, 27 E2E, build, fmt/clippy y 43 tests Rust
+npm run pipeline                                  # tipos, lint, formato, 29 unitarios, 28 E2E, build, fmt/clippy y 43 tests Rust
 cargo test --manifest-path src-tauri/Cargo.toml   # 43 tests Rust
 node node_modules/typescript/bin/tsc --noEmit     # tipos del frontend
 ```

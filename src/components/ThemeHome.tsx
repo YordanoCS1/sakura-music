@@ -39,7 +39,8 @@ export default function ThemeHome({
     theme !== 'shonen' &&
     theme !== 'ghost' &&
     theme !== 'samurai' &&
-    theme !== 'kawaii'
+    theme !== 'kawaii' &&
+    theme !== 'manga'
   ) {
     return null;
   }
@@ -422,6 +423,66 @@ export default function ThemeHome({
           </div>
           <p className="samurai-dato">{trackCount} formas · lacado y oro</p>
         </div>
+      </div>
+    );
+  }
+
+  if (theme === 'manga') {
+    const capitulos: { id: AppTab; label: string; numero: string }[] = [
+      { id: 'home', label: 'Inicio', numero: '01' },
+      { id: 'library', label: 'Biblioteca', numero: '02' },
+      { id: 'search', label: 'Buscar', numero: '03' },
+      { id: 'queue', label: 'Cola', numero: '04' },
+      { id: 'playlists', label: 'Listas', numero: '05' },
+      { id: 'settings', label: 'Ajustes', numero: '06' },
+    ];
+    return (
+      <div className="manga-home">
+        <div className="manga-lineas" aria-hidden="true" />
+        <section className="manga-portada">
+          <div className="manga-cabecera">
+            <span>第 01 話</span>
+            <small>SAKURA MUSIC · VOL. 01</small>
+          </div>
+          <div className="manga-titulo">
+            <span className="manga-grito">¡TU MÚSICA!</span>
+            <h1>
+              CAPÍTULO
+              <br />
+              01
+            </h1>
+          </div>
+          <div className="manga-globo" aria-hidden="true">
+            ¿Listo para escuchar?
+          </div>
+          <span className="manga-sello" aria-hidden="true">
+            開
+          </span>
+        </section>
+        <section className="manga-panel">
+          <p className="manga-kicker">CRÓNICA DE TU BIBLIOTECA</p>
+          <h2>{trackCount} pistas en este número</h2>
+          <p className="manga-copy">
+            Cada canción es una viñeta, cada álbum un capítulo. Pasá la página y seguí leyendo tu
+            colección.
+          </p>
+          <div className="manga-acciones">
+            <button type="button" onClick={() => onNavigate('library')}>
+              Abrir biblioteca <ArrowRight className="w-4 h-4" />
+            </button>
+            <button type="button" onClick={() => onNavigate('search')}>
+              <Search className="w-4 h-4" /> Buscar música
+            </button>
+          </div>
+          <div className="manga-indice">
+            {capitulos.map((capitulo) => (
+              <button key={capitulo.id} type="button" onClick={() => onNavigate(capitulo.id)}>
+                <span>{capitulo.numero}</span>
+                {capitulo.label}
+              </button>
+            ))}
+          </div>
+        </section>
       </div>
     );
   }
