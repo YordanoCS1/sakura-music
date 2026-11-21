@@ -51,7 +51,9 @@ export default function ThemeQueue({
   ).length;
   const terminadas = downloads.filter((d) => d.status.startsWith('completado')).length;
   const conError = downloads.filter((d) => d.status.includes('error')).length;
-  const [filtro, setFiltro] = useState<'todas' | 'activas' | 'terminadas' | 'errores'>('todas');
+  const [filtro, setFiltro] = useState<
+    'todas' | 'activas' | 'terminadas' | 'errores' | 'canceladas'
+  >('todas');
   const visibles = downloads.filter((item) => {
     if (filtro === 'activas')
       return (
@@ -61,6 +63,7 @@ export default function ThemeQueue({
       );
     if (filtro === 'terminadas') return item.status.startsWith('completado');
     if (filtro === 'errores') return item.status.includes('error');
+    if (filtro === 'canceladas') return item.status === 'cancelado';
     return true;
   });
   const selectorFiltro = (
@@ -75,6 +78,9 @@ export default function ThemeQueue({
         <option value="activas">En curso ({activas})</option>
         <option value="terminadas">Terminadas ({terminadas})</option>
         <option value="errores">Con error ({conError})</option>
+        <option value="canceladas">
+          Canceladas ({downloads.filter((d) => d.status === 'cancelado').length})
+        </option>
       </select>
     </div>
   );
