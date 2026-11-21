@@ -123,7 +123,7 @@ jobs:
         run: npm run tauri build -- --bundles nsis
 
       - name: Subir artefactos
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: sakura-music-windows
           path: src-tauri/target/release/bundle/**
