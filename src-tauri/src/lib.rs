@@ -743,15 +743,31 @@ fn preparar_directorio_datos(app: &tauri::AppHandle) -> Result<PathBuf, String> 
         "Sakura Music · APPLOCALDATA resuelto: {}",
         destino.display()
     );
-    if let Ok(otro) = app.path().app_data_dir() {
-        eprintln!("Sakura Music · APPDATA resuelto: {}", otro.display());
-    }
-    std::fs::create_dir_all(&destino).map_err(|error| {
-        format!(
-            "No se pudo crear la carpeta de datos ({}) : {error}",
-            destino.display()
-        )
-    })?;
+    let writable = (|| -> bool {
+        if std::fs::create_dir_all(&destino).is_err() {
+            return false;
+        }
+        let prueba = destino.join(".sakura-write-test");
+        std::fs::write(&prueba, b"ok").is_ok() && std::fs::remove_file(&prueba).is_ok()
+    })();
+    let destino = if writable {
+        destino
+    } else {
+        // Sandboxes de desarrollo o carpetas protegidas: usamos la carpeta del
+        // proyecto. En una instalación normal APPLOCALDATA sí es escribible.
+        let alternativo = std::env::current_dir()
+            .unwrap_or_else(|_| PathBuf::from("."))
+            .join(".tauri_data");
+        let _ = std::fs::create_dir_all(&alternativo);
+        logging::warn(
+            "lib",
+            &format!(
+                "APPLOCALDATA no escribible; usando {} como respaldo",
+                alternativo.display()
+            ),
+        );
+        alternativo
+    };
 
     let anterior = std::env::current_dir()
         .unwrap_or_else(|_| PathBuf::from("."))
