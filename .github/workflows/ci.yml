@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - name: Obtener código
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Dependencias del sistema (Linux)
         if: runner.os == 'Linux'
@@ -100,7 +100,7 @@ jobs:
 
     steps:
       - name: Obtener código
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Node.js
         uses: actions/setup-node@v4
