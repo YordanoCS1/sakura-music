@@ -44,16 +44,6 @@
     "windows": {
       "webviewInstallMode": {
         "type": "downloadBootstrapper"
-      },
-      "nsis": {
-        "installMode": "currentUser",
-        "displayLanguageSelector": true,
-        "installerIcon": "icons/icon.ico",
-        "headerImage": "icons/installer-header.bmp",
-        "sidebarImage": "icons/installer-sidebar.bmp",
-        "startMenuFolder": "Sakura Music",
-        "installerHooks": "windows/hooks.nsh",
-        "languages": ["Spanish", "English"]
       }
     },
     "copyright": "Sakura Music · estudio local",
