@@ -415,6 +415,10 @@ export default function App() {
     defaultMusicDir,
     downloadFolder,
     rescanAfterDownload,
+    onAviso: (mensaje) => {
+      setScanMessage(mensaje);
+      window.setTimeout(() => setScanMessage(null), 4500);
+    },
   });
 
   const {
@@ -1456,15 +1460,24 @@ export default function App() {
                 onRetry={retryDownload}
                 onMoveDownload={moveDownload}
                 onClearFinished={() =>
-                  setDownloads((prev) =>
-                    prev.filter(
-                      (d) =>
-                        !d.status.startsWith('completado') &&
-                        !d.status.includes('error') &&
-                        d.status !== 'cancelado',
-                    ),
-                  )
+                  setDownloads((prev) => prev.filter((d) => !d.status.startsWith('completado')))
                 }
+                onClearInactive={() => {
+                  const cantidad = downloads.filter(
+                    (d) => d.status.includes('error') || d.status === 'cancelado',
+                  ).length;
+                  if (
+                    cantidad === 0 ||
+                    !window.confirm(
+                      `¿Quitar ${cantidad} descargas canceladas o con error de la cola?`,
+                    )
+                  ) {
+                    return;
+                  }
+                  setDownloads((prev) =>
+                    prev.filter((d) => !d.status.includes('error') && d.status !== 'cancelado'),
+                  );
+                }}
               />
             )}
             {activeTab === 'queue' && !esTemaPropio && (
@@ -1479,15 +1492,24 @@ export default function App() {
                 onCancel={cancelDownload}
                 onRetry={retryDownload}
                 onClearFinished={() =>
-                  setDownloads((prev) =>
-                    prev.filter(
-                      (d) =>
-                        !d.status.startsWith('completado') &&
-                        !d.status.includes('error') &&
-                        d.status !== 'cancelado',
-                    ),
-                  )
+                  setDownloads((prev) => prev.filter((d) => !d.status.startsWith('completado')))
                 }
+                onClearInactive={() => {
+                  const cantidad = downloads.filter(
+                    (d) => d.status.includes('error') || d.status === 'cancelado',
+                  ).length;
+                  if (
+                    cantidad === 0 ||
+                    !window.confirm(
+                      `¿Quitar ${cantidad} descargas canceladas o con error de la cola?`,
+                    )
+                  ) {
+                    return;
+                  }
+                  setDownloads((prev) =>
+                    prev.filter((d) => !d.status.includes('error') && d.status !== 'cancelado'),
+                  );
+                }}
               />
             )}
 

@@ -8160,3 +8160,12 @@ html[data-theme-transition='space'] #theme-panel.panel-enter { animation:t-estud
 .tqueue-filtros select { padding:6px 9px; border:1px solid var(--set-linea, rgba(127,127,127,.3)); border-radius:7px; background:var(--set-panel-base, inherit); color:inherit; font-size:11px; }
 .tsearch-duracion { display:flex; align-items:center; gap:7px; }
 .tsearch-duracion select { padding:6px 9px; border:1px solid rgba(127,127,127,.3); border-radius:8px; background:rgba(127,127,127,.07); color:inherit; font-size:11px; }
+
+
+.tqueue-item.is-resaltada,
+.manga-queue-pagina.is-resaltada,
+.cola-item.is-resaltada {
+  outline:2px solid var(--set-acento, #a8442f);
+  outline-offset:2px;
+  box-shadow:0 0 18px rgba(168,68,47,.35);
+}

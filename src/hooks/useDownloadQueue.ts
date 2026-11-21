@@ -14,6 +14,16 @@ interface UseDownloadQueueDeps {
   defaultMusicDir: string | null;
   downloadFolder: string | null;
   rescanAfterDownload: () => void;
+  onAviso?: (mensaje: string) => void;
+}
+
+const esActiva = (item: DownloadItem) =>
+  item.status !== 'cancelado' &&
+  !item.status.startsWith('completado') &&
+  !item.status.includes('error');
+
+function ordenarCola(items: DownloadItem[]): DownloadItem[] {
+  return [...items].sort((a, b) => Number(esActiva(b)) - Number(esActiva(a)));
 }
 
 export function useDownloadQueue({
@@ -21,6 +31,7 @@ export function useDownloadQueue({
   defaultMusicDir,
   downloadFolder,
   rescanAfterDownload,
+  onAviso,
 }: UseDownloadQueueDeps) {
   const [downloads, setDownloads] = useState<DownloadItem[]>([]);
   const downloadsRef = useRef<DownloadItem[]>([]);
@@ -131,6 +142,21 @@ export function useDownloadQueue({
     thumbnail?: string | null,
     customFolder?: string,
   ) => {
+    const duplicada = downloadsRef.current.find(
+      (item) =>
+        item.url === url &&
+        (item.outputDir ?? undefined) ===
+          (customFolder || downloadFolder || currentFolder || defaultMusicDir || '.') &&
+        item.format === downloadFormat &&
+        item.status !== 'cancelado' &&
+        !item.status.startsWith('completado') &&
+        !item.status.includes('error'),
+    );
+    if (duplicada) {
+      onAviso?.('Esa pista ya está en la cola con la misma carpeta y formato.');
+      window.dispatchEvent(new CustomEvent('sakura-enfocar-descarga', { detail: duplicada.id }));
+      return;
+    }
     void import('../lib/notificaciones').then((m) => m.pedirPermisoNotificaciones());
     const jobId = `dl-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
     const destFolder = customFolder || downloadFolder || currentFolder || defaultMusicDir || '.';
@@ -151,7 +177,7 @@ export function useDownloadQueue({
       createdAt: Date.now(),
     };
 
-    setDownloads((prev) => [newJob, ...prev]);
+    setDownloads((prev) => ordenarCola([newJob, ...prev]));
     try {
       await invoke('start_download', {
         jobId,

@@ -123,3 +123,11 @@ veces en la cola: se rechaza con un aviso para no duplicar el archivo.
 - **Prioridad y filtro en la cola**: cada fila tiene botones para subir/bajar y el encabezado permite filtrar por *En curso*, *Terminadas* o *Con error*.
 - **Filtro de duración en la búsqueda**: *Menos de 5 min*, *5 a 10 min* o *Más de 10 min*, usando la duración que reporta YouTube.
 - **Arranque rápido (opcional)**: en Ajustes → Sistema podés evitar el reescaneo automático al abrir. Si cambiás archivos con la app cerrada, tocá *Actualizar biblioteca*.
+
+
+## Limpieza y duplicados
+
+- La cola ordena primero las descargas activas y deja abajo las canceladas, terminadas o con error.
+- **Limpiar terminadas** quita sólo las que terminaron bien. **Limpiar canceladas y errores** pide confirmación y quita el resto de inactivas.
+- Si agregás una pista que ya está en la cola con la misma carpeta y formato, no se crea una fila nueva que falla: aparece un aviso y se resalta la fila existente.
+- Al cancelar, la fila se queda como *cancelada* (no desaparece) con opciones de reintentar o quitar.

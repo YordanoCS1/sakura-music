@@ -24,6 +24,7 @@ interface QueueTabProps {
   onCancel: (jobId: string) => void;
   onRetry: (item: DownloadItem) => void;
   onClearFinished: () => void;
+  onClearInactive: () => void;
 }
 
 export default function QueueTab({
@@ -37,6 +38,7 @@ export default function QueueTab({
   onCancel,
   onRetry,
   onClearFinished,
+  onClearInactive,
 }: QueueTabProps) {
   const activeCount = downloads.filter(
     (item) =>
@@ -75,6 +77,9 @@ export default function QueueTab({
                 Cancelar todo
               </button>
             )}
+            <button type="button" onClick={onClearInactive} className="cola-btn-ghost">
+              Limpiar canceladas y errores
+            </button>
             <button type="button" onClick={onClearFinished} className="cola-btn-ghost">
               Limpiar terminadas
             </button>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ArrowDown, ArrowUp, RotateCcw, X } from 'lucide-react';
 import type { DownloadItem, ThemeMode } from '../types';
 
@@ -13,6 +13,7 @@ interface ThemeQueueProps {
   onCancel: (jobId: string) => void;
   onRetry: (item: DownloadItem) => void;
   onClearFinished: () => void;
+  onClearInactive: () => void;
   onMoveDownload: (id: string, delta: number) => void;
 }
 
@@ -43,8 +44,22 @@ export default function ThemeQueue({
   onCancel,
   onRetry,
   onClearFinished,
+  onClearInactive,
   onMoveDownload,
 }: ThemeQueueProps) {
+  const [resaltado, setResaltado] = useState<string | null>(null);
+  const filasRef = useRef<Record<string, HTMLLIElement | null>>({});
+  useEffect(() => {
+    const enfocar = (evento: Event) => {
+      const id = (evento as CustomEvent<string>).detail;
+      setResaltado(id);
+      filasRef.current[id]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      window.setTimeout(() => setResaltado(null), 2500);
+    };
+    window.addEventListener('sakura-enfocar-descarga', enfocar);
+    return () => window.removeEventListener('sakura-enfocar-descarga', enfocar);
+  }, []);
+
   const activas = downloads.filter(
     (d) =>
       !d.status.startsWith('completado') && !d.status.includes('error') && d.status !== 'cancelado',
@@ -119,6 +134,9 @@ export default function ThemeQueue({
                 Cancelar todo
               </button>
             )}
+            <button type="button" onClick={onClearInactive}>
+              Limpiar canceladas y errores
+            </button>
             <button type="button" onClick={onClearFinished}>
               Limpiar terminadas
             </button>
@@ -145,7 +163,7 @@ export default function ThemeQueue({
                 return (
                   <li
                     key={item.id}
-                    className={`manga-queue-pagina ${done ? 'is-done' : ''} ${error ? 'is-error' : ''}`}
+                    className={`manga-queue-pagina ${done ? 'is-done' : ''} ${error ? 'is-error' : ''} ${resaltado === item.id ? 'is-resaltada' : ''}`}
                   >
                     <span className="manga-queue-num">{String(i + 1).padStart(2, '0')}</span>
                     {item.thumbnail ? (
@@ -274,7 +292,7 @@ export default function ThemeQueue({
               return (
                 <li
                   key={item.id}
-                  className={`tqueue-item ${done ? 'is-done' : ''} ${error ? 'is-error' : ''}`}
+                  className={`tqueue-item ${done ? 'is-done' : ''} ${error ? 'is-error' : ''} ${resaltado === item.id ? 'is-resaltada' : ''}`}
                 >
                   <span className="tqueue-num">{String(i + 1).padStart(2, '0')}</span>
                   <div className="tqueue-thumb">
