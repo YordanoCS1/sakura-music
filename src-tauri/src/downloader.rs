@@ -6,6 +6,9 @@ use std::process::{Command, Stdio};
 /// En Windows los procesos hijos sin consola propia abren una ventana CMD
 /// aunque la app sea de escritorio sin terminal. CREATE_NO_WINDOW lo evita.
 fn nueva_command<S: AsRef<std::ffi::OsStr>>(programa: S) -> Command {
+    // En Unix no hay creation_flags, así que `cmd` no se muta: clippy con
+    // -D warnings lo marca como `unused_mut` en macOS/Linux.
+    #[cfg_attr(not(windows), allow(unused_mut))]
     let mut cmd = std::process::Command::new(programa);
     #[cfg(windows)]
     {

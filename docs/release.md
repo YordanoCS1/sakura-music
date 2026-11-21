@@ -50,7 +50,7 @@ Hay dos firmas distintas y no conviene confundirlas:
 Si no hay certificado de código, **no finjas que está firmado**: documentalo en las notas de release para que el usuario sepa que Windows puede mostrar una advertencia la primera vez.
 
 > **Importante:** el endpoint del updater en `tauri.conf.json` apunta a
-> `sakura-music/sakura-music`. Si publicás en otro repo, cambialo antes de
+> `YordanoCS1/sakura-music`. Si publicás en otro repo, cambialo antes de
 > compilar el instalador: debe coincidir con el repo real o la app nunca va a
 > encontrar `latest.json`.
 
@@ -59,7 +59,6 @@ Si no hay certificado de código, **no finjas que está firmado**: documentalo e
 1. Hacé el commit de preparación y verificá que el CI esté en verde.
 2. Etiquetá: `git tag -a vX.Y.Z -m "Sakura Music X.Y.Z"` y `git push origin vX.Y.Z`.
 3. Creá la release en GitHub con el changelog de esa versión y adjuntá los bundles **y el `latest.json`** que genera `tauri build` (el updater lo busca en el endpoint configurado).
-4. Reemplazá `REPLACE_OWNER/REPLACE_REPO` en `src-tauri/tauri.conf.json` por el owner/repo real antes del primer release.
 4. Anotá en el issue/PR de release qué quedó sin firmar y qué plataformas se probaron de verdad.
 
 ## Checklist rápido

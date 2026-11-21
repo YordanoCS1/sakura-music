@@ -57,13 +57,13 @@
       }
     },
     "copyright": "Sakura Music · estudio local",
-    "homepage": "https://github.com/sakura-music/sakura-music"
+    "homepage": "https://github.com/YordanoCS1/sakura-music"
   },
   "plugins": {
     "updater": {
       "active": true,
       "endpoints": [
-        "https://github.com/sakura-music/sakura-music/releases/latest/download/latest.json"
+        "https://github.com/YordanoCS1/sakura-music/releases/latest/download/latest.json"
       ],
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEJFMjcxNjY4QTRFMTEwNkIKUldSckVPR2thQlludnRxU3UvWHdpcnhycUN4Um1oa2d1YndkT1h2RkJZOUFRTmpvTkZUZEhOQXAK"
     }

@@ -74,7 +74,7 @@ Todos los cambios destacables de este proyecto se registran acá. El formato sig
 
 ### Listo para empaquetar
 - La carpeta de datos pasó del directorio de trabajo a `APPLOCALDATA` de Tauri, con migración automática del `.tauri_data` antiguo: la app instalada ya no intenta escribir en `Program Files`.
-- Endpoint del actualizador apuntado a `sakura-music/sakura-music` y bundle NSIS/MSI configurados.
+- Endpoint del actualizador apuntado a `YordanoCS1/sakura-music` y bundle NSIS/MSI configurados.
 
 ## [2.0.0]
 

@@ -37,7 +37,7 @@ En `src-tauri/target/release/bundle/nsis/`:
 | `latest.json` | Manifiesto que consume el actualizador |
 
 `latest.json` apunta a
-`https://github.com/sakura-music/sakura-music/releases/latest/download/...`.
+`https://github.com/YordanoCS1/sakura-music/releases/latest/download/...`.
 **Cambialo en `tauri.conf.json` y en el manifiesto si el repo es otro.**
 
 ## Construir
