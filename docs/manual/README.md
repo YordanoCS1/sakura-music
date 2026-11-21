@@ -38,8 +38,6 @@ descargar, ordenar, etiquetar, personalizar y, si algo falla, arreglarlo.
   ([metadatos-y-letras.md](metadatos-y-letras.md#letras-sincronizadas-lrc)).
 - **Paleta ⌘K:** `Ctrl+K` / `⌘K` para navegar, cambiar tema, reproducir y
   buscar; ↑↓, ↵ y esc ([apariencia.md](apariencia.md)).
-- **Actualizaciones:** se buscan e instalan desde Ajustes → Sistema, con firma
-  minisign e instaladores NSIS/MSI ([instalacion.md](instalacion.md#actualizaciones)).
 
 El detalle técnico de cada una está en [../nuevas-funciones.md](../nuevas-funciones.md).
 

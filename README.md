@@ -29,16 +29,15 @@ Gestor, reproductor, descargador y etiquetador de música para escritorio, const
 - Play/pausa, seek, volumen, mute, shuffle, repetición (`off` / `all` / `one`) y avance automático que respeta "repetición apagada" al llegar al final de la lista.
 - **Panel “Ahora suena” ampliado:** tocando la portada del reproductor se abre una vista grande con la portada protagonista, el color dominante de la carátula teñendo el fondo y controles amplios, organizada en cuatro pestañas: **Detalles**, **Letras**, **Álbum** y **Artista**. El glifo del splash hace la transición continua hacia la navegación con View Transitions.
 
-### 🗂️ Playlists, deshacer y actualizaciones
+### 🗂️ Playlists y deshacer
 - **Playlists persistentes** en SQLite: pestaña Listas con alta, renombre, borrado, carga de pistas y reorden manual, con estilo propio por tema.
 - **Borrado con Deshacer**: los archivos van a `trash/` y se restauran desde el toast durante 9 s; Ajustes → Sistema muestra el contador y permite **Vaciar papelera**.
 - **Letras `.lrc` sincronizadas** en el panel “Ahora suena”, con resaltado y autoscroll y **búsqueda online en LRCLIB** con botón *Aplicar* (ADR 0021).
 - **Paleta de comandos** con `Ctrl+K` / `⌘K` para navegar, cambiar tema, controlar la reproducción y buscar pistas.
-- **Actualizaciones automáticas** firmadas con minisign e instaladores NSIS/MSI; Ajustes → Sistema permite buscar e instalar versiones nuevas.
 
 ### 🛠️ Mantenimiento, doctor y herramientas
 - **Migraciones versionadas** con `PRAGMA user_version=2` (1 = FTS5 y disparadores, 2 = índices en artista, álbum, año y género), respaldo automático previo con `VACUUM INTO` y retención de 3 copias.
-- **Doctor del sistema** en Ajustes → Sistema: integridad, pistas indexadas, entradas FTS, tamaño y esquema de SQLite, con botones **Verificar**, **Compactar**, **Crear respaldo**, **Vaciar papelera** y **Buscar actualizaciones**, más un visor de logs con **Copiar**.
+- **Doctor del sistema** en Ajustes → Sistema: integridad, pistas indexadas, entradas FTS, tamaño y esquema de SQLite, con botones **Verificar**, **Compactar**, **Crear respaldo**, **Vaciar papelera**, más un visor de logs con **Copiar**.
 - **Control remoto local** en el puerto `17342` (Ajustes → Control remoto) y **CLI `sakura-cli`** para tareas por línea de comandos.
 - **Generador de temas** para crear variantes propias a partir de un arquetipo existente.
 
@@ -174,7 +173,7 @@ Sakura_Music/
 │   │   ├── PlaylistsPanel.tsx    # pestaña Listas (SQLite)
 │   │   ├── UndoToast.tsx         # borrado con Deshacer
 │   │   ├── CommandPalette.tsx    # paleta Ctrl+K / ⌘K
-│   │   ├── SystemPanel.tsx       # doctor: SQLite, papelera, actualizaciones y logs
+│   │   ├── SystemPanel.tsx       # doctor: SQLite, papelera y logs
 │   │   ├── ThemeNav.tsx / ThemeHome.tsx / ThemeLibrary.tsx / ThemeSearch.tsx / ThemeQueue.tsx  # vistas propias
 │   │   ├── ThemeGeneratorModal.tsx # generador de temas
 │   │   ├── SettingsTab.tsx       # ajustes
@@ -205,11 +204,10 @@ Sakura_Music/
 │   │   ├── queue.rs              # cola de descargas persistente, tests
 │   │   └── paths.rs              # resolución centralizada de la carpeta de datos
 │   ├── Cargo.toml / Cargo.lock   # dependencias (commiteado: es una app)
-│   ├── tauri.conf.json           # ventana, CSP, updater (minisign) y asset scope acotado
-│   ├── updater.key.pub           # clave pública de las actualizaciones
+│   ├── tauri.conf.json           # ventana, CSP y asset scope acotado
 │   └── capabilities/default.json
 ├── scripts/                      # benchmark_scan.mjs y utilidades
-├── .github/workflows/            # CI (matriz Windows/macOS/Linux) y release con firma
+├── .github/workflows/            # CI (matriz Windows/macOS/Linux)
 ├── docs/                         # documentación del proyecto (ver abajo)
 ├── legacy_python/                # v1.0 histórica (Python + PySide6)
 ├── iniciar_sakura.bat            # lanzador de desarrollo para Windows
@@ -230,7 +228,7 @@ Todo el detalle vivido en `docs/`, en Markdown plano con Mermaid, sin MkDocs:
 - [Contrato IPC](docs/ipc-contract.md) — los 51 comandos Tauri y los 7 eventos.
 - [Formatos de datos](docs/data-formats.md) — SQLite, cola persistente y preferencias.
 - [Manual de usuario](docs/manual/README.md) — instalación, buscar/descargar, biblioteca, playlists, deshacer, letras, metadatos y resolución de problemas.
-- [Funciones nuevas](docs/nuevas-funciones.md) — playlists, deshacer, letras LRC, paleta ⌘K, actualizaciones y benchmarks.
+- [Funciones nuevas](docs/nuevas-funciones.md) — playlists, deshacer, letras LRC, paleta ⌘K y benchmarks.
 - [Herramientas](docs/herramientas/README.md) — CLI `sakura-cli`, generador de temas y control remoto.
 - [Pipeline de CI](docs/pipeline.md) — etapas, métricas de tests y el comando `npm run pipeline`.
 - [ADRs](docs/adr/README.md) — decisiones. Los 0001–0008 quedaron como histórico de la v1; 0009 y posteriores rigen la v2.

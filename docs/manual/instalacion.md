@@ -49,18 +49,6 @@ Para tener la app instalada (instalador .exe / .msi):
 npm run tauri build
 ```
 
-## Actualizaciones
-
-Si instalaste la app con el instalador, acceda a **Ajustes → Sistema** y seleccione
-**Buscar actualizaciones**. Si hay una versión nueva aparece **Instalar
-\<versión\>**: se baja, se verifica la firma **minisign** con la clave pública
-incluida y se instala; después la app se reinicia sola. Las actualizaciones
-firmadas son las únicas que se aceptan, así que no hace falta buscar instaladores
-por fuera del canal oficial. Si compilás desde el código, antes de publicar hay
-que configurar el endpoint real en `tauri.conf.json` (el repo trae
-`REPLACE_OWNER/REPLACE_REPO` como marcador de posición); el detalle está en
-[../nuevas-funciones.md](../nuevas-funciones.md).
-
 ## Dónde quedan sus datos
 
 Por defecto, en Windows:
@@ -94,7 +82,6 @@ nuevo. No perdés tags ni audio.
    aparece sola en Biblioteca.
 5. En **Ajustes** seleccione uno de los 14 temas y ajuste los efectos visuales; en
    **Ajustes → Sistema** puede verificar la base, vaciar la papelera y buscar
-   actualizaciones.
 
 Los siguientes pasos están en [buscar-y-descargar.md](buscar-y-descargar.md) y
 [biblioteca.md](biblioteca.md).

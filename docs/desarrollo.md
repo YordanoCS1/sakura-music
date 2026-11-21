@@ -46,7 +46,7 @@ Sakura_Music/
 │   │   ├── PlaylistsPanel.tsx    # pestaña Listas
 │   │   ├── CommandPalette.tsx    # ⌘K / Ctrl+K
 │   │   ├── UndoToast.tsx         # deshacer borrados (9 s)
-│   │   ├── SystemPanel.tsx       # salud BD, papelera, updater y logs
+│   │   ├── SystemPanel.tsx       # salud BD, papelera y logs
 │   │   ├── MetadataModal.tsx     # editor de metadatos
 │   │   ├── BatchModal.tsx        # edición en lote
 │   │   ├── SearchTab.tsx         # buscar y descargar
@@ -75,9 +75,8 @@ Sakura_Music/
 │   │   └── tools.rs              # detección e instalación con SHA256 fijo
 │   ├── Cargo.toml / Cargo.lock   # dependencias (Cargo.lock commiteado: es una app; [profile.dev] debug=0)
 │   ├── build.rs                  # inyecta RUSTC_VERSION real
-│   ├── tauri.conf.json           # ventana, CSP, updater, NSIS/MSI y asset scope
-│   ├── updater.key.pub           # clave pública del updater (la privada no se commitea)
-│   └── capabilities/default.json # permisos: core, dialog, updater, process
+│   ├── tauri.conf.json           # ventana, CSP y asset scope
+│   └── capabilities/default.json # permisos: core y dialog
 ├── scripts/
 │   └── benchmark_scan.mjs        # benchmark de escaneo (10k pistas ≈ 12,6 s en release)
 ├── e2e/                          # suites Playwright (32 tests)
@@ -123,13 +122,7 @@ warnings` y los 47 tests Rust). La auditoría de npm (`npm run audit`) corre com
 paso informativo: hoy hay un aviso *high* de `picomatch` que afecta solo a
 dependencias de desarrollo y todavía no tiene corrección; no bloquea el pipeline.
 
-El job `build` genera los instaladores **NSIS/MSI** cuando se dispara a mano o
-se pushea un tag `v*`: usa los secrets `TAURI_SIGNING_PRIVATE_KEY` y
-`TAURI_SIGNING_PRIVATE_KEY_PASSWORD` para firmar con el updater y sube el bundle
-como artefacto. `.github/workflows/release.yml` publica en GitHub Releases con
-el mismo par de claves; antes de publicar hay que reemplazar
-`REPLACE_OWNER/REPLACE_REPO` en `tauri.conf.json`. Dependabot revisa npm, Cargo
-y GitHub Actions semanalmente.
+La app no genera instaladores ni tiene actualizador automático: cada versión se distribuye por separado. Dependabot revisa npm, Cargo y GitHub Actions semanalmente.
 
 ### Recortar la corrida
 
@@ -175,7 +168,7 @@ verifican arranque, splash, las 7 pestañas, paleta ⌘K y teclado. Todo lo dem�
 se verifica a mano: búsqueda real en YouTube, descarga en los 4 formatos,
 playlist completa, edición individual y en lote (incluido el mensaje de fallos
 parciales), iTunes/Deezer/MusicBrainz, letras `.lrc`, playlists, los 14 temas y
-sus efectos, cancelación/reintento de filas y búsqueda de actualizaciones.
+sus efectos, cancelación y reintento de filas.
 
 ## Recetas para extender
 

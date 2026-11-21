@@ -52,7 +52,7 @@ flowchart TD
 | 12 | Instalador | `npm run tauri build` | sí | Sólo con tag o manual |
 
 Las etapas 1–11 corren en **Windows, macOS y Linux** (matriz de 3 SO). La 12
-sólo en Windows y usa los secrets de firma del updater.
+sólo en Windows.
 
 > Nota de build: `src-tauri/Cargo.toml` fija `[profile.dev] debug = 0`. MSVC se
 > topaba con el error D8050 cuando los target paths largos incluían información

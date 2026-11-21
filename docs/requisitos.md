@@ -297,17 +297,6 @@ se muestran en Ajustes → Sistema.
 **Test:** test de integración de la migración `user_version` con backup
 automático sobre una base en disco (`library_db.rs`) + `cargo test` (43).
 
-#### RF-25 · Actualizaciones e instaladores
-
-**Criterio:** los plugins `updater`/`process` permiten buscar e instalar
-actualizaciones desde Ajustes → Sistema con la clave pública configurada y un
-endpoint de GitHub Releases (`REPLACE_OWNER/REPLACE_REPO` se reemplaza antes de
-publicar). El build genera instaladores **NSIS/MSI**; el job `build` del CI y
-`release.yml` firman con `TAURI_SIGNING_PRIVATE_KEY` y su password.
-
-**Test:** revisión de `tauri.conf.json` y del workflow; `npm run pipeline` +
-firma de prueba con el par de claves (verificación manual antes de publicar).
-
 ---
 
 ## Requisitos no funcionales
@@ -392,7 +381,7 @@ enlaza a `docs/`.
 | Biblioteca y reproducción | RF-08 … RF-12 | `cargo test` (`scanner`, `library_db`), manual |
 | Metadatos y catálogo | RF-13 … RF-16 | `cargo test` + `tsc`, manual |
 | Apariencia y navegación | RF-17 … RF-18 | Vitest + E2E + `npm run build`, manual |
-| Playlists, papelera, letras, paleta, BD y updater | RF-20 … RF-25 | Vitest (60), E2E (32), `cargo test` (43), manual |
+| Playlists, papelera, letras, paleta y BD | RF-20 … RF-24 | Vitest (60), E2E (33), `cargo test` (47), manual |
 | Transversales | RNF-01 … RNF-08 | `npm run pipeline` completo |
 
 **Totales:** 60 tests unitarios Vitest, 32 tests E2E Playwright y **47 tests

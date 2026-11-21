@@ -41,7 +41,6 @@ Fuera de alcance: el contenido de las canciones descargadas, las políticas de l
 - **Registro local** en `<datos>/sakura.log` para avisos que antes se perdían en una consola inexistente; no guarda datos personales ni rutas de búsquedas, y los tokens quedan **redactados** antes de escribirse.
 - **Subprocessos sin shell**: `Command` con argumentos por `.arg()`, sin interpolación.
 - **Herramientas verificadas**: si el usuario instala yt-dlp o FFmpeg desde Ajustes, se descargan de URLs fijadas y se valida su SHA256 antes de escribir nada; nunca se pisa un binario existente.
-- **Actualizaciones automáticas firmadas** con minisign: el plugin `updater` de Tauri verifica la firma con la clave pública de `src-tauri/updater.key.pub` antes de instalar. La clave privada está ignorada por git y los secretos de firma viven sólo en el CI.
 - **Sin secretos en el código** ni rutas hardcodeadas de usuarios. LRCLIB no requiere clave; el User-Agent va en `catalog.rs`.
 - **Letras validadas**: los archivos `.lrc` se escriben con el mismo scope canónico que los tags y el frontend convierte las letras planas a formato LRC antes de guardarlas.
 
@@ -51,4 +50,4 @@ Sakura Music es **local-first**: lee y escribe archivos que están en su equipo 
 
 ## Para releases
 
-Antes de publicar: `npm audit`, `cargo audit`, revisión de dependencias y firma de los instaladores NSIS/MSI con minisign. Reemplazá `REPLACE_OWNER/REPLACE_REPO` por el owner/repo real en `src-tauri/tauri.conf.json` y mantené la clave pública en `src-tauri/updater.key.pub`; la privada (`updater.key`) nunca entra al repositorio. El CI de GitHub Actions ya corre la matriz Windows/macOS/Linux y, con los secrets `TAURI_SIGNING_PRIVATE_KEY` y `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`, genera y firma los bundles en el job de build. Las actualizaciones se instalan sólo si la firma es válida, así que el canal de distribución queda verificado de extremo a extremo.
+Antes de publicar: `npm audit`, `cargo audit` y revisión de dependencias. El CI de GitHub Actions corre la matriz Windows/macOS/Linux. La app no tiene canal de actualizaciones automáticas: cada versión se distribuye por separado y el usuario decide cuándo instalarla.

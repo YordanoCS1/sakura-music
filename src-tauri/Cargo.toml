@@ -24,8 +24,6 @@ tauri-build = { version = "2", features = [] }
 [dependencies]
 tauri = { version = "2", features = ["protocol-asset"] }
 tauri-plugin-dialog = "2"
-tauri-plugin-updater = "2"
-tauri-plugin-process = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 reqwest = { version = "0.12", default-features = false, features = ["json", "native-tls"] }
@@ -54,9 +52,8 @@ opt-level = 3
 panic = "abort"
 strip = true
 
-# `ring` (del plugin de updater) falla con MSVC si el command line de C
-# incluye debug records y la ruta del target es larga. Sin debug en dev
-# compila limpio y además acelera los builds iterativos.
+# Sin debug en dev acelera los builds iterativos y evita problemas de
+# command line larga con MSVC en rutas de target extensas.
 [profile.dev]
 debug = 0
 

@@ -54,13 +54,6 @@ los snapshots `space-home-win32.png` y `space-library-win32.png` y el badge
 
 `Ctrl+K` / `⌘K` abre una paleta para navegar, cambiar tema, controlar la reproducción y buscar pistas. ↑↓ navega, ↵ ejecuta, esc cierra. Está estilizada con el tema activo, incluido Manga.
 
-## Actualizaciones e instaladores
-
-- `tauri.conf.json` define `bundle.targets = ["nsis", "msi"]` y el plugin `updater` con endpoint de GitHub Releases.
-- La clave pública está en `src-tauri/updater.key.pub` y en la configuración. La privada (`src-tauri/updater.key`, ignorada por git) se generó con `npm run tauri signer generate -- --password sakura-updater-2026 -w src-tauri/updater.key`. **Guardala bien: sin ella no se pueden firmar las actualizaciones.**
-- Ajustes → Sistema tiene **Buscar actualizaciones** y, si hay una nueva, **Instalar \<versión\>**. Antes de publicar, reemplace `REPLACE_OWNER/REPLACE_REPO` por su repositorio en `tauri.conf.json`.
-- `.github/workflows/release.yml` compila los instaladores al pushear un tag `v*` y necesita los secrets `TAURI_SIGNING_PRIVATE_KEY` y `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`.
-
 ## CI y benchmarking
 
 - `.github/workflows/ci.yml` corre `npm run pipeline` en cada push y PR (Windows + Node 20 + Rust stable + Chromium).

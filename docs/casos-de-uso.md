@@ -521,33 +521,3 @@ los 9 segundos; el borrado definitivo es explícito.
 **Dónde está:** `src/components/CommandPalette.tsx`, `src/App.tsx`
 (`activeTab`), `src/types.ts` (`AppTab`).
 
----
-
-## CU-17 · Actualizar la app
-
-**Actor:** Usuario. **Sistemas:** GitHub Releases, plugins `updater`/`process`.
-
-**Precondiciones:** hay una versión publicada con el endpoint y la clave
-pública configurados (`REPLACE_OWNER/REPLACE_REPO` ya reemplazado).
-
-**Flujo principal**
-
-1. En Ajustes → Sistema, `SystemPanel` muestra **Buscar actualizaciones**.
-2. El plugin `updater` consulta `latest.json` y compara con la versión actual.
-3. Si hay una nueva, el usuario pulsa **Instalar \<versión\>**. El bundle se
-   descarga, se verifica con la clave pública y se instala con el plugin
-   `process`.
-4. Se muestra el estado de la actualización; los logs quedan visibles en el
-   mismo panel (redactados).
-
-**Flujos alternativos**
-
-- **Firma inválida:** la instalación se rechaza y se informa el error.
-- **Sin red:** se muestra el error y se puede reintentar más tarde.
-
-**Postcondiciones:** la app queda en la nueva versión; el binario anterior se
-reemplaza sin perder la carpeta de datos (biblioteca, playlists y papelera).
-
-**Dónde está:** `src/components/SystemPanel.tsx`, `src-tauri/tauri.conf.json`
-(updater, clave pública, `nsis`/`msi`), `.github/workflows/release.yml` y
-[release.md](release.md) con los secrets de firma.

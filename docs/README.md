@@ -20,7 +20,7 @@ Esta carpeta contiene la documentación técnica y de referencia del proyecto Sa
 | Auditoría de contraste de los 14 temas | [contraste.md](contraste.md) |
 | Tokens y reglas visuales | [diseno.md](diseno.md) |
 | Comandos y eventos disponibles | [ipc-contract.md](ipc-contract.md) (51 comandos / 7 eventos) |
-| Funciones nuevas (playlists, deshacer, letras, updater, temas Manga y Estudio) | [nuevas-funciones.md](nuevas-funciones.md) |
+| Funciones nuevas (playlists, deshacer, letras, temas Manga y Estudio) | [nuevas-funciones.md](nuevas-funciones.md) |
 | Dónde y cómo se guardan los datos | [data-formats.md](data-formats.md) |
 | Buscar, descargar y entender la cola | [manual/buscar-y-descargar.md](manual/buscar-y-descargar.md) |
 | Escaneo, ordenar y filtrar biblioteca | [manual/biblioteca.md](manual/biblioteca.md) |
@@ -38,7 +38,7 @@ docs/
   requisitos.md              RF/RNF con criterio de aceptación y tests
   arquitectura.md            capas, hilos, persistencia, seguridad y secuencias
   desarrollo.md              setup, tests, tipos, benchmark y recetas
-  nuevas-funciones.md         playlists, deshacer, letras, paleta y updater
+  nuevas-funciones.md         playlists, deshacer, letras y paleta
   release.md                 versionado, build, firma y publicación
   pipeline.md                diagrama y etapas del CI (58/33/47 tests)
   diseno.md                  tokens y los 14 temas propios (incluido Estudio)
@@ -71,7 +71,6 @@ docs/
     0015-letras-lrc-y-panel-detalle.md
     0016-migraciones-y-hardening-bd.md
     0017-validacion-ipc-y-scope.md
-    0018-updater-firmado-e-instaladores.md
     0019-temas-propios-estructurales.md
     0020-paleta-de-comandos.md
     0021-busqueda-de-letras-online.md
@@ -132,7 +131,7 @@ docs/
 | `data-formats.md` | 2026-11-19 | `library_db.rs`, `playlists.rs`, `queue.rs`, `paths.rs`, `localStorage` |
 | `diseno.md` | 2026-11-20 | `App.css`, `ThemeLibrary/ThemeHome/ThemeNav`, `tailwind.config.js` |
 | `desarrollo.md` | 2026-11-20 | `package.json`, `src-tauri/Cargo.toml`, `scripts/benchmark_scan.mjs` |
-| `nuevas-funciones.md` | 2026-11-20 | playlists, papelera, letras, paleta, updater y temas Manga y Estudio |
+| `nuevas-funciones.md` | 2026-11-20 | playlists, papelera, letras, paleta y temas Manga y Estudio |
 | `pipeline.md` | 2026-11-19 | `.github/workflows/ci.yml` + `npm run pipeline` |
 | `manual/` | 2026-11-20 | interfaz real + `tauri.conf.json` |
 | `adr/` | 2026-11-20 | 0009 (migración) + 0010 (cierre) + 0011 (cola) + 0012 (temas) + 0013…0021 (nuevas funciones) |

@@ -39,9 +39,8 @@ Todos los cambios destacables de este proyecto se registran aquí. El formato si
 - **Borrado con Deshacer:** el archivo se mueve a `<datos>/trash`, aparece un toast con **Deshacer** durante 9 segundos y Ajustes → Sistema muestra el contador y **Vaciar papelera**.
 - **Letras `.lrc` sincronizadas** al lado del audio: resaltado de la línea activa, autoscroll y parser con varios timestamps por línea.
 - **Paleta de comandos** `Ctrl+K` / `⌘K` para navegar, cambiar tema, reproducir y buscar pistas (↑↓, ↵, esc).
-- **Doctor del sistema** en Ajustes → Sistema: salud de SQLite (integridad, pistas, FTS, tamaño y esquema), botones Verificar/Compactar/Crear respaldo/Vaciar papelera/Buscar actualizaciones y visor de logs con copiar.
+- **Doctor del sistema** en Ajustes → Sistema: salud de SQLite (integridad, pistas, FTS, tamaño y esquema), botones Verificar/Compactar/Crear respaldo/Vaciar papelera y visor de logs con copiar.
 - **Control remoto local** en el puerto `17342` y **CLI `sakura-cli`** para escaneo, búsqueda y generación de temas.
-- **Actualizaciones automáticas firmadas** con minisign e instaladores NSIS/MSI; clave pública en `src-tauri/updater.key.pub`, privada ignorada por git y endpoint a configurar al publicar (`REPLACE_OWNER/REPLACE_REPO` en `tauri.conf.json`).
 - **Migraciones versionadas** con `PRAGMA user_version=2` (1 = FTS5 y disparadores, 2 = índices en artista/álbum/año/genero), respaldo automático `VACUUM INTO` con retención de 3 y PRAGMAs WAL + `synchronous=NORMAL` + `temp_store=MEMORY` + `foreign_keys=ON`.
 - **Benchmark de escaneo** `node scripts/benchmark_scan.mjs [cantidad]`: 10.000 pistas tardaron ~12,6 s en release en esta máquina; el CLI `scan` imprime los milisegundos.
 - **`npm run pipeline`** como comando único para todo lo que corre el CI: 60 unitarios Vitest, 33 E2E Playwright y 47 tests Rust.
@@ -74,7 +73,6 @@ Todos los cambios destacables de este proyecto se registran aquí. El formato si
 
 ### Listo para empaquetar
 - La carpeta de datos pasó del directorio de trabajo a `APPLOCALDATA` de Tauri, con migración automática del `.tauri_data` antiguo: la app instalada ya no intenta escribir en `Program Files`.
-- Endpoint del actualizador apuntado a `YordanoCS1/sakura-music` y bundle NSIS/MSI configurados.
 
 ## [2.0.0]
 

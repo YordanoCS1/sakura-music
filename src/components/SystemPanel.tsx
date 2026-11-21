@@ -1,7 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
 import { invoke } from '@tauri-apps/api/core';
-import { check, type Update } from '@tauri-apps/plugin-updater';
-import { relaunch } from '@tauri-apps/plugin-process';
 import {
   Activity,
   Check,
@@ -11,7 +9,6 @@ import {
   RefreshCw,
   ScrollText,
   Trash2,
-  DownloadCloud,
   Sparkles,
 } from 'lucide-react';
 
@@ -38,8 +35,6 @@ export default function SystemPanel() {
   const [ocupado, setOcupado] = useState(false);
   const [copiado, setCopiado] = useState(false);
   const [papelera, setPapelera] = useState(0);
-  const [actualizacion, setActualizacion] = useState<Update | null>(null);
-  const [versionUpdate, setVersionUpdate] = useState('');
 
   const cargar = useCallback(async () => {
     try {
@@ -84,37 +79,6 @@ export default function SystemPanel() {
     } catch (error) {
       setEstado(String(error));
     } finally {
-      setOcupado(false);
-    }
-  };
-
-  const buscarActualizacion = async () => {
-    setOcupado(true);
-    setEstado('');
-    try {
-      const disponible = await check();
-      setActualizacion(disponible);
-      setVersionUpdate(disponible?.version ?? '');
-      setEstado(
-        disponible
-          ? `Hay una versión nueva: ${disponible.version}`
-          : 'No hay actualizaciones disponibles.',
-      );
-    } catch (error) {
-      setEstado(`No se pudo consultar el servidor de actualizaciones: ${String(error)}`);
-    } finally {
-      setOcupado(false);
-    }
-  };
-
-  const instalarActualizacion = async () => {
-    if (!actualizacion) return;
-    setOcupado(true);
-    try {
-      await actualizacion.downloadAndInstall();
-      await relaunch();
-    } catch (error) {
-      setEstado(`No se pudo instalar la actualización: ${String(error)}`);
       setOcupado(false);
     }
   };
@@ -190,24 +154,6 @@ export default function SystemPanel() {
         >
           <Trash2 className="w-3.5 h-3.5" /> Vaciar papelera{papelera > 0 ? ` (${papelera})` : ''}
         </button>
-        <button
-          type="button"
-          className="sys-btn"
-          disabled={ocupado}
-          onClick={() => void buscarActualizacion()}
-        >
-          <DownloadCloud className="w-3.5 h-3.5" /> Buscar actualizaciones
-        </button>
-        {actualizacion && (
-          <button
-            type="button"
-            className="sys-btn"
-            disabled={ocupado}
-            onClick={() => void instalarActualizacion()}
-          >
-            <RefreshCw className="w-3.5 h-3.5" /> Instalar {versionUpdate}
-          </button>
-        )}
       </div>
 
       {estado && <p className="sys-estado">{estado}</p>}

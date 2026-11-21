@@ -25,7 +25,7 @@ que se parezca al tuyo y seguí la causa probable.
 3. **Comprobá el estado en la app:** en **Cola** y en **Ajustes** ves el motor
    Tauri, la versión de `rustc` (real, no de ejemplo) y la memoria del proceso;
    en **Ajustes → Sistema** está el doctor de SQLite, la papelera, las
-   actualizaciones y los logs.
+   y los logs.
 
 ## Arranque
 
@@ -106,13 +106,8 @@ No perdés tags ni portadas: todo eso vive en los archivos de audio.
 | Cambié de tema y la biblioteca no cambia de vista | Estás con un tema importado, que cae en la vista genérica (`LibraryTab`) | Los 14 temas oficiales son propios, incluido Estudio (`space`): todos traen biblioteca, cabecera y diálogos propios |
 | La paleta `⌘K` no abre | El atajo no llegó al WebView | Probá `Ctrl+K` en Windows/Linux; seleccione la lupa de la cabecera como alternativa |
 
-## Actualizaciones y papelera
+## Papelera
 
-| Síntoma | Causa probable | Qué hacer |
-|---|---|---|
-| **Buscar actualizaciones** dice que no hay | No hay versión nueva publicada, o el endpoint apunta a `REPLACE_OWNER/REPLACE_REPO` | Si compilaste usted, configure el owner/repo real en `tauri.conf.json` antes de publicar |
-| El actualizador falla con error de firma | El bundle no fue firmado con la clave privada correcta, o el binario fue modificado | No lo instales: descargue el instalador del canal oficial, que sí pasa la verificación minisign |
-| Después de instalar no se reinicia | El proceso no pudo relanzarse | Cerrá la app y abrila de nuevo: la versión nueva ya está instalada |
 | Borré pistas y no aparece **Deshacer** | Pasaron los 9 segundos del toast | El archivo quedó en `trash\`: Ajustes → Sistema muestra el contador, pero la restauración sólo se hace desde el toast dentro de esos 9 segundos |
 | El contador de la papelera no baja | Hay archivos pendientes de borrado definitivo | Tocá **Vaciar papelera** en Ajustes → Sistema; esa acción sí es irreversible |
 | La base crece sin parar o las búsquedas van lentas | Índice SQLite desactualizado | En Ajustes → Sistema usá **Verificar** y **Compactar**; los respaldos se crean con `VACUUM INTO` |

@@ -54,7 +54,7 @@ flowchart TB
     subgraph EXT["Externos"]
         YTDLP["yt-dlp"]
         FFMPEG["ffmpeg"]
-        NET["HTTP: iTunes, Deezer, MusicBrainz<br/>+ Cover Art Archive + updater"]
+        NET["HTTP: iTunes, Deezer, MusicBrainz<br/>+ Cover Art Archive"]
         DISK["Disco"]
     end
 
@@ -204,10 +204,6 @@ devuelve métricas; `backup_database`, `vacuum_database` y `get_system_logs`
   ffmpeg a `bin/` y verifica el hash contra un valor fijo; nunca sobrescribe un
   binario que ya está en el `PATH`. Los logs del sistema se redactan para no
   filtrar secretos.
-- **Actualizador:** los plugins `updater`/`process` consultan el endpoint de
-  GitHub Releases definido en la configuración con la clave pública provista.
-  El endpoint de plantilla (`REPLACE_OWNER/REPLACE_REPO`) debe reemplazarse
-  antes de publicar; los instaladores son NSIS/MSI.
 - **Sin login:** la app es local-first. Agregar un login local sería teatro
   (no protege nada sin servidor); recién tiene sentido con sincronización y
   hashes Argon2id.
@@ -333,12 +329,7 @@ siguiendo `currentTime`.
 antes de tocar el disco. Las operaciones de metadatos y borrado exigen la ruta
 canónica dentro de la biblioteca activa y portadas dentro de `covers/`.
 
-### Actualizador
 
-Los plugins `updater` y `process` gestionan las actualizaciones desde Ajustes →
-Sistema. La clave pública se lee de la configuración, el endpoint apunta a
-GitHub Releases (plantilla `REPLACE_OWNER/REPLACE_REPO` a reemplazar) y los
-instaladores se generan como NSIS/MSI. Ver [release.md](release.md).
 
 ## Manejo de errores
 
@@ -357,7 +348,6 @@ instaladores se generan como NSIS/MSI. Ver [release.md](release.md).
 | Búsqueda FTS fallida | `search_library_fts` falla y el frontend cae al filtro local |
 | BD corrupta antes de migrar | Se restaura el último respaldo `VACUUM INTO`; `doctor_detallado` informa `integrity_check` |
 | Borrar con deshacer | El archivo va a `trash/` y queda una fila en `deleted_tracks`; si vence el toast, se vacía desde Ajustes |
-| Actualización sin firma válida | El updater rechaza el bundle; la clave pública debe coincidir con la privada usada al publicar |
 
 ## Puntos de extensión
 

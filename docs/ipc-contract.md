@@ -121,7 +121,6 @@ sobrescribe un binario que ya esté en el PATH.
 
 El frontend filtra `library-changed` comparando la ruta con la carpeta activa, para no recargar si cambia otra biblioteca. Los eventos de búsqueda se descartan si su `request_id` no corresponde a la petición vigente.
 
-Además de estos eventos, los plugins `updater` y `process` tienen sus propios canales (`plugin:updater|*`, `plugin:process|*`) y se consumen con las APIs `@tauri-apps/plugin-updater` y `@tauri-apps/plugin-process`, no con `invoke()` directo. Por eso no cuentan en la tabla de 51 comandos. La búsqueda de actualizaciones y el reinicio viven en `SystemPanel.tsx`.
 
 ## Registro de comandos
 

@@ -32,8 +32,7 @@
     }
   },
   "bundle": {
-    "active": true,
-    "targets": ["nsis", "msi"],
+    "active": false,
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
@@ -48,14 +47,5 @@
     },
     "copyright": "Sakura Music · estudio local",
     "homepage": "https://github.com/YordanoCS1/sakura-music"
-  },
-  "plugins": {
-    "updater": {
-      "active": true,
-      "endpoints": [
-        "https://github.com/YordanoCS1/sakura-music/releases/latest/download/latest.json"
-      ],
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEJFMjcxNjY4QTRFMTEwNkIKUldSckVPR2thQlludnRxU3UvWHdpcnhycUN4Um1oa2d1YndkT1h2RkJZOUFRTmpvTkZUZEhOQXAK"
-    }
   }
 }
