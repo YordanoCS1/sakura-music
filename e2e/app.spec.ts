@@ -736,6 +736,51 @@ test('la pestaña de estadísticas resume la biblioteca', async ({ page }) => {
   await expect(stats.locator('.estadisticas-donut')).toBeVisible();
 });
 
+test('el menú contextual de la biblioteca ofrece las acciones de la pista', async ({ page }) => {
+  await page.addInitScript(() => {
+    const tracks = [
+      {
+        id: 'ctx1',
+        path: 'Disco\\ctx1.flac',
+        title: 'Pista contextual',
+        artist: 'Artista X',
+        album: 'Álbum X',
+        album_artist: null,
+        track_number: 1,
+        duration: 200,
+        duration_str: '3:20',
+        format: 'FLAC',
+        bitrate_kbps: 900,
+        cover_url: null,
+        year: 2024,
+        genre: 'Jazz',
+        file_size: 1000,
+      },
+    ];
+    const w = window as unknown as {
+      __TAURI_INTERNALS__: { invoke: (cmd: string) => Promise<unknown> };
+    };
+    const anterior = w.__TAURI_INTERNALS__.invoke;
+    w.__TAURI_INTERNALS__.invoke = async (cmd: string, args?: unknown) =>
+      cmd === 'get_cached_library' ? tracks : anterior(cmd, args);
+  });
+  await page.goto('/');
+  await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });
+  await page.getByRole('tab', { name: /Biblioteca/ }).click();
+  const fila = page.locator('[data-track-id]').first();
+  await expect(fila).toBeVisible();
+  await fila.click({ button: 'right' });
+
+  const menu = page.getByRole('menu');
+  await expect(menu).toBeVisible();
+  await expect(menu.getByRole('menuitem', { name: /Reproducir después/ })).toBeVisible();
+  await expect(menu.getByRole('menuitem', { name: /Añadir a playlist/ })).toBeVisible();
+  await expect(menu.getByRole('menuitem', { name: /Editar metadatos/ })).toBeVisible();
+  await expect(menu.getByRole('menuitem', { name: /Eliminar canción/ })).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(menu).toHaveCount(0);
+});
+
 test('Ajustes → Sistema muestra la salud de la base y los registros', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });

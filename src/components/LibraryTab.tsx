@@ -442,6 +442,7 @@ export default function LibraryTab({
                       return (
                         <tr
                           key={track.id}
+                          data-track-id={track.id}
                           onClick={() => onPlayTrack(track)}
                           className={`cursor-pointer transition-colors ${
                             isSelected
@@ -569,6 +570,7 @@ export default function LibraryTab({
             return (
               <div
                 key={track.id}
+                data-track-id={track.id}
                 onClick={() => onPlayTrack(track)}
                 className={`group relative flex items-center gap-3.5 p-3 rounded-2xl glass-card transition-all duration-base cursor-pointer ${
                   isSelected
@@ -734,7 +736,7 @@ export default function LibraryTab({
                     const startsArtistSection =
                       index === 0 || makimonoTracks[index - 1].artist !== track.artist;
                     return (
-                      <div className="makimono-item" key={track.id}>
+                      <div className="makimono-item" key={track.id} data-track-id={track.id}>
                         {startsArtistSection && (
                           <div
                             className="makimono-seal"
@@ -865,6 +867,7 @@ export default function LibraryTab({
               return (
                 <article
                   key={track.id}
+                  data-track-id={track.id}
                   className={`lantern-item ${isCurrent && isPlaying ? 'is-lit' : ''}`}
                   role="listitem"
                 >
@@ -1087,6 +1090,7 @@ export default function LibraryTab({
                 return (
                   <article
                     key={track.id}
+                    data-track-id={track.id}
                     className={`hanafuda-card ${season.className} ${isCurrent && isPlaying ? 'is-playing' : ''} ${isSelected ? 'is-selected' : ''}`}
                   >
                     <button
@@ -1230,6 +1234,7 @@ export default function LibraryTab({
                 return (
                   <tr
                     key={track.id}
+                    data-track-id={track.id}
                     onClick={() => onPlayTrack(track)}
                     className={`h-7 cursor-pointer transition-colors ${
                       isSelected
@@ -1491,6 +1496,7 @@ export default function LibraryTab({
                       return (
                         <tr
                           key={track.id}
+                          data-track-id={track.id}
                           onClick={() => onPlayTrack(track)}
                           className={`cursor-pointer transition-colors ${
                             isSelected

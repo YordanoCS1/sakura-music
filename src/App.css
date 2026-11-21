@@ -8169,3 +8169,43 @@ html[data-theme-transition='space'] #theme-panel.panel-enter { animation:t-estud
   outline-offset:2px;
   box-shadow:0 0 18px rgba(168,68,47,.35);
 }
+
+
+/* ======================================================================== */
+/* MENÚ CONTEXTUAL DE PISTAS                                                 */
+/* ======================================================================== */
+.ctx-menu {
+  --ctx-fondo:#1c1820; --ctx-linea:rgba(255,255,255,.14); --ctx-texto:#f4eef6;
+  --ctx-suave:#a99bb4; --ctx-acento:#a8442f; --ctx-radio:9px;
+  position:fixed; z-index:290; width:232px; padding:6px;
+  border:1px solid var(--ctx-linea); border-radius:var(--ctx-radio);
+  background:var(--ctx-fondo); color:var(--ctx-texto);
+  box-shadow:0 24px 60px rgba(0,0,0,.6);
+  animation:np-aparecer 140ms ease both;
+}
+.ctx-cab { display:flex; flex-direction:column; gap:2px; padding:8px 9px 10px; border-bottom:1px solid var(--ctx-linea); margin-bottom:5px; position:relative; }
+.ctx-cab strong { font-size:11px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding-right:18px; }
+.ctx-cab small { font-size:9px; color:var(--ctx-suave); }
+.ctx-cab button { position:absolute; right:4px; top:8px; border:0; background:transparent; color:var(--ctx-suave); cursor:pointer; }
+.ctx-menu > button {
+  display:flex; align-items:center; gap:9px; width:100%; padding:8px 9px;
+  border:0; border-radius:6px; background:transparent; color:inherit;
+  cursor:pointer; text-align:left; font-size:11px;
+}
+.ctx-menu > button:hover { background:var(--ctx-acento); color:#fff; }
+.ctx-menu > button svg { flex:none; }
+.ctx-menu > button.ctx-peligro:hover { background:#b7352a; }
+.ctx-sep { height:1px; background:var(--ctx-linea); margin:5px 4px; }
+.ctx-flecha { margin-left:auto; opacity:.6; }
+.ctx-submenu { margin:2px 6px 6px; padding:5px; border:1px solid var(--ctx-linea); border-radius:7px; background:rgba(127,127,127,.08); max-height:140px; overflow-y:auto; }
+.ctx-submenu button { display:flex; width:100%; justify-content:space-between; gap:6px; padding:5px 7px; border:0; border-radius:5px; background:transparent; color:inherit; cursor:pointer; font-size:10px; text-align:left; }
+.ctx-submenu button:hover { background:var(--ctx-acento); color:#fff; }
+.ctx-submenu small { color:var(--ctx-suave); }
+
+.ctx-menu.tema-swiss { --ctx-fondo:#fff; --ctx-linea:#111; --ctx-texto:#111; --ctx-suave:#555; --ctx-acento:#111; --ctx-radio:0px; }
+.ctx-menu.tema-manga { --ctx-fondo:#15181a; --ctx-linea:#f0a23c; --ctx-texto:#f2ede6; --ctx-suave:#9aa3a8; --ctx-acento:#f0a23c; --ctx-radio:0px; }
+.ctx-menu.tema-kawaii { --ctx-fondo:#fff7fb; --ctx-linea:rgba(255,158,196,.5); --ctx-texto:#5a2f48; --ctx-suave:#8a5c74; --ctx-acento:#e5749b; --ctx-radio:14px; }
+.ctx-menu.tema-shonen { --ctx-fondo:#fff6e8; --ctx-linea:#1c1c1c; --ctx-texto:#1c1c1c; --ctx-suave:#8a6a45; --ctx-acento:#ff6b1a; --ctx-radio:3px; }
+.ctx-menu.tema-ghost, .ctx-menu.tema-moonlit { --ctx-fondo:#101820; --ctx-linea:rgba(143,182,232,.3); --ctx-texto:#dfe8f7; --ctx-suave:#7f92b4; --ctx-acento:#67e8f9; }
+.ctx-menu.tema-samurai { --ctx-fondo:#1a1512; --ctx-linea:rgba(201,169,97,.35); --ctx-texto:#efe6d6; --ctx-suave:#9e8f7c; --ctx-acento:#c9a961; }
+.ctx-menu.tema-sumie, .ctx-menu.tema-shoji, .ctx-menu.tema-ledger { --ctx-fondo:#faf5e9; --ctx-linea:#c9b28a; --ctx-texto:#2c241a; --ctx-suave:#6b6459; --ctx-acento:#b23a2b; --ctx-radio:2px; }

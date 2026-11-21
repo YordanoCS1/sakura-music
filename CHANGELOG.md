@@ -5,6 +5,7 @@ Todos los cambios destacables de este proyecto se registran acá. El formato sig
 ## [Sin publicar]
 
 ### Agregado
+- **Menú contextual** en la biblioteca (clic derecho): reproducir, reproducir después, añadir a playlist, favorito, editar y eliminar, con estilo propio por tema. **Sonidos de UI** generados con WebAudio, una voz distinta por tema.
 - **Descargas más resilient**: reintentos automáticos con backoff, fallback de formato, notificación y sonido al terminar, historial persistente, filtro de duración, reorden y filtro de la cola, y opción de arranque rápido sin reescaneo.
 - **Mejoras de descarga**: archivo persistente de IDs para no repetir pistas, indexación automática al terminar, portada HD del catálogo, errores traducidos y concurrencia configurable (1–4) en Ajustes → Sistema.
 - **Instalador personalizado** con marca Estudio: cabecera y barra lateral propias, selector de idioma, página de elección de carpeta, menú Inicio, acceso al escritorio y hooks que documentan la ruta de datos y limpian al desinstalar.
@@ -43,7 +44,7 @@ Todos los cambios destacables de este proyecto se registran acá. El formato sig
 - **Actualizaciones automáticas firmadas** con minisign e instaladores NSIS/MSI; clave pública en `src-tauri/updater.key.pub`, privada ignorada por git y endpoint a configurar al publicar (`REPLACE_OWNER/REPLACE_REPO` en `tauri.conf.json`).
 - **Migraciones versionadas** con `PRAGMA user_version=2` (1 = FTS5 y disparadores, 2 = índices en artista/álbum/año/genero), respaldo automático `VACUUM INTO` con retención de 3 y PRAGMAs WAL + `synchronous=NORMAL` + `temp_store=MEMORY` + `foreign_keys=ON`.
 - **Benchmark de escaneo** `node scripts/benchmark_scan.mjs [cantidad]`: 10.000 pistas tardaron ~12,6 s en release en esta máquina; el CLI `scan` imprime los milisegundos.
-- **`npm run pipeline`** como comando único para todo lo que corre el CI: 60 unitarios Vitest, 32 E2E Playwright y 47 tests Rust.
+- **`npm run pipeline`** como comando único para todo lo que corre el CI: 60 unitarios Vitest, 33 E2E Playwright y 47 tests Rust.
 
 ### Cambiado
 - Los archivos descargados se nombran `Artista - Canción.opus`, sin el `[IDdeYouTube]`. Si ya existe, se agrega `(2)`, `(3)`… en vez de saltear la descarga; la misma URL repetida en la cola sí se rechaza con un aviso.

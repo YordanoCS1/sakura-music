@@ -173,7 +173,7 @@ Incluí:
 
 ```powershell
 cargo test --manifest-path src-tauri/Cargo.toml   # 47 tests Rust
-npm run pipeline                                  # 60 unitarios + 32 E2E + 47 tests Rust + build
+npm run pipeline                                  # 60 unitarios + 33 E2E + 47 tests Rust + build
 node node_modules/typescript/bin/tsc --noEmit      # tipos
 npm run build                                      # tsc + vite build
 ```

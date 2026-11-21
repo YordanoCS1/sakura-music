@@ -129,3 +129,10 @@ Más en [problemas.md](problemas.md) y en [../nuevas-funciones.md](../nuevas-fun
 La pestaña **Datos** muestra la biblioteca en números: duración total, tamaño,
 géneros, artistas más frecuentes, décadas, formatos y porcentaje de portadas.
 Los gráficos usan el lenguaje visual del tema activo.
+
+
+## Menú contextual y sonidos de interfaz
+
+Hacé clic derecho sobre cualquier pista de la biblioteca para ver su menú: reproducir, reproducir después, añadir a playlist, favorito, editar metadatos y eliminar. El menú usa el estilo del tema activo y se cierra con Escape.
+
+Cada tema tiene además un sonido propio para abrir el menú, confirmar una acción y marcar un error. Se generan con WebAudio, sin archivos de audio, y se respeta el volumen del sistema.

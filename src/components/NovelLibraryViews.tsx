@@ -88,6 +88,7 @@ function CdsView({
         return (
           <div
             key={track.id}
+            data-track-id={track.id}
             onClick={() => onPlayTrack(track)}
             className={`nv-cds-row flex items-center gap-4 p-2.5 rounded-2xl cursor-pointer ${active ? 'is-active' : ''}`}
           >
@@ -138,6 +139,7 @@ function TiltView({
         return (
           <div
             key={track.id}
+            data-track-id={track.id}
             className="nv-tilt-card cursor-pointer"
             onClick={() => onPlayTrack(track)}
           >
@@ -182,6 +184,7 @@ function GlowView({
         return (
           <div
             key={track.id}
+            data-track-id={track.id}
             className="nv-glow-card cursor-pointer"
             onClick={() => onPlayTrack(track)}
           >

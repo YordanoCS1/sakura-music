@@ -14,7 +14,7 @@ flowchart TD
       S2 --> S3["lint · ESLint"]
       S3 --> S4["formato · Prettier"]
       S4 --> S5["tests unitarios · Vitest (60)"]
-      S5 --> S6["tests E2E · Playwright (32)"]
+      S5 --> S6["tests E2E · Playwright (33)"]
       S6 --> S7["build · vite"]
       S7 --> S8["cargo fmt --check"]
       S8 --> S9["cargo clippy -D warnings"]

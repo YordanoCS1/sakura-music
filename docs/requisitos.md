@@ -11,7 +11,7 @@ este documento (con fecha y motivo). **No se renumeran.**
 
 - **Criterio:** qué tiene que pasar para considerar el requisito cumplido.
 - **Test:** `npm test` (Vitest, **60 tests** del frontend), `npm run test:e2e`
-  (Playwright, **32 tests**), `cargo test` (Rust, **47 tests**) o `tsc --noEmit`
+  (Playwright, **33 tests**), `cargo test` (Rust, **47 tests**) o `tsc --noEmit`
   (tipos). `npm run pipeline` corre todo en orden y pasa en verde.
 - Si un requisito depende de red o de un binario externo, no se testea en la
   suite: se verifica a mano con `yt-dlp`/`ffmpeg` reales.

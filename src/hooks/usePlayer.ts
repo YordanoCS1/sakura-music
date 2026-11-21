@@ -24,6 +24,7 @@ export function usePlayer({
   const [repeatMode, setRepeatMode] = useState<'off' | 'all' | 'one'>('off');
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const currentBlobUrlRef = useRef<string | null>(null);
+  const playNextRef = useRef<ScannedTrack[]>([]);
 
   // El audio se reproduce desde un Blob URL en vez de desde el archivo:
   // así el protocolo asset: de Tauri libera el handle y Windows permite
@@ -67,6 +68,11 @@ export function usePlayer({
     }
   };
 
+  /// Pista elegida con "Reproducir después": va al frente de la automática.
+  const playNext = useCallback((track: ScannedTrack) => {
+    playNextRef.current = [track, ...playNextRef.current.filter((t) => t.id !== track.id)];
+  }, []);
+
   const togglePlay = () => {
     if (!audioRef.current) return;
     if (!activeTrack && tracks.length > 0) {
@@ -85,6 +91,11 @@ export function usePlayer({
   };
 
   const handleNextTrack = (auto = false) => {
+    const siguiente = playNextRef.current.shift();
+    if (siguiente) {
+      void handlePlayTrack(siguiente);
+      return;
+    }
     const queue = playbackQueueRef.current;
     if (queue.length === 0) return;
     if (isShuffle) {
@@ -171,6 +182,7 @@ export function usePlayer({
     isShuffle,
     repeatMode,
     handlePlayTrack,
+    playNext,
     togglePlay,
     handleNextTrack,
     handlePreviousTrack,

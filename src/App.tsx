@@ -30,6 +30,8 @@ import UndoToast from './components/UndoToast';
 import ThemedLoader from './components/ThemedLoader';
 import PlaylistsPanel from './components/PlaylistsPanel';
 import StatsTab from './components/StatsTab';
+import TrackContextMenu from './components/TrackContextMenu';
+import { sonidoUI } from './lib/sonidos';
 import CommandPalette from './components/CommandPalette';
 import SearchTab from './components/SearchTab';
 import ThemeSearch from './components/ThemeSearch';
@@ -97,6 +99,9 @@ const TEMAS_DISPONIBLES: ThemeOption[] = [
 export default function App() {
   const [activeTab, setActiveTabRaw] = useState<AppTab>('library');
   const [paletaAbierta, setPaletaAbierta] = useState(false);
+  const [menuPista, setMenuPista] = useState<{ track: ScannedTrack; x: number; y: number } | null>(
+    null,
+  );
   const [historialDescargas, setHistorialDescargas] = useState<DownloadHistoryItem[]>([]);
   const [concurrencia, setConcurrencia] = useState(() => {
     const guardado = Number(localStorage.getItem('sakura_download_concurrency') ?? 2);
@@ -333,6 +338,7 @@ export default function App() {
     isShuffle,
     repeatMode,
     handlePlayTrack,
+    playNext,
     togglePlay,
     handleNextTrack,
     handlePreviousTrack,
@@ -397,6 +403,24 @@ export default function App() {
       unlisten?.();
     };
   }, []);
+
+  useEffect(() => {
+    if (activeTab !== 'library') {
+      setMenuPista(null);
+      return;
+    }
+    const alHacerClicDerecho = (evento: MouseEvent) => {
+      const destino = evento.target as HTMLElement;
+      const nodo = destino.closest<HTMLElement>('[data-track-id]');
+      if (!nodo) return;
+      evento.preventDefault();
+      const pista = tracks.find((item) => item.id === nodo.dataset.trackId);
+      if (!pista) return;
+      setMenuPista({ track: pista, x: evento.clientX, y: evento.clientY });
+    };
+    document.addEventListener('contextmenu', alHacerClicDerecho);
+    return () => document.removeEventListener('contextmenu', alHacerClicDerecho);
+  }, [activeTab, tracks]);
 
   const {
     downloads,
@@ -1617,6 +1641,37 @@ export default function App() {
               onTogglePlay={togglePlay}
               onNext={() => handleNextTrack()}
               onPrevious={handlePreviousTrack}
+            />
+          )}
+
+          {menuPista && (
+            <TrackContextMenu
+              x={menuPista.x}
+              y={menuPista.y}
+              theme={temaBase}
+              track={menuPista.track}
+              esFav={favorites.includes(menuPista.track.id)}
+              isPlaying={activeTrack?.id === menuPista.track.id && isPlaying}
+              onClose={() => setMenuPista(null)}
+              onPlay={() => {
+                sonidoUI(temaBase, 'click');
+                void handlePlayTrack(menuPista.track);
+              }}
+              onPlayNext={() => {
+                sonidoUI(temaBase, 'confirm');
+                playNext(menuPista.track);
+                setScanMessage(`${menuPista.track.title} se reproducirá después.`);
+                window.setTimeout(() => setScanMessage(null), 3500);
+              }}
+              onToggleFavorite={() =>
+                toggleFavorite(menuPista.track.id, { stopPropagation() {} } as React.MouseEvent)
+              }
+              onEdit={() => openEditModal(menuPista.track)}
+              onDelete={() => setPendingDeleteTracks([menuPista.track])}
+              onAviso={(mensaje) => {
+                setScanMessage(mensaje);
+                window.setTimeout(() => setScanMessage(null), 4000);
+              }}
             />
           )}
 

@@ -118,7 +118,7 @@ cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings
 
 `.github/workflows/ci.yml` ejecuta en Windows, macOS y Linux (matriz de 3 SO) las
 mismas comprobaciones: `npm ci`, `npm run pipeline` (tipos, lint, formato, 58
-unitarios, 32 E2E, build del frontend, `cargo fmt --check`, `cargo clippy -D
+unitarios, 33 E2E, build del frontend, `cargo fmt --check`, `cargo clippy -D
 warnings` y los 47 tests Rust). La auditoría de npm (`npm run audit`) corre como
 paso informativo: hoy hay un aviso *high* de `picomatch` que afecta solo a
 dependencias de desarrollo y todavía no tiene corrección; no bloquea el pipeline.
@@ -254,7 +254,7 @@ superficie además de los tokens de color. Ver [ADR 0012](adr/0012-temas-multipl
 | Rutas | `paths.rs` es el único lugar que conoce la carpeta de datos; nunca hay rutas hardcodeadas de usuario |
 | Escrituras | Siempre `write_atomic` para tags, caché y portadas |
 | Colores | Solo `accent-*` (variables `--accent-*`) fuera de `App.css`; el resto es rosa de apoyo (status) |
-| Tests | Un `#[test]` por comportamiento puro en su módulo (47 Rust); el frontend con 60 unitarios Vitest + 32 E2E Playwright, más `tsc` + build |
+| Tests | Un `#[test]` por comportamiento puro en su módulo (47 Rust); el frontend con 60 unitarios Vitest + 33 E2E Playwright, más `tsc` + build |
 
 ## Documentación
 

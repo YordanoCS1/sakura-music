@@ -373,6 +373,7 @@ export default function ThemeLibrary({
             {vistaTracks.map((track) => (
               <article
                 key={track.id}
+                data-track-id={track.id}
                 className={`sumie-recorte ${activeTrack?.id === track.id ? 'is-active' : ''}`}
               >
                 <span className="recorte-cinta" aria-hidden="true" />
@@ -456,6 +457,7 @@ export default function ThemeLibrary({
                     return (
                       <article
                         key={track.id}
+                        data-track-id={track.id}
                         className={`shoji-slata ${activeTrack?.id === track.id ? 'is-active' : ''}`}
                       >
                         <span className="shoji-slata-num">{String(numero).padStart(2, '0')}</span>
@@ -493,6 +495,7 @@ export default function ThemeLibrary({
             {vistaTracks.map((track, i) => (
               <article
                 key={track.id}
+                data-track-id={track.id}
                 className={`origami-hoja ${activeTrack?.id === track.id ? 'is-active' : ''}`}
                 style={
                   {
@@ -536,6 +539,7 @@ export default function ThemeLibrary({
             {vistaTracks.map((track, i) => (
               <article
                 key={track.id}
+                data-track-id={track.id}
                 className={`swiss-poster ${activeTrack?.id === track.id ? 'is-active' : ''}`}
               >
                 <button
@@ -579,6 +583,7 @@ export default function ThemeLibrary({
             {vistaTracks.map((track, i) => (
               <article
                 key={track.id}
+                data-track-id={track.id}
                 className={`sumiink-rollo ${activeTrack?.id === track.id ? 'is-active' : ''}`}
               >
                 <span className="sumiink-rollo-barra" aria-hidden="true" />
@@ -620,6 +625,7 @@ export default function ThemeLibrary({
             {vistaTracks.map((track) => (
               <div
                 key={track.id}
+                data-track-id={track.id}
                 className={`moonlit-nodo ${activeTrack?.id === track.id ? 'is-active' : ''}`}
               >
                 <span className="moonlit-nodo-cover">{portadaDe(track)}</span>
@@ -670,6 +676,7 @@ export default function ThemeLibrary({
                 {vistaTracks.map((track, i) => (
                   <div
                     key={track.id}
+                    data-track-id={track.id}
                     className={`ledger-fila ${activeTrack?.id === track.id ? 'is-active' : ''}`}
                   >
                     <span className="ledger-num-sello">{String(i + 1).padStart(2, '0')}</span>
@@ -718,6 +725,7 @@ export default function ThemeLibrary({
               {vistaTracks.map((track, i) => (
                 <article
                   key={track.id}
+                  data-track-id={track.id}
                   className={`shonen-oponente ${activeTrack?.id === track.id ? 'is-active' : ''}`}
                 >
                   <span className="shonen-rango">{String(i + 1).padStart(2, '0')}</span>
@@ -758,6 +766,7 @@ export default function ThemeLibrary({
             {vistaTracks.map((track) => (
               <article
                 key={track.id}
+                data-track-id={track.id}
                 className={`ghost-lapida ${activeTrack?.id === track.id ? 'is-active' : ''}`}
               >
                 <button type="button" onClick={() => onPlayTrack(track)}>
@@ -793,6 +802,7 @@ export default function ThemeLibrary({
               {vistaTracks.map((track, i) => (
                 <article
                   key={track.id}
+                  data-track-id={track.id}
                   className={`samurai-kata ${activeTrack?.id === track.id ? 'is-active' : ''}`}
                 >
                   <span className="samurai-kanji">侍</span>
@@ -862,6 +872,7 @@ export default function ThemeLibrary({
               {vistaTracks.map((track, i) => (
                 <article
                   key={track.id}
+                  data-track-id={track.id}
                   className={`estudio-disco ${activeTrack?.id === track.id ? 'is-activo' : ''}`}
                 >
                   <div className="estudio-disco-tapa">
@@ -922,6 +933,7 @@ export default function ThemeLibrary({
             {vistaTracks.map((track, i) => (
               <article
                 key={track.id}
+                data-track-id={track.id}
                 className={`manga-pagina ${activeTrack?.id === track.id ? 'is-active' : ''}`}
               >
                 <span className="manga-pagina-num" aria-hidden="true">
@@ -964,6 +976,7 @@ export default function ThemeLibrary({
             {vistaTracks.map((track, i) => (
               <article
                 key={track.id}
+                data-track-id={track.id}
                 className={`kawaii-nube-amiga ${activeTrack?.id === track.id ? 'is-active' : ''}`}
                 style={
                   {
@@ -999,7 +1012,11 @@ export default function ThemeLibrary({
       ) : (
         <ol className="byobu-indice">
           {vistaTracks.map((track, i) => (
-            <li key={track.id} className={activeTrack?.id === track.id ? 'is-active' : ''}>
+            <li
+              key={track.id}
+              data-track-id={track.id}
+              className={activeTrack?.id === track.id ? 'is-active' : ''}
+            >
               <button type="button" className="byobu-fila" onClick={() => onPlayTrack(track)}>
                 <span className="byobu-cover">
                   {track.cover_url ? (
