@@ -110,7 +110,7 @@ veces en la cola: se rechaza con un aviso para no duplicar el archivo.
 
 - **No se repiten**: un archivo `download_archive.txt` guarda los IDs ya bajados, así que aunque limpies la cola o reinicies, la misma URL no se descarga dos veces.
 - **Se indexan solas**: al terminar, la pista se agrega a la biblioteca y aparece sin escaneo manual (evento `library-track-added`).
-- **Portada HD**: antes de descargar se busca carátula en iTunes; si hay, se usa en vez de la miniatura de YouTube. Si falla, se usa la de siempre.
+- **Portada HD**: antes de descargar se busca carátula en iTunes; si hay, se incrusta en el archivo terminado con ffmpeg (sobre un temporal, para no dañar el audio). Si falla, se conserva la miniatura de YouTube.
 - **Errores claros**: en vez del texto crudo de yt-dlp, la cola dice cosas como "El video es privado", "Sin conexión a internet" o "YouTube pidió verificación".
 - **Paralelismo configurable**: Ajustes → Sistema → *Descargas en paralelo* permite elegir entre 1 y 4.
 

@@ -718,6 +718,45 @@ fn es_transitorio(detalle: &str) -> bool {
         || bajo.contains("http error 5")
 }
 
+/// Reemplaza la carátula del archivo ya descargado con la portada HD del
+/// catálogo. Escribe un temporal y sólo lo cambia si ffmpeg termina bien.
+fn incrustar_portada(audio: &str, portada: &Path) -> bool {
+    let Some(ffmpeg) = find_ffmpeg_binary() else {
+        return false;
+    };
+    let origen = Path::new(audio);
+    let extension = origen.extension().and_then(|e| e.to_str()).unwrap_or("mp3");
+    let temporal = origen.with_extension(format!("sakura-cover.{extension}"));
+    let exito = nueva_command(ffmpeg)
+        .args(["-y", "-i", audio, "-i"])
+        .arg(portada)
+        .args([
+            "-map",
+            "0",
+            "-map",
+            "1",
+            "-c",
+            "copy",
+            "-disposition:v:0",
+            "attached_pic",
+        ])
+        .arg(&temporal)
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .status()
+        .map(|estado| estado.success())
+        .unwrap_or(false);
+    if !exito || !temporal.exists() {
+        let _ = std::fs::remove_file(&temporal);
+        return false;
+    }
+    if std::fs::remove_file(origen).is_ok() && std::fs::rename(&temporal, origen).is_ok() {
+        return true;
+    }
+    let _ = std::fs::remove_file(&temporal);
+    false
+}
+
 fn es_error_formato(detalle: &str) -> bool {
     let bajo = detalle.to_lowercase();
     bajo.contains("requested format") || bajo.contains("unsupported format")
@@ -1004,12 +1043,6 @@ fn run_download(
         artist.as_deref().unwrap_or(""),
         job_id,
     );
-    if let Some(portada) = &portada
-        && let Some(ruta) = portada.to_str()
-    {
-        cmd.args(["--thumbnail", ruta]);
-    }
-
     cmd.arg(url);
     cmd.args(["-o", &out_template, "--extract-audio", "--continue"]);
     let fmt = format_opt.to_lowercase();
@@ -1084,9 +1117,6 @@ fn run_download(
     }
 
     let estado = child.wait();
-    if let Some(portada) = &portada {
-        let _ = std::fs::remove_file(portada);
-    }
     manager.unregister_pid(job_id);
     let stderr_texto = stderr_thread.join().unwrap_or_default();
 
@@ -1098,6 +1128,10 @@ fn run_download(
     match estado {
         Ok(estado) if estado.success() => {
             let file_path = final_path.or_else(|| find_downloaded_file(out_dir, url));
+            if let (Some(portada), Some(ruta)) = (&portada, &file_path) {
+                incrustar_portada(ruta, portada);
+                let _ = std::fs::remove_file(portada);
+            }
             if let Some(ruta) = &file_path
                 && let Some(track) = scanner::scan_audio_file(Path::new(ruta))
                 && library_db::upsert_track(&track).is_ok()
