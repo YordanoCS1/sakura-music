@@ -1,5 +1,9 @@
 import { expect, test } from '@playwright/test';
 
+// Las snapshots de referencia se generaron en Windows (sufijo -win32). En
+// Linux/macOS Playwright busca -linux/-darwin y no las encuentra.
+test.skip(process.platform !== 'win32', 'Snapshots visuales generadas en Windows');
+
 // Datos fijos y efectos desactivados para que las capturas sean reproducibles.
 test.use({ reducedMotion: 'reduce', viewport: { width: 1280, height: 800 } });
 
