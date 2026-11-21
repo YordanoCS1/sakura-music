@@ -1308,23 +1308,30 @@ mod tests {
 
     #[test]
     fn rechaza_duplicados_activos_y_permite_reintentar_al_terminar() {
+        // En Windows la carpeta se compara sin distinguer mayúsculas; en Unix
+        // las rutas son sensibles a mayúsculas, así que usamos la misma ruta.
+        let (carpeta, duplicada) = if cfg!(windows) {
+            (r"C:\Music", r"c:\music")
+        } else {
+            ("/music", "/music")
+        };
         let manager = DownloadManager::new(1);
         assert!(manager.register_job(
             "first",
             "https://www.youtube.com/watch?v=abc123",
-            r"C:\Music",
+            carpeta,
             "FLAC",
         ));
         assert!(!manager.register_job(
             "duplicate",
             "https://www.youtube.com/watch?v=abc123&list=PL1",
-            r"c:\music",
+            duplicada,
             "flac",
         ));
         assert!(manager.register_job(
             "other-format",
             "https://www.youtube.com/watch?v=abc123",
-            r"C:\Music",
+            carpeta,
             "MP3",
         ));
         manager.finish("other-format");
@@ -1335,7 +1342,7 @@ mod tests {
         assert!(manager.register_job(
             "retry",
             "https://www.youtube.com/watch?v=abc123",
-            r"C:\Music",
+            carpeta,
             "FLAC",
         ));
     }
