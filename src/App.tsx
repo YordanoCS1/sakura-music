@@ -676,7 +676,7 @@ export default function App() {
       const selected = await open({
         directory: true,
         multiple: false,
-        title: 'Seleccionar Carpeta con tu Música',
+        title: 'Seleccionar carpeta con su música',
       });
       if (selected && typeof selected === 'string') {
         scanFolder(selected);
@@ -799,7 +799,7 @@ export default function App() {
   };
 
   // Estado y lógica de edición (lote + individual). Vive en hooks propios;
-  // acá solo se pasa lo necesario.
+  // aquí solo se pasa lo necesario.
   const batch = useBatchEditor({
     tracks,
     selectedTrackIds,
@@ -1231,7 +1231,7 @@ export default function App() {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Buscar en tu música..."
+                  placeholder="Buscar en su música..."
                   className="gh-search-input"
                 />
                 {searchQuery ? (
@@ -1694,7 +1694,7 @@ export default function App() {
                   window.setTimeout(() => setScanMessage(null), 4000);
                 } catch (error) {
                   console.error('No se pudo deshacer el borrado:', error);
-                  setScanMessage('No se pudo deshacer el borrado; mirá la papelera en Sistema.');
+                  setScanMessage('No se pudo deshacer el borrado; vea la papelera en Sistema.');
                 }
               }}
             />

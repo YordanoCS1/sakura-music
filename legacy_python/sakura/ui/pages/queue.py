@@ -316,7 +316,7 @@ class QueuePage(Page):
         self.thumbnails.loaded.connect(self._on_thumbnail)
         self._build_controls()
         self._message = MessageBlock(
-            "Las descargas que encoles desde Buscar van a aparecer acá, "
+            "Las descargas que encoles desde Buscar van a aparecer aquí, "
             "con su progreso y su estado."
         )
         self._message.set_title("Todavía no hay descargas")

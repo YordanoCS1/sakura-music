@@ -8,7 +8,7 @@ Esta carpeta contiene la documentación técnica y de referencia del proyecto Sa
 
 ## Por dónde empezar
 
-| Si querés… | Leé |
+| Si desea… | Leé |
 |---|---|
 | Visión general, instalación y arranque rápido | [README principal](../README.md) |
 | Arquitectura v2 (Tauri + Rust + React) | [arquitectura.md](arquitectura.md) |
@@ -140,11 +140,11 @@ docs/
 | `temas/informe-temas.md` | 2026-11-20 | propuesta histórica de prototipos (ver nota en el archivo) |
 
 La documentación se actualiza **cuando cambia el comportamiento**, no cuando
-cambia una línea. Si un cambio invalida un requisito, actualizá el requisito y su
+cambia una línea. Si un cambio invalida un requisito, actualice el requisito y su
 criterio de aceptación en el mismo commit. Si agrega una decisión estructural,
 sumá un ADR nuevo en vez de reescribir los viejos.
 
-## Qué no vive acá
+## Qué no vive aquí
 
 - El **porqué** detallado de cada decisión de diseño: está en el
   [README](../README.md) y en los [ADRs](adr/README.md).

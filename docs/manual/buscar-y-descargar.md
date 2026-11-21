@@ -14,20 +14,20 @@ aparece en **Cola**.
 
 ## Elegir formato
 
-Arriba de la búsqueda tenés la **Calidad de audio**:
+Arriba de la búsqueda tiene la **Calidad de audio**:
 
 | Formato | Qué hace | Cuándo conviene |
 |---|---|---|
 | **Opus (Original)** | Audio original de YouTube, sin recodificar | Uso general, archivo liviano |
 | **M4A · AAC 192 kbps** | Recodifica a AAC | Compatibilidad amplia (iOS, muchos reproductores) |
 | **MP3 320 kbps** | Recodifica a MP3 | Cuando el destino solo acepta MP3 |
-| **FLAC (Sin pérdida)** | Compresión lossless | Tu colección de calidad (valor por defecto) |
+| **FLAC (Sin pérdida)** | Compresión lossless | Su colección de calidad (valor por defecto) |
 
 En todos los casos la app embebe carátula y metadatos.
 
 ## Descargar una canción
 
-1. Elegí el formato.
+1. Seleccione el formato.
 2. Pulsá el botón de descarga de la tarjeta (o **Descargar Enlace** si pegaste
    una URL única).
 3. El trabajo aparece en **Cola** como `en cola` y arranca enseguida si hay
@@ -39,9 +39,9 @@ En todos los casos la app embebe carátula y metadatos.
 2. Las pistas aparecen conforme `yt-dlp` las va encontrando; la lista sigue
    cargando hasta que termine la consulta. Esto no descarga nada.
 3. Marcá o desmarcá pistas con las casillas, o usá **Seleccionar todas**.
-4. Elegí si **organizar en subcarpeta dedicada** con el nombre de la playlist.
+4. Seleccione si desea **organizar en subcarpeta dedicada** con el nombre de la playlist.
 5. Pulsá **Descargar N Canciones**. Cada pista baja como descarga independiente;
-   podés cancelarlas una por una sin frenar las demás.
+   puede cancelarlas una por una sin frenar las demás.
 
 ## La cola
 
@@ -56,7 +56,7 @@ espera turno.
 | `convirtiendo audio` | ffmpeg está convirtiendo |
 | `completado` | Archivo guardado (con ruta real); ofrece **Ver en Biblioteca** |
 | `error: ...` | Falló; muestra la última línea del error y ofrece **Reintentar** |
-| `cancelado` | Lo cancelaste vos; también ofrece **Reintentar** |
+| `cancelado` | Lo cancelaste usted; también ofrece **Reintentar** |
 
 ### Acciones
 
@@ -78,20 +78,20 @@ canceladas y con error quedan como historial en la Cola.
 
 1. Leé el motivo en la fila de Cola.
 2. Revisá la tabla de [problemas.md](problemas.md).
-3. Si el error es temporal (red, timeout), probá **Reintentar**.
+3. Si el error es temporal (red, timeout), pruebe **Reintentar**.
 4. Si el video es privado, borrado o tiene restricción de edad, no hay forma de
-   bajarlo desde la app: probá otro resultado.
+   descargarlo desde la app: pruebe otro resultado.
 
 Los errores llegan traducidos por yt-dlp (por ejemplo, "Video unavailable").
 
 ## Listas y atajos
 
-Las **playlists de YouTube que cargás acá** son listas de descarga temporales;
-para guardar tu propia colección usá la pestaña **Listas**, con playlists
+Las **playlists de YouTube que cargás aquí** son listas de descarga temporales;
+para guardar su propia colección use la pestaña **Listas**, con playlists
 persistentes en SQLite. Cómo crearlas, renombrarlas y reordenarlas está en
 [biblioteca.md](biblioteca.md#listas-playlists).
 
-Desde cualquier pestaña podés apretar `Ctrl+K` / `⌘K` para abrir la **paleta de
+Desde cualquier pestaña puede apretar `Ctrl+K` / `⌘K` para abrir la **paleta de
 comandos**: navegación, cambio de tema, reproducción y búsqueda de pistas con
 **↑↓**, **↵** y **esc**. Está disponible en los 14 temas y se detalla en
 [apariencia.md](apariencia.md).
@@ -120,9 +120,9 @@ veces en la cola: se rechaza con un aviso para no duplicar el archivo.
 - **Reintentos automáticos**: los errores transitorios (429, sin conexión, timeout) se reintentan hasta 3 veces con esperas de 2 y 4 segundos; la cola muestra "Reintentando en…".
 - **Fallback de formato**: si el formato pedido no existe (por ejemplo FLAC), se prueba OPUS, M4A y MP3 automáticamente.
 - **Aviso al terminar**: notificación de Windows y un tono breve que cambia según el tema. Si el navegador bloquea las notificaciones, el sonido sigue funcionando.
-- **Prioridad y filtro en la cola**: cada fila tiene botones para subir/bajar y el encabezado permite filtrar por *En curso*, *Terminadas* o *Con error*.
+- **Prioridad y filtro en la cola**: cada fila tiene botones para subir/descargar y el encabezado permite filtrar por *En curso*, *Terminadas* o *Con error*.
 - **Filtro de duración en la búsqueda**: *Menos de 5 min*, *5 a 10 min* o *Más de 10 min*, usando la duración que reporta YouTube.
-- **Arranque rápido (opcional)**: en Ajustes → Sistema podés evitar el reescaneo automático al abrir. Si cambiás archivos con la app cerrada, tocá *Actualizar biblioteca*.
+- **Arranque rápido (opcional)**: en Ajustes → Sistema puede evitar el reescaneo automático al abrir. Si cambiás archivos con la app cerrada, seleccione *Actualizar biblioteca*.
 
 
 ## Limpieza y duplicados

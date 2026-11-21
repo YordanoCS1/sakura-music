@@ -25,7 +25,7 @@ Gestor, reproductor, descargador y etiquetador de música para escritorio, const
 
 ### 🎵 Reproducción sin bloqueo de archivos
 - El audio se sirve vía protocolo `asset:` y se carga en memoria como Blob URL.
-- Al soltar el `fetch`, Windows libera el handle: podés renombrar, editar tags o cambiar la carátula **mientras suena**, sin `os error 5`.
+- Al soltar el `fetch`, Windows libera el handle: puede renombrar, editar tags o cambiar la carátula **mientras suena**, sin `os error 5`.
 - Play/pausa, seek, volumen, mute, shuffle, repetición (`off` / `all` / `one`) y avance automático que respeta "repetición apagada" al llegar al final de la lista.
 - **Panel “Ahora suena” ampliado:** tocando la portada del reproductor se abre una vista grande con la portada protagonista, el color dominante de la carátula teñendo el fondo y controles amplios, organizada en cuatro pestañas: **Detalles**, **Letras**, **Álbum** y **Artista**. El glifo del splash hace la transición continua hacia la navegación con View Transitions.
 
@@ -52,7 +52,7 @@ Gestor, reproductor, descargador y etiquetador de música para escritorio, const
 - Diseño premium adaptado al tema claro (superficies blancas, texto legible, foco rosa).
 
 ### 📥 Búsqueda, playlists y descarga en segundo plano
-- Búsqueda en YouTube con `ytsearch10` vía `yt-dlp`, playlists resueltas con `--flat-playlist` sin descargar, y `--no-playlist` al bajar pistas sueltas.
+- Búsqueda en YouTube con `ytsearch10` vía `yt-dlp`, playlists resueltas con `--flat-playlist` sin descargar, y `--no-playlist` al descargar pistas sueltas.
 - Cola con **máximo 2 descargas en paralelo**, cancelación por ítem y "Cancelar todo", reintento de fallidas/canceladas, limpieza de terminadas y **persistencia entre sesiones** (`download_queue.json`): al reabrir, lo interrumpido se reanuda solo.
 - Al salir se cancelan y matan los procesos `yt-dlp`/`ffmpeg` vivos.
 - Formatos: Opus (`--audio-quality 0`), FLAC (sin pérdida), M4A/AAC 192 kbps y MP3 320 kbps, siempre con metadatos y carátula embebidos.
@@ -122,11 +122,11 @@ Detalle completo en [`docs/arquitectura.md`](docs/arquitectura.md).
 ### Requisitos previos
 1. **Node.js 20+** ([nodejs.org](https://nodejs.org/)) — el proyecto usa Vite 8.
 2. **Rust estable** ([rustup.rs](https://rustup.rs/)) — el build.rs reporta la versión real con `rustc --version`.
-3. **yt-dlp y FFmpeg en el `PATH`** (o en `bin/` de la carpeta de datos). La app los detecta y lo informa en Cola/Ajustes; sin yt-dlp no podés buscar ni bajar.
+3. **yt-dlp y FFmpeg en el `PATH`** (o en `bin/` de la carpeta de datos). La app los detecta y lo informa en Cola/Ajustes; sin yt-dlp no puede buscar ni descargar.
 
 ### Instalación y desarrollo
 ```powershell
-git clone https://github.com/tu-usuario/Sakura_Music.git
+git clone https://github.com/su-usuario/Sakura_Music.git
 cd Sakura_Music
 npm install
 ```

@@ -41,7 +41,7 @@
     --accent-950: 80 7 36;
 
     /* Neutros: mismos valores que la escala anterior de Tailwind, pero
-       centralizados. Cambiarlos acá recolorea toda la interfaz. */
+       centralizados. Cambiarlos aquí recolorea toda la interfaz. */
     --ink-100: 243 244 246;
     --ink-200: 229 231 235;
     --ink-300: 209 213 219;
@@ -7383,7 +7383,7 @@ html[data-theme-transition='manga'] #theme-panel.panel-enter { animation:t-manga
 .theme-modal.tema-manga [class*='aspect-square'] { border:3px solid #101010 !important; box-shadow:5px 5px 0 #d62828 !important; }
 
 
-/* El editor mezcla variables de tema con clases Tailwind internas: acá se
+/* El editor mezcla variables de tema con clases Tailwind internas: aquí se
    fuerzan las superficies manga para que no queden paneles oscuros sueltos. */
 .theme-modal.tema-manga > div:nth-child(2) {
   background:#fbfaf7 !important; border-bottom:4px solid #101010 !important;

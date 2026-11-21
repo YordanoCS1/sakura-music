@@ -164,7 +164,7 @@ Todo estado vacío usa el componente `EmptyState.tsx`: una marca (sakura, descar
 
 ## Antes de hacer un cambio visual
 
-1. ¿Usa un token existente? Si no, agregalo acá y en `App.css`/`tailwind.config.js`.
+1. ¿Usa un token existente? Si no, agregalo aquí y en `App.css`/`tailwind.config.js`.
 2. ¿Respeta `prefers-reduced-motion`?
 3. ¿El estado vacío tiene acción?
 4. ¿El foco con teclado sigue siendo visible?

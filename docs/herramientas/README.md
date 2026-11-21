@@ -4,9 +4,9 @@ Utilidades que acompañan a Sakura Music. Ninguna es necesaria para usar la app.
 
 ## 1. Generador de temas
 
-[`generador-temas.html`](generador-temas.html) es una página standalone: elegí fondo, superficie, texto, acento y radio, y te devuelve el CSS listo para pegar al final de `src/App.css`. Incluye vista previa en vivo y botón de copiar.
+[`generador-temas.html`](generador-temas.html) es una página standalone: seleccione fondo, superficie, texto, acento y radio, y te devuelve el CSS listo para pegar al final de `src/App.css`. Incluye vista previa en vivo y botón de copiar.
 
-**Para cambiar toda la app**, entrá a **Ajustes → Importar un tema → Abrir generador** (o copiá el JSON del generador externo y pegalo en *Importar JSON*). El generador integrado tiene vista previa en vivo, selector de arquetipo y botón *Aplicar tema*, todo dentro de la app. El arquetipo define la estructura de Home, biblioteca, barra superior, Buscar y Cola; el CSS define la paleta. Los temas importados se guardan en `localStorage` (`sakura_temas_personalizados`) y se inyectan en runtime, sin tocar el código fuente.
+**Para cambiar toda la app**, acceda a **Ajustes → Importar un tema → Abrir generador** (o copie el JSON del generador externo y péguelo en *Importar JSON*). El generador integrado tiene vista previa en vivo, selector de arquetipo y botón *Aplicar tema*, todo dentro de la app. El arquetipo define la estructura de Home, biblioteca, barra superior, Buscar y Cola; el CSS define la paleta. Los temas importados se guardan en `localStorage` (`sakura_temas_personalizados`) y se inyectan en runtime, sin tocar el código fuente.
 
 Cada arquetipo también define una **transición de vista** propia al cambiar de pestaña: deslizamiento en Shoji, plegado en Origami, barrido continuo en Swiss, fundido en Sumi Ink, subida en Moonlit y giro de página en Ledger. Se anima directamente el panel con `transform`/`opacity` (GPU, 170-220 ms) en vez de capturar la página con View Transitions, para que no se sienta lag. Los cambios rápidos de pestaña no se encolan y se respeta `prefers-reduced-motion`.
 
@@ -24,7 +24,7 @@ Para registrar el tema nuevo:
 2. Agregá la entrada a `TEMAS_DISPONIBLES` y los glows en `src/App.tsx`.
 3. Sumá el color al mapa `SWATCHES` de `SettingsTab.tsx` y al `PREVIEWS`.
 4. Pegá el CSS generado.
-5. Si querés vista propia, sumalo a `TEMAS_CON_VISTAS_PROPIAS` y creá las ramas en `ThemeHome` / `ThemeLibrary` / `ThemeNav`.
+5. Si desea vista propia, agréguelo a `TEMAS_CON_VISTAS_PROPIAS` y cree las ramas en `ThemeHome` / `ThemeLibrary` / `ThemeNav`.
 
 ## 2. CLI `sakura-cli`
 
@@ -65,7 +65,7 @@ referencia para comparar cambios en el escáner, no un objetivo de rendimiento.
 
 ## 4. Control remoto local
 
-La app levanta un servidor HTTP mínimo en el puerto **17342**. Se activa desde **Ajustes → Control remoto**. Desde el celular, en la misma Wi-Fi, se entra a `http://<IP local>:17342`.
+La app levanta un servidor HTTP mínimo en el puerto **17342**. Se activa desde **Ajustes → Control remoto**. Desde el teléfono móvil, en la misma Wi-Fi, se entra a `http://<IP local>:17342`.
 
 La página permite play/pause, anterior/siguiente, volumen, ver la canción actual y buscar en la biblioteca. El backend busca con FTS5 y manda la pista elegida al frontend con el evento `remote-command`; el frontend publica el estado cada segundo con `remote_update_state`.
 

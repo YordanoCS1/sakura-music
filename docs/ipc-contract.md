@@ -1,6 +1,6 @@
 # Contrato IPC (frontend ↔ Rust)
 
-Toda la comunicación entre React y el núcleo Rust pasa por `invoke()` y por eventos de Tauri. Este documento es la lista canonical de los **51 comandos** y los **7 eventos**. Si agregás uno, actualizá este archivo en el mismo commit.
+Toda la comunicación entre React y el núcleo Rust pasa por `invoke()` y por eventos de Tauri. Este documento es la lista canonical de los **51 comandos** y los **7 eventos**. Si agregás uno, actualice este archivo en el mismo commit.
 
 Los tipos (`ScannedTrack`, `PersistedDownload`, etc.) están en [`src/types.ts`](../src/types.ts) y su contrato Rust en los módulos indicados. Los formatos persistidos están en [data-formats.md](data-formats.md).
 

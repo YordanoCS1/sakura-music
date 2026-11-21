@@ -1,6 +1,6 @@
 # Problemas y diagnóstico
 
-Esta página es para cuando algo no funciona. Está ordenada por síntoma: buscá el
+Esta página es para cuando algo no funciona. Está ordenada por síntoma: busque el
 que se parezca al tuyo y seguí la causa probable.
 
 ## Antes de tocar nada
@@ -32,8 +32,8 @@ que se parezca al tuyo y seguí la causa probable.
 | Síntoma | Causa probable | Qué hacer |
 |---|---|---|
 | `node` / `cargo` no reconocido | Node o Rust no están en `PATH` | Instalalos y reabrí la terminal |
-| La ventana no aparece | Vite no levantó | Corré `npm run tauri dev` desde terminal y leé el error |
-| Se cierra al instante | Error en el backend o falta WebView2 | Abrí desde terminal y probá dev; en prod, reinstalá WebView2 |
+| La ventana no aparece | Vite no levantó | Corré `npm run tauri dev` desde terminal y lea el error |
+| Se cierra al instante | Error en el backend o falta WebView2 | Abrí desde terminal y pruebe dev; en prod, reinstalá WebView2 |
 | WebView2 falla con `0x800700AA` | El perfil está ocupado por otra instancia/proceso | Cerrá Sakura duplicada y las apps que estén usando `%LOCALAPPDATA%\SakuraMusic\webview`; no borres `.tauri_data` |
 | “yt-dlp no encontrado” | Falta el binario | Instalalo en `PATH` o en la carpeta de datos `bin\` |
 | “ffmpeg no encontrado” | Falta el binario | Instalalo en `PATH`, con winget o en `bin\` |
@@ -42,15 +42,15 @@ que se parezca al tuyo y seguí la causa probable.
 
 | Síntoma | Causa probable | Qué hacer |
 |---|---|---|
-| “Sin resultados” | La consulta no devuelve nada en YouTube | Probá con artista + título, o pegá una URL |
+| “Sin resultados” | La consulta no devuelve nada en YouTube | Probá con artista + título, o pegue una URL |
 | La búsqueda tarda | yt-dlp arrancando o red lenta | Esperá unos segundos; no es un cuelgue |
 | `PYI-... Could not create temporary directory` | yt-dlp no pudo crear su carpeta de extracción temporal | Reiniciá la app; Sakura prepara una carpeta temporal propia para yt-dlp. Si persiste, revisá permisos y espacio libre en la carpeta de datos |
 | El video es privado/eliminado | El dueño lo restringió | Probá otro resultado |
-| “Restricción de edad” / “solo miembros” | YouTube pide sesión | La v2 no soporta cookies de navegador (era la v1); buscá otro video |
+| “Restricción de edad” / “solo miembros” | YouTube pide sesión | La v2 no soporta cookies de navegador (era la v1); busque otro video |
 | La fila queda en `en cola` | Ya hay 2 descargas en curso | Esperá: solo 2 corren a la vez |
 | Una descarga no avanza | Red colgada | Cancelala con **X** y reintentala |
 | Falla siempre en el mismo punto | Video caído o red inestable | Probá otro resultado u otro formato |
-| “No se encontró el archivo descargado” | yt-dlp terminó sin dejar archivo válido | Reintentá; si persiste, actualizá yt-dlp |
+| “No se encontró el archivo descargado” | yt-dlp terminó sin dejar archivo válido | Reintentá; si persiste, actualice yt-dlp |
 | Querés más de 2 descargas a la vez | Límite del motor | No es configurable: el `DownloadManager` está fijo en 2 |
 
 ### La cola se guarda y se reanuda
@@ -70,9 +70,9 @@ se corrompe, la app arranca con la cola vacía en vez de romperse.
 
 | Síntoma | Causa probable | Qué hacer |
 |---|---|---|
-| “No se encontró la carpeta” | La ruta elegida no existe | Elegí la carpeta de nuevo con **Escanear Carpeta de Música** |
-| La biblioteca está vacía | No hay audio en la carpeta | Revisá la ruta o importá otra carpeta |
-| Falta una pista descargada | La carpeta de descarga no es la biblioteca | La Cola reescanea sola al terminar; si el archivo está en otra carpeta, abrí esa carpeta como biblioteca |
+| “No se encontró la carpeta” | La ruta elegida no existe | Seleccione la carpeta de nuevo con **Escanear Carpeta de Música** |
+| La biblioteca está vacía | No hay audio en la carpeta | Revisá la ruta o importe otra carpeta |
+| Falta una pista descargada | La carpeta de descarga no es la biblioteca | La Cola reescanea sola al terminar; si el archivo está en otra carpeta, abra esa carpeta como biblioteca |
 | No se ve la portada | No hay tag ni `folder.jpg`/`cover.*` | Editá la portada en el editor |
 | Cambié de carpeta y no veo audio | La caché es de la carpeta anterior | Volvé a escanear; la caché se regenera sola |
 | La app arranca vacía | caché borrada o corrupta | Es normal: reescanéa la carpeta; la caché se reconstruye |
@@ -80,7 +80,7 @@ se corrompe, la app arranca con la cola vacía en vez de romperse.
 ### La caché
 
 La biblioteca ahora se guarda en `library.sqlite3`. Si sospechás que quedó
-desincronizada, usá **Ajustes → Limpiar Caché** y luego volvé a escanear la
+desincronizada, usá **Ajustes → Limpiar Caché** y luego vuelva a escanear la
 carpeta. La caché anterior `library_cache.json` se importa una sola vez si
 está presente.
 
@@ -94,7 +94,7 @@ No perdés tags ni portadas: todo eso vive en los archivos de audio.
 | La portada no se incrusta | El formato no soporta carátula | Probá otro formato o dejá un `folder.jpg` |
 | El lote no cambió nada | Todos los campos estaban desmarcados | Activá al menos un campo: **un campo desmarcado no se toca** |
 | El lote dice “M fallaron” | Fallo parcial real | La v2 lo informa (antes fingía éxito). Leé las razones y corregí esos archivos |
-| “Deezer” no encuentra nada | La búsqueda de Deezer es distinta a la de iTunes | Probá iTunes, o buscá con otro artista/título |
+| “Deezer” no encuentra nada | La búsqueda de Deezer es distinta a la de iTunes | Probá iTunes, o busque con otro artista/título |
 | Quedaron `temp_*` en `covers\` | La app se cerró con el editor abierto | Se limpian solos al reabrir |
 
 ## Apariencia
@@ -102,16 +102,16 @@ No perdés tags ni portadas: todo eso vive en los archivos de audio.
 | Síntoma | Causa probable | Qué hacer |
 |---|---|---|
 | El tema no cambia un color de estado | Los estados (rojo error, verde éxito) no siguen el tema | Es intencional |
-| El tema no se guarda | `localStorage` bloqueado | Limpiá los datos del WebView2 y volvé a abrir la app |
+| El tema no se guarda | `localStorage` bloqueado | Limpiá los datos del WebView2 y vuelva a abrir la app |
 | Cambié de tema y la biblioteca no cambia de vista | Estás con un tema importado, que cae en la vista genérica (`LibraryTab`) | Los 14 temas oficiales son propios, incluido Estudio (`space`): todos traen biblioteca, cabecera y diálogos propios |
-| La paleta `⌘K` no abre | El atajo no llegó al WebView | Probá `Ctrl+K` en Windows/Linux; tocá la lupa de la cabecera como alternativa |
+| La paleta `⌘K` no abre | El atajo no llegó al WebView | Probá `Ctrl+K` en Windows/Linux; seleccione la lupa de la cabecera como alternativa |
 
 ## Actualizaciones y papelera
 
 | Síntoma | Causa probable | Qué hacer |
 |---|---|---|
-| **Buscar actualizaciones** dice que no hay | No hay versión nueva publicada, o el endpoint apunta a `REPLACE_OWNER/REPLACE_REPO` | Si compilaste vos, configurá el owner/repo real en `tauri.conf.json` antes de publicar |
-| El actualizador falla con error de firma | El bundle no fue firmado con la clave privada correcta, o el binario fue modificado | No lo instales: bajá el instalador del canal oficial, que sí pasa la verificación minisign |
+| **Buscar actualizaciones** dice que no hay | No hay versión nueva publicada, o el endpoint apunta a `REPLACE_OWNER/REPLACE_REPO` | Si compilaste usted, configure el owner/repo real en `tauri.conf.json` antes de publicar |
+| El actualizador falla con error de firma | El bundle no fue firmado con la clave privada correcta, o el binario fue modificado | No lo instales: descargue el instalador del canal oficial, que sí pasa la verificación minisign |
 | Después de instalar no se reinicia | El proceso no pudo relanzarse | Cerrá la app y abrila de nuevo: la versión nueva ya está instalada |
 | Borré pistas y no aparece **Deshacer** | Pasaron los 9 segundos del toast | El archivo quedó en `trash\`: Ajustes → Sistema muestra el contador, pero la restauración sólo se hace desde el toast dentro de esos 9 segundos |
 | El contador de la papelera no baja | Hay archivos pendientes de borrado definitivo | Tocá **Vaciar papelera** en Ajustes → Sistema; esa acción sí es irreversible |
@@ -132,7 +132,7 @@ entradas FTS, tamaño y esquema (`user_version=2`), y tiene un visor de
   bin\                   ← yt-dlp / ffmpeg opcionales
 ```
 
-**Tu música no vive ahí**: vive en tu biblioteca. Si borrás el índice y las
+**Su música no vive allí**: vive en su biblioteca. Si elimina el índice y las
 carátulas, la app los regenera; en cambio, borrar `trash\` descarta los archivos
 que todavía podías recuperar con **Deshacer**.
 

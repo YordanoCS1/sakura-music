@@ -275,7 +275,7 @@ class DownloadManager(QObject):
         self.job_added.emit(job)
         self.queue_changed.emit()
 
-        # Si la pista ya esta en la biblioteca no se vuelve a bajar: ademas de
+        # Si la pista ya esta en la biblioteca no se vuelve a descargar: ademas de
         # gastar ancho de banda, `shutil.move` pisaria el archivo que ya esta.
         if self._mark_ya_downloaded(job) or self._mark_ya_in_queue(job):
             self.job_finished.emit(job)
@@ -317,7 +317,7 @@ class DownloadManager(QObject):
             return False
 
         job.filepath = existing
-        job.error = f"Ya está en tu biblioteca: {existing.name}"
+        job.error = f"Ya está en su biblioteca: {existing.name}"
         self._set_status(job, JobStatus.SKIPPED)
         return True
 

@@ -3,7 +3,7 @@
 Tiene dos modos, y el modo lo decide el layout de navegación elegido:
 
 - `top`: la barra ES el menú. Marca, cápsula de navegación, buscador y acciones.
-- `sidebar` / `dock`: navega la barra lateral, así que acá solo queda el buscador
+- `sidebar` / `dock`: navega la barra lateral, así que aquí solo queda el buscador
   para no duplicar el menú (antes `sidebar` se resolvía como `top` y convivían
   las dos navegaciones).
 """

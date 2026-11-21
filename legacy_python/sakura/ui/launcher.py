@@ -157,7 +157,7 @@ class LauncherHero(QWidget):
         layout.addSpacing(10)
 
         self.caption = QLabel(
-            "Buscá, descargá y ordená tu biblioteca desde un solo lugar."
+            "Buscá, descargue y ordene su biblioteca desde un solo lugar."
         )
         self.caption.setObjectName("LauncherHeroText")
         self.caption.setWordWrap(True)
@@ -484,7 +484,7 @@ class LauncherWindow(QWidget):
         self.panel_layout.addWidget(self.title)
 
         self.subtitle = QLabel(
-            "Abrí Sakura para buscar, descargar y ordenar tu colección."
+            "Abrí Sakura para buscar, descargar y ordenar su colección."
         )
         self.subtitle.setObjectName("LauncherSubtitle")
         self.subtitle.setWordWrap(True)
@@ -558,7 +558,7 @@ class LauncherWindow(QWidget):
 
     def _footer_text(self) -> str:
         app_version = _package_version("sakura-music") or "0.1.0"
-        return f"Sakura Music {app_version}  ·  datos y biblioteca en tu equipo"
+        return f"Sakura Music {app_version}  ·  datos y biblioteca en su equipo"
 
     def _apply_status(self) -> None:
         if self._status.track_count is None:

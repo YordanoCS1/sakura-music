@@ -790,7 +790,7 @@ def test_el_titulo_se_compara_sin_mayusculas(manager) -> None:
 
 
 def test_otro_formato_no_cuenta_como_duplicado(manager) -> None:
-    """Un mp3 no impide bajar la misma pista en opus."""
+    """Un mp3 no impide descargar la misma pista en opus."""
     _put_existing(manager, "cancion.mp3")
 
     job = manager.enqueue(result("cancion"))

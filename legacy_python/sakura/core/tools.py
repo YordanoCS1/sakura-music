@@ -316,7 +316,7 @@ def parse_search_line(line: str) -> SearchResult | None:
 # --- entradas que no se pueden descargar --------------------------------------
 
 # `availability` es el campo con el que yt-dlp marca el acceso a un video. Los
-# que no son "public"/"unlisted" no se pueden bajar.
+# que no son "public"/"unlisted" no se pueden descargar.
 NO_DESCARGABLE = frozenset(
     {
         "private",

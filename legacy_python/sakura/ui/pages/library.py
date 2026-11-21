@@ -539,7 +539,7 @@ class LibraryPage(Page):
         self.table.setSortingEnabled(False)
         self._show_message(
             "Buscando pistas y leyendo sus metadatos...",
-            title="Preparando tu biblioteca",
+            title="Preparando su biblioteca",
             icon="music",
         )
         self._set_stats("Leyendo metadatos...")
@@ -560,7 +560,7 @@ class LibraryPage(Page):
             self._update_folder_navigation()
             self._show_message(
                 f"No hay música en {self.library_folder()}\n\n"
-                "Descargá algo desde Buscar y aparecerá acá.",
+                "Descargá algo desde Buscar y aparecerá aquí.",
                 title="Tu biblioteca está vacía",
                 icon="music",
                 action="Buscar música",
@@ -630,7 +630,7 @@ class LibraryPage(Page):
         if not len(self.model):
             self._show_message(
                 f"No hay música en {self.library_folder()}\n\n"
-                "Descargá algo desde Buscar y aparecerá acá.",
+                "Descargá algo desde Buscar y aparecerá aquí.",
                 title="Tu biblioteca está vacía",
                 icon="music",
                 action="Buscar música",

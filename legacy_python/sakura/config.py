@@ -14,7 +14,7 @@ ORG_NAME = "SakuraMusic"
 # Plantilla de salida. Se organiza por canal para no apilar todo en la raiz.
 OUTPUT_TEMPLATE = "%(uploader,Unknown Artist)s/%(title)s.%(ext)s"
 
-# Al bajar una playlist, todo junto en una carpeta con el nombre de la playlist.
+# Al descargar una playlist, todo junto en una carpeta con el nombre de la playlist.
 # Si se usara la plantilla de arriba, una playlist de 30 temas de 12 artistas
 # quedaria dispersa en 12 carpetas y seria imposible de encontrar.
 PLAYLIST_TEMPLATE = "%(playlist_title)s/%(title)s.%(ext)s"
@@ -185,7 +185,7 @@ def covers_dir() -> Path:
 def icons_dir() -> Path:
     """Copia estable de los PNG elegidos en Ajustes.
 
-    Se guarda acá en vez de apuntar al archivo original: si el usuario mueve o
+    Se guarda aquí en vez de apuntar al archivo original: si el usuario mueve o
     borra su PNG, la personalización no se rompe.
     """
     path = data_dir() / "Iconos"

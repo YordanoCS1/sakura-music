@@ -77,7 +77,7 @@ def test_todo_etiquetado_oculta_el_boton(page) -> None:
     page.set_without_tags(0)
 
     assert page.tags_btn.isHidden()
-    assert "Todas tus pistas" in page.without_tags.text()
+    assert "Todas sus pistas" in page.without_tags.text()
 
 
 def test_revision_muestra_cantidades_y_oculta_categorias_resueltas(page) -> None:

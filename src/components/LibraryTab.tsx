@@ -206,8 +206,8 @@ export default function LibraryTab({
           viewMode === 'portadas'
         ) && (
           <EmptyState
-            titulo="Tu biblioteca aún está vacía"
-            descripcion="Selecciona una carpeta en tu disco para que el motor en Rust extraiga títulos, artistas, carátulas y formatos de audio en milisegundos."
+            titulo="Su biblioteca aún está vacía"
+            descripcion="Seleccione una carpeta en su disco para que el motor en Rust extraiga títulos, artistas, carátulas y formatos de audio en milisegundos."
             accion={
               <div className="flex items-center gap-3">
                 <button
@@ -1577,7 +1577,7 @@ export default function LibraryTab({
               <div className="flex items-center justify-between mb-4">
                 <p className="text-xs text-ink-400 font-mono">
                   <span className="text-white font-bold">{albumGroups.length}</span>{' '}
-                  {albumGroups.length === 1 ? 'álbum' : 'álbumes'} en tu colección
+                  {albumGroups.length === 1 ? 'álbum' : 'álbumes'} en su colección
                 </p>
               </div>
 

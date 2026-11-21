@@ -51,7 +51,7 @@ export default function ThemeHome({
     e.target.value = '';
     if (!archivo) return;
     if (!archivo.type.startsWith('image/')) {
-      setError('Elegí un archivo de imagen.');
+      setError('Seleccione un archivo de imagen.');
       return;
     }
     if (archivo.size > LIMITE_BYTES) {
@@ -109,7 +109,7 @@ export default function ThemeHome({
         <p className="sumie-home-kicker">桜 · Estudio de tinta</p>
         <h1>Bienvenido a la tinta</h1>
         <p className="sumie-home-copy">
-          Tu música dispuesta como un pergamino. Elegí una carpeta y el recorrido comienza.
+          Su música dispuesta como un pergamino. Seleccione una carpeta y el recorrido comienza.
         </p>
         <div className="sumie-home-actions">
           <button type="button" onClick={() => onNavigate('library')}>
@@ -150,7 +150,7 @@ export default function ThemeHome({
                 <small>local</small>
               </div>
             </div>
-            <p>Deslizá los paneles y encontrá tu música sin ruido.</p>
+            <p>Deslizá los paneles y encontrá su música sin ruido.</p>
           </section>
           <section className="shoji-pano shoji-pano-cta">
             <button type="button" onClick={() => onNavigate('library')}>
@@ -214,7 +214,7 @@ export default function ThemeHome({
                 <br />
                 sin ruido
               </h1>
-              <p>Lo esencial. Cuadrícula, tipografía y tu colección. Nada más, nada menos.</p>
+              <p>Lo esencial. Cuadrícula, tipografía y su colección. Nada más, nada menos.</p>
             </div>
           </div>
           <div className="swiss-poster-pie">
@@ -247,7 +247,7 @@ export default function ThemeHome({
             <span className="sumiink-kicker">SUMI · INK</span>
             <h1>La tinta lo dice todo</h1>
             <p>
-              Una sola pincelada basta. Tu música en blanco y negro, sin adornos que la aparten.
+              Una sola pincelada basta. Su música en blanco y negro, sin adornos que la aparten.
             </p>
             <span className="sumiink-pincelada" aria-hidden="true" />
             <div className="sumiink-acciones">
@@ -281,8 +281,8 @@ export default function ThemeHome({
         </div>
         <div className="moonlit-contenido">
           <p className="moonlit-kicker">MOONLIT · NOCHE</p>
-          <h1>Escucha bajo la luna</h1>
-          <p>Todo en calma, todo azul. Tu música flotando en la noche.</p>
+          <h1>Escuche bajo la luna</h1>
+          <p>Todo en calma, todo azul. Su música flotando en la noche.</p>
           <div className="moonlit-acciones">
             <button type="button" onClick={() => onNavigate('library')}>
               Abrir biblioteca
@@ -305,7 +305,7 @@ export default function ThemeHome({
             <span className="ledger-cabecera">LIBRO MAYOR / 01</span>
             <h1>Toda canción queda registrada</h1>
             <p>
-              Fechas, artistas, álbumes. Un libro mayor de tu música, escrito a máquina y sellado en
+              Fechas, artistas, álbumes. Un libro mayor de su música, escrito a máquina y sellado en
               rojo.
             </p>
             <button type="button" onClick={() => onNavigate('library')}>
@@ -345,8 +345,8 @@ export default function ThemeHome({
             ¡Dale <em>todo!</em>
           </h1>
           <p>
-            Cada día es una pelea, cada canción una oportunidad de superarse. Ponete el uniforme y
-            entrá al combate.
+            Cada día es una pelea, cada canción una oportunidad de superarse. Póngase el uniforme y
+            acceda al combate.
           </p>
           <div className="shonen-acciones">
             <button type="button" onClick={() => onNavigate('library')}>
@@ -380,7 +380,7 @@ export default function ThemeHome({
           <span className="ghost-kicker">GHOST · ECOS DEL PASADO</span>
           <h1>Lo que quedó sonando</h1>
           <p>
-            Voces que vuelven entre niebla. Tu biblioteca es un cementerio de buenos momentos
+            Voces que vuelven entre niebla. Su biblioteca es un cementerio de buenos momentos
             esperando una nueva reproducción.
           </p>
           <div className="ghost-acciones">
@@ -411,7 +411,7 @@ export default function ThemeHome({
           <span className="samurai-kicker">侍 · CAMINO DEL GUERRERO</span>
           <h1>El sonido del acero</h1>
           <p>
-            disciplina, silencio y un golpe preciso. Tu biblioteca es un dojo donde cada canción es
+            disciplina, silencio y un golpe preciso. Su biblioteca es un dojo donde cada canción es
             una forma que dominar.
           </p>
           <div className="samurai-acciones">
@@ -448,8 +448,8 @@ export default function ThemeHome({
             EST<span>DIO</span>
           </h1>
           <p className="estudio-copy">
-            Tu biblioteca en la consola. Cada pista es un canal, cada álbum una sesión, y el máster
-            suena como vos quieras.
+            Su biblioteca en la consola. Cada pista es un canal, cada álbum una sesión, y el máster
+            suena como desee.
           </p>
           <div className="estudio-medidor" aria-hidden="true">
             {[72, 84, 58, 91, 66, 78, 48, 88, 62, 74, 55, 80].map((nivel, i) => (
@@ -529,7 +529,7 @@ export default function ThemeHome({
           <p className="manga-kicker">CRÓNICA DE TU BIBLIOTECA</p>
           <h2>{trackCount} pistas en este número</h2>
           <p className="manga-copy">
-            Cada canción es una viñeta, cada álbum un capítulo. Pasá la página y seguí leyendo tu
+            Cada canción es una viñeta, cada álbum un capítulo. Pase la página y continúe leyendo su
             colección.
           </p>
           <div className="manga-acciones">
@@ -566,9 +566,9 @@ export default function ThemeHome({
             <span>♡</span>
           </div>
           <span className="kawaii-kicker">KAWAII · MÚSICA TIERNA</span>
-          <h1>¡Escucha con una sonrisa!</h1>
+          <h1>¡Escuche con una sonrisa!</h1>
           <p>
-            Colores pastel, caritas felices y pura ternura. Tu biblioteca es un parque donde cada
+            Colores pastel, caritas felices y pura ternura. Su biblioteca es un parque donde cada
             canción es un amigo nuevo.
           </p>
           <div className="kawaii-acciones">
@@ -633,7 +633,7 @@ export default function ThemeHome({
         </button>
         {portadas.length > 0 && (
           <div className="byobu-home-portadas">
-            <span>Portadas de tu biblioteca</span>
+            <span>Portadas de su biblioteca</span>
             <div>
               {portadas.map((track) => (
                 <button
@@ -670,7 +670,7 @@ export default function ThemeHome({
         <p className="byobu-home-kicker">蔵 · Inicio</p>
         <h1>Bienvenido a la tinta</h1>
         <p className="byobu-home-copy">
-          Dos paneles, uno de tinta y otro de contenido. Tu música, dispuesta como un byōbu.
+          Dos paneles, uno de tinta y otro de contenido. Su música, dispuesta como un byōbu.
         </p>
         <div className="byobu-home-actions">
           <button type="button" onClick={() => onNavigate('library')}>

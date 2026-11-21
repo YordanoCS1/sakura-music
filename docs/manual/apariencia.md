@@ -1,7 +1,7 @@
 # Apariencia
 
 Sakura Music 2.0 ofrece **14 temas visuales, todos propios con estructura
-completa**: ningún tema oficial es genérico. Elegí el que quieras en **Ajustes →
+completa**: ningún tema oficial es genérico. Seleccione el que desee en **Ajustes →
 Diseño Visual**; el cambio es inmediato y se recuerda al reabrir la app.
 
 ## El tema por defecto: Estudio
@@ -34,7 +34,7 @@ aplica con `data-skin` (en Estudio, `data-skin="space"`). `LibraryTab` y
 | **Kawaii** | Pastel, ternura y caritas, con formas redondeadas y colores dulces. |
 | **Manga** | Viñetas, tinta y screentone. Papel `#fbfaf7`, tinta `#101010` y un acento rojo `#d62828`. El Inicio es una portada de revista (`第 01 話`, globo de diálogo, sello 開 y línea de tiempo) y la biblioteca son páginas de viñetas con tramado halftone, globo con el título, tag **GO!** y carátulas en blanco y negro. La cabecera es negra con el glifo 漫 y la navegación lleva kanji sobre cuadrado rojo; también tiene estilo propio en Ajustes, panel "Ahora suena", playlists, paleta ⌘K, modales de metadatos, splash y transición de página `t-manga`. |
 
-También podés crear los tuyos con el **generador de temas**: elegís un
+También puede crear los tuyos con el **generador de temas**: elegís un
 arquetipo entre los 14 propios (Estudio y Manga también están disponibles), ajustás colores
 y el CSS se inyecta en runtime sin tocar archivos del proyecto. Los temas
 generados se guardan en `localStorage` (`sakura_temas_personalizados`) y aparecen
@@ -76,7 +76,7 @@ Todas viven en `localStorage` y se restauran al reabrir la app:
 
 ## Efectos (Ajustes)
 
-En **Ajustes** todavía podés ajustar lo que queda del sistema visual:
+En **Ajustes** todavía puede ajustar lo que queda del sistema visual:
 
 - **Opacidad del vidrio** (15–95 %): qué tan transparente se ve el panel.
 - **Desenfoque (Backdrop Blur)** (0–32 px): cuánto se difumina el fondo.
@@ -141,7 +141,7 @@ y —en todos los oficiales— la estructura completa de cada pantalla. Aun así
 
 | Sí | No |
 |---|---|
-| La paleta, la tipografía y el estilo de navegación, tarjetas y reproductor | Tu música, tags y portadas |
+| La paleta, la tipografía y el estilo de navegación, tarjetas y reproductor | Su música, etiquetas y portadas |
 | El layout de la biblioteca (vista propia en los 14 oficiales; 9 vistas genéricas sólo en importados) | Los atajos y controles |
 | El tamaño/orientación del reproductor (flotante, fijo o mini) y los efectos (opcionales) | La lógica de descargas o escaneo |
 
@@ -150,10 +150,10 @@ y —en todos los oficiales— la estructura completa de cada pantalla. Aun así
 | Síntoma | Causa probable | Qué hacer |
 |---|---|---|
 | El botón no cambia de color | Usa un color de estado fijo (rojo/ámbar/verde) | Es intencional: los estados de condición no siguen el tema |
-| La preferencia no se guarda | `localStorage` bloqueado por el WebView | Limpiá los datos del sitio en WebView2 y volvé a elegir |
+| La preferencia no se guarda | `localStorage` bloqueado por el WebView | Limpiá los datos del sitio en WebView2 y vuelva a elegir |
 | Las partículas no aparecen | Están apagadas en Ajustes | Activá **Efectos atmosféricos de partículas** |
 | Texto poco legible en algún modal | Superficie heredada de estilos viejos | Reportalo: los modales nuevos usan las superficies claras del tema activo |
-| Un tema no cambia la estructura | Estás con un tema importado, que cae en la vista genérica | Elegí uno de los 14 temas oficiales: todos traen Home, biblioteca y diálogos propios, incluido Estudio (`space`) |
+| Un tema no cambia la estructura | Está usando un tema importado, que cae en la vista genérica | Seleccione uno de los 14 temas oficiales: todos traen Home, biblioteca y diálogos propios, incluido Estudio (`space`) |
 
 Más en [problemas.md](problemas.md) y en [../nuevas-funciones.md](../nuevas-funciones.md).
 

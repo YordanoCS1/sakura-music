@@ -1,11 +1,11 @@
 # La biblioteca
 
-La pestaña **Biblioteca** lista tu música local, la mantiene al día y te deja
-encontrarla rápido. El reproductor vive abajo; esta página es tu catálogo.
+La pestaña **Biblioteca** lista su música local, la mantiene al día y te deja
+encontrarla rápido. El reproductor vive abajo; esta página es su catálogo.
 
 ## Primer escaneo
 
-La primera vez (o con la caché borrada), la app recorre la carpeta que elegiste
+La primera vez (o con la caché borrada), la app recorre la carpeta que seleccionó
 y lee los tags de cada archivo con un motor Rust en paralelo (`rayon`). Miles
 de pistas tardan segundos, no minutos.
 
@@ -31,7 +31,7 @@ si está presente; el archivo original se conserva.
 La opción **Limpiar Caché** en Ajustes borra el índice SQLite; el siguiente
 escaneo lo reconstruye desde los archivos. No se pierde música ni tags.
 
-> La música no vive en la carpeta de datos: vive en la carpeta que elegiste
+> La música no vive en la carpeta de datos: vive en la carpeta que seleccionó
 > como biblioteca.
 
 ## Las nueve vistas (vista genérica, fallback para importados)
@@ -43,7 +43,7 @@ canales llevan fader y medidor VU.
 
 | Vista | Ideal para |
 |---|---|
-| **Carpetas** | Explorador con breadcrumbs: subí y bajá de niveles, clic en cada nivel |
+| **Carpetas** | Explorador con breadcrumbs: suba y descargue de niveles, clic en cada nivel |
 | **Cuadrícula** | Tarjetas con portada grande, título y artista |
 | **Tabla** | Ver todo junto: título, artista, álbum, año, duración, tamaño |
 | **Álbumes** | Estante con vinilo 3D: agrupado por álbum, con vista detalle |
@@ -54,7 +54,7 @@ canales llevan fader y medidor VU.
 | **Portadas** | Galería de carátulas |
 
 En **Carpetas** ves las subcarpetas como tarjetas; al entrar, las migas muestran
-`Artista / Álbum` y podés volver a cualquier nivel. En las demás vistas, navegar
+`Artista / Álbum` y puede volver a cualquier nivel. En las demás vistas, navegar
 carpetas filtra la lista (con indicador "Filtrando por carpeta: …" y opción de
 "Mostrar toda la biblioteca").
 
@@ -69,7 +69,7 @@ carpetas filtra la lista (con indicador "Filtrando por carpeta: …" y opción d
 
 En Cuadrícula y Tabla, marcá casillas para seleccionar. Al seleccionar más de
 una aparece la barra de lote con **Seleccionar todas**, **Deseleccionar** y
-**Editar en lote (N)**. También podés usar **Eliminar (N)** para borrar los
+**Editar en lote (N)**. También puede usar **Eliminar (N)** para borrar los
 archivos seleccionados del disco; la app pide confirmación antes de hacerlo y
 el borrado se puede **deshacer** durante unos segundos (ver más abajo). El
 detalle de edición está en [metadatos-y-letras.md](metadatos-y-letras.md).
@@ -77,7 +77,7 @@ detalle de edición está en [metadatos-y-letras.md](metadatos-y-letras.md).
 ## Reproducción
 
 Hacé clic en una pista para reproducirla. El audio se carga en memoria, así que
-Windows no bloquea el archivo: podés editarlo mientras suena. Controles del
+Windows no bloquea el archivo: puede editarlo mientras suena. Controles del
 reproductor inferior:
 
 - Play/pausa, anterior/siguiente
@@ -91,7 +91,7 @@ el panel **Ahora suena**, con las pestañas Detalles, Letras, Álbum y Artista.
 
 ## Listas (playlists)
 
-La pestaña **Listas** de la navegación guarda tus listas en SQLite (tablas
+La pestaña **Listas** de la navegación guarda sus listas en SQLite (tablas
 `playlists` y `playlist_tracks`). Podés **crear**, renombrar y borrar listas,
 agregar pistas desde la biblioteca, quitarlas y reordenarlas con las flechas.
 Cada lista se persiste entre sesiones y cada tema le da su propio estilo al
@@ -102,7 +102,7 @@ panel (los 14 temas propios tienen variantes explícitas).
 Cuando borrás pistas, el archivo no se elimina de golpe: se mueve a la carpeta
 `trash/` dentro de los datos de la app y aparece un toast con **Deshacer**
 durante **9 segundos**. Si lo tocás, vuelven el archivo y su fila en la
-biblioteca. Pasado ese tiempo, el archivo queda en la papelera y podés vaciarla
+biblioteca. Pasado ese tiempo, el archivo queda en la papelera y puede vaciarla
 desde **Ajustes → Sistema → Vaciar papelera**, donde también ves el contador de
 elementos. El vaciado sí es definitivo.
 
@@ -115,10 +115,10 @@ Si no hay música, ves un estado vacío con **Escanear Carpeta de Música** y
 
 | Síntoma | Qué revisar |
 |---|---|
-| No aparece una pista recién descargada | La Cola reescanea sola al terminar; si no, volvé a escanear la carpeta |
+| No aparece una pista recién descargada | La Cola reescanea sola al terminar; si no, vuelva a escanear la carpeta |
 | No se ve la portada | El archivo no tiene tag de portada ni `folder.jpg`/`cover.*`: editala |
 | La carpeta no abre | La carpeta no existe o Tauri no puede leerla: re-eligí la carpeta |
-| Un tema no cambia el color | Cerrá y volvé a abrir: el tema se aplica al instante y se persiste en `localStorage` |
+| Un tema no cambia el color | Cerrá y vuelva a abrir: el tema se aplica al instante y se persiste en `localStorage` |
 | No aparece la pestaña Listas | Buscala entre las 7 pestañas de la navegación: Inicio, Biblioteca, Buscar, Cola, Listas y Ajustes |
 
 Más en [problemas.md](problemas.md) y en [../nuevas-funciones.md](../nuevas-funciones.md).

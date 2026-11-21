@@ -100,7 +100,7 @@ regla vive en un módulo Rust o en `src/App.tsx`, se nombra el archivo.
    individuales por casilla.
 4. Al pulsar **Descargar N canciones**, cada pista seleccionada se encola como
    descarga individual (CU-01), cada una con `--no-playlist`. El usuario
-   elige si respetar la subcarpeta de la playlist o bajar a la carpeta base.
+   elige si respetar la subcarpeta de la playlist o descargar a la carpeta base.
 5. Cada fila sigue su propio progreso; cancelar o reintentar una no afecta a
    las demás.
 
@@ -381,14 +381,14 @@ Ajustes).
 
 **Flujo principal**
 
-1. Instalá con `npm install` y verificá con `cargo test` + `tsc --noEmit`.
+1. Instalá con `npm install` y verifique con `cargo test` + `tsc --noEmit`.
 2. Para un **comando** nuevo, agregalo en `src-tauri/src/lib.rs`, registralo en
    `invoke_handler!` y consumilo con `invoke` desde `App.tsx`. Mapeá errores
    como `String`.
 3. Para un **tema importado** (único caso genérico), agregá su bloque
    `[data-skin='...']` y sus tokens `--m3-*` en `App.css` y el valor en
    `ThemeMode` (`src/types.ts`); reutiliza `LibraryTab`. Para un **tema propio**,
-   además creá sus `ThemeLibrary`/`ThemeHome`/`ThemeNav` con diálogos,
+   además cree sus `ThemeLibrary`/`ThemeHome`/`ThemeNav` con diálogos,
    transiciones, iconos y splash propios (los 14 oficiales lo son, incluido
    Estudio); `manga` es arquetipo disponible en
    `ThemeGeneratorModal`/`customThemes.ts`.
@@ -396,7 +396,7 @@ Ajustes).
    antiparse con las otras vistas.
 5. Para un **formato** nuevo, sumá la rama en `run_download` (`downloader.rs`).
 6. Para una **fuente de catálogo**, sumá la rama en los comandos de
-   `src-tauri/src/catalog.rs` y habilitá el host en el `connect-src` del CSP de
+   `src-tauri/src/catalog.rs` y habilite el host en el `connect-src` del CSP de
    `tauri.conf.json`.
 7. Actualizá el requisito afectado y, si hay decisión estructural, sumá un ADR.
 
@@ -506,7 +506,7 @@ los 9 segundos; el borrado definitivo es explícito.
 
 1. El usuario pulsa `Ctrl+K` / `⌘K`: se abre `CommandPalette` sobre el tema
    activo.
-2. Escribe para filtrar; con ↑↓ recorre las acciones (navegar a las 6
+2. Escriba para filtrar; con ↑↓ recorre las acciones (navegar a las 6
    pestañas, cambiar tema, reproducir/pausar, buscar pistas).
 3. Pulsa ↵ para ejecutar o Esc para cerrar. Acciones como *Listas* y
    *Biblioteca* cambian `activeTab` de `AppTab`.

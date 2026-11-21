@@ -4,7 +4,7 @@
 
 !macro NSIS_HOOK_PREFINISHPAGE
   !define MUI_FINISHPAGE_TITLE "Sakura Music lista para sonar"
-  !define MUI_FINISHPAGE_TEXT "Elegiste d$\'onde instalarla. Tu biblioteca y tus listas se guardan en la carpeta de datos de la app, no en la carpeta de instalación."
+  !define MUI_FINISHPAGE_TEXT "Seleccionó d$\'onde instalarla. Su biblioteca y sus listas se guardan en la carpeta de datos de la app, no en la carpeta de instalación."
 !macroend
 
 !macro NSIS_HOOK_POSTINSTALL
@@ -12,7 +12,7 @@
   FileOpen $9 "$INSTDIR\LEEME.txt" w
   FileWrite $9 "Sakura Music$\r$\n"
   FileWrite $9 "Datos: %LOCALAPPDATA%\com.sakura.music$\r$\n"
-  FileWrite $9 "Tu música se indexa ahí; podés cambiar la carpeta desde Ajustes.$\r$\n"
+  FileWrite $9 "Su música se indexa allí; puede cambiar la carpeta desde Ajustes.$\r$\n"
   FileClose $9
 !macroend
 

@@ -15,7 +15,7 @@ Hay dos caminos:
 El editor lee los tags al abrir y **no escribe nada hasta Confirmar**. Si hacés
 clic en **Cancelar**, no se toca ningún archivo.
 
-## Qué podés editar
+## Qué puede editar
 
 - **Información principal:** título, artista, artista del álbum
 - **Álbum y posición:** nombre del álbum, número de pista
@@ -29,7 +29,7 @@ Cada campo que modificás muestra su botón de **reversión individual**, y hay 
 ### Carátula
 
 - **Cargar…** abre el selector nativo de imágenes.
-- **Pegar desde el portapapeles (`Ctrl+V`)**: copiá cualquier imagen de la web
+- **Pegar desde el portapapeles (`Ctrl+V`)**: copie cualquier imagen de la web
   o de una captura y pegala al instante.
 - **Quitar carátula** la elimina del archivo; **Restaurar** vuelve a la original.
 
@@ -42,9 +42,9 @@ basura.
 Al presionar **Guardar**:
 
 1. El backend Rust procesa los cambios en RAM.
-2. Escribe los bloques del formato (Vorbis para Opus/FLAC, ID3 para MP3, MP4
+2. Escriba los bloques del formato (Vorbis para Opus/FLAC, ID3 para MP3, MP4
    para M4A) con temporal + `rename`, con reintentos.
-3. Actualiza la caché y el frontend sin reescanear toda la carpeta.
+3. Actualice la caché y el frontend sin reescanear toda la carpeta.
 
 Como el reproductor carga el audio en memoria, Windows no bloquea el archivo:
 editás aunque esté sonando, sin errores de "acceso denegado".
@@ -52,7 +52,7 @@ editás aunque esté sonando, sin errores de "acceso denegado".
 ## Buscar en catálogo (iTunes, Deezer o MusicBrainz)
 
 La pestaña **Buscador Catálogo** del editor busca por artista + título y muestra
-resultados con carátula, artista, álbum, año y género. También podés explorar un
+resultados con carátula, artista, álbum, año y género. También puede explorar un
 álbum y aplicar sus pistas.
 
 - Cada fuente consulta su **API real** desde Rust (antes "Deezer" consultaba
@@ -103,7 +103,7 @@ el error puntual y el resto del lote sigue.
 
 ## Letras sincronizadas (`.lrc`)
 
-En el panel **Ahora suena** (tocá la portada del reproductor), la pestaña
+En el panel **Ahora suena** (seleccione la portada del reproductor), la pestaña
 **Letras** busca un archivo `.lrc` con el mismo nombre que el audio, al lado de
 él; también reconoce la extensión `.LRC`. El parser acepta además metadatos como
 `[ar:...]` y **varios timestamps por línea**, así que funciona con letras que
@@ -111,7 +111,7 @@ repiten estribillo.
 
 La línea activa se resalta y hace **autoscroll** siguiendo `currentTime` de la
 pista. Si no hay `.lrc`, la pestaña lo indica y no consulta servicios externos:
-la letra live en tu carpeta.
+la letra live en su carpeta.
 
 ## Buenos hábitos
 
@@ -120,9 +120,9 @@ la letra live en tu carpeta.
 - **Revisá el contador** después de importar música de fuentes diversas.
 - **Dejá un `folder.jpg`** en cada carpeta de álbum: es el respaldo de portada
   más compatible.
-- **Hacé una copia** de tu biblioteca antes de un lote grande: la escritura es
+- **Hacé una copia** de su biblioteca antes de un lote grande: la escritura es
   atómica, pero un lote equivocado sigues siendo tuyo.
-- **La v1 no existe más acá**: acá las letras son archivos `.lrc` al lado del
+- **La v1 no existe más aquí**: aquí las letras son archivos `.lrc` al lado del
   audio (no letra incrustada vía LRCLIB), el deshacer usa la papelera en
   `<datos>/trash` (no manifiestos) y no está el "aplicar a todo el álbum" del
   editor v1. Si extrañás esa última función, está en `legacy_python/`.
@@ -135,7 +135,7 @@ la letra live en tu carpeta.
 | La portada no cambia | Formato sin soporte de carátula | Probá otro formato o dejá `folder.jpg` |
 | El lote no actualizó nada | Todos los campos estaban desmarcados | Activá al menos un campo |
 | Quedaron `temp_*` en `covers/` | La app se cerró con un editor abierto | Ventana nueva: se limpian solos al arrancar |
-| La pestaña Letras está vacía | No hay `.lrc` al lado del audio, o el nombre no coincide | Poné `Canción.lrc` junto a `Canción.mp3` y volvé a abrir el panel |
+| La pestaña Letras está vacía | No hay `.lrc` al lado del audio, o el nombre no coincide | Poné `Canción.lrc` junto a `Canción.mp3` y vuelva a abrir el panel |
 
 Más en [problemas.md](problemas.md) y en [../nuevas-funciones.md](../nuevas-funciones.md).
 

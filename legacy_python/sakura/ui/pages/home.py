@@ -66,7 +66,7 @@ class HeroBanner(QWidget):
         self.title = QLabel("Bienvenido a Sakura Music")
         self.title.setObjectName("HeroTitle")
         self.subtitle = QLabel(
-            "Descubre, descarga de YouTube en alta definición y organiza tu "
+            "Descubre, descarga de YouTube en alta definición y organiza su "
             "biblioteca local con carátulas y metadatos limpios."
         )
         self.subtitle.setObjectName("HeroSubtitle")
@@ -296,7 +296,7 @@ class HomePage(Page):
             "Buscar y Descargar", "Encuentra canciones y playlists en YouTube.", "search"
         )
         self.card_library = ActionCard(
-            "Biblioteca Local", "Gestiona y edita metadatos de tus archivos.", "folder"
+            "Biblioteca Local", "Gestiona y edita metadatos de sus archivos.", "folder"
         )
         self.card_queue = ActionCard(
             "Cola de Descargas", "Supervisa las conversiones y descargas activas.", "download"
@@ -354,7 +354,7 @@ class HomePage(Page):
 
     def set_without_tags(self, count: int) -> None:
         if count <= 0:
-            self.without_tags.setText("Todas tus pistas tienen título y artista.")
+            self.without_tags.setText("Todas sus pistas tienen título y artista.")
             self.tags_btn.setVisible(False)
             return
 
@@ -371,7 +371,7 @@ class HomePage(Page):
         self.set_without_tags(without_tags)
 
         if without_cover <= 0:
-            self.without_cover.setText("Todas tus pistas tienen carátula.")
+            self.without_cover.setText("Todas sus pistas tienen carátula.")
             self.covers_btn.setVisible(False)
         else:
             self.without_cover.setText(

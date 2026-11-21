@@ -289,7 +289,7 @@ class SettingsPage(Page):
         )
         row_icons = SettingRow(
             "Iconos de la interfaz",
-            "Reemplazá las pestañas y botones con tus propios PNG. Podés teñirlos "
+            "Reemplazá las pestañas y botones con sus propios PNG. Podés teñirlos "
             "con el color del tema y ver el resultado antes de aplicarlo.",
             self.icons_btn,
             "palette",
@@ -311,13 +311,13 @@ class SettingsPage(Page):
         row_cookies = SettingRow(
             "Cookies de YouTube",
             "Usa la sesión de un navegador para videos con restricción de edad o acceso. "
-            "Sakura no almacena tus cookies.",
+            "Sakura no almacena sus cookies.",
             cookie_box,
             "user",
         )
         row_library = SettingRow(
             "Carpeta de biblioteca",
-            "De dónde lee y escanea tu música local Sakura Music.",
+            "De dónde lee y escanea su música local Sakura Music.",
             library_row,
             "folder-open",
         )

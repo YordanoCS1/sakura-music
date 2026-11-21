@@ -4,7 +4,7 @@ Esta guía deja registrado cómo sacar una versión de Sakura Music. La app tien
 
 ## 1. Preparar la versión
 
-1. Elegí un número `X.Y.Z` siguiendo [Semantic Versioning](https://semver.org/lang/es/).
+1. Seleccione un número `X.Y.Z` siguiendo [Semantic Versioning](https://semver.org/lang/es/).
 2. Actualizalo en los tres sitios (deben coincidir):
    - `package.json` → `version`
    - `src-tauri/Cargo.toml` → `version`
@@ -56,7 +56,7 @@ Si no hay certificado de código, **no finjas que está firmado**: documentalo e
 
 ## 5. Publicar
 
-1. Hacé el commit de preparación y verificá que el CI esté en verde.
+1. Hacé el commit de preparación y verifique que el CI esté en verde.
 2. Etiquetá: `git tag -a vX.Y.Z -m "Sakura Music X.Y.Z"` y `git push origin vX.Y.Z`.
 3. Creá la release en GitHub con el changelog de esa versión y adjuntá los bundles **y el `latest.json`** que genera `tauri build` (el updater lo busca en el endpoint configurado).
 4. Anotá en el issue/PR de release qué quedó sin firmar y qué plataformas se probaron de verdad.

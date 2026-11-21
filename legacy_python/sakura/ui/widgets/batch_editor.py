@@ -164,7 +164,7 @@ class BatchEditDialog(QDialog):
         root.addWidget(title_text)
 
         ayuda = QLabel(
-            "Escribí solo los campos que quieras cambiar: los que dejes vacíos no "
+            "Escribí solo los campos que quiera cambiar: los que dejes vacíos no "
             "se tocan. Para borrar un campo hay que vaciarlo en el editor de una pista."
         )
         ayuda.setObjectName("PageSubtitle")

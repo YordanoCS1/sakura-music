@@ -16,7 +16,7 @@ Sakura Music es una app de escritorio que lee la biblioteca musical del usuario,
 - módulo afectado (`biblioteca`, `descargas`, `metadatos`, `IPC`, `UI`),
 - pasos para reproducirlo,
 - versión de la app y sistema operativo,
-- impacto estimado y, si tenés, una probación de concepto.
+- impacto estimado y, si tiene, una prueba de concepto.
 
 Acusamos recibo en un plazo de **7 días** y procuramos publicar una corrección en **30 días** para problemas confirmados en la versión con soporte. Si el caso merece más tiempo por coordinar una divulgación, lo avisamos.
 
@@ -47,7 +47,7 @@ Fuera de alcance: el contenido de las canciones descargadas, las políticas de l
 
 ## Por qué no hay login
 
-Sakura Music es **local-first**: lee y escribe archivos que están en tu máquina y no tiene cuenta, usuario ni servidor propio. Un login local sería **teatro de seguridad**: cualquiera con acceso al equipo podría saltárselo, y no protegería nada de lo que la app realmente maneja. Tendría sentido recién con **sincronización entre dispositivos**, y ahí sí correspondería almacenar credenciales con un KDF como **Argon2id**. Hoy no hay login y **no está planeado**.
+Sakura Music es **local-first**: lee y escribe archivos que están en su equipo y no tiene cuenta, usuario ni servidor propio. Un login local sería **teatro de seguridad**: cualquiera con acceso al equipo podría eludirlo, y no protegería nada de lo que la app realmente maneja. Tendría sentido solo con **sincronización entre dispositivos**, y ahí sí correspondería almacenar credenciales con un KDF como **Argon2id**. Hoy no hay login y **no está planeado**.
 
 ## Para releases
 

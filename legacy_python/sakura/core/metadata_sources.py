@@ -452,7 +452,7 @@ def artist_albums(artist_id: str | int, limit: int = 100) -> list[AlbumEntry]:
 
     Trae tambien los singles y los EPs: Ask, un catálogo de 41 entradas para
     Daft Punk son 9 álbumes y el resto son remixes de una pista. No se filtran
-    acá porque cual es un álbum y cual un single lo decide el oido, no el
+    aquí porque cual es un álbum y cual un single lo decide el oido, no el
     nombre; quien quiera solo los discos completos usa `solo_albums`.
     """
     id_text = str(artist_id).strip()

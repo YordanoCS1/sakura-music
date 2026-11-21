@@ -111,8 +111,8 @@ export default function ThemeNav({
           type="text"
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Buscar en tu música..."
-          aria-label="Buscar en tu música"
+          placeholder="Buscar en su música..."
+          aria-label="Buscar en su música"
         />
         {searchQuery && (
           <button type="button" onClick={() => onSearchChange('')} aria-label="Limpiar búsqueda">

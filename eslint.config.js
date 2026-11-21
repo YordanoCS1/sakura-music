@@ -2,7 +2,7 @@ import tseslint from 'typescript-eslint';
 import reactHooks from 'eslint-plugin-react-hooks';
 
 // Configuración plana (ESLint 9+). El proyecto usa TypeScript estricto en
-// tsconfig.json; acá solo se suman reglas que el compilador no puede detectar.
+// tsconfig.json; aquí solo se suman reglas que el compilador no puede detectar.
 export default tseslint.config(
   {
     ignores: [

@@ -94,7 +94,7 @@ export default function StatsTab({ theme, tracks, getCoverSrc }: StatsTabProps) 
         </span>
         <div>
           <small>CAPÍTULO · ESTADÍSTICAS</small>
-          <h1>Tu biblioteca en números</h1>
+          <h1>Su biblioteca en números</h1>
         </div>
         <span className="estadisticas-count">{datos.total} pistas analizadas</span>
       </header>

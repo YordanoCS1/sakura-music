@@ -66,7 +66,7 @@ class ThumbnailLoader(QObject):
     def shutdown(self) -> None:
         """Aborta las descargas en curso (usar al cerrar la app).
 
-        Sin esto una miniatura a medio bajar sigue viva despues de que la
+        Sin esto una miniatura a medio descargar sigue viva despues de que la
         ventana se cerro y su `finished` llega a widgets ya destruidos.
         """
         self._pending.clear()

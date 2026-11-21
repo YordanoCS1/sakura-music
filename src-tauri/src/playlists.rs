@@ -233,7 +233,7 @@ mod tests {
     fn create_rename_y_delete() {
         let connection = Connection::open_in_memory().unwrap();
         library_db::create_schema(&connection).unwrap();
-        // Las funciones usan la BD global; acá probamos las consultas sobre la
+        // Las funciones usan la BD global; aquí probamos las consultas sobre la
         // conexión en memoria para no depender de `paths::data_dir()`.
         connection
             .execute(

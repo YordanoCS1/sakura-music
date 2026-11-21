@@ -36,19 +36,19 @@ const FEATURES = [
   {
     icon: Library,
     title: 'Biblioteca inteligente',
-    desc: 'Organiza tu colección por álbumes, carpetas y vistas visuales únicas.',
+    desc: 'Organice su colección por álbumes, carpetas y vistas visuales únicas.',
     tone: 'indigo',
   },
   {
     icon: Search,
     title: 'Catálogo online',
-    desc: 'Busca carátulas y metadatos en iTunes, Deezer y MusicBrainz.',
+    desc: 'Busque carátulas y metadatos en iTunes, Deezer y MusicBrainz.',
     tone: 'cyan',
   },
   {
     icon: DownloadCloud,
     title: 'Descargas integradas',
-    desc: 'Trae música nueva a tu biblioteca con gestión de cola y progreso.',
+    desc: 'Traiga música nueva a su biblioteca con gestión de cola y progreso.',
     tone: 'teal',
   },
   {
@@ -60,11 +60,11 @@ const FEATURES = [
 ];
 
 const NAV = [
-  { id: 'library' as AppTab, label: 'Biblioteca', desc: 'Tu colección', icon: Library },
+  { id: 'library' as AppTab, label: 'Biblioteca', desc: 'Su colección', icon: Library },
   { id: 'search' as AppTab, label: 'Buscar', desc: 'Catálogo online', icon: Search },
   { id: 'queue' as AppTab, label: 'Cola', desc: 'Descargas', icon: DownloadCloud },
-  { id: 'playlists' as AppTab, label: 'Listas', desc: 'Tus selecciones', icon: ListMusic },
-  { id: 'stats' as AppTab, label: 'Datos', desc: 'Tu biblioteca en números', icon: BarChart3 },
+  { id: 'playlists' as AppTab, label: 'Listas', desc: 'Sus selecciones', icon: ListMusic },
+  { id: 'stats' as AppTab, label: 'Datos', desc: 'Su biblioteca en números', icon: BarChart3 },
   { id: 'settings' as AppTab, label: 'Ajustes', desc: 'Preferencias', icon: Settings },
 ];
 
@@ -94,7 +94,7 @@ export default function HomeTab({ trackCount, onNavigate }: HomeTabProps) {
           </div>
           <h1 className="wb-title">{greeting}</h1>
           <p className="wb-subtitle">
-            Este es tu espacio musical. Una app de escritorio rápida, privada y hecha para tu
+            Este es su espacio musical. Una app de escritorio rápida, privada y hecha para su
             colección.
           </p>
           <div className="wb-hero-actions">
@@ -109,7 +109,7 @@ export default function HomeTab({ trackCount, onNavigate }: HomeTabProps) {
 
         <div className="wb-stats-float">
           <span className="wb-stat-f">
-            <strong>{trackCount}</strong> pistas en tu biblioteca
+            <strong>{trackCount}</strong> pistas en su biblioteca
           </span>
           <span className="wb-divider" />
           <span className="wb-stat-f">
@@ -143,7 +143,7 @@ export default function HomeTab({ trackCount, onNavigate }: HomeTabProps) {
       <div className="wb-section">
         <div className="wb-section-head">
           <div>
-            <h2>¿A dónde quieres ir?</h2>
+            <h2>¿A dónde desea ir?</h2>
             <p>Accede directo a cada sección.</p>
           </div>
         </div>

@@ -511,7 +511,7 @@ export default function NowPlayingPanel(props: NowPlayingPanelProps) {
                       <>
                         <div className="np-letra-line is-current">♪</div>
                         <p className="np-letra-nota">
-                          Buscá letras online o poné{' '}
+                          Buscá letras online o ponga{' '}
                           <code>{activeTrack?.title ?? 'cancion'}.lrc</code> en la carpeta de la
                           pista.
                         </p>

@@ -2,7 +2,7 @@
 
 Revisión del 2026-11-20 sobre los **14 temas** actuales. Todo el texto normal
 de la interfaz debe superar **4.5:1** contra su superficie; los textos grandes
-pueden conformarse con 3:1, pero acá se exige el criterio estricto.
+pueden conformarse con 3:1, pero aquí se exige el criterio estricto.
 
 ## Método
 
@@ -44,5 +44,5 @@ definió `--set-on-accent-base` por tema:
 
 ## Mantenimiento
 
-Si cambiás una paleta, actualizá la pareja en `contraste.test.ts` y corré
+Si cambiás una paleta, actualice la pareja en `contraste.test.ts` y ejecute
 `npm test`. No cambies un color sólo "porque se ve mejor" sin verificar el ratio.

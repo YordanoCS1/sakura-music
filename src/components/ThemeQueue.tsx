@@ -147,7 +147,7 @@ export default function ThemeQueue({
           <div className="manga-queue-vacio">
             <span aria-hidden="true">…</span>
             <h2>ESTA PÁGINA ESTÁ EN BLANCO</h2>
-            <p>Buscá canciones o pegá un enlace para llenar la cola.</p>
+            <p>Buscá canciones o pegue un enlace para llenar la cola.</p>
             <button type="button" onClick={onGoSearch}>
               Buscar música →
             </button>
@@ -276,7 +276,7 @@ export default function ThemeQueue({
             桜
           </span>
           <h3>No hay descargas activas</h3>
-          <p>Buscá canciones en YouTube o pegá enlaces directos para llenar la cola.</p>
+          <p>Buscá canciones en YouTube o pegue enlaces directos para llenar la cola.</p>
           <button type="button" onClick={onGoSearch}>
             Buscar música →
           </button>

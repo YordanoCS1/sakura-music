@@ -90,7 +90,7 @@ deleted_tracks(token TEXT PK, original_path TEXT, trash_path TEXT,
                track_json TEXT, deleted_at INTEGER)
 ```
 
-`delete_library_track` mueve el archivo a `trash/<token>.<ext>` y guarda acá la ruta original y un snapshot JSON de la pista. `restore_deleted_track(token)` mueve el archivo de vuelta y vuelve a insertar la fila en `library_tracks`; `empty_trash()` borra los archivos y las filas. El cruce entre unidades se resuelve con copia + borrado del original.
+`delete_library_track` mueve el archivo a `trash/<token>.<ext>` y guarda aquí la ruta original y un snapshot JSON de la pista. `restore_deleted_track(token)` mueve el archivo de vuelta y vuelve a insertar la fila en `library_tracks`; `empty_trash()` borra los archivos y las filas. El cruce entre unidades se resuelve con copia + borrado del original.
 
 ## `download_queue.json`
 
@@ -132,7 +132,7 @@ Array JSON con una foto de la cola. Se escribe de forma atómica (temporal + `re
 ## `download_archive.txt`
 
 Una línea por video (`youtube <id>`) escrita por `yt-dlp --download-archive`.
-Evita volver a bajar una pista aunque se limpien las terminadas de la cola o se
+Evita volver a descargar una pista aunque se limpien las terminadas de la cola o se
 reinicie la app. `start_download` chequea este archivo antes de encolar y
 devuelve un aviso si el video ya está descargado.
 

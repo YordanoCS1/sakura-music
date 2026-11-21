@@ -130,7 +130,7 @@ class SearchPage(Page):
         self._album_btn.setVisible(False)
         layout.addWidget(self._album_btn, 0)
 
-        # Por nombre no se sabe qué disco querés. Con el artista se ve la
+        # Por nombre no se sabe qué disco desea. Con el artista se ve la
         # discografía entera y se elige de la lista.
         self._artist_btn = TextButton("Ver albums del artista", "ghost", icon="user")
         self._artist_btn.clicked.connect(self._on_artist_from_catalog)
@@ -256,7 +256,7 @@ class SearchPage(Page):
     def _on_search_finished(self, count: int) -> None:
         if count == 0:
             self._show_message(
-                "Probá con otro nombre o pegá un enlace de YouTube.",
+                "Probá con otro nombre o pegue un enlace de YouTube.",
                 title="Sin resultados",
                 icon="search",
             )

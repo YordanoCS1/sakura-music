@@ -19,7 +19,7 @@ export default function DeleteTracksDialog({
   onConfirm,
 }: DeleteTracksDialogProps) {
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
-  // Ya ponemos el foco en "Cancelar"; acá sólo queremos que Tab no se escape.
+  // Ya ponemos el foco en "Cancelar"; aquí sólo queremos que Tab no se escape.
   const dialogRef = useFocusTrap<HTMLElement>(tracks.length > 0, false);
 
   useEffect(() => {
@@ -82,8 +82,8 @@ export default function DeleteTracksDialog({
         <div className="space-y-4 px-6 py-5">
           <p id="delete-tracks-description" className="text-sm leading-relaxed text-ink-300">
             {isSingleTrack
-              ? 'Se borrará este archivo de audio de tu disco, no solo de la biblioteca.'
-              : `Se borrarán ${tracks.length} archivos de audio de tu disco, no solo de la biblioteca.`}
+              ? 'Se borrará este archivo de audio de su disco, no solo de la biblioteca.'
+              : `Se borrarán ${tracks.length} archivos de audio de su disco, no solo de la biblioteca.`}
           </p>
 
           <div className="space-y-2 rounded-2xl border border-white/10 bg-black/15 p-3">

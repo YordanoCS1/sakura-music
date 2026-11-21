@@ -18,7 +18,7 @@
 mostraba las 5 vistas principales: **Home, Biblioteca (cuadrícula), Lista de
 canciones, Now Playing y Cola.**
 
-> 💡 **Ver los prototipos en vivo:** abrí `docs/temas/sakura_temas.html` (doble
+> 💡 **Ver los prototipos en vivo:** abra `docs/temas/sakura_temas.html` (doble
 > clic, autocontenido). Ahí están los 8 prototipos, cada uno con sus 5 pantallas
 > en una fila. Es una maqueta, no la UI de la app.
 
@@ -41,7 +41,7 @@ todos propios**:
 para temas importados; ningún tema oficial los usa.
 
 > **Nota (2026-11-20):** ninguno de los ocho prototipos de este informe se
-> implementó como tema. Los temas `yoru`, `hanabi` y `aizuri` no salieron de acá:
+> implementó como tema. Los temas `yoru`, `hanabi` y `aizuri` no salieron de aquí:
 > fueron variantes de paleta de una etapa posterior y también se retiraron por
 > no tener vistas estructurales propias. El estado actual es **14 temas propios**
 > (incluido Estudio, el ex `space` genérico).
@@ -148,7 +148,7 @@ viñetas en la biblioteca.
 ## ▶️ Siguientes pasos (históricos)
 
 Esta sección se conserva tal cual porque documenta el proceso de diseño original:
-"abrí el HTML, mirá cada tema en sus 5 pantallas y decí cuál te gusta". Hoy esos
+"abra el HTML, vea cada tema en sus 5 pantallas y decí cuál te gusta". Hoy esos
 pasos ya no están pendientes: la app implementa los 14 temas descriptos arriba
 (incluido `manga`, que se sumó después de este informe).
 Para temas nuevos, seguí la receta de [desarrollo.md](../desarrollo.md).

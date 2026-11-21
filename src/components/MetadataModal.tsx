@@ -759,8 +759,8 @@ export default function MetadataModal({
             {/* Explicación */}
             <p className="text-xs text-ink-400">
               {catalogMode === 'albums'
-                ? `Busca álbumes en ${catalogSource === 'musicbrainz' ? 'MusicBrainz' : catalogSource === 'deezer' ? 'Deezer' : 'Apple Music / iTunes'}, ábrelos y aplica la pista que corresponda a la canción en edición.`
-                : `Busca canciones en ${catalogSource === 'musicbrainz' ? 'MusicBrainz' : catalogSource === 'deezer' ? 'Deezer' : 'Apple Music / iTunes'} para autocompletar título, artista, álbum, año, género, número de pista y carátula en alta definición.`}
+                ? `Busque álbumes en ${catalogSource === 'musicbrainz' ? 'MusicBrainz' : catalogSource === 'deezer' ? 'Deezer' : 'Apple Music / iTunes'}, ábralos y aplique la pista que corresponda a la canción en edición.`
+                : `Busque canciones en ${catalogSource === 'musicbrainz' ? 'MusicBrainz' : catalogSource === 'deezer' ? 'Deezer' : 'Apple Music / iTunes'} para autocompletar título, artista, álbum, año, género, número de pista y carátula en alta definición.`}
             </p>
 
             {/* Pegar enlace del álbum (solo iTunes en modo Álbumes) */}
@@ -768,7 +768,7 @@ export default function MetadataModal({
               <div className="p-3 rounded-2xl bg-cyan-500/[0.04] border border-cyan-500/20">
                 <div className="flex items-center gap-2 mb-1.5 text-cyan-300 text-xs font-semibold">
                   <Link2 className="w-3.5 h-3.5" />
-                  ¿No encuentras el álbum? Pega el enlace de Apple Music / iTunes
+                  ¿No encuentra el álbum? Pegue el enlace de Apple Music / iTunes
                 </div>
                 <div className="flex flex-col sm:flex-row gap-2">
                   <input

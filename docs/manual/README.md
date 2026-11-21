@@ -19,15 +19,15 @@ descargar, ordenar, etiquetar, personalizar y, si algo falla, arreglarlo.
 ## Ruta sugerida
 
 1. [instalacion.md](instalacion.md) — dejá la app abierta y con yt-dlp/ffmpeg detectados.
-2. [buscar-y-descargar.md](buscar-y-descargar.md) — bajá tu primera canción y mirala en Cola.
-3. [biblioteca.md](biblioteca.md) — elegí tu carpeta y una vista que te guste.
+2. [buscar-y-descargar.md](buscar-y-descargar.md) — descargue su primera canción y revísela en Cola.
+3. [biblioteca.md](biblioteca.md) — seleccione su carpeta y una vista que te guste.
 4. [metadatos-y-letras.md](metadatos-y-letras.md) — arreglá los tags y sumá letras `.lrc`.
-5. [apariencia.md](apariencia.md) — elegí entre los 14 temas (incluidos Estudio y Manga) y probá la paleta ⌘K.
+5. [apariencia.md](apariencia.md) — seleccione entre los 14 temas (incluidos Estudio y Manga) y pruebe la paleta ⌘K.
 6. [problemas.md](problemas.md) — guardalo para cuando algo falle.
 
 ## Novedades que conviene conocer
 
-- **Listas (playlists):** la pestaña Listas guarda tus listas en SQLite; podés
+- **Listas (playlists):** la pestaña Listas guarda sus listas en SQLite; puede
   crearlas, renombrarlas, borrarlas, agregar pistas, quitarlas y reordenarlas
   ([biblioteca.md](biblioteca.md#listas-playlists)).
 - **Deshacer:** al borrar pistas, el archivo va a `<datos>/trash` y el toast

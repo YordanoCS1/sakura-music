@@ -195,7 +195,7 @@ export default function ThemeGeneratorModal({
                 <span className="tg-preview-kicker" style={{ color: acento }}>
                   ARQUETIPO {base.toUpperCase()}
                 </span>
-                <h3>Tu música, a tu manera</h3>
+                <h3>Su música, a su manera</h3>
                 <p style={{ color: suave }}>
                   Esta es la paleta. El arquetipo elige la estructura de Home, biblioteca y el
                   resto.

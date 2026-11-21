@@ -135,7 +135,7 @@ export default function SearchTab({
       <div className="glass-card p-5 rounded-3xl border border-white/10 space-y-4">
         <form onSubmit={onSearchSubmit}>
           <label className="text-xs text-ink-400 font-medium block mb-2">
-            Escribe el nombre de la canción/artista o pega un enlace de video o Playlist / Álbum de
+            Escriba el nombre de la canción/artista o pegue un enlace de video o Playlist / Álbum de
             YouTube:
           </label>
           <div className="flex gap-2">

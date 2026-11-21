@@ -38,7 +38,7 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
         </span>
         <h1 className="text-lg font-bold text-[#2b1521]">La interfaz encontró un problema</h1>
         <p className="max-w-md text-sm text-[#8a6577]">
-          Tu biblioteca y tus descargas están a salvo. Recargá la app para volver a intentarlo.
+          Su biblioteca y sus descargas están a salvo. Recargue la app para volver a intentarlo.
         </p>
         <button
           type="button"

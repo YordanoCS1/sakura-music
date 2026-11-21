@@ -694,7 +694,7 @@ fn find_downloaded_file(dir: &Path, url: &str) -> Option<String> {
     best.map(|(_, path)| path.to_string_lossy().to_string())
 }
 
-/// Archivo persistente de IDs ya descargados: evita bajar de nuevo una pista
+/// Archivo persistente de IDs ya descargados: evita descargar de nuevo una pista
 /// aunque se haya limpiado la cola.
 fn ruta_archive() -> PathBuf {
     paths::ensure_data_dir().join("download_archive.txt")

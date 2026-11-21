@@ -262,7 +262,7 @@ export function useMetadataEditor({
   const openAlbumByLink = async (link: string) => {
     const trimmed = link.trim();
     if (!trimmed) {
-      setCatalogError('Pega primero el enlace del álbum de iTunes/Apple Music.');
+      setCatalogError('Pegue primero el enlace del álbum de iTunes/Apple Music.');
       return;
     }
     // storefront: /music.apple.com/<cc>/album/...  o  /itunes.apple.com/<cc>/album/...
@@ -274,7 +274,7 @@ export function useMetadataEditor({
     const collectionId = idMatch ? idMatch[1] : null;
     if (!collectionId) {
       setCatalogError(
-        'No se pudo extraer el ID del álbum. Pega un enlace tipo https://music.apple.com/us/album/<id> o https://itunes.apple.com/us/album/<id>.',
+        'No se pudo extraer el ID del álbum. Pegue un enlace tipo https://music.apple.com/us/album/<id> o https://itunes.apple.com/us/album/<id>.',
       );
       return;
     }
@@ -304,7 +304,7 @@ export function useMetadataEditor({
       setCatalogAlbums([]);
       if (tracks.length === 0) {
         setCatalogError(
-          'No se encontraron pistas para ese álbum. Verifica el enlace (debe apuntar al álbum, no a una canción).',
+          'No se encontraron pistas para ese álbum. Verifique el enlace (debe apuntar al álbum, no a una canción).',
         );
       }
     } catch (err) {
@@ -321,7 +321,7 @@ export function useMetadataEditor({
   const openSongByLink = async (link: string) => {
     const trimmed = link.trim();
     if (!trimmed) {
-      setCatalogError('Pega primero el enlace de la canción de iTunes/Apple Music.');
+      setCatalogError('Pegue primero el enlace de la canción de iTunes/Apple Music.');
       return;
     }
     const ccMatch =
@@ -332,7 +332,7 @@ export function useMetadataEditor({
     const collectionId = idMatch ? idMatch[1] : null;
     if (!collectionId) {
       setCatalogError(
-        'No se pudo extraer el ID. Pega un enlace tipo https://music.apple.com/us/album/.../<id>?i=<id>.',
+        'No se pudo extraer el ID. Pegue un enlace tipo https://music.apple.com/us/album/.../<id>?i=<id>.',
       );
       return;
     }

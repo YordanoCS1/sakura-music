@@ -65,7 +65,7 @@ sólo en Windows y usa los secrets de firma del updater.
 
 - **En local, de un vistazo:** este documento.
 - **En local, ejecutándolo:** `npm run pipeline` (corre todas las etapas bloqueantes en orden).
-- **En GitHub:** subí el repo y entrá a *Actions → CI*. El job del instalador se lanza con *Run workflow* o con un tag `vX.Y.Z`.
+- **En GitHub:** suba el repo y acceda a *Actions → CI*. El job del instalador se lanza con *Run workflow* o con un tag `vX.Y.Z`.
 
 ## Convenciones
 

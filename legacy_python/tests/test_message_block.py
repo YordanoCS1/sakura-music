@@ -8,9 +8,9 @@ from sakura.ui.pages.search import SearchPage
 
 
 def test_por_defecto_solo_esta_la_descripcion(qapp) -> None:
-    block = MessageBlock("Nada por acá.")
+    block = MessageBlock("Nada por aquí.")
 
-    assert block.label.text() == "Nada por acá."
+    assert block.label.text() == "Nada por aquí."
     assert block.title_label.isHidden() is True
     assert block.icon_wrap.isHidden() is True
     assert block.button.isHidden() is True

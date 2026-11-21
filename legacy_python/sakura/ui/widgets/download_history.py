@@ -188,7 +188,7 @@ class DownloadHistoryDialog(ThemedDialog):
         super().__init__(
             title="Historial de descargas",
             eyebrow="REGISTRO",
-            subtitle="Lo descargado y lo que no pudo bajar",
+            subtitle="Lo descargado y lo que no pudo descargar",
             parent=parent,
         )
         self.setMinimumWidth(860)
@@ -300,7 +300,7 @@ class DownloadHistoryDialog(ThemedDialog):
         confirm = QMessageBox.question(
             self,
             "Limpiar historial",
-            "¿Seguro que querés borrar todo el historial de descargas?\n"
+            "¿Seguro que desea borrar todo el historial de descargas?\n"
             "Esta acción no se puede deshacer.",
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
             QMessageBox.StandardButton.No,

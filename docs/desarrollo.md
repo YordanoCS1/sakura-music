@@ -197,7 +197,7 @@ bloque `.app-shell[data-skin='id']` en `src/App.css` con `--m3-*`, `--space-*`,
 `LibraryTab` de 9 vistas. Es el único camino genérico que queda: ningún tema
 oficial lo usa.
 
-**Propio (los 14 oficiales, incluido Estudio):** además de lo anterior, creá sus
+**Propio (los 14 oficiales, incluido Estudio):** además de lo anterior, cree sus
 `ThemeLibrary`/`ThemeHome`/`ThemeNav` según corresponda, con cabecera, Buscar,
 Cola, ajustes, diálogos y transiciones propios, más iconos y splash propios.
 Revisá `ViewMode` y el switcher si agregás vistas. Verificá el handoff del glifo
@@ -263,6 +263,6 @@ superficie además de los tokens de color. Ver [ADR 0012](adr/0012-temas-multipl
 - Los flujos están en [casos-de-uso.md](casos-de-uso.md).
 - El manual de usuario está en [manual/](manual/README.md).
 
-Cuando cambie un comportamiento, actualizá el requisito y su criterio en el
+Cuando cambie un comportamiento, actualice el requisito y su criterio en el
 mismo commit. Cuando agregues una decisión estructural, sumá un ADR nuevo en
 vez de reescribir los viejos.

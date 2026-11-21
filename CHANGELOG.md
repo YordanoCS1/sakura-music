@@ -1,6 +1,6 @@
 # Changelog
 
-Todos los cambios destacables de este proyecto se registran acá. El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y el versionado, [Semantic Versioning](https://semver.org/lang/es/).
+Todos los cambios destacables de este proyecto se registran aquí. El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y el versionado, [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Sin publicar]
 

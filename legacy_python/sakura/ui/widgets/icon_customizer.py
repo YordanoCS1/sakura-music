@@ -1,6 +1,6 @@
 """Personalizacion de iconos, con vista previa en vivo.
 
-En vez de escribir rutas en el codigo, acá se elige por cada icono un PNG/SVG
+En vez de escribir rutas en el codigo, aquí se elige por cada icono un PNG/SVG
 propio y se guarda en `config.json`. Como cada pestaña y cada boton pide su
 icono por nombre, un override alcanza a todos los lugares donde se use, sin
 tocarlos uno por uno. El panel de la derecha simula el chrome de la app para ver

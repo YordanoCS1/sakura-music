@@ -13,8 +13,8 @@ en la página final y hooks propios (`src-tauri/windows/hooks.nsh`) que escriben
 
 El asistente incluye la página **Elegir ubicación de instalación**: el usuario
 decide la carpeta, por defecto `%LOCALAPPDATA%\Sakura Music` (no pide permisos de
-administrador). El modo de instalación es `currentUser`; si querés que ofrezca
-también "para todos los usuarios", cambiá `installMode` a `both` en
+administrador). El modo de instalación es `currentUser`; si desea que ofrezca
+también "para todos los usuarios", cambie `installMode` a `both` en
 `tauri.conf.json` (el instalador pedirá elevación).
 
 ## No compilar con cargo directo
@@ -64,7 +64,7 @@ existe un `.tauri_data/` viejo del desarrollo, se copia automáticamente la
 primera vez.
 
 El CLI `sakura-cli` sigue usando `.tauri_data` del directorio actual por defecto;
-para apuntar a la base de la app instalada pasá `--data <ruta APPLOCALDATA>`.
+para apuntar a la base de la app instalada pase `--data <ruta APPLOCALDATA>`.
 
 ## MSI (opcional)
 
@@ -96,4 +96,4 @@ npm run tauri build -- --bundles msi
 La instalación interactiva y la persistencia después de reiniciar se validan
 en el equipo donde se publique: este entorno de desarrollo bloquea escrituras de
 los binarios fuera del workspace, así que el smoke test de "instalar y reabrir"
-no se pudo completar acá.
+no se pudo completar aquí.

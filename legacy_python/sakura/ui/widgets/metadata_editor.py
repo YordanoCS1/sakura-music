@@ -180,7 +180,7 @@ class MetadataEditor(ThemedDialog):
 
         self.path_label = ElidedLabel("")
         self.path_label.setObjectName("MetadataPath")
-        self.path_label.setToolTip("La ruta del archivo en tu biblioteca")
+        self.path_label.setToolTip("La ruta del archivo en su biblioteca")
         row.addWidget(self.path_label, 1)
 
         row.addWidget(self._view_toggle(), 0, Qt.AlignmentFlag.AlignVCenter)
@@ -234,7 +234,7 @@ class MetadataEditor(ThemedDialog):
         self.cover.image_dropped.connect(self._load_cover_path)
         layout.addWidget(self.cover, 0, Qt.AlignmentFlag.AlignHCenter)
 
-        self.track_title = ElidedLabel("Editando tu música")
+        self.track_title = ElidedLabel("Editando su música")
         self.track_title.setObjectName("MetadataTrackTitle")
         layout.addWidget(self.track_title)
 

@@ -90,7 +90,7 @@ export function useRemoteControl({
     handleVolumeChange,
   ]);
 
-  // Publica el estado del reproductor para que el celular vea la canción actual.
+  // Publica el estado del reproductor para que el teléfono móvil vea la canción actual.
   useEffect(() => {
     const temporizador = setInterval(() => {
       invoke('remote_update_state', {

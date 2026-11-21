@@ -134,7 +134,7 @@ export default function LibraryToolbar({
                 <Loader2 className="w-3 h-3 animate-spin" /> Escaneando…
               </span>
             ) : (
-              currentFolder || `${filteredCount} canciones en tu colección`
+              currentFolder || `${filteredCount} canciones en su colección`
             )}
           </p>
         </div>

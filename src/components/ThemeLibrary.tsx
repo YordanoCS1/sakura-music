@@ -315,7 +315,7 @@ export default function ThemeLibrary({
   const vacio = (
     <EmptyState
       titulo="Aún no hay piezas"
-      descripcion="Elegí una carpeta o escaneá la biblioteca para indexar tus títulos, artistas y portadas."
+      descripcion="Seleccione una carpeta o escanee la biblioteca para indexar sus títulos, artistas y portadas."
       accion={
         <div className="theme-empty-actions">
           <button type="button" onClick={onOpenFolderDialog} className="cta">

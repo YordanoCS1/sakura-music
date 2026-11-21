@@ -1,6 +1,6 @@
 # Requisitos
 
-Un requisito acá es una promesa verificable de la app, no un deseo. Cada uno
+Un requisito aquí es una promesa verificable de la app, no un deseo. Cada uno
 tiene un identificador estable y un criterio de aceptación comprobable. Cuando
 existe un test que lo cubre, se nombra el archivo.
 
@@ -55,7 +55,7 @@ el resto de la concurrencia se verifica a mano).
 
 **Criterio:** una URL de playlist se enumera con `yt-dlp --flat-playlist` y se
 muestran título, canal, cantidad y pistas. "Descargar N canciones" encola cada
-pista; cada descarga suelta usa `--no-playlist` para no bajar la lista entera
+pista; cada descarga suelta usa `--no-playlist` para no descargar la lista entera
 por accidente.
 
 **Test:** `downloader::tests::parsea_linea_de_busqueda` (incluye `--print`

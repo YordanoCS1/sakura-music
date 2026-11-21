@@ -148,7 +148,7 @@ class MainWindow(QWidget):
         self.topbar.page_selected.connect(self.show_page)
         self.topbar.search_changed.connect(self._on_search_changed)
         self.topbar.download_clicked.connect(self._ir_a_search)
-        # La vista de la cola se limpia sola; acá solo hay que vaciar el gestor.
+        # La vista de la cola se limpia sola; aquí solo hay que vaciar el gestor.
         self.page_map["queue"].clear_requested.connect(self._on_clear_finished)
         self.page_map["queue"].cancel_requested.connect(self._on_cancel_all)
         self.page_map["queue"].retry_requested.connect(self._on_retry_failed)
@@ -598,7 +598,7 @@ class MainWindow(QWidget):
         """Acepta el cierre sin bloquear.
 
         La limpieza de hilos va en `sakura.app.main()`, despues de que `exec()`
-        vuelve: hacerla acá deja un QThread vivo mientras Qt se destruye, y eso
+        vuelve: hacerla aquí deja un QThread vivo mientras Qt se destruye, y eso
         cuelga la salida de forma intermitente cuando el escaneo de la biblioteca
         todavia no termino.
         """

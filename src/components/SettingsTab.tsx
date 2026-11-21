@@ -273,7 +273,7 @@ export default function SettingsTab(props: SettingsTabProps) {
         <Tarjeta
           n="01"
           titulo="Biblioteca de temas"
-          desc="Elegí la apariencia de la app"
+          desc="Seleccione la apariencia de la app"
           icono={Palette}
           ancha
         >
@@ -288,7 +288,7 @@ export default function SettingsTab(props: SettingsTabProps) {
         <Tarjeta
           n="02"
           titulo="Generador de temas"
-          desc="Creá uno nuevo con tu paleta"
+          desc="Creá uno nuevo con su paleta"
           icono={Wand2}
           ancha
         >
@@ -301,7 +301,7 @@ export default function SettingsTab(props: SettingsTabProps) {
             className="set-json"
             value={jsonTema}
             onChange={(e) => setJsonTema(e.target.value)}
-            placeholder="…o pegá acá el JSON de un tema"
+            placeholder="…o pegue aquí el JSON de un tema"
             spellCheck={false}
           />
           <div className="set-actions">
@@ -451,7 +451,7 @@ export default function SettingsTab(props: SettingsTabProps) {
         <Tarjeta
           n="07"
           titulo="Control remoto"
-          desc="Manejá la reproducción desde el celular"
+          desc="Controle la reproducción desde el teléfono móvil"
           icono={Wifi}
           ancha
         >
@@ -472,7 +472,7 @@ export default function SettingsTab(props: SettingsTabProps) {
           </div>
           {remoteEnabled && (
             <p className="set-note">
-              Entrá a <b>http://{remoteIp}:17342</b> desde el celular en la misma red.
+              Acceda a <b>http://{remoteIp}:17342</b> desde el teléfono móvil en la misma red.
             </p>
           )}
         </Tarjeta>

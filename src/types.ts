@@ -1,4 +1,4 @@
-// Tipos compartidos del frontend. Viven acá para que los componentes no
+// Tipos compartidos del frontend. Viven aquí para que los componentes no
 // dependan de App.tsx y el monolito no vuelva a crecer.
 
 export interface ScannedTrack {

@@ -114,7 +114,7 @@ def main() -> int:
 
     codigo = app.exec()
 
-    # La limpieza va acá y no en `closeEvent`: si queda un QThread vivo mientras
+    # La limpieza va aquí y no en `closeEvent`: si queda un QThread vivo mientras
     # Qt se destruye, la salida se cuelga de forma intermitente.
     if window is not None:
         window.shutdown()

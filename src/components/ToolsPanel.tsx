@@ -46,7 +46,7 @@ export default function ToolsPanel() {
       </div>
 
       <p className="text-xs text-ink-500">
-        yt-dlp y FFmpeg se usan para buscar y convertir música. Si ya están en tu sistema, Sakura
+        yt-dlp y FFmpeg se usan para buscar y convertir música. Si ya están en su sistema, Sakura
         las detecta y no las reemplaza.
       </p>
 

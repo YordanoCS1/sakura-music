@@ -94,7 +94,7 @@ class Theme:
     def with_ambient(self, hex_color: str) -> Theme:
         """Variante con el acento de la portada, sin perder legibilidad.
 
-        `with_accent` cambia solo el color de marca; acá tambien se ajustan el
+        `with_accent` cambia solo el color de marca; aquí tambien se ajustan el
         texto de los botones (que va encima del acento), el hover y la seleccion,
         porque un color sacado de una foto puede ser claro u oscuro.
         """

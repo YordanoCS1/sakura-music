@@ -219,7 +219,7 @@ function PortadasView({
   return (
     <div className="nv-stack-wrap p-5">
       <div className="flex items-center gap-2 mb-5">
-        <h3 className="text-sm font-bold nv-text">Tus álbumes</h3>
+        <h3 className="text-sm font-bold nv-text">Sus álbumes</h3>
         <span className="text-2xs nv-muted">({albumGroups.length})</span>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">

@@ -163,7 +163,7 @@ export default function PlaylistsPanel({
         </span>
         <div>
           <h1>Playlists</h1>
-          <p>{playlists.length} listas guardadas en tu biblioteca local</p>
+          <p>{playlists.length} listas guardadas en su biblioteca local</p>
         </div>
         <button type="button" className="playlists-nueva" onClick={() => setCreando(true)}>
           <Plus className="w-4 h-4" /> Nueva lista
@@ -196,7 +196,7 @@ export default function PlaylistsPanel({
             </div>
           )}
           {playlists.length === 0 && !creando && (
-            <p className="playlists-vacio">Todavía no tenés listas. Creá una para empezar.</p>
+            <p className="playlists-vacio">Todavía no tiene listas. Creá una para empezar.</p>
           )}
           {playlists.map((lista) => (
             <button
@@ -216,7 +216,7 @@ export default function PlaylistsPanel({
           {!detalle ? (
             <div className="playlists-sin-seleccion">
               <ListMusic className="w-10 h-10" />
-              <p>Elegí una lista a la izquierda.</p>
+              <p>Seleccione una lista a la izquierda.</p>
             </div>
           ) : (
             <>

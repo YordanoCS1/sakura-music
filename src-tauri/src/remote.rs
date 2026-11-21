@@ -1,5 +1,5 @@
 //! Control remoto local: servidor HTTP mínimo para manejar la reproducción
-//! desde el celular en la misma red. Usa sólo `std`, sin crates extra.
+//! desde el teléfono móvil en la misma red. Usa sólo `std`, sin crates extra.
 
 use parking_lot::Mutex;
 use serde::{Deserialize, Serialize};

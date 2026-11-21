@@ -139,7 +139,7 @@ test('la app arranca, oculta el splash y navega entre pestañas', async ({ page 
   const buscar = page.getByRole('tab', { name: /Buscar/ });
   await buscar.click();
   await expect(buscar).toHaveAttribute('aria-selected', 'true');
-  await expect(page.getByPlaceholder('Buscar en tu música...')).toBeVisible();
+  await expect(page.getByPlaceholder('Buscar en su música...')).toBeVisible();
 
   const ajustes = page.getByRole('tab', { name: /Ajustes/ });
   await ajustes.click();
@@ -434,7 +434,7 @@ test('la búsqueda filtra usando el índice FTS del backend', async ({ page }) =
   await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });
   await expect(page.locator('.shoji-slata')).toHaveCount(3);
 
-  await page.getByPlaceholder('Buscar en tu música...').fill('guren');
+  await page.getByPlaceholder('Buscar en su música...').fill('guren');
   await expect(page.locator('.shoji-slata')).toHaveCount(1);
   await expect(page.locator('.shoji-slata')).toContainText('Gurenge');
 });

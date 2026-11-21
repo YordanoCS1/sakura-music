@@ -353,7 +353,7 @@ export default function BatchModal({
                       ? 'Se removerán las portadas de todas las canciones seleccionadas.'
                       : batchCoverPath
                         ? 'La imagen seleccionada se incrustará en todas las pistas del lote.'
-                        : 'Elige una imagen JPEG o PNG de tu equipo.'}
+                        : 'Seleccione una imagen JPEG o PNG de su equipo.'}
                   </p>
                 </div>
               </div>

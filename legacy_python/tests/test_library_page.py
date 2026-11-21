@@ -479,7 +479,7 @@ def test_el_refresco_suelta_su_hilo_al_terminar(page, library_real) -> None:
 
     Si el refresher se queda con el QThread viejo, el releido siguiente lo
     reemplaza mientras Qt todavia lo esta cerrando. Es el patron que el scanner
-    ya usaba y que acá faltaba.
+    ya usaba y que aquí faltaba.
     """
     _wait(page)
     page._refresh_all()
