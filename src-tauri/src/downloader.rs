@@ -878,7 +878,7 @@ pub fn execute_download(
         );
     }
     if !manager.register_job(&job_id, &url, &output_folder, &format_opt) {
-        return Err("Ya existe una descarga activa para esta pista y carpeta.".to_string());
+        return Err("Esa pista ya está en la cola con la misma carpeta y formato.".to_string());
     }
     std::thread::spawn(move || {
         if !manager.acquire(&job_id) {
@@ -948,6 +948,8 @@ pub fn execute_download(
                 }
             }
         }
+        manager.release();
+        manager.finish(&job_id);
         if ultimo != "cancelado" {
             emit_progress(
                 &app,
@@ -959,8 +961,6 @@ pub fn execute_download(
                 None,
             );
         }
-        manager.release();
-        manager.finish(&job_id);
     });
     Ok(())
 }

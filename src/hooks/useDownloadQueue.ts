@@ -164,7 +164,9 @@ export function useDownloadQueue({
     } catch (err) {
       console.error('Error al iniciar descarga:', err);
       setDownloads((prev) =>
-        prev.map((d) => (d.id === jobId ? { ...d, status: `error: ${String(err)}` } : d)),
+        prev.map((d) =>
+          d.id === jobId ? { ...d, status: String(err).replace(/^error:\s*/i, '') } : d,
+        ),
       );
     }
   };
