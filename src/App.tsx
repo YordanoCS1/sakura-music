@@ -363,6 +363,7 @@ export default function App() {
     activeTrack,
     setActiveTrack,
     playbackQueueRef,
+    desactivado: playerStyle === 'off',
   });
 
   // Atajos configurables: si se está reasignando, se captura la tecla.

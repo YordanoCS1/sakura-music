@@ -155,6 +155,20 @@ test('la app arranca, oculta el splash y navega entre pestañas', async ({ page 
   await expect(page.getByRole('button', { name: 'Salir del mini reproductor' })).toBeVisible();
 });
 
+test('con el reproductor desactivado no se reproduce audio', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('sakura_player_style', 'off'));
+  await page.goto('/');
+  await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });
+
+  await expect(page.getByRole('button', { name: 'Activar reproductor' })).toBeVisible();
+  expect(await page.locator('audio').evaluate((audio: HTMLAudioElement) => audio.paused)).toBe(
+    true,
+  );
+
+  await page.getByRole('button', { name: 'Activar reproductor' }).click();
+  await expect(page.getByRole('button', { name: 'Activar reproductor' })).toHaveCount(0);
+});
+
 test('Byobu permite elegir una imagen de inicio', async ({ page }) => {
   await page.addInitScript(() => {
     localStorage.setItem('sakura_theme', 'byobu');

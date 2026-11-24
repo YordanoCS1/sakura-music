@@ -7,6 +7,8 @@ interface UsePlayerDeps {
   activeTrack: ScannedTrack | null;
   setActiveTrack: React.Dispatch<React.SetStateAction<ScannedTrack | null>>;
   playbackQueueRef: React.MutableRefObject<ScannedTrack[]>;
+  /** Cuando el reproductor está desactivado no se reproduce audio. */
+  desactivado?: boolean;
 }
 
 export function usePlayer({
@@ -14,6 +16,7 @@ export function usePlayer({
   activeTrack,
   setActiveTrack,
   playbackQueueRef,
+  desactivado = false,
 }: UsePlayerDeps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const currentTimeRef = useRef(0);
@@ -46,6 +49,11 @@ export function usePlayer({
 
   const handlePlayTrack = async (track: ScannedTrack) => {
     setActiveTrack(track);
+    if (desactivado) {
+      audioRef.current?.pause();
+      setIsPlaying(false);
+      return;
+    }
     if (!esEscritorio()) {
       // En el celular no hay audio local: la PC es la que reproduce.
       void accionRemota(`play?id=${encodeURIComponent(track.id)}`);
@@ -80,6 +88,7 @@ export function usePlayer({
   }, []);
 
   const togglePlay = () => {
+    if (desactivado) return;
     if (!esEscritorio()) {
       void accionRemota('playpause');
       setIsPlaying((valor) => !valor);
@@ -149,6 +158,10 @@ export function usePlayer({
   };
 
   const handleSongEnded = () => {
+    if (desactivado) {
+      setIsPlaying(false);
+      return;
+    }
     if (repeatMode === 'one' && audioRef.current) {
       audioRef.current.currentTime = 0;
       void audioRef.current.play();
