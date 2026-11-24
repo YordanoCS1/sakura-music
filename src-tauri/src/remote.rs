@@ -323,12 +323,16 @@ fn emitir(app: &tauri::AppHandle, comando: RemoteCommand) {
     let _ = app.emit("remote-command", comando);
 }
 
-/// Sirve imágenes de la carpeta de datos (carátulas y vistas previas). Sólo se
-/// permiten rutas dentro de `covers/` o la carpeta de datos, para que un
-/// navegador comprometido no pueda leer archivos arbitrarios del equipo.
+/// Sirve imágenes al celular. Se permiten rutas dentro de la carpeta de datos,
+/// de `covers/` o de la raíz de la biblioteca (donde viven las carátulas sueltas
+/// tipo `cover.jpg`). Nunca rutas arbitrarias del equipo.
 fn servir_archivo_datos(stream: &mut TcpStream, ruta: &str) {
     let destino = PathBuf::from(ruta);
-    let permitido = [crate::paths::covers_dir(), crate::paths::data_dir()]
+    let mut bases = vec![crate::paths::covers_dir(), crate::paths::data_dir()];
+    if let Ok(raiz) = crate::library_db::root_path() {
+        bases.push(PathBuf::from(raiz));
+    }
+    let permitido = bases
         .iter()
         .filter_map(|base| base.canonicalize().ok())
         .any(|base| {

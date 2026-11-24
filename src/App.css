@@ -8235,3 +8235,67 @@ html[data-theme-transition='space'] #theme-panel.panel-enter { animation:t-estud
 .ctx-menu.tema-ghost, .ctx-menu.tema-moonlit { --ctx-fondo:#101820; --ctx-linea:rgba(143,182,232,.3); --ctx-texto:#dfe8f7; --ctx-suave:#7f92b4; --ctx-acento:#67e8f9; }
 .ctx-menu.tema-samurai { --ctx-fondo:#1a1512; --ctx-linea:rgba(201,169,97,.35); --ctx-texto:#efe6d6; --ctx-suave:#9e8f7c; --ctx-acento:#c9a961; }
 .ctx-menu.tema-sumie, .ctx-menu.tema-shoji, .ctx-menu.tema-ledger { --ctx-fondo:#faf5e9; --ctx-linea:#c9b28a; --ctx-texto:#2c241a; --ctx-suave:#6b6459; --ctx-acento:#b23a2b; --ctx-radio:2px; }
+
+
+/* ==========================================================================
+   VISTA MÓVIL — la misma app, adaptada al celular (sin Tauri, sin streaming)
+   ========================================================================== */
+@media (max-width: 640px) {
+  .app-shell { width: 100vw !important; height: 100dvh !important; }
+  .app-shell .app-rail-row { flex-direction: column !important; }
+  .app-shell .app-rail-row > main,
+  .app-shell .app-rail-row > section { width: 100% !important; min-width: 0 !important; }
+
+  /* Navegación: franja horizontal deslizable arriba. */
+  .app-shell .theme-nav,
+  .app-shell .zen-topnav,
+  .app-shell [class*='nav-rail'] {
+    flex-direction: row !important;
+    flex-basis: auto !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    max-height: 72px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    padding: 8px 10px !important;
+    border-right: 0 !important;
+    border-bottom: 1px solid rgba(255,255,255,.12) !important;
+    scrollbar-width: none;
+  }
+  .app-shell .theme-nav::-webkit-scrollbar,
+  .app-shell .zen-topnav::-webkit-scrollbar { display: none; }
+  .app-shell .theme-nav-tab,
+  .app-shell .zen-topnav-tab,
+  .app-shell .nav-tab { flex: 0 0 auto !important; min-height: 44px !important; padding: 0 12px !important; }
+
+  /* Contenido a una columna y con padding de pulgar. */
+  .app-shell .main-scroll-region,
+  .app-shell [role='tabpanel'] { padding: 12px !important; }
+  .app-shell .grid,
+  .app-shell [class*='grid-cols-'],
+  .app-shell .library-grid,
+  .app-shell .theme-grid { grid-template-columns: minmax(0, 1fr) !important; }
+
+  /* Objetos táctiles grandes. */
+  .app-shell button { min-height: 40px; }
+  .app-shell .sys-btn,
+  .app-shell .set-actions button,
+  .app-shell .ctx-menu > button { min-height: 44px !important; }
+
+  /* Reproductor fijo abajo, a lo ancho. */
+  .app-shell .player-dock {
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    border-radius: 14px 14px 0 0 !important;
+    padding: 8px 12px calc(8px + env(safe-area-inset-bottom)) !important;
+  }
+  .app-shell .remote-status { margin: 8px !important; }
+
+  /* Menú contextual y QR dentro del viewport. */
+  .app-shell .ctx-menu { left: 8px !important; right: 8px !important; width: auto !important; top: auto !important; bottom: 84px !important; }
+  .app-shell .set-remoto-fila { flex-direction: column; }
+  .app-shell .set-remoto-qr { width: 100%; height: auto; aspect-ratio: 1; }
+  .app-shell .set-remoto-qr svg { width: 100%; height: 100%; }
+}

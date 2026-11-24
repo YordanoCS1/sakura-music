@@ -854,7 +854,7 @@ export default function MetadataModal({
                 <div className="p-3 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center gap-3">
                   {openedAlbum.cover_url ? (
                     <img
-                      src={openedAlbum.cover_url}
+                      src={getCoverSrc(openedAlbum.cover_url)}
                       className="w-14 h-14 rounded-xl object-cover border border-white/10 shadow-md"
                       alt={openedAlbum.title}
                     />
@@ -947,7 +947,7 @@ export default function MetadataModal({
                     >
                       {album.cover_url ? (
                         <img
-                          src={album.cover_url}
+                          src={getCoverSrc(album.cover_url)}
                           className="w-14 h-14 rounded-xl object-cover flex-shrink-0 border border-white/10 shadow-md group-hover:scale-105 transition-transform"
                           alt={album.title}
                         />
@@ -992,7 +992,7 @@ export default function MetadataModal({
                       <div className="flex items-center gap-3 min-w-0">
                         {item.cover_url ? (
                           <img
-                            src={item.cover_url}
+                            src={getCoverSrc(item.cover_url)}
                             className="w-12 h-12 rounded-xl object-cover flex-shrink-0 border border-white/10 shadow-md group-hover:scale-105 transition-transform"
                             alt={item.title}
                           />
