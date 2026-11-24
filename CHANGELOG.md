@@ -5,7 +5,7 @@ Todos los cambios destacables de este proyecto se registran aquí. El formato si
 ## [Sin publicar]
 
 ### Agregado
-- **Presentación con identidad por tema**: los 14 temas tienen su propia puesta en escena (consola, tinta, biombo, papel, rejilla suiza, luna, libro mayor, velocidad, fantasma, laca kawaii, halftone manga…), con colores, fondos, tipografías y decoración propios.
+- **Presentación con identidad única por tema**: los 14 temas tienen diseño propio y exclusivo —consola ámbar, tinta sobre arroz, caligrafía con sello rojo, biombo dorado, washi con listones, origami plegado, rejilla suiza, luna estrellada, libro mayor, velocidad shōnen, bruma cian glitch, laca y oro samurái, pastel kawaii y viñeta manga— con fondos, tipografías, formas de carátula, tarjeta y decoración diferenciadas.
 - **Doble clic en una pista** de la biblioteca abre directamente su presentación, aunque el reproductor esté desactivado; selecciona la pista sin iniciar audio.
 - **Presentación de canción accesible con el reproductor desactivado**: botón *Presentar canción* junto al aviso flotante y atajo `Ctrl+Shift+P`. La pantalla muestra la carátula protagonista, una ficha editorial (álbum, año, género, formato, tamaño, duración, favorito) y letras LRC sincronizadas.
 - **Reproductor desactivable**: nueva opción *Desactivado* en Ajustes → Reproductor oculta la barra y pausa la música; un botón flotante (o `Ctrl+P`) lo reactiva. El estado se guarda en `localStorage`.

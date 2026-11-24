@@ -8375,87 +8375,133 @@ html[data-theme-transition='space'] #theme-panel.panel-enter { animation:t-estud
 .cover-full-lyrics p { margin:0 0 9px; font-size:15px; line-height:1.5; color:var(--cf-soft); opacity:.72; transition:color .3s, transform .3s, opacity .3s; }
 .cover-full-lyrics p.is-current { color:var(--cf-fg); opacity:1; font-weight:700; transform:translateX(6px); }
 
-/* --- Estudio / space: consola, rejilla y naranja --- */
-.cover-full[data-skin='space'] { --cf-bg:#15181a; --cf-accent:#f0a23c; --cf-card:linear-gradient(145deg, rgba(240,162,60,.12), rgba(255,255,255,.02)); background:linear-gradient(135deg,#0e1011,#1a1e20); }
-.cover-full[data-skin='space']::before { background-image:linear-gradient(rgba(240,162,60,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(240,162,60,.06) 1px, transparent 1px); background-size:36px 36px; mask-image:none; }
-.cover-full[data-skin='space'] .cover-full-deco span:nth-child(3) { border-radius:0; border-width:1px; opacity:.4; }
+/* --- 01 · Estudio (space): consola de grabación, rejilla y ámbar --- */
+.cover-full[data-skin='space'] { --cf-bg:#15181a; --cf-fg:#f4efe6; --cf-soft:#9aa0a3; --cf-accent:#f0a23c; --cf-card:linear-gradient(145deg, rgba(240,162,60,.12), rgba(255,255,255,.02)); --cf-line:rgba(240,162,60,.28); --cf-radius:4px; background:linear-gradient(135deg,#0e1011,#1a1e20); }
+.cover-full[data-skin='space']::before { background-image:linear-gradient(rgba(240,162,60,.07) 1px, transparent 1px),linear-gradient(90deg, rgba(240,162,60,.07) 1px, transparent 1px); background-size:36px 36px; mask-image:none; }
+.cover-full[data-skin='space'] .cover-full-deco span { border-radius:0; border-color:rgba(240,162,60,.25); }
 .cover-full[data-skin='space'] .cover-full-copy h1 { font-family:'JetBrains Mono',monospace; letter-spacing:-.04em; }
+.cover-full[data-skin='space'] .cover-full-card { border-left:3px solid var(--cf-accent); }
 .cover-full[data-skin='space'] .cover-full-sello { border-radius:2px; }
 
-/* --- Sumi-e / sumie: tinta sobre papel --- */
-.cover-full[data-skin='sumie'], .cover-full[data-skin='sumiink'] { --cf-bg:#0d0c0b; --cf-fg:#e8e5dd; --cf-soft:#9a968c; --cf-accent:#e8e5dd; --cf-radius:2px; background:radial-gradient(ellipse at 30% 20%, #26241f, #0b0a09 70%); }
-.cover-full[data-skin='sumie']::before, .cover-full[data-skin='sumiink']::before { background:none; }
-.cover-full[data-skin='sumie'] .cover-full-deco span:nth-child(1), .cover-full[data-skin='sumiink'] .cover-full-deco span:nth-child(1) { border-color:rgba(232,229,221,.12); border-radius:40% 60% 55% 45%; transform:rotate(-12deg); }
-.cover-full[data-skin='sumie'] .cover-full-deco span:nth-child(3), .cover-full[data-skin='sumiink'] .cover-full-deco span:nth-child(3) { border:0; background:radial-gradient(ellipse, rgba(232,229,221,.1), transparent 70%); border-radius:50%; width:50vw; height:18vw; transform:rotate(-8deg); }
-.cover-full[data-skin='sumie'] .cover-full-art, .cover-full[data-skin='sumiink'] .cover-full-art { filter:grayscale(.9) contrast(1.15); }
-.cover-full[data-skin='sumiink'] { --cf-accent:#b23a2b; }
+/* --- 02 · Sumi-e: tinta sobre arroz, claro y pincel --- */
+.cover-full[data-skin='sumie'] { --cf-bg:#f6f1e6; --cf-fg:#1c1a17; --cf-soft:#6f6a60; --cf-accent:#2f2b26; --cf-card:rgba(255,255,255,.5); --cf-line:rgba(28,26,23,.22); --cf-radius:2px; background:radial-gradient(ellipse at 25% 15%, #fbf7ed, #eae3d2 80%); }
+.cover-full[data-skin='sumie']::before { background:none; }
+.cover-full[data-skin='sumie'] .cover-full-deco span:nth-child(1) { width:70vw; height:26vw; left:-20%; top:24%; border:0; border-radius:50%; background:radial-gradient(ellipse, rgba(28,26,23,.13), transparent 68%); transform:rotate(-14deg); }
+.cover-full[data-skin='sumie'] .cover-full-deco span:nth-child(3) { width:40vw; height:12vw; left:52%; bottom:18%; border:0; border-radius:50%; background:radial-gradient(ellipse, rgba(28,26,23,.1), transparent 70%); transform:rotate(8deg); }
+.cover-full[data-skin='sumie'] .cover-full-deco span:nth-child(2), .cover-full[data-skin='sumie'] .cover-full-deco span:nth-child(4), .cover-full[data-skin='sumie'] .cover-full-deco span:nth-child(5) { display:none; }
+.cover-full[data-skin='sumie'] .cover-full-art { border-radius:0; filter:grayscale(1) contrast(1.1); box-shadow:0 20px 60px rgba(28,26,23,.25); }
+.cover-full[data-skin='sumie'] .cover-full-copy h1 { font-family:'Cormorant Garamond',serif; font-size:54px; }
+.cover-full[data-skin='sumie'] .cover-full-sello { background:rgba(255,255,255,.6); border-radius:0; }
 
-/* --- Byobu: biombo dorado --- */
-.cover-full[data-skin='byobu'] { --cf-bg:#1a1210; --cf-fg:#f2e8d8; --cf-soft:#c9b39a; --cf-accent:#c9a961; background:repeating-linear-gradient(90deg, #1a1210 0 24vw, #221813 24vw 24.4vw, #1a1210 24.4vw 48vw); }
-.cover-full[data-skin='byobu'] .cover-full-deco span { border-radius:0; border-color:rgba(201,169,97,.3); }
+/* --- 03 · Sumi Ink: negro tinta, caligrafía y sello rojo --- */
+.cover-full[data-skin='sumiink'] { --cf-bg:#0a0a09; --cf-fg:#f0eee8; --cf-soft:#8d8981; --cf-accent:#d94a35; --cf-card:rgba(255,255,255,.03); --cf-line:rgba(240,238,232,.14); --cf-radius:0; background:radial-gradient(ellipse at 80% 20%, #191816, #060605 70%); }
+.cover-full[data-skin='sumiink']::before { background:repeating-linear-gradient(112deg, rgba(255,255,255,.018) 0 2px, transparent 2px 9px); mask-image:none; }
+.cover-full[data-skin='sumiink'] .cover-full-deco span:nth-child(3) { width:13vw; height:13vw; right:8%; top:7%; left:auto; bottom:auto; border:4px double var(--cf-accent); border-radius:2px; opacity:.7; transform:rotate(6deg); }
+.cover-full[data-skin='sumiink'] .cover-full-deco span:nth-child(1), .cover-full[data-skin='sumiink'] .cover-full-deco span:nth-child(2), .cover-full[data-skin='sumiink'] .cover-full-deco span:nth-child(4), .cover-full[data-skin='sumiink'] .cover-full-deco span:nth-child(5) { display:none; }
+.cover-full[data-skin='sumiink'] .cover-full-art { filter:grayscale(1) brightness(.85) contrast(1.4); border-color:rgba(255,255,255,.25); }
+.cover-full[data-skin='sumiink'] .cover-full-copy h1 { font-family:'Cormorant Garamond',serif; font-size:50px; line-height:.95; writing-mode:vertical-rl; max-height:280px; }
+.cover-full[data-skin='sumiink'] .cover-full-sello { border:2px solid var(--cf-accent); color:var(--cf-accent); border-radius:0; }
 
-/* --- Shoji: papel y madera --- */
-.cover-full[data-skin='shoji'] { --cf-bg:#f3ebd9; --cf-fg:#2c241a; --cf-soft:#6b6459; --cf-accent:#a8442f; --cf-card:rgba(255,255,255,.55); --cf-line:rgba(44,36,26,.2); --cf-radius:2px; background:linear-gradient(135deg,#f7f0e0,#e9dfc8); }
-.cover-full[data-skin='shoji']::before { background-image:linear-gradient(rgba(44,36,26,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(44,36,26,.07) 1px, transparent 1px); background-size:80px 80px; mask-image:none; }
-.cover-full[data-skin='shoji'] .cover-full-deco span { border:2px solid rgba(44,36,26,.18); border-radius:0; }
+/* --- 04 · Byobu: biombo de hoja de oro, paneles plegados --- */
+.cover-full[data-skin='byobu'] { --cf-bg:#1a1210; --cf-fg:#f5ead8; --cf-soft:#cbb79c; --cf-accent:#d4af37; --cf-card:linear-gradient(135deg, rgba(212,175,55,.14), rgba(0,0,0,.1)); --cf-line:rgba(212,175,55,.35); --cf-radius:0; background:repeating-linear-gradient(90deg, #17100e 0 22vw, #2a1f16 22vw 22.5vw, #1c130f 22.5vw 44vw, #2a1f16 44vw 44.5vw); }
+.cover-full[data-skin='byobu']::before { background:linear-gradient(180deg, rgba(212,175,55,.07), transparent 30%, rgba(212,175,55,.05)); mask-image:none; }
+.cover-full[data-skin='byobu'] .cover-full-deco span { border:1px solid rgba(212,175,55,.28); border-radius:0; }
+.cover-full[data-skin='byobu'] .cover-full-art { border:6px double var(--cf-accent); filter:sepia(.3) saturate(1.1); }
+.cover-full[data-skin='byobu'] .cover-full-copy h1 { font-family:'Cormorant Garamond',serif; font-size:48px; color:var(--cf-accent); }
+.cover-full[data-skin='byobu'] .cover-full-card { border-top:3px solid var(--cf-accent); }
 
-/* --- Origami: papel plegado rosa --- */
-.cover-full[data-skin='origami'] { --cf-bg:#fff8fa; --cf-fg:#5a2f48; --cf-soft:#8a5c74; --cf-accent:#d9547f; --cf-card:rgba(255,255,255,.7); --cf-line:rgba(217,84,127,.28); background:linear-gradient(140deg,#fff8fa,#ffeaf3); }
-.cover-full[data-skin='origami'] .cover-full-art { clip-path:polygon(0 4%, 96% 0, 100% 94%, 5% 100%); }
-.cover-full[data-skin='origami'] .cover-full-deco span:nth-child(1) { border-radius:0; transform:rotate(45deg); }
-.cover-full[data-skin='origami'] .cover-full-deco span:nth-child(3) { clip-path:polygon(50% 0,100% 100%,0 100%); border:0; background:rgba(217,84,127,.16); }
+/* --- 05 · Shoji: papel washi, listones de madera y sello rojo --- */
+.cover-full[data-skin='shoji'] { --cf-bg:#f3ebd9; --cf-fg:#2c241a; --cf-soft:#6b6459; --cf-accent:#a8442f; --cf-card:rgba(255,252,244,.7); --cf-line:rgba(72,48,30,.28); --cf-radius:2px; background:linear-gradient(135deg,#f9f3e4,#e8dec7); }
+.cover-full[data-skin='shoji']::before { background-image:linear-gradient(rgba(72,48,30,.12) 2px, transparent 2px),linear-gradient(90deg, rgba(72,48,30,.12) 2px, transparent 2px); background-size:96px 96px; mask-image:none; }
+.cover-full[data-skin='shoji'] .cover-full-deco span { border:3px solid rgba(72,48,30,.22); border-radius:0; }
+.cover-full[data-skin='shoji'] .cover-full-art { border:8px solid #6b4a2f; box-shadow:0 0 0 3px #d8c9a8, 0 20px 50px rgba(72,48,30,.3); }
+.cover-full[data-skin='shoji'] .cover-full-copy h1 { font-family:'Cormorant Garamond',serif; }
+.cover-full[data-skin='shoji'] .cover-full-sello { border:2px solid var(--cf-accent); color:var(--cf-accent); background:#fffdf7; }
 
-/* --- Swiss: rejilla estricta, blanco y negro --- */
+/* --- 06 · Origami: papel plegado rosa, geometría angular --- */
+.cover-full[data-skin='origami'] { --cf-bg:#fff5fa; --cf-fg:#5a2f48; --cf-soft:#91657e; --cf-accent:#e0568f; --cf-card:rgba(255,255,255,.78); --cf-line:rgba(224,86,143,.35); --cf-radius:22px; background:linear-gradient(140deg,#fff8fc,#ffe0ee); }
+.cover-full[data-skin='origami'] .cover-full-deco span:nth-child(1) { width:60vw; height:60vw; left:-18%; top:-28%; border:0; background:linear-gradient(135deg, rgba(224,86,143,.16), transparent 55%); clip-path:polygon(0 0,100% 0,0 100%); }
+.cover-full[data-skin='origami'] .cover-full-deco span:nth-child(3) { width:48vw; height:48vw; right:-16%; bottom:-22%; left:auto; top:auto; border:0; background:linear-gradient(315deg, rgba(224,86,143,.14), transparent 55%); clip-path:polygon(100% 0,100% 100%,0 100%); }
+.cover-full[data-skin='origami'] .cover-full-deco span:nth-child(2), .cover-full[data-skin='origami'] .cover-full-deco span:nth-child(4), .cover-full[data-skin='origami'] .cover-full-deco span:nth-child(5) { display:none; }
+.cover-full[data-skin='origami'] .cover-full-art { clip-path:polygon(0 5%,95% 0,100% 95%,5% 100%); box-shadow:none; border:0; }
+.cover-full[data-skin='origami'] .cover-full-card { clip-path:polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 0 100%); }
+.cover-full[data-skin='origami'] .cover-full-sello { border-radius:22px; background:#fff; }
+
+/* --- 07 · Swiss: cuadrícula estricta, blanco/negro, tipografía --- */
 .cover-full[data-skin='swiss'] { --cf-bg:#fff; --cf-fg:#111; --cf-soft:#555; --cf-accent:#111; --cf-card:#fff; --cf-line:#111; --cf-radius:0; background:#fff; }
 .cover-full[data-skin='swiss']::before, .cover-full[data-skin='swiss'] .cover-full-deco { display:none; }
-.cover-full[data-skin='swiss'] .cover-full-inner { border-left:1px solid #111; border-right:1px solid #111; }
-.cover-full[data-skin='swiss'] .cover-full-art { border:2px solid #111; filter:grayscale(1) contrast(1.2); }
-.cover-full[data-skin='swiss'] .cover-full-copy h1 { font-family:'Helvetica Neue',Arial,sans-serif; font-weight:800; text-transform:uppercase; }
+.cover-full[data-skin='swiss'] .cover-full-inner { border-left:2px solid #111; border-right:2px solid #111; gap:56px; }
+.cover-full[data-skin='swiss'] .cover-full-art { border:3px solid #111; filter:grayscale(1) contrast(1.3); box-shadow:12px 12px 0 #111; }
+.cover-full[data-skin='swiss'] .cover-full-copy h1 { font-family:'Helvetica Neue',Arial,sans-serif; font-weight:800; font-size:58px; text-transform:uppercase; line-height:.92; letter-spacing:-.05em; }
+.cover-full[data-skin='swiss'] .cover-full-kicker::before { content:'01 / '; }
+.cover-full[data-skin='swiss'] .cover-full-card { border:3px solid #111; box-shadow:none; }
 .cover-full[data-skin='swiss'] .cover-full-sello { border-radius:0; border:2px solid #111; }
+.cover-full[data-skin='swiss'] .cover-full-lyrics { border-top:1px solid #111; }
 
-/* --- Moonlit: noche azul y estrellas --- */
-.cover-full[data-skin='moonlit'] { --cf-bg:#0b1324; --cf-fg:#dfe8f7; --cf-soft:#8fa3bf; --cf-accent:#8fb6e8; --cf-card:rgba(143,182,232,.08); --cf-line:rgba(143,182,232,.25); background:radial-gradient(ellipse at 70% 10%, #1b2c50, #080e1c 70%); }
-.cover-full[data-skin='moonlit']::before { background-image:radial-gradient(#dfe8f7 1px, transparent 1px); background-size:48px 48px; opacity:.35; }
-.cover-full[data-skin='moonlit'] .cover-full-halo { background:conic-gradient(#8fb6e8, #dfe8f7, #8fb6e8); }
+/* --- 08 · Moonlit: noche azul, luna y estrellas --- */
+.cover-full[data-skin='moonlit'] { --cf-bg:#0b1324; --cf-fg:#e6effb; --cf-soft:#93a9c7; --cf-accent:#8fb6e8; --cf-card:rgba(143,182,232,.09); --cf-line:rgba(143,182,232,.28); --cf-radius:18px; background:radial-gradient(ellipse at 72% 12%, #1e3563, #070d1b 72%); }
+.cover-full[data-skin='moonlit']::before { background-image:radial-gradient(#e6effb 1px, transparent 1px); background-size:54px 54px; opacity:.38; }
+.cover-full[data-skin='moonlit'] .cover-full-deco span:nth-child(1) { width:26vw; height:26vw; right:6%; top:6%; left:auto; border:0; border-radius:50%; background:radial-gradient(circle at 35% 35%, #f2f7ff, #9fbfe8 60%, transparent 72%); opacity:.6; }
+.cover-full[data-skin='moonlit'] .cover-full-deco span:nth-child(2), .cover-full[data-skin='moonlit'] .cover-full-deco span:nth-child(4), .cover-full[data-skin='moonlit'] .cover-full-deco span:nth-child(5) { display:none; }
+.cover-full[data-skin='moonlit'] .cover-full-halo { background:conic-gradient(#8fb6e8,#e6effb,#8fb6e8); }
+.cover-full[data-skin='moonlit'] .cover-full-art { box-shadow:0 0 90px rgba(143,182,232,.32); }
+.cover-full[data-skin='moonlit'] .cover-full-copy h1 { font-family:'Cormorant Garamond',serif; font-weight:500; }
 
-/* --- Ledger: libro mayor, papel y sello rojo --- */
-.cover-full[data-skin='ledger'] { --cf-bg:#f4eddc; --cf-fg:#2c241a; --cf-soft:#6b6252; --cf-accent:#a33a2a; --cf-card:rgba(255,255,255,.45); --cf-line:rgba(163,58,42,.25); --cf-radius:2px; background:repeating-linear-gradient(#f6efde 0 31px, rgba(163,58,42,.12) 31px 32px); }
-.cover-full[data-skin='ledger'] .cover-full-deco span:nth-child(3) { border:3px double var(--cf-accent); border-radius:50%; transform:none; }
-.cover-full[data-skin='ledger'] .cover-full-copy h1 { font-family:'Cormorant Garamond',serif; font-size:52px; }
-.cover-full[data-skin='ledger'] .cover-full-sello { border-radius:2px; border-color:var(--cf-accent); color:var(--cf-accent); }
+/* --- 09 · Ledger: libro mayor, columnas y timbre --- */
+.cover-full[data-skin='ledger'] { --cf-bg:#f5eedb; --cf-fg:#2b2419; --cf-soft:#716854; --cf-accent:#a33a2a; --cf-card:rgba(255,255,255,.48); --cf-line:rgba(163,58,42,.3); --cf-radius:2px; background:repeating-linear-gradient(#f8f1df 0 30px, rgba(163,58,42,.14) 30px 31px); }
+.cover-full[data-skin='ledger']::before { background:repeating-linear-gradient(90deg, transparent 0 68%, rgba(163,58,42,.12) 68% 68.3%, transparent 68.3%); mask-image:none; }
+.cover-full[data-skin='ledger'] .cover-full-deco span:nth-child(3) { width:12vw; height:12vw; right:9%; top:8%; left:auto; bottom:auto; border:4px double var(--cf-accent); border-radius:50%; transform:rotate(-14deg); opacity:.7; }
+.cover-full[data-skin='ledger'] .cover-full-deco span:nth-child(1), .cover-full[data-skin='ledger'] .cover-full-deco span:nth-child(2), .cover-full[data-skin='ledger'] .cover-full-deco span:nth-child(4), .cover-full[data-skin='ledger'] .cover-full-deco span:nth-child(5) { display:none; }
+.cover-full[data-skin='ledger'] .cover-full-art { filter:sepia(.4) contrast(1.1); border:1px solid rgba(43,36,25,.3); }
+.cover-full[data-skin='ledger'] .cover-full-copy h1 { font-family:'Cormorant Garamond',serif; font-size:54px; }
+.cover-full[data-skin='ledger'] .cover-full-kicker { font-family:'JetBrains Mono',monospace; }
+.cover-full[data-skin='ledger'] .cover-full-sello { border:2px solid var(--cf-accent); color:var(--cf-accent); border-radius:2px; transform:rotate(-3deg); }
 
-/* --- Shonen: velocidad y naranja --- */
-.cover-full[data-skin='shonen'] { --cf-bg:#fff6e8; --cf-fg:#1c1c1c; --cf-soft:#8a6a45; --cf-accent:#ff6b1a; --cf-card:rgba(255,255,255,.8); --cf-line:rgba(255,107,26,.35); --cf-radius:3px; background:#fff6e8; }
-.cover-full[data-skin='shonen']::before { background:repeating-conic-gradient(from 0deg at 50% 50%, rgba(255,107,26,.08) 0deg 3deg, transparent 3deg 9deg); opacity:.5; mask-image:none; }
-.cover-full[data-skin='shonen'] .cover-full-copy h1 { font-style:italic; font-weight:900; text-transform:uppercase; }
-.cover-full[data-skin='shonen'] .cover-full-art { transform:rotate(-2deg); }
+/* --- 10 · Shōnen: líneas de velocidad y naranja eléctrico --- */
+.cover-full[data-skin='shonen'] { --cf-bg:#fff6e8; --cf-fg:#16120c; --cf-soft:#8a6a45; --cf-accent:#ff6b1a; --cf-card:rgba(255,255,255,.85); --cf-line:rgba(255,107,26,.45); --cf-radius:3px; background:#fff6e8; }
+.cover-full[data-skin='shonen']::before { background:repeating-conic-gradient(from 0deg at 50% 50%, rgba(255,107,26,.12) 0deg 2deg, transparent 2deg 7deg); opacity:.55; mask-image:none; }
+.cover-full[data-skin='shonen'] .cover-full-deco span { border:0; border-left:3px solid var(--cf-accent); border-radius:0; height:1px; width:60vw; transform:rotate(-24deg); opacity:.3; }
+.cover-full[data-skin='shonen'] .cover-full-copy h1 { font-style:italic; font-weight:900; font-size:56px; text-transform:uppercase; text-shadow:3px 3px 0 var(--cf-accent); }
+.cover-full[data-skin='shonen'] .cover-full-art { transform:rotate(-3deg); border:4px solid #16120c; }
+.cover-full[data-skin='shonen'] .cover-full-card { transform:rotate(1deg); box-shadow:6px 6px 0 var(--cf-accent); }
 
-/* --- Fantasmas / ghost: cian espectral --- */
-.cover-full[data-skin='ghost'] { --cf-bg:#0a1018; --cf-fg:#e6f7fb; --cf-soft:#7f9bab; --cf-accent:#67e8f9; --cf-card:rgba(103,232,249,.06); --cf-line:rgba(103,232,249,.25); background:radial-gradient(ellipse at 50% 80%, #123040, #070c12 75%); }
-.cover-full[data-skin='ghost'] .cover-full-halo { background:conic-gradient(#67e8f9, #a5f3fc, #67e8f9); opacity:.3; }
-.cover-full[data-skin='ghost'] .cover-full-art { box-shadow:0 0 80px rgba(103,232,249,.25); }
-.cover-full[data-skin='ghost'] .cover-full-lyrics p { letter-spacing:.04em; }
+/* --- 11 · Fantasmas: bruma cian, glitch y neón --- */
+.cover-full[data-skin='ghost'] { --cf-bg:#070d12; --cf-fg:#eafcff; --cf-soft:#7fa0ad; --cf-accent:#4ff0e0; --cf-card:rgba(79,240,224,.05); --cf-line:rgba(79,240,224,.3); --cf-radius:0; background:radial-gradient(ellipse at 50% 85%, #12313b, #05090d 78%); }
+.cover-full[data-skin='ghost']::before { background:repeating-linear-gradient(0deg, rgba(79,240,224,.04) 0 1px, transparent 1px 4px); mask-image:none; }
+.cover-full[data-skin='ghost'] .cover-full-deco span:nth-child(1) { width:90vw; height:40vw; left:-20%; top:50%; border:0; border-radius:50%; background:radial-gradient(ellipse, rgba(79,240,224,.12), transparent 70%); filter:blur(30px); }
+.cover-full[data-skin='ghost'] .cover-full-deco span:nth-child(2), .cover-full[data-skin='ghost'] .cover-full-deco span:nth-child(3), .cover-full[data-skin='ghost'] .cover-full-deco span:nth-child(4), .cover-full[data-skin='ghost'] .cover-full-deco span:nth-child(5) { display:none; }
+.cover-full[data-skin='ghost'] .cover-full-art { box-shadow:0 0 90px rgba(79,240,224,.3); filter:hue-rotate(25deg) saturate(.8); }
+.cover-full[data-skin='ghost'] .cover-full-copy h1 { letter-spacing:.12em; font-weight:300; text-shadow:-2px 0 rgba(255,0,120,.5), 2px 0 rgba(0,255,255,.5); }
+.cover-full[data-skin='ghost'] .cover-full-lyrics p { letter-spacing:.14em; font-weight:300; }
 
-/* --- Samurai: laca, oro y carmesí --- */
-.cover-full[data-skin='samurai'] { --cf-bg:#1a1512; --cf-fg:#efe6d6; --cf-soft:#a89985; --cf-accent:#c9a961; --cf-card:rgba(201,169,97,.07); --cf-line:rgba(201,169,97,.3); background:radial-gradient(ellipse at 30% 10%, #2c211a, #120e0b 75%); }
-.cover-full[data-skin='samurai'] .cover-full-deco span:nth-child(3) { border:6px double var(--cf-accent); border-radius:50%; width:16vw; height:16vw; opacity:.5; }
-.cover-full[data-skin='samurai'] .cover-full-copy h1 { font-family:'Cormorant Garamond',serif; letter-spacing:.04em; }
+/* --- 12 · Samurái: laca negra, oro y estandarte rojo --- */
+.cover-full[data-skin='samurai'] { --cf-bg:#17120e; --cf-fg:#f0e7d7; --cf-soft:#a89a84; --cf-accent:#c9a961; --cf-card:linear-gradient(135deg, rgba(201,169,97,.1), rgba(0,0,0,.15)); --cf-line:rgba(201,169,97,.35); --cf-radius:0; background:radial-gradient(ellipse at 25% 10%, #2e2219, #0d0a08 72%); }
+.cover-full[data-skin='samurai']::before { background:linear-gradient(90deg, rgba(183,53,42,.18) 0 8px, transparent 8px); mask-image:none; }
+.cover-full[data-skin='samurai'] .cover-full-deco span:nth-child(3) { width:14vw; height:14vw; right:8%; top:8%; left:auto; bottom:auto; border:7px double var(--cf-accent); border-radius:50%; opacity:.55; }
+.cover-full[data-skin='samurai'] .cover-full-deco span:nth-child(1), .cover-full[data-skin='samurai'] .cover-full-deco span:nth-child(2), .cover-full[data-skin='samurai'] .cover-full-deco span:nth-child(4), .cover-full[data-skin='samurai'] .cover-full-deco span:nth-child(5) { display:none; }
+.cover-full[data-skin='samurai'] .cover-full-art { border:5px solid var(--cf-accent); box-shadow:inset 0 0 60px rgba(201,169,97,.15); }
+.cover-full[data-skin='samurai'] .cover-full-copy h1 { font-family:'Cormorant Garamond',serif; font-size:52px; letter-spacing:.06em; }
 .cover-full[data-skin='samurai'] .cover-full-card-head button.is-fav { color:#b7352a; }
 
-/* --- Kawaii: pastel y corazones --- */
-.cover-full[data-skin='kawaii'] { --cf-bg:#fff7fb; --cf-fg:#5a2f48; --cf-soft:#8a5c74; --cf-accent:#ff9ec4; --cf-card:rgba(255,255,255,.75); --cf-line:rgba(255,158,196,.45); --cf-radius:26px; background:linear-gradient(140deg,#fff7fb,#ffe9f4); }
-.cover-full[data-skin='kawaii'] .cover-full-deco span { border-color:rgba(255,158,196,.4); border-radius:50%; }
-.cover-full[data-skin='kawaii'] .cover-full-art { border:4px solid #fff; box-shadow:0 20px 60px rgba(229,116,155,.3); }
-.cover-full[data-skin='kawaii'] .cover-full-copy h1 { font-weight:800; }
-.cover-full[data-skin='kawaii'] .cover-full-sello { background:#fff; }
+/* --- 13 · Kawaii: pastel, corazones y nubes --- */
+.cover-full[data-skin='kawaii'] { --cf-bg:#fff7fb; --cf-fg:#61324f; --cf-soft:#9c6f88; --cf-accent:#ff8fbe; --cf-card:rgba(255,255,255,.82); --cf-line:rgba(255,143,190,.5); --cf-radius:28px; background:radial-gradient(circle at 15% 15%, #ffe3f1, #fff8fc 55%, #e8fff5); }
+.cover-full[data-skin='kawaii']::before { background-image:radial-gradient(circle, rgba(255,143,190,.25) 3px, transparent 4px); background-size:44px 44px; opacity:.5; }
+.cover-full[data-skin='kawaii'] .cover-full-deco span { border:3px dotted var(--cf-accent); border-radius:50%; opacity:.45; }
+.cover-full[data-skin='kawaii'] .cover-full-art { border:6px solid #fff; border-radius:28px; box-shadow:0 18px 50px rgba(255,143,190,.4); }
+.cover-full[data-skin='kawaii'] .cover-full-copy h1 { font-weight:800; letter-spacing:-.02em; }
+.cover-full[data-skin='kawaii'] .cover-full-copy h1::before { content:'♥ '; color:var(--cf-accent); font-size:.7em; }
+.cover-full[data-skin='kawaii'] .cover-full-card { border-radius:28px; box-shadow:0 12px 30px rgba(255,143,190,.2); }
+.cover-full[data-skin='kawaii'] .cover-full-sello { border-radius:28px; background:#fff; }
 
-/* --- Manga: tinta, halftone y rojo --- */
-.cover-full[data-skin='manga'] { --cf-bg:#fbfaf7; --cf-fg:#101010; --cf-soft:#555; --cf-accent:#d62828; --cf-card:#fff; --cf-line:#101010; --cf-radius:0; background:#fbfaf7; }
-.cover-full[data-skin='manga']::before { background-image:radial-gradient(#101010 1px, transparent 1px); background-size:6px 6px; opacity:.14; mask-image:none; }
-.cover-full[data-skin='manga'] .cover-full-deco span { border:3px solid #101010; border-radius:0; opacity:.6; }
-.cover-full[data-skin='manga'] .cover-full-art { border:3px solid #101010; filter:grayscale(1) contrast(1.3); box-shadow:8px 8px 0 var(--cf-accent); }
-.cover-full[data-skin='manga'] .cover-full-card { border:3px solid #101010; box-shadow:6px 6px 0 #101010; }
-.cover-full[data-skin='manga'] .cover-full-copy h1 { font-weight:900; text-transform:uppercase; }
+/* --- 14 · Manga: viñeta, halftone y tinta roja --- */
+.cover-full[data-skin='manga'] { --cf-bg:#fdfcf8; --cf-fg:#0d0d0d; --cf-soft:#4a4a4a; --cf-accent:#d62828; --cf-card:#fff; --cf-line:#0d0d0d; --cf-radius:0; background:#fdfcf8; }
+.cover-full[data-skin='manga']::before { background-image:radial-gradient(#0d0d0d 1.2px, transparent 1.2px); background-size:7px 7px; opacity:.18; mask-image:none; }
+.cover-full[data-skin='manga'] .cover-full-deco span { border:4px solid #0d0d0d; border-radius:0; opacity:.7; }
+.cover-full[data-skin='manga'] .cover-full-art { border:4px solid #0d0d0d; filter:grayscale(1) contrast(1.4); box-shadow:10px 10px 0 var(--cf-accent); }
+.cover-full[data-skin='manga'] .cover-full-copy h1 { font-weight:900; text-transform:uppercase; font-size:52px; letter-spacing:-.03em; }
+.cover-full[data-skin='manga'] .cover-full-copy h1::after { content:'!!'; color:var(--cf-accent); }
+.cover-full[data-skin='manga'] .cover-full-card { border:4px solid #0d0d0d; box-shadow:8px 8px 0 #0d0d0d; }
+.cover-full[data-skin='manga'] .cover-full-sello { border:3px solid #0d0d0d; border-radius:0; background:#fff; }
 
 @media (max-width: 760px) {
   .cover-full-inner { grid-template-columns:1fr; gap:18px; padding:22px 18px 40px; align-content:start; }
