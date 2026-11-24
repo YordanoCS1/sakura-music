@@ -6,6 +6,7 @@
 import { invoke as invocarTauri } from '@tauri-apps/api/core';
 import { listen as escucharTauri } from '@tauri-apps/api/event';
 import { convertFileSrc as archivoTauri } from '@tauri-apps/api/core';
+import { open as abrirTauri } from '@tauri-apps/plugin-dialog';
 
 export function esEscritorio(): boolean {
   // En los tests unitarios se mockea el módulo de Tauri, así que se comporta
@@ -43,6 +44,14 @@ export async function listen<T>(
 ): Promise<() => void> {
   if (esEscritorio()) return escucharTauri<T>(evento, manejador);
   return () => undefined;
+}
+
+/** Abre un diálogo nativo en la PC; en el celular no hay selector de archivos. */
+export async function open(
+  opciones: Parameters<typeof abrirTauri>[0],
+): Promise<Awaited<ReturnType<typeof abrirTauri>>> {
+  if (!esEscritorio()) return null as Awaited<ReturnType<typeof abrirTauri>>;
+  return abrirTauri(opciones);
 }
 
 /** Manda una acción de reproducción al servidor (sólo tiene efecto en el celular). */

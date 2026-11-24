@@ -798,6 +798,30 @@ test('Ajustes → Sistema muestra la salud de la base y los registros', async ({
   await expect(panel.locator('.sys-estado')).toContainText('Base compactada');
 });
 
+test('la interfaz carga en el celular sin el bridge de Tauri', async ({ page }) => {
+  // El navegador del celular no tiene __TAURI_INTERNALS__: ningún módulo de
+  // Tauri debe ejecutarse al montar y romper la app.
+  await page.addInitScript(() => {
+    delete (window as unknown as Record<string, unknown>).__TAURI_INTERNALS__;
+  });
+  await page.route('**/api/status', (ruta) =>
+    ruta.fulfill({
+      json: {
+        title: 'Pista de prueba',
+        artist: 'Artista',
+        playing: true,
+        position: 10,
+        duration: 200,
+      },
+    }),
+  );
+  await page.goto('/');
+  await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });
+  await expect(page.getByText('La interfaz encontró un problema')).toHaveCount(0);
+  await expect(page.getByRole('tab', { name: /Biblioteca/ })).toBeVisible();
+  await expect(page.locator('.remote-status')).toBeVisible({ timeout: 5_000 });
+});
+
 test('el control remoto genera un QR con la IP indicada', async ({ page }) => {
   await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
   await page.goto('/');

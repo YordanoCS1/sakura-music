@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { convertFileSrc, invoke } from '../lib/puente';
-import { open } from '@tauri-apps/plugin-dialog';
+import { open } from '../lib/puente';
 import type { ScannedTrack } from '../types';
 import type { BatchUpdateResult } from '../types';
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { Maximize2, Minus, Minimize2, X } from 'lucide-react';
+import { esEscritorio } from '../lib/puente';
 
 interface TitleBarProps {
   nombreTema?: string;
@@ -13,6 +14,8 @@ export default function TitleBar({ nombreTema = 'Estudio' }: TitleBarProps) {
   const [isMax, setIsMax] = useState(false);
 
   useEffect(() => {
+    // En el celular no hay ventana nativa: la barra se oculta en el render.
+    if (!esEscritorio()) return;
     const win = getCurrentWindow();
     let disposed = false;
     (async () => {
@@ -33,6 +36,8 @@ export default function TitleBar({ nombreTema = 'Estudio' }: TitleBarProps) {
       unlisten.then((fn) => fn?.()).catch(() => {});
     };
   }, []);
+
+  if (!esEscritorio()) return null;
 
   return (
     <div className="titlebar" data-tauri-drag-region>

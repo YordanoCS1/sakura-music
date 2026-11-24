@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { invoke } from './lib/puente';
 import { convertFileSrc } from './lib/puente';
 import { listen } from './lib/puente';
-import { open } from '@tauri-apps/plugin-dialog';
+import { open } from './lib/puente';
 import { Search, Heart, X, AudioLines, Music2 } from 'lucide-react';
 
 import type {
