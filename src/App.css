@@ -6071,6 +6071,16 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .set-remoto-pin { margin:0; font-size:11px; color:var(--set-suave); }
 .set-remoto-pin b { color:var(--set-texto); font:13px 'JetBrains Mono',monospace; letter-spacing:2px; margin-left:4px; }
 .set-remoto-pin small { display:block; margin-top:3px; font-size:9px; }
+
+/* Panel de "ahora suena" cuando la app corre en el celular (sin streaming). */
+.remote-status { position:sticky; bottom:0; z-index:120; margin:10px; padding:10px 12px; border:1px solid var(--set-linea); border-radius:12px; background:var(--set-panel); box-shadow:0 -8px 24px rgba(0,0,0,.35); }
+.remote-status-cab { display:flex; align-items:center; gap:6px; color:var(--set-accento); }
+.remote-status-cab small { flex:1; color:var(--set-suave); font-size:9px; text-transform:uppercase; letter-spacing:.08em; }
+.remote-status-cab button { display:grid; place-items:center; width:30px; height:30px; border:1px solid var(--set-linea); border-radius:50%; background:transparent; color:var(--set-texto); }
+.remote-status strong { display:block; margin-top:6px; font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.remote-status > small { color:var(--set-suave); font-size:10px; }
+.remote-status-barra { height:3px; margin-top:8px; border-radius:3px; background:var(--set-linea); overflow:hidden; }
+.remote-status-barra i { display:block; height:100%; background:var(--set-accento); }
 .set-specs { margin:0; display:flex; flex-direction:column; }
 .set-specs div { display:flex; justify-content:space-between; gap:10px; padding:9px 0; border-bottom:1px solid var(--set-linea); font-size:11px; }
 .set-specs div:last-child { border:0; }

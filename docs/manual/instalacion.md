@@ -92,10 +92,15 @@ sesión y muestra la interfaz de Sakura Music en el navegador del celular. Si
 escribe la URL a mano, el PIN se pide en un formulario.
 
 Si la app no detecta la IP de la red (aparece `127.0.0.1`), escriba la IP de la
-PC en el campo y el QR se generará con ese valor. La interfaz del celular es la
-misma aplicación (temas incluidos), pero **no transmite el audio**: la música
-sigue sonando en la computadora. El PIN se renueva cada vez que se activa el
-servidor y se descarta al desactivarlo.
+PC en el campo y el QR se generará con ese valor. El PIN se renueva cada vez que
+se activa el servidor y se descarta al desactivarlo.
+
+La interfaz del celular es **la misma aplicación** (temas incluidos). Desde el
+teléfono puede ver la biblioteca, buscar, reproducir, **mandar descargas**,
+editar metadatos, administrar playlists y la papelera y consultar el doctor del
+sistema. Todas las acciones se ejecutan en la computadora; el celular solo
+envía comandos por la red local. **No hay streaming**: la música sigue sonando
+en la PC y el panel «Sonando en la PC» muestra el estado.
 
 Si el celular dice que no puede acceder al sitio, habilite el puerto en el
 firewall de Windows (como Administrador):

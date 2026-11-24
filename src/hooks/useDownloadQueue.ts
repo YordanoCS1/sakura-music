@@ -2,8 +2,8 @@
 // cancelación y reintento. Persiste en download_queue.json vía comandos Tauri.
 
 import { useEffect, useRef, useState } from 'react';
-import { invoke } from '@tauri-apps/api/core';
-import { listen } from '@tauri-apps/api/event';
+import { invoke } from '../lib/puente';
+import { listen } from '../lib/puente';
 import { notificarDescarga } from '../lib/notificaciones';
 import type { DownloadItem, DownloadProgressEvent } from '../types';
 import type { PersistedDownload } from '../lib/queue';

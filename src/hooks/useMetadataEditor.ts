@@ -3,7 +3,7 @@
 // búsqueda en iTunes, Deezer y MusicBrainz, y guardado atómico.
 
 import { useState } from 'react';
-import { convertFileSrc, invoke } from '@tauri-apps/api/core';
+import { convertFileSrc, invoke } from '../lib/puente';
 import { open } from '@tauri-apps/plugin-dialog';
 import type {
   CatalogAlbum,

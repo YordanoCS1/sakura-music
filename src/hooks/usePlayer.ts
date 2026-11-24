@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { convertFileSrc } from '@tauri-apps/api/core';
+import { accionRemota, convertFileSrc, esEscritorio } from '../lib/puente';
 import type { ScannedTrack } from '../types';
 
 interface UsePlayerDeps {
@@ -46,6 +46,12 @@ export function usePlayer({
 
   const handlePlayTrack = async (track: ScannedTrack) => {
     setActiveTrack(track);
+    if (!esEscritorio()) {
+      // En el celular no hay audio local: la PC es la que reproduce.
+      void accionRemota(`play?id=${encodeURIComponent(track.id)}`);
+      setIsPlaying(true);
+      return;
+    }
     if (!audioRef.current) return;
 
     try {
@@ -74,6 +80,11 @@ export function usePlayer({
   }, []);
 
   const togglePlay = () => {
+    if (!esEscritorio()) {
+      void accionRemota('playpause');
+      setIsPlaying((valor) => !valor);
+      return;
+    }
     if (!audioRef.current) return;
     if (!activeTrack && tracks.length > 0) {
       void handlePlayTrack(tracks[0]);
@@ -91,6 +102,10 @@ export function usePlayer({
   };
 
   const handleNextTrack = (auto = false) => {
+    if (!esEscritorio()) {
+      void accionRemota('next');
+      return;
+    }
     const siguiente = playNextRef.current.shift();
     if (siguiente) {
       void handlePlayTrack(siguiente);
@@ -118,6 +133,10 @@ export function usePlayer({
   };
 
   const handlePreviousTrack = () => {
+    if (!esEscritorio()) {
+      void accionRemota('prev');
+      return;
+    }
     const queue = playbackQueueRef.current;
     if (queue.length === 0) return;
     if (currentTimeRef.current > 3) {
@@ -150,6 +169,10 @@ export function usePlayer({
   const handleSeek = (event: React.ChangeEvent<HTMLInputElement>) => {
     const targetTime = parseFloat(event.target.value);
     currentTimeRef.current = targetTime;
+    if (!esEscritorio()) {
+      void accionRemota(`seek?value=${targetTime}`);
+      return;
+    }
     if (audioRef.current) {
       audioRef.current.currentTime = targetTime;
     }
@@ -165,6 +188,9 @@ export function usePlayer({
 
   const handleVolumeChange = (newVolume: number) => {
     setVolume(newVolume);
+    if (!esEscritorio()) {
+      void accionRemota(`volume?value=${Math.round(newVolume * 100)}`);
+    }
     if (isMuted) setIsMuted(false);
   };
 

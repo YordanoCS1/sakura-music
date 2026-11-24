@@ -2,8 +2,8 @@
 // Mantiene fuera de App.tsx el diálogo con yt-dlp y sus eventos de progreso.
 
 import { useState } from 'react';
-import { invoke } from '@tauri-apps/api/core';
-import { listen } from '@tauri-apps/api/event';
+import { invoke } from '../lib/puente';
+import { listen } from '../lib/puente';
 import type { OnlineSearchResult, PlaylistInfo } from '../types';
 
 type ActiveTab = 'home' | 'search' | 'library' | 'queue' | 'settings';

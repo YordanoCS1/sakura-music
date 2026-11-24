@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { invoke } from '@tauri-apps/api/core';
-import { listen } from '@tauri-apps/api/event';
+import { invoke } from '../lib/puente';
+import { listen } from '../lib/puente';
 import { Check, Download, Loader2 } from 'lucide-react';
 import type { ToolProgress, ToolStatus } from '../types';
 

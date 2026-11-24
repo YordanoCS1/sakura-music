@@ -19,7 +19,7 @@ import {
   X,
 } from 'lucide-react';
 import { useFocusTrap } from '../hooks/useFocusTrap';
-import { convertFileSrc } from '@tauri-apps/api/core';
+import { convertFileSrc } from '../lib/puente';
 import ThemedLoader from './ThemedLoader';
 import type {
   CatalogAlbum,

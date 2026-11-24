@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { invoke } from '@tauri-apps/api/core';
-import { listen } from '@tauri-apps/api/event';
+import { invoke } from '../lib/puente';
+import { listen } from '../lib/puente';
 import type { ScannedTrack } from '../types';
 
 type RemoteCommand =
@@ -10,7 +10,8 @@ type RemoteCommand =
   | { action: 'previous' }
   | { action: 'play_track'; track: ScannedTrack }
   | { action: 'set_volume'; value: number }
-  | { action: 'seek'; seconds: number };
+  | { action: 'seek'; seconds: number }
+  | { action: 'invoke'; id: string; cmd: string; args: Record<string, unknown> };
 
 interface UseRemoteControlDeps {
   audioRef: React.RefObject<HTMLAudioElement | null>;
@@ -80,6 +81,24 @@ export function useRemoteControl({
         case 'seek':
           if (audioRef.current) audioRef.current.currentTime = payload.seconds;
           break;
+        case 'invoke': {
+          // El celular pide un comando: se ejecuta acá, con los State reales.
+          void invoke<unknown>(payload.cmd, payload.args)
+            .then((valor) =>
+              invoke('remote_responder', {
+                id: payload.id,
+                resultado: { ok: true, valor: valor ?? null },
+              }),
+            )
+            .catch((error: unknown) =>
+              invoke('remote_responder', {
+                id: payload.id,
+                resultado: { ok: false, error: String(error) },
+              }),
+            )
+            .catch(() => undefined);
+          break;
+        }
       }
     })
       .then((fn) => {

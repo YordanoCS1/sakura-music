@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { invoke } from '@tauri-apps/api/core';
+import { invoke } from '../lib/puente';
 import { Edit3, Heart, ListPlus, Pause, Play, Trash2, X } from 'lucide-react';
 import type { Playlist, ScannedTrack, ThemeMode } from '../types';
 import { sonidoUI } from '../lib/sonidos';

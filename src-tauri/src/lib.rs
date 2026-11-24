@@ -307,6 +307,24 @@ fn remote_pin() -> String {
     remote::pin_actual()
 }
 
+/// Devuelve al servidor HTTP el resultado de un comando ejecutado en la PC.
+#[tauri::command]
+fn remote_responder(id: String, resultado: serde_json::Value) {
+    let resolucion = if resultado.get("ok") == Some(&serde_json::Value::Bool(false)) {
+        Err(resultado
+            .get("error")
+            .and_then(|v| v.as_str())
+            .unwrap_or("Error al ejecutar el comando")
+            .to_string())
+    } else {
+        Ok(resultado
+            .get("valor")
+            .cloned()
+            .unwrap_or(serde_json::Value::Null))
+    };
+    remote::responder_invoke(&id, resolucion);
+}
+
 #[tauri::command]
 fn remote_update_state(title: String, artist: String, playing: bool, position: f64, duration: f64) {
     // El estado del remoto no es crítico: si llega un texto desmedido se
@@ -866,6 +884,7 @@ pub fn run() {
             remote_is_enabled,
             remote_local_ip,
             remote_pin,
+            remote_responder,
             remote_update_state,
             clear_library_cache,
             delete_library_track,

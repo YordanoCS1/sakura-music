@@ -5,15 +5,17 @@
 
 use parking_lot::Mutex;
 use serde::{Deserialize, Serialize};
-use std::collections::HashSet;
+use serde_json::Value;
+use std::collections::{HashMap, HashSet};
 use std::io::{Read, Write};
 use std::net::{TcpListener, TcpStream, UdpSocket};
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
+use std::sync::mpsc;
 use std::sync::{Arc, OnceLock};
 use std::thread;
 use std::time::{SystemTime, UNIX_EPOCH};
-use tauri::Emitter;
+use tauri::{Emitter, Manager};
 
 pub const PUERTO: u16 = 17342;
 
@@ -54,6 +56,12 @@ pub enum RemoteCommand {
     Seek {
         seconds: f64,
     },
+    /// Ejecuta un comando Tauri en la PC y devuelve el resultado por `id`.
+    Invoke {
+        id: String,
+        cmd: String,
+        args: Value,
+    },
 }
 
 pub struct Remote {
@@ -63,6 +71,8 @@ pub struct Remote {
     pin: Mutex<String>,
     /// Tokens de sesión emitidos después de validar el PIN.
     sesiones: Mutex<HashSet<String>>,
+    /// Canales de espera para los comandos reenviados a la PC.
+    respuestas: Mutex<HashMap<String, mpsc::Sender<Result<Value, String>>>>,
 }
 
 static REMOTO: OnceLock<Arc<Remote>> = OnceLock::new();
@@ -75,6 +85,7 @@ pub fn remote() -> &'static Arc<Remote> {
             estado: Mutex::new(RemoteState::default()),
             pin: Mutex::new(String::new()),
             sesiones: Mutex::new(HashSet::new()),
+            respuestas: Mutex::new(HashMap::new()),
         })
     })
 }
@@ -312,6 +323,137 @@ fn emitir(app: &tauri::AppHandle, comando: RemoteCommand) {
     let _ = app.emit("remote-command", comando);
 }
 
+/// Sirve imágenes de la carpeta de datos (carátulas y vistas previas). Sólo se
+/// permiten rutas dentro de `covers/` o la carpeta de datos, para que un
+/// navegador comprometido no pueda leer archivos arbitrarios del equipo.
+fn servir_archivo_datos(stream: &mut TcpStream, ruta: &str) {
+    let destino = PathBuf::from(ruta);
+    let permitido = [crate::paths::covers_dir(), crate::paths::data_dir()]
+        .iter()
+        .filter_map(|base| base.canonicalize().ok())
+        .any(|base| {
+            destino
+                .canonicalize()
+                .map(|d| d.starts_with(&base))
+                .unwrap_or(false)
+        });
+    if !permitido {
+        responder(stream, "403", "text/plain", "Ruta no permitida");
+        return;
+    }
+    match std::fs::read(&destino) {
+        Ok(bytes) => responder_bytes(stream, "200", mime(&destino), &bytes),
+        Err(_) => responder(stream, "404", "text/plain", "No encontrado"),
+    }
+}
+
+fn arg<T: serde::de::DeserializeOwned>(args: &Value, clave: &str) -> Result<T, String> {
+    args.get(clave)
+        .cloned()
+        .ok_or_else(|| format!("Falta el argumento {clave}"))
+        .and_then(|valor| serde_json::from_value(valor).map_err(|e| e.to_string()))
+}
+
+fn arg_opcional<T: serde::de::DeserializeOwned>(args: &Value, clave: &str) -> Option<T> {
+    args.get(clave)
+        .cloned()
+        .and_then(|valor| serde_json::from_value(valor).ok())
+}
+
+fn a_valor<T: Serialize>(valor: T) -> Result<Value, String> {
+    serde_json::to_value(valor).map_err(|error| error.to_string())
+}
+
+/// Devuelve `Some` cuando el comando es de sólo lectura y el servidor puede
+/// resolverlo sin acceder al `State` de Tauri. Los demás se reenvían a la PC.
+fn leer_directo(cmd: &str, args: &Value, app: &tauri::AppHandle) -> Option<Result<Value, String>> {
+    let resultado = match cmd {
+        "library_scan_needed" => arg::<String>(args, "folder")
+            .and_then(|carpeta| {
+                crate::validacion::ruta(&carpeta, "Carpeta de biblioteca")?;
+                crate::library_db::scan_needed(&carpeta)
+            })
+            .and_then(a_valor),
+        "get_cached_library" => {
+            let pistas: Vec<_> = crate::library_db::cached_tracks()
+                .map(|entradas| entradas.into_iter().map(|e| e.track).collect())
+                .unwrap_or_default();
+            a_valor(pistas)
+        }
+        "search_library_fts" => {
+            let consulta = arg::<String>(args, "query").unwrap_or_default();
+            let limite = arg_opcional::<usize>(args, "limit").unwrap_or(300).min(500);
+            a_valor(crate::library_db::search_tracks(&consulta, limite).unwrap_or_default())
+        }
+        "get_default_music_dir" => a_valor(
+            app.path()
+                .audio_dir()
+                .ok()
+                .filter(|ruta| ruta.exists())
+                .map(|ruta| ruta.to_string_lossy().to_string()),
+        ),
+        "check_downloader_tools" => a_valor(crate::downloader::get_status()),
+        "tools_status" => a_valor(crate::tools::estados()),
+        "get_download_queue" => a_valor(crate::queue::load_queue()),
+        "list_download_history" => {
+            a_valor(crate::library_db::list_download_history().unwrap_or_default())
+        }
+        "doctor_database" => match crate::library_db::doctor_detallado() {
+            Ok(valor) => a_valor(valor),
+            Err(error) => Err(error),
+        },
+        "get_system_logs" => {
+            let limite = arg_opcional::<usize>(args, "limit").unwrap_or(200);
+            a_valor(crate::logging::read_logs(limite).unwrap_or_default())
+        }
+        "list_playlists" => a_valor(crate::playlists::list().unwrap_or_default()),
+        "get_playlist" => {
+            let id = arg::<String>(args, "id").unwrap_or_default();
+            a_valor(crate::playlists::detail(&id))
+        }
+        "trash_count" => a_valor(crate::library_db::trash_count().unwrap_or(0)),
+        "read_lyrics" => {
+            let ruta = arg::<String>(args, "path").unwrap_or_default();
+            a_valor(crate::lyrics::read_for(&ruta))
+        }
+        _ => return None,
+    };
+    Some(resultado)
+}
+
+/// Ejecuta un comando en la PC (que sí tiene los `State` de Tauri) y espera la
+/// respuesta por un canal. Así el celular usa exactamente la misma lógica.
+fn puente(cmd: &str, args: &Value, app: &tauri::AppHandle) -> Result<Value, String> {
+    if let Some(resultado) = leer_directo(cmd, args, app) {
+        return resultado;
+    }
+
+    let id = generar_token();
+    let (tx, rx) = mpsc::channel();
+    remote().respuestas.lock().insert(id.clone(), tx);
+    emitir(
+        app,
+        RemoteCommand::Invoke {
+            id: id.clone(),
+            cmd: cmd.to_string(),
+            args: args.clone(),
+        },
+    );
+    let espera = std::time::Duration::from_secs(20);
+    let respuesta = rx
+        .recv_timeout(espera)
+        .unwrap_or_else(|_| Err("La aplicación de escritorio no respondió a tiempo".to_string()));
+    remote().respuestas.lock().remove(&id);
+    respuesta
+}
+
+/// Entrega el resultado de un comando ejecutado en la PC al hilo HTTP que espera.
+pub fn responder_invoke(id: &str, resultado: Result<Value, String>) {
+    if let Some(tx) = remote().respuestas.lock().remove(id) {
+        let _ = tx.send(resultado);
+    }
+}
+
 fn atender(mut stream: TcpStream, app: &tauri::AppHandle) {
     let mut buffer = [0u8; 16_384];
     let leidos = stream.read(&mut buffer).unwrap_or(0);
@@ -425,6 +567,22 @@ fn atender(mut stream: TcpStream, app: &tauri::AppHandle) {
         }
         ("GET", ruta) if ruta.starts_with("/api/cover/") => {
             servir_cover(&mut stream, ruta.trim_start_matches("/api/cover/"));
+        }
+        ("GET", "/api/archivo") => {
+            let ruta = parametro(consulta, "path").unwrap_or_default();
+            servir_archivo_datos(&mut stream, &ruta);
+        }
+        ("POST", ruta) if ruta.starts_with("/api/cmd/") => {
+            let cmd = ruta.trim_start_matches("/api/cmd/");
+            let args: Value =
+                serde_json::from_str(cuerpo).unwrap_or_else(|_| serde_json::json!({}));
+            match puente(cmd, &args, app) {
+                Ok(valor) => responder(&mut stream, "200", "application/json", &valor.to_string()),
+                Err(error) => {
+                    let json = serde_json::json!({ "error": error }).to_string();
+                    responder(&mut stream, "500", "application/json", &json);
+                }
+            }
         }
         ("POST", "/api/playpause") => {
             emitir(app, RemoteCommand::PlayPause);
@@ -581,6 +739,27 @@ mod tests {
     fn la_pagina_de_login_pide_el_pin() {
         assert!(pagina_login(false).contains("name=\"pin\""));
         assert!(pagina_login(true).contains("PIN incorrecto"));
+    }
+
+    #[test]
+    fn los_argumentos_del_puente_se_extraen_y_validan() {
+        let args = serde_json::json!({ "query": "gurenge", "limit": 5 });
+        assert_eq!(arg::<String>(&args, "query").unwrap(), "gurenge");
+        assert_eq!(arg_opcional::<usize>(&args, "limit"), Some(5));
+        assert!(arg::<String>(&args, "falta").is_err());
+    }
+
+    #[test]
+    fn la_respuesta_del_puente_llega_al_hilo_que_espera() {
+        let id = "prueba-respuesta";
+        let (tx, rx) = mpsc::channel();
+        remote().respuestas.lock().insert(id.to_string(), tx);
+        responder_invoke(id, Ok(serde_json::json!({ "ok": true })));
+        assert_eq!(
+            rx.recv().unwrap().unwrap(),
+            serde_json::json!({ "ok": true })
+        );
+        assert!(!remote().respuestas.lock().contains_key(id));
     }
 
     #[test]

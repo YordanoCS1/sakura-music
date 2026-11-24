@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { invoke } from '@tauri-apps/api/core';
-import { convertFileSrc } from '@tauri-apps/api/core';
-import { listen } from '@tauri-apps/api/event';
+import { invoke } from './lib/puente';
+import { convertFileSrc } from './lib/puente';
+import { listen } from './lib/puente';
 import { open } from '@tauri-apps/plugin-dialog';
 import { Search, Heart, X, AudioLines, Music2 } from 'lucide-react';
 
@@ -32,6 +32,8 @@ import PlaylistsPanel from './components/PlaylistsPanel';
 import StatsTab from './components/StatsTab';
 import TrackContextMenu from './components/TrackContextMenu';
 import { sonidoUI } from './lib/sonidos';
+import { esEscritorio } from './lib/puente';
+import RemoteStatus from './components/RemoteStatus';
 import CommandPalette from './components/CommandPalette';
 import SearchTab from './components/SearchTab';
 import ThemeSearch from './components/ThemeSearch';
@@ -1644,6 +1646,8 @@ export default function App() {
               onPrevious={handlePreviousTrack}
             />
           )}
+
+          {!esEscritorio() && <RemoteStatus />}
 
           {menuPista && (
             <TrackContextMenu

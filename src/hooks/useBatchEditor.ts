@@ -2,7 +2,7 @@
 // portada opcional y guardado que informa qué archivos fallaron.
 
 import { useState } from 'react';
-import { convertFileSrc, invoke } from '@tauri-apps/api/core';
+import { convertFileSrc, invoke } from '../lib/puente';
 import { open } from '@tauri-apps/plugin-dialog';
 import type { ScannedTrack } from '../types';
 import type { BatchUpdateResult } from '../types';
