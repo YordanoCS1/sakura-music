@@ -9,7 +9,8 @@ export type AccionAtajo =
   | 'anterior'
   | 'playpause'
   | 'favorito'
-  | 'reproductor';
+  | 'reproductor'
+  | 'presentar';
 
 export const ACCIONES: { id: AccionAtajo; etiqueta: string }[] = [
   { id: 'paleta', etiqueta: 'Paleta de comandos' },
@@ -21,6 +22,7 @@ export const ACCIONES: { id: AccionAtajo; etiqueta: string }[] = [
   { id: 'playpause', etiqueta: 'Reproducir / pausar' },
   { id: 'favorito', etiqueta: 'Favorito' },
   { id: 'reproductor', etiqueta: 'Activar / desactivar reproductor' },
+  { id: 'presentar', etiqueta: 'Presentar la canción' },
 ];
 
 const POR_DEFECTO: Record<AccionAtajo, string> = {
@@ -33,6 +35,7 @@ const POR_DEFECTO: Record<AccionAtajo, string> = {
   playpause: 'Space',
   favorito: 'Ctrl+F',
   reproductor: 'Ctrl+P',
+  presentar: 'Ctrl+Shift+P',
 };
 
 const CLAVE = 'sakura_atajos';

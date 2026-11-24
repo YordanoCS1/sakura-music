@@ -3,7 +3,7 @@ import { invoke } from './lib/puente';
 import { convertFileSrc } from './lib/puente';
 import { listen } from './lib/puente';
 import { open } from './lib/puente';
-import { Search, Heart, X, AudioLines, Music2 } from 'lucide-react';
+import { Search, Heart, X, AudioLines, Music2, GalleryVerticalEnd } from 'lucide-react';
 
 import type {
   ScannedTrack,
@@ -416,6 +416,9 @@ export default function App() {
           break;
         case 'reproductor':
           void handleSetPlayerStyle(playerStyle === 'off' ? 'floating' : 'off');
+          break;
+        case 'presentar':
+          if (activeTrack) setPortadaFull(true);
           break;
       }
     };
@@ -1740,8 +1743,10 @@ export default function App() {
             <CoverFullscreen
               track={activeTrack}
               portada={activeTrack.cover_url ? getCoverSrc(activeTrack.cover_url) : null}
-              letras={[]}
-              lineaActual={-1}
+              esFav={favorites.includes(activeTrack.id)}
+              onToggleFavorite={() =>
+                toggleFavorite(activeTrack.id, { stopPropagation() {} } as React.MouseEvent)
+              }
               onClose={() => setPortadaFull(false)}
             />
           )}
@@ -1842,15 +1847,28 @@ export default function App() {
               onOpenFullscreen={() => setPortadaFull(true)}
             />
           ) : (
-            <button
-              type="button"
-              className="player-off-btn"
-              onClick={() => void handleSetPlayerStyle('floating')}
-              title="Volver a activar el reproductor"
-              aria-label="Activar reproductor"
-            >
-              <Music2 className="w-3.5 h-3.5" /> Reproductor desactivado · activar
-            </button>
+            <div className="player-off-actions">
+              <button
+                type="button"
+                className="player-off-btn"
+                onClick={() => void handleSetPlayerStyle('floating')}
+                title="Volver a activar el reproductor"
+                aria-label="Activar reproductor"
+              >
+                <Music2 className="w-3.5 h-3.5" /> Reproductor desactivado · activar
+              </button>
+              {activeTrack && (
+                <button
+                  type="button"
+                  className="player-off-btn is-present"
+                  onClick={() => setPortadaFull(true)}
+                  title="Presentar la canción"
+                  aria-label="Presentar canción"
+                >
+                  <GalleryVerticalEnd className="w-3.5 h-3.5" /> Presentar canción
+                </button>
+              )}
+            </div>
           )}
 
           {/* ── MODAL EDITOR DE METADATOS PRO & CATÁLOGO ── */}

@@ -169,6 +169,49 @@ test('con el reproductor desactivado no se reproduce audio', async ({ page }) =>
   await expect(page.getByRole('button', { name: 'Activar reproductor' })).toHaveCount(0);
 });
 
+test('se puede presentar la canción con el reproductor desactivado', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('sakura_player_style', 'off');
+    const pista = {
+      id: 'pres1',
+      path: 'Disco\\pres1.flac',
+      title: 'Canción presentada',
+      artist: 'Artista',
+      album: 'Álbum de prueba',
+      album_artist: null,
+      track_number: 1,
+      duration: 200,
+      duration_str: '3:20',
+      format: 'FLAC',
+      bitrate_kbps: 900,
+      cover_url: null,
+      year: 2024,
+      genre: 'Jazz',
+      file_size: 1000,
+    };
+    const w = window as unknown as {
+      __TAURI_INTERNALS__: { invoke: (cmd: string) => Promise<unknown> };
+    };
+    const anterior = w.__TAURI_INTERNALS__.invoke;
+    w.__TAURI_INTERNALS__.invoke = async (cmd: string, args?: unknown) =>
+      cmd === 'get_cached_library' ? [pista] : cmd === 'read_lyrics' ? [] : anterior(cmd, args);
+  });
+  await page.goto('/');
+  await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });
+
+  const presentar = page.getByRole('button', { name: 'Presentar canción' });
+  await expect(presentar).toBeVisible();
+  await presentar.click();
+
+  const cartel = page.getByRole('dialog', { name: /Presentación de Canción presentada/ });
+  await expect(cartel).toBeVisible();
+  await expect(cartel).toContainText('Álbum de prueba');
+  await expect(cartel).toContainText('FLAC');
+  await cartel.getByRole('button', { name: 'Añadir a favoritas' }).click();
+  await page.keyboard.press('Escape');
+  await expect(cartel).toHaveCount(0);
+});
+
 test('Byobu permite elegir una imagen de inicio', async ({ page }) => {
   await page.addInitScript(() => {
     localStorage.setItem('sakura_theme', 'byobu');
