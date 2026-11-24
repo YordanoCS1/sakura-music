@@ -1757,6 +1757,7 @@ export default function App() {
               onToggleFavorite={() =>
                 toggleFavorite(activeTrack.id, { stopPropagation() {} } as React.MouseEvent)
               }
+              tema={temaBase}
               onClose={() => setPortadaFull(false)}
             />
           )}

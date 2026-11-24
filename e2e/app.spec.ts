@@ -249,6 +249,8 @@ test('doble clic en una pista presenta la canción con el reproductor apagado', 
 
   const cartel = page.getByRole('dialog', { name: /Presentación de Doble clic/ });
   await expect(cartel).toBeVisible();
+  await expect(cartel).toHaveAttribute('data-skin', 'space');
+  await expect(cartel.locator('.cover-full-deco span')).toHaveCount(5);
   await expect(cartel).toContainText('Álbum doble');
   expect(await page.locator('audio').evaluate((audio: HTMLAudioElement) => audio.paused)).toBe(
     true,

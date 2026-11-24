@@ -15,6 +15,20 @@ interface CoverFullscreenProps {
   onClose: () => void;
   esFav: boolean;
   onToggleFavorite: () => void;
+  tema: string;
+}
+
+/** Decoración abstracta que cada tema interpreta a su manera. */
+function Decoracion() {
+  return (
+    <div className="cover-full-deco" aria-hidden="true">
+      <span />
+      <span />
+      <span />
+      <span />
+      <span />
+    </div>
+  );
 }
 
 const formatoTamano = (bytes: number) =>
@@ -27,6 +41,7 @@ export default function CoverFullscreen({
   onClose,
   esFav,
   onToggleFavorite,
+  tema,
 }: CoverFullscreenProps) {
   const [letras, setLetras] = useState<LineaLetra[]>([]);
   const [lineaActual, setLineaActual] = useState(-1);
@@ -66,7 +81,13 @@ export default function CoverFullscreen({
   }, [letras]);
 
   return createPortal(
-    <div className="cover-full" role="dialog" aria-label={`Presentación de ${track.title}`}>
+    <div
+      className="cover-full"
+      data-skin={tema}
+      role="dialog"
+      aria-label={`Presentación de ${track.title}`}
+    >
+      <Decoracion />
       <button type="button" className="cover-full-close" onClick={onClose} aria-label="Salir">
         <X className="w-5 h-5" />
       </button>
