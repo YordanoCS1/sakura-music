@@ -15,6 +15,7 @@ interface UseDownloadQueueDeps {
   downloadFolder: string | null;
   rescanAfterDownload: () => void;
   onAviso?: (mensaje: string) => void;
+  onDescargaCompletada?: (titulo: string) => void;
 }
 
 const esActiva = (item: DownloadItem) =>
@@ -32,6 +33,7 @@ export function useDownloadQueue({
   downloadFolder,
   rescanAfterDownload,
   onAviso,
+  onDescargaCompletada,
 }: UseDownloadQueueDeps) {
   const [downloads, setDownloads] = useState<DownloadItem[]>([]);
   const downloadsRef = useRef<DownloadItem[]>([]);
@@ -116,13 +118,14 @@ export function useDownloadQueue({
         rescanAfterDownload();
         const terminada = downloadsRef.current.find((item) => item.id === payload.id);
         notificarDescarga(terminada?.title ?? 'Pista');
+        onDescargaCompletada?.(terminada?.title ?? 'Pista');
       }
     });
 
     return () => {
       unlistenPromise.then((unlisten) => unlisten());
     };
-  }, [rescanAfterDownload]);
+  }, [rescanAfterDownload, onDescargaCompletada]);
 
   // Persistir la cola tras cada cambio (una vez restaurada, para no pisar el
   // archivo con la lista vacía inicial).

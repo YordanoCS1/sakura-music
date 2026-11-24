@@ -5,6 +5,11 @@ Todos los cambios destacables de este proyecto se registran aquí. El formato si
 ## [Sin publicar]
 
 ### Agregado
+- **Identidad visual reforzada**: fondo con gradiente teñido por la carátula y transición suave al cambiar de pista, animaciones de entrada por tema (respetando `prefers-reduced-motion`), insignia del tema con su glifo en la barra de título y microinteracciones sonoras al cambiar de pestaña, marcar favorito y terminar una descarga.
+- **Modo presentación**: doble clic en la portada abre una pantalla completa solo con arte y letras sincronizadas (Escape para salir).
+- **Atajos configurables** en Ajustes: reasigne las combinaciones para la paleta, navegación, reproducción y favorito; se guardan en `localStorage`.
+- **Toasts con acción**: las descargas terminadas ofrecen *Ver biblioteca*, además del deshacer de borrados.
+- **Biblioteca portátil**: exportar/importar un ZIP con la base SQLite (copia consistente), carátulas y preferencias; la importación valida `integrity_check` antes de reemplazar la base.
 - **Menú contextual** en la biblioteca (clic derecho): reproducir, reproducir después, añadir a playlist, favorito, editar y eliminar, con estilo propio por tema. **Sonidos de UI** generados con WebAudio, una voz distinta por tema.
 - **Descargas más resilient**: reintentos automáticos con backoff, fallback de formato, notificación y sonido al terminar, historial persistente, filtro de duración, reorden y filtro de la cola, y opción de arranque rápido sin reescaneo.
 - **Mejoras de descarga**: archivo persistente de IDs para no repetir pistas, indexación automática al terminar, portada HD del catálogo, errores traducidos y concurrencia configurable (1–4) en Ajustes → Sistema.

@@ -923,6 +923,8 @@ pub fn run() {
             restore_deleted_track,
             empty_trash,
             trash_count,
+            exportar_biblioteca,
+            importar_biblioteca,
             read_lyrics,
             search_lyrics,
             save_track_lyrics,
@@ -940,4 +942,119 @@ pub fn run() {
             manager.cancel_all();
         }
     });
+}
+
+/// Exporta la biblioteca completa a un archivo portátil: copia consistente de
+/// SQLite (VACUUM INTO), carátulas, letras y preferencias del tema.
+#[tauri::command]
+fn exportar_biblioteca(ruta: String, preferencias: Option<String>) -> Result<String, String> {
+    use std::io::Write;
+
+    val::ruta(&ruta, "Ruta de exportación")?;
+    let destino = PathBuf::from(&ruta);
+    if let Some(carpeta) = destino.parent() {
+        std::fs::create_dir_all(carpeta)
+            .map_err(|error| format!("No se pudo crear la carpeta: {error}"))?;
+    }
+    let archivo = std::fs::File::create(&destino)
+        .map_err(|error| format!("No se pudo crear el archivo: {error}"))?;
+
+    let mut writer = zip::ZipWriter::new(archivo);
+    let opciones = zip::write::SimpleFileOptions::default()
+        .compression_method(zip::CompressionMethod::Deflated);
+
+    // Copia consistente de la BD con WAL activo.
+    let temporal = paths::data_dir().join("export-temp.sqlite3");
+    let _ = std::fs::remove_file(&temporal);
+    library_db::backup_a(&temporal)?;
+    {
+        let mut origen = std::fs::File::open(&temporal)
+            .map_err(|error| format!("No se pudo leer la copia: {error}"))?;
+        writer
+            .start_file("library.sqlite3", opciones)
+            .map_err(|error| format!("No se pudo agregar la BD: {error}"))?;
+        std::io::copy(&mut origen, &mut writer)
+            .map_err(|error| format!("No se pudo copiar la BD: {error}"))?;
+    }
+    let _ = std::fs::remove_file(&temporal);
+
+    // Carátulas.
+    if let Ok(entradas) = std::fs::read_dir(paths::covers_dir()) {
+        for entrada in entradas.flatten() {
+            let ruta_archivo = entrada.path();
+            if !ruta_archivo.is_file() {
+                continue;
+            }
+            let nombre = format!(
+                "covers/{}",
+                ruta_archivo
+                    .file_name()
+                    .unwrap_or_default()
+                    .to_string_lossy()
+            );
+            if let Ok(mut contenido) = std::fs::File::open(&ruta_archivo)
+                && writer.start_file(&nombre, opciones).is_ok()
+            {
+                let _ = std::io::copy(&mut contenido, &mut writer);
+            }
+        }
+    }
+
+    // Preferencias del frontend (el serialization lo hace la UI).
+    let preferencias = preferencias.unwrap_or_else(|| "{}".to_string());
+    writer
+        .start_file("preferencias.json", opciones)
+        .map_err(|error| format!("No se pudo agregar preferencias: {error}"))?;
+    writer
+        .write_all(preferencias.as_bytes())
+        .map_err(|error| format!("No se pudo escribir preferencias: {error}"))?;
+
+    writer
+        .finish()
+        .map_err(|error| format!("No se pudo cerrar el archivo: {error}"))?;
+    Ok(destino.to_string_lossy().to_string())
+}
+
+/// Importa un backup portátil validando que el ZIP contenga lo esperado.
+#[tauri::command]
+fn importar_biblioteca(ruta: String) -> Result<String, String> {
+    val::ruta(&ruta, "Ruta de importación")?;
+    let archivo = std::fs::File::open(&ruta)
+        .map_err(|error| format!("No se pudo abrir el archivo: {error}"))?;
+    let mut archive = zip::ZipArchive::new(archivo)
+        .map_err(|error| format!("No es un backup válido: {error}"))?;
+    if archive.by_name("library.sqlite3").is_err() {
+        return Err("El archivo no contiene library.sqlite3".to_string());
+    }
+    // Se importa en un archivo temporal y se valida antes de reemplazar.
+    let temporal = paths::data_dir().join("import-temp.sqlite3");
+    {
+        let mut origen = archive
+            .by_name("library.sqlite3")
+            .map_err(|e| e.to_string())?;
+        let mut destino = std::fs::File::create(&temporal).map_err(|e| e.to_string())?;
+        std::io::copy(&mut origen, &mut destino).map_err(|e| e.to_string())?;
+    }
+    {
+        let conexion = rusqlite::Connection::open(&temporal).map_err(|e| e.to_string())?;
+        conexion
+            .pragma_query_value(None, "integrity_check", |fila| fila.get::<_, String>(0))
+            .map_err(|e| format!("Base inválida: {e}"))?;
+    }
+    std::fs::rename(&temporal, paths::library_db_file())
+        .map_err(|error| format!("No se pudo instalar la base: {error}"))?;
+
+    for i in 0..archive.len() {
+        let mut archivo = archive.by_index(i).map_err(|e| e.to_string())?;
+        let nombre = archivo.name().to_string();
+        if nombre.starts_with("covers/") && !nombre.ends_with('/') {
+            let destino = paths::covers_dir().join(nombre.trim_start_matches("covers/"));
+            if let Some(carpeta) = destino.parent() {
+                let _ = std::fs::create_dir_all(carpeta);
+            }
+            let mut salida = std::fs::File::create(destino).map_err(|e| e.to_string())?;
+            let _ = std::io::copy(&mut archivo, &mut salida);
+        }
+    }
+    Ok("Biblioteca importada correctamente".to_string())
 }

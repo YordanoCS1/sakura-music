@@ -766,6 +766,16 @@ pub fn clear() -> Result<(), String> {
 /* BACKUPS, DIAGNÓSTICO Y VALIDACIÓN DE SCOPE                                */
 /* ======================================================================== */
 
+/// Copia consistente a una ruta arbitraria (para exportar/portar la base).
+pub fn backup_a(destino: &std::path::Path) -> Result<(), String> {
+    let conexion = open_connection()?;
+    let nombre = destino.to_string_lossy().to_string();
+    conexion
+        .execute("VACUUM INTO ?1", params![nombre])
+        .map_err(|error| format!("No se pudo exportar la base: {error}"))?;
+    Ok(())
+}
+
 /// Copia consistente de la base: `VACUUM INTO` incluye los últimos commits
 /// aunque haya WAL activo, algo que no pasa con una copia del archivo.
 fn crear_backup(connection: &Connection, etiqueta: &str) -> Result<String, String> {

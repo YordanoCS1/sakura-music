@@ -8299,3 +8299,71 @@ html[data-theme-transition='space'] #theme-panel.panel-enter { animation:t-estud
   .app-shell .set-remoto-qr { width: 100%; height: auto; aspect-ratio: 1; }
   .app-shell .set-remoto-qr svg { width: 100%; height: 100%; }
 }
+
+
+/* ==========================================================================
+   IDENTIDAD VISUAL — glow de carátula, animaciones por tema y extras
+   ========================================================================== */
+.cover-glow-layer {
+  z-index: 0;
+  opacity: .9;
+  background:
+    radial-gradient(60% 55% at 12% 8%, var(--glow-1, transparent) 0%, transparent 70%),
+    radial-gradient(55% 50% at 88% 92%, var(--glow-2, transparent) 0%, transparent 72%),
+    linear-gradient(var(--glow-angle, 0deg), var(--glow-2, transparent), var(--glow-1, transparent));
+  filter: saturate(1.35) blur(38px);
+  transition: background 1200ms ease, opacity 800ms ease;
+  animation: glow-breathe 9s ease-in-out infinite alternate;
+}
+@keyframes glow-breathe { from { opacity:.65; transform:scale(1); } to { opacity:1; transform:scale(1.04); } }
+
+/* Animación de entrada por tema (respeta prefers-reduced-motion). */
+@keyframes entrada-tema { from { opacity:0; transform:translateY(10px) scale(.995); } to { opacity:1; transform:none; } }
+.app-shell[data-skin='space'] .main-scroll-region > * { animation: entrada-tema 420ms ease both; }
+.app-shell[data-skin='sumie'] .main-scroll-region > *,
+.app-shell[data-skin='sumiink'] .main-scroll-region > * { animation: entrada-tema 620ms ease both; }
+.app-shell[data-skin='manga'] .main-scroll-region > * { animation: entrada-tema 260ms steps(4) both; }
+.app-shell[data-skin='estudio'] .main-scroll-region > *,
+.app-shell[data-skin='swiss'] .main-scroll-region > * { animation: entrada-tema 300ms cubic-bezier(.2,.9,.2,1) both; }
+@media (prefers-reduced-motion: reduce) {
+  .cover-glow-layer { animation: none; }
+  .app-shell .main-scroll-region > * { animation: none !important; }
+}
+
+/* Insignia del tema en la barra de título. */
+.titlebar-brand-badge {
+  display:inline-flex; align-items:center; gap:6px; margin-left:8px;
+  padding:3px 10px; border:1px solid rgba(255,255,255,.14); border-radius:999px;
+  font-size:9px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--accent-300, #f0a23c); background:rgba(255,255,255,.04);
+}
+.titlebar-brand-badge span { font-size:13px; line-height:1; }
+
+/* Modo presentación: portada + letras. */
+.cover-full { position:fixed; inset:0; z-index:400; background:#08070b; color:#f4eef6; }
+.cover-full-close { position:absolute; top:18px; right:18px; z-index:2; width:40px; height:40px; display:grid; place-items:center; border:1px solid rgba(255,255,255,.2); border-radius:50%; background:rgba(0,0,0,.4); color:#fff; cursor:pointer; }
+.cover-full-inner { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:36px; align-items:center; height:100%; max-width:1100px; margin:0 auto; padding:36px; }
+.cover-full-art { width:100%; aspect-ratio:1; object-fit:cover; border-radius:20px; box-shadow:0 40px 100px rgba(0,0,0,.7); animation:entrada-tema 500ms ease both; }
+.cover-full-copy small { text-transform:uppercase; letter-spacing:.2em; font-size:10px; color:#a99bb4; }
+.cover-full-copy h1 { font-size:38px; margin:8px 0 2px; line-height:1.1; }
+.cover-full-copy h2 { font-size:18px; font-weight:500; color:#c9bcd6; margin:0 0 24px; }
+.cover-full-lyrics { max-height:48vh; overflow-y:auto; mask-image:linear-gradient(transparent, #000 18%, #000 82%, transparent); }
+.cover-full-lyrics p { margin:0 0 10px; font-size:17px; line-height:1.5; color:#8f8499; transition:color .3s, transform .3s; }
+.cover-full-lyrics p.is-current { color:#fff; font-weight:700; transform:translateX(6px); }
+@media (max-width: 760px) {
+  .cover-full-inner { grid-template-columns:1fr; gap:16px; padding:20px; align-content:start; overflow-y:auto; }
+  .cover-full-art { max-height:42vh; }
+  .cover-full-copy h1 { font-size:26px; }
+}
+
+/* Toast con acción. */
+.action-toast { position:fixed; z-index:310; left:50%; bottom:26px; transform:translateX(-50%); display:flex; align-items:center; gap:10px; max-width:min(560px, calc(100vw - 24px)); padding:10px 12px; border:1px solid rgba(255,255,255,.14); border-radius:12px; background:#1c1820; color:#f4eef6; box-shadow:0 18px 50px rgba(0,0,0,.5); animation:entrada-tema 240ms ease both; }
+.action-toast-icon { display:grid; place-items:center; width:26px; height:26px; border-radius:50%; background:#3f7d5a; color:#fff; flex:none; }
+.action-toast-copy { font-size:11px; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.action-toast-btn { margin-left:auto; flex:none; border:0; border-radius:8px; padding:7px 11px; background:var(--accent-600, #a8442f); color:#fff; font-size:10px; font-weight:700; cursor:pointer; }
+.action-toast-close { border:0; background:transparent; color:#a99bb4; cursor:pointer; padding:4px; }
+
+/* Atajos: fila reasignable en Ajustes. */
+.atajo-fila { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 0; border-bottom:1px solid var(--set-linea); font-size:11px; }
+.atajo-tecla { min-width:86px; padding:6px 9px; border:1px solid var(--set-linea); border-radius:8px; background:var(--set-panel); color:var(--set-texto); font:10px 'JetBrains Mono',monospace; cursor:pointer; }
+.atajo-tecla.is-escuchando { border-color:var(--set-accento); color:var(--set-accento); }

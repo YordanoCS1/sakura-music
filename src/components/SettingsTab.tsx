@@ -18,8 +18,11 @@ import {
   Link2,
   Smartphone,
   Copy,
+  FileArchive,
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
+import { invoke, open } from '../lib/puente';
+import { ACCIONES, type AccionAtajo } from '../lib/atajos';
 import { esIpRedLocal, urlControlRemoto } from '../lib/red';
 import type { AppInfo, DownloadHistoryItem, PlayerStyle, ThemeOption } from '../types';
 import { GLIFOS, PREVIEWS, SWATCHES } from '../themes/themeMeta';
@@ -65,6 +68,10 @@ interface SettingsTabProps {
   onBorrarTema: (id: string) => void;
   temasPersonalizadosIds: string[];
   onImportarTema: (json: string) => void;
+  onExportado?: (mensaje: string) => void;
+  atajos: Record<AccionAtajo, string>;
+  escuchandoAtajo: AccionAtajo | null;
+  onEscucharAtajo: (accion: AccionAtajo) => void;
   onGuardarTema: (tema: import('../themes/customThemes').TemaPersonalizado) => void;
 }
 
@@ -109,6 +116,10 @@ export default function SettingsTab(props: SettingsTabProps) {
     onBorrarTema,
     temasPersonalizadosIds,
     onImportarTema,
+    onExportado,
+    atajos,
+    escuchandoAtajo,
+    onEscucharAtajo,
   } = props;
 
   const [seccion, setSeccion] = useState<Seccion>('tema');
@@ -124,6 +135,40 @@ export default function SettingsTab(props: SettingsTabProps) {
   const ipRemota = ipManual.trim() || remoteIp;
   const urlRemota = urlControlRemoto(ipRemota, remotePin);
   const qrDisponible = esIpRedLocal(ipRemota) && remotePin.length === 6;
+
+  const exportar = async () => {
+    const destino = await open({ directory: true });
+    if (typeof destino !== 'string') return;
+    try {
+      const preferencias = JSON.stringify({
+        tema: localStorage.getItem('sakura_theme'),
+        player_style: localStorage.getItem('sakura_player_style'),
+        temas_personalizados: localStorage.getItem('sakura_temas_personalizados'),
+        atajos: localStorage.getItem('sakura_atajos'),
+      });
+      const ruta = await invoke<string>('exportar_biblioteca', {
+        ruta: destino.endsWith('.zip') ? destino : `${destino}.zip`,
+        preferencias,
+      });
+      onExportado?.(`Backup creado: ${ruta}`);
+    } catch (error) {
+      onExportado?.(`No se pudo exportar: ${String(error)}`);
+    }
+  };
+
+  const importar = async () => {
+    const origen = await open({
+      directory: false,
+      filters: [{ name: 'Backup', extensions: ['zip'] }],
+    });
+    if (typeof origen !== 'string') return;
+    try {
+      const mensaje = await invoke<string>('importar_biblioteca', { ruta: origen });
+      onExportado?.(mensaje);
+    } catch (error) {
+      onExportado?.(`No se pudo importar: ${String(error)}`);
+    }
+  };
 
   const copiarUrlRemota = async () => {
     try {
@@ -678,6 +723,49 @@ export default function SettingsTab(props: SettingsTabProps) {
             <button type="button" onClick={onClearCache} className="set-btn-danger">
               <Trash2 className="w-3.5 h-3.5" /> Limpiar caché
             </button>
+          </div>
+        </Tarjeta>
+        <Tarjeta
+          n="09b"
+          titulo="Biblioteca portátil"
+          desc="Exporte o importe la biblioteca completa en un archivo"
+          icono={FileArchive}
+          ancha
+        >
+          <div className="set-actions">
+            <button type="button" onClick={() => void exportar()}>
+              <Download className="w-3.5 h-3.5" /> Exportar backup
+            </button>
+            <button type="button" onClick={() => void importar()}>
+              <FolderOpen className="w-3.5 h-3.5" /> Importar backup
+            </button>
+          </div>
+          <p className="set-note" style={{ marginTop: 8 }}>
+            Incluye la base SQLite, las carátulas y sus preferencias. El backup no se sube a ningún
+            servidor.
+          </p>
+        </Tarjeta>
+        <Tarjeta
+          n="09c"
+          titulo="Atajos de teclado"
+          desc="Haga clic en una tecla para reasignarla"
+          icono={Link2}
+          ancha
+        >
+          <div>
+            {ACCIONES.map((accion: { id: AccionAtajo; etiqueta: string }) => (
+              <div className="atajo-fila" key={accion.id}>
+                <span>{accion.etiqueta}</span>
+                <button
+                  type="button"
+                  className={`atajo-tecla ${escuchandoAtajo === accion.id ? 'is-escuchando' : ''}`}
+                  onClick={() => onEscucharAtajo(accion.id)}
+                  aria-label={`Reasignar ${accion.etiqueta}`}
+                >
+                  {escuchandoAtajo === accion.id ? 'Presione una tecla…' : atajos[accion.id]}
+                </button>
+              </div>
+            ))}
           </div>
         </Tarjeta>
         <Tarjeta

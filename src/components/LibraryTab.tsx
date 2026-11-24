@@ -1590,6 +1590,7 @@ export default function LibraryTab({
                   return (
                     <div
                       key={group.key}
+                      data-track-id={group.tracks[0]?.id}
                       onClick={() => onSetExpandedAlbumKey(group.key)}
                       className={`group relative flex flex-col p-3 rounded-2xl glass-card transition-all duration-base cursor-pointer hover:-translate-y-1 hover:shadow-2xl border ${
                         hasSelectedTracks

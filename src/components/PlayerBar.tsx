@@ -43,6 +43,7 @@ interface PlayerBarProps {
   onVolumeChange: (v: number) => void;
   onToggleFavorite: (id: string, e: React.MouseEvent) => void;
   onPlayTrackFromPanel: (track: ScannedTrack) => void;
+  onOpenFullscreen?: () => void;
 }
 
 export default function PlayerBar({
@@ -71,6 +72,7 @@ export default function PlayerBar({
   onVolumeChange,
   onToggleFavorite,
   onPlayTrackFromPanel,
+  onOpenFullscreen,
 }: PlayerBarProps) {
   const [currentTime, setCurrentTime] = useState(0);
 
@@ -214,9 +216,10 @@ export default function PlayerBar({
                 <button
                   type="button"
                   onClick={() => setExpanded(true)}
+                  onDoubleClick={() => onOpenFullscreen?.()}
                   className={`npr-cover npr-cover-vinilo ${isPlaying ? 'is-girando' : ''}`}
-                  aria-label="Ver ahora reproduciendo"
-                  title="Ver ahora reproduciendo"
+                  aria-label="Ver ahora reproduciendo (doble clic: pantalla completa)"
+                  title="Clic: ahora reproduciendo · Doble clic: modo presentación"
                 >
                   {activeTrack.cover_url ? (
                     <img src={getCoverSrc(activeTrack.cover_url)} alt={activeTrack.title} />

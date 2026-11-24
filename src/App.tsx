@@ -34,6 +34,9 @@ import TrackContextMenu from './components/TrackContextMenu';
 import { sonidoUI } from './lib/sonidos';
 import { esEscritorio } from './lib/puente';
 import RemoteStatus from './components/RemoteStatus';
+import CoverFullscreen from './components/CoverFullscreen';
+import ActionToast from './components/ActionToast';
+import { leerAtajos, guardarAtajos, teclaDelEvento, type AccionAtajo } from './lib/atajos';
 import CommandPalette from './components/CommandPalette';
 import SearchTab from './components/SearchTab';
 import ThemeSearch from './components/ThemeSearch';
@@ -165,19 +168,11 @@ export default function App() {
       localStorage.setItem('sakura_theme', 'space');
     }
   };
-  const setActiveTab = useThemeTransition(temaBase, setActiveTabRaw);
+  const setActiveTab = useThemeTransition(temaBase, (tab) => {
+    sonidoUI(temaBase, 'click');
+    setActiveTabRaw(tab);
+  });
 
-  // ⌘K / Ctrl+K abre la paleta desde cualquier pestaña.
-  useEffect(() => {
-    const alTeclar = (evento: KeyboardEvent) => {
-      if ((evento.metaKey || evento.ctrlKey) && evento.key.toLowerCase() === 'k') {
-        evento.preventDefault();
-        setPaletaAbierta((abierta) => !abierta);
-      }
-    };
-    window.addEventListener('keydown', alTeclar);
-    return () => window.removeEventListener('keydown', alTeclar);
-  }, []);
   const [playerStyle, setPlayerStyle] = useState<PlayerStyle>(() => {
     return (localStorage.getItem('sakura_player_style') as PlayerStyle) || 'floating';
   });
@@ -269,6 +264,13 @@ export default function App() {
   const [isScanning, setIsScanning] = useState(false);
   const [isDeletingTracks, setIsDeletingTracks] = useState(false);
   const [scanMessage, setScanMessage] = useState<string | null>(null);
+  const [atajos, setAtajos] = useState(() => leerAtajos());
+  const [escuchandoAtajo, setEscuchandoAtajo] = useState<AccionAtajo | null>(null);
+  const [avisoAccion, setAvisoAccion] = useState<{
+    mensaje: string;
+    accion?: { etiqueta: string; onClick: () => void };
+  } | null>(null);
+  const [portadaFull, setPortadaFull] = useState(false);
   const [currentFolder, setCurrentFolder] = useState<string | null>(null);
   const [defaultMusicDir, setDefaultMusicDir] = useState<string | null>(null);
   const [downloadFolder, setDownloadFolder] = useState<string | null>(() =>
@@ -359,6 +361,69 @@ export default function App() {
     playbackQueueRef,
   });
 
+  // Atajos configurables: si se está reasignando, se captura la tecla.
+  useEffect(() => {
+    const alTeclar = (evento: KeyboardEvent) => {
+      if (escuchandoAtajo) {
+        evento.preventDefault();
+        const combinacion = teclaDelEvento(evento);
+        const actualizados = { ...atajos, [escuchandoAtajo]: combinacion };
+        setAtajos(actualizados);
+        guardarAtajos(actualizados);
+        setEscuchandoAtajo(null);
+        setAvisoAccion({
+          mensaje: `Atajo guardado: ${combinacion}`,
+          accion: undefined,
+        });
+        return;
+      }
+      const combinacion = teclaDelEvento(evento);
+      const accion = (Object.keys(atajos) as AccionAtajo[]).find(
+        (clave) => atajos[clave].toLowerCase() === combinacion.toLowerCase(),
+      );
+      if (!accion) return;
+      evento.preventDefault();
+      switch (accion) {
+        case 'paleta':
+          setPaletaAbierta((abierta) => !abierta);
+          break;
+        case 'biblioteca':
+          setActiveTab('library');
+          break;
+        case 'buscar':
+          setActiveTab('search');
+          break;
+        case 'cola':
+          setActiveTab('queue');
+          break;
+        case 'siguiente':
+          handleNextTrack();
+          break;
+        case 'anterior':
+          handlePreviousTrack();
+          break;
+        case 'playpause':
+          togglePlay();
+          break;
+        case 'favorito':
+          if (activeTrack)
+            toggleFavorite(activeTrack.id, { stopPropagation() {} } as React.MouseEvent);
+          break;
+      }
+    };
+    window.addEventListener('keydown', alTeclar);
+    return () => window.removeEventListener('keydown', alTeclar);
+    // toggleFavorite se declara más abajo; se usa dentro del handler, no al montar.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    atajos,
+    escuchandoAtajo,
+    activeTrack,
+    handleNextTrack,
+    handlePreviousTrack,
+    togglePlay,
+    setActiveTab,
+  ]);
   const controlRemoto = useRemoteControl({
     audioRef,
     activeTrack,
@@ -445,6 +510,13 @@ export default function App() {
       setScanMessage(mensaje);
       window.setTimeout(() => setScanMessage(null), 4500);
     },
+    onDescargaCompletada: (titulo) => {
+      sonidoUI(temaBase, 'confirm');
+      setAvisoAccion({
+        mensaje: `${titulo} descargada. Ya está en la biblioteca.`,
+        accion: { etiqueta: 'Ver biblioteca', onClick: () => setActiveTab('library') },
+      });
+    },
   });
 
   const {
@@ -489,9 +561,11 @@ export default function App() {
   };
 
   // Extrae el color dominante de la portada para teñir el resplandor del reproductor.
-  const [coverGlowColors, setCoverGlowColors] = useState<{ color1: string; color2: string } | null>(
-    null,
-  );
+  const [coverGlowColors, setCoverGlowColors] = useState<{
+    color1: string;
+    color2: string;
+    angulo?: number;
+  } | null>(null);
 
   useEffect(() => {
     if (!activeTrack?.cover_url) {
@@ -558,6 +632,7 @@ export default function App() {
           setCoverGlowColors({
             color1: `rgba(${vibrantR}, ${vibrantG}, ${vibrantB}, 0.28)`,
             color2: `rgba(${avgR}, ${avgG}, ${avgB}, 0.20)`,
+            angulo: Math.round((vibrantR / 255) * 360),
           });
         }
       } catch {
@@ -691,6 +766,7 @@ export default function App() {
   // Alternar favorito
   const toggleFavorite = (trackId: string, e: React.MouseEvent) => {
     e.stopPropagation();
+    sonidoUI(temaBase, 'confirm');
     setFavorites((prev) => {
       const next = prev.includes(trackId)
         ? prev.filter((id) => id !== trackId)
@@ -1096,34 +1172,28 @@ export default function App() {
         onError={(e) => console.error('Error nativo del elemento audio:', e)}
       />
 
-      {/* Resplandor ambiental de fondo dinámico (Acelerado por GPU) */}
-      {ambientGlow && (
+      {/* Resplandor ambiental de fondo teñido por la carátula (GPU). */}
+      {coverGlowColors && (
+        <div
+          className="cover-glow-layer pointer-events-none absolute inset-0"
+          aria-hidden="true"
+          style={
+            {
+              '--glow-1': coverGlowColors.color1,
+              '--glow-2': coverGlowColors.color2,
+              '--glow-angle': `${coverGlowColors.angulo ?? 0}deg`,
+            } as React.CSSProperties
+          }
+        />
+      )}
+      {ambientGlow && !coverGlowColors && (
         <>
-          {coverGlowColors ? (
-            <>
-              <div
-                className="absolute -top-32 -left-32 w-[34rem] h-[34rem] rounded-full blur-[130px] pointer-events-none transition-all duration-slow animate-pulse"
-                style={{ backgroundColor: coverGlowColors.color1 }}
-              />
-              <div
-                className="absolute -bottom-32 -right-32 w-[34rem] h-[34rem] rounded-full blur-[140px] pointer-events-none transition-all duration-slow"
-                style={{ backgroundColor: coverGlowColors.color2 }}
-              />
-              <div
-                className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[36rem] h-[22rem] rounded-full blur-[150px] pointer-events-none opacity-40 transition-all duration-slow"
-                style={{ backgroundColor: coverGlowColors.color1 }}
-              />
-            </>
-          ) : (
-            <>
-              <div
-                className={`absolute -top-32 -left-32 w-96 h-96 ${worldStyle.ambientGlow1} rounded-full blur-[110px] pointer-events-none transition-all duration-slow animate-pulse`}
-              ></div>
-              <div
-                className={`absolute -bottom-32 -right-32 w-96 h-96 ${worldStyle.ambientGlow2} rounded-full blur-[120px] pointer-events-none transition-all duration-slow`}
-              ></div>
-            </>
-          )}
+          <div
+            className={`absolute -top-32 -left-32 w-96 h-96 ${worldStyle.ambientGlow1} rounded-full blur-[110px] pointer-events-none transition-all duration-slow animate-pulse`}
+          />
+          <div
+            className={`absolute -bottom-32 -right-32 w-96 h-96 ${worldStyle.ambientGlow2} rounded-full blur-[120px] pointer-events-none transition-all duration-slow`}
+          />
         </>
       )}
 
@@ -1166,7 +1236,7 @@ export default function App() {
       )}
 
       {/* Barra de título personalizada de la ventana (sin decoración nativa) */}
-      <TitleBar nombreTema={nombreTema} />
+      <TitleBar nombreTema={nombreTema} temaId={theme} />
 
       {/* Fila principal: nav + contenido */}
       <div
@@ -1565,6 +1635,15 @@ export default function App() {
                 theme={temaBase}
                 temas={todosLosTemas}
                 onImportarTema={importarTema}
+                onExportado={(mensaje) =>
+                  setAvisoAccion({
+                    mensaje,
+                    accion: undefined,
+                  })
+                }
+                atajos={atajos}
+                escuchandoAtajo={escuchandoAtajo}
+                onEscucharAtajo={setEscuchandoAtajo}
                 onAbrirGenerador={() => setGeneradorAbierto(true)}
                 onGuardarTema={(tema) => {
                   setCustomThemes(guardarTemaPersonalizado(tema));
@@ -1648,6 +1727,22 @@ export default function App() {
           )}
 
           {!esEscritorio() && <RemoteStatus />}
+          {portadaFull && activeTrack && (
+            <CoverFullscreen
+              track={activeTrack}
+              portada={activeTrack.cover_url ? getCoverSrc(activeTrack.cover_url) : null}
+              letras={[]}
+              lineaActual={-1}
+              onClose={() => setPortadaFull(false)}
+            />
+          )}
+          {avisoAccion && (
+            <ActionToast
+              mensaje={avisoAccion.mensaje}
+              accion={avisoAccion.accion}
+              onDismiss={() => setAvisoAccion(null)}
+            />
+          )}
 
           {menuPista && (
             <TrackContextMenu
@@ -1734,6 +1829,7 @@ export default function App() {
             onToggleMute={toggleMute}
             onVolumeChange={handleVolumeChange}
             onToggleFavorite={toggleFavorite}
+            onOpenFullscreen={() => setPortadaFull(true)}
           />
 
           {/* ── MODAL EDITOR DE METADATOS PRO & CATÁLOGO ── */}

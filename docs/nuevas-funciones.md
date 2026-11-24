@@ -6,6 +6,18 @@ ADR [0013](adr/0013-playlists-persistentes.md) a
 [data-formats.md](data-formats.md) y el contrato IPC en
 [ipc-contract.md](ipc-contract.md).
 
+## Identidad visual y presentación
+
+El fondo se tiñe con los colores dominantes de la carátula (`cover-glow-layer`) y transiciona suavemente al cambiar de pista. Cada tema tiene una animación de entrada propia, desactivada con `prefers-reduced-motion`. La barra de título muestra una insignia con el glifo del tema activo. Las microinteracciones usan `sonidoUI()` al cambiar de pestaña, marcar favorito o completar una descarga.
+
+Doble clic en la portada del reproductor abre el **modo presentación**: pantalla completa con la carátula y las letras LRC sincronizadas; Escape la cierra.
+
+## Atajos y biblioteca portátil
+
+Ajustes → Sistema permite **reasignar atajos** (paleta, navegación, reproducción, favorito); se guardan en `localStorage` bajo `sakura_atajos`. Las descargas terminadas muestran un toast con la acción **Ver biblioteca**.
+
+La tarjeta **Biblioteca portátil** exporta un ZIP con `library.sqlite3` (copia `VACUUM INTO`), las carátulas y `preferencias.json`, y permite importarlo: se valida `PRAGMA integrity_check` antes de reemplazar la base.
+
 ## Playlists persistentes
 
 Pestaña **Listas** en la navegación (también accesible desde ⌘K). Las listas viven en las tablas `playlists` y `playlist_tracks` de SQLite, con `ON DELETE CASCADE`. Se pueden crear, renombrar, borrar, cargar pistas desde la biblioteca, quitarlas y reordenar con las flechas. Cada tema tiene su propio estilo de panel; los arquetipos Swiss, Shōnen, Kawaii, Fantasmas, Luna y Samurái tienen variantes explícitas, el resto hereda las variables del tema.

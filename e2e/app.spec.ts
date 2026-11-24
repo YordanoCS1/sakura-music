@@ -326,7 +326,7 @@ test('los temas propios usan vistas propias sin el selector de 9 vistas', async 
       .click();
 
     await expect(page.locator('.app-shell')).toHaveAttribute('data-skin', tema.id);
-    await expect(page.locator('.titlebar-brand-tag')).toHaveText(tema.nombre);
+    await expect(page.locator('.titlebar-brand-badge')).toContainText(tema.nombre);
 
     await page.getByRole('tab', { name: /Inicio/ }).click();
     await expect(page.locator(`.${tema.id}-home`)).toBeVisible();

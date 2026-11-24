@@ -2,15 +2,17 @@ import { useEffect, useState } from 'react';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { Maximize2, Minus, Minimize2, X } from 'lucide-react';
 import { esEscritorio } from '../lib/puente';
+import { GLIFOS } from '../themes/themeMeta';
 
 interface TitleBarProps {
   nombreTema?: string;
+  temaId?: string;
 }
 
 // Barra de título personalizada de la ventana (la nativa de Windows se ocultó
 // con `decorations: false` en Rust). Toda la barra es zona de arrastre salvo
 // los botones; los pétalos y el fondo siguen el tema activo.
-export default function TitleBar({ nombreTema = 'Estudio' }: TitleBarProps) {
+export default function TitleBar({ nombreTema = 'Estudio', temaId = 'space' }: TitleBarProps) {
   const [isMax, setIsMax] = useState(false);
 
   useEffect(() => {
@@ -48,7 +50,8 @@ export default function TitleBar({ nombreTema = 'Estudio' }: TitleBarProps) {
         <span className="titlebar-brand-name" data-tauri-drag-region>
           Sakura Music
         </span>
-        <span className="titlebar-brand-tag" data-tauri-drag-region>
+        <span className="titlebar-brand-badge" data-tauri-drag-region title={`Tema: ${nombreTema}`}>
+          <span aria-hidden="true">{GLIFOS[temaId] ?? '桜'}</span>
           {nombreTema}
         </span>
       </div>
