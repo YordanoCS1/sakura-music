@@ -38,10 +38,17 @@ export function useRemoteControl({
 }: UseRemoteControlDeps) {
   const [enabled, setEnabled] = useState(false);
   const [ip, setIp] = useState('127.0.0.1');
+  const [pin, setPin] = useState('');
 
   useEffect(() => {
     invoke<boolean>('remote_is_enabled')
-      .then(setEnabled)
+      .then((activo) => {
+        setEnabled(activo);
+        if (activo)
+          void invoke<string>('remote_pin')
+            .then(setPin)
+            .catch(() => undefined);
+      })
       .catch(() => undefined);
     invoke<string>('remote_local_ip')
       .then(setIp)
@@ -108,10 +115,16 @@ export function useRemoteControl({
     try {
       const nuevo = await invoke<boolean>('remote_set_enabled', { activo: !enabled });
       setEnabled(nuevo);
+      if (nuevo) {
+        const nuevoPin = await invoke<string>('remote_pin');
+        setPin(nuevoPin);
+      } else {
+        setPin('');
+      }
     } catch {
       // El backend no está disponible (por ejemplo, en tests).
     }
   };
 
-  return { enabled, ip, alternar };
+  return { enabled, ip, pin, alternar };
 }

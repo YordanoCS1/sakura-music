@@ -53,6 +53,7 @@ interface SettingsTabProps {
   onClearCache: () => void;
   remoteEnabled: boolean;
   remoteIp: string;
+  remotePin: string;
   onToggleRemote: () => void;
   concurrencia: number;
   onSetConcurrencia: (n: number) => void;
@@ -96,6 +97,7 @@ export default function SettingsTab(props: SettingsTabProps) {
     onClearCache,
     remoteEnabled,
     remoteIp,
+    remotePin,
     onToggleRemote,
     concurrencia,
     onSetConcurrencia,
@@ -120,8 +122,8 @@ export default function SettingsTab(props: SettingsTabProps) {
 
   // La IP detectada puede caer en 127.0.0.1; el campo manual permite corregirla.
   const ipRemota = ipManual.trim() || remoteIp;
-  const urlRemota = urlControlRemoto(ipRemota);
-  const qrDisponible = esIpRedLocal(ipRemota);
+  const urlRemota = urlControlRemoto(ipRemota, remotePin);
+  const qrDisponible = esIpRedLocal(ipRemota) && remotePin.length === 6;
 
   const copiarUrlRemota = async () => {
     try {
@@ -507,7 +509,11 @@ export default function SettingsTab(props: SettingsTabProps) {
                   ) : (
                     <div className="set-remoto-sin-qr">
                       <Smartphone className="w-5 h-5" />
-                      <span>Escriba la IP de la PC para generar el código.</span>
+                      <span>
+                        {esIpRedLocal(ipRemota)
+                          ? 'Esperando el PIN del servidor…'
+                          : 'Escriba la IP de la PC para generar el código.'}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -516,6 +522,15 @@ export default function SettingsTab(props: SettingsTabProps) {
                     Escanee el código con el celular, en la <b>misma red Wi-Fi</b>, o abra:
                   </p>
                   <code className="set-remoto-url">{urlRemota}</code>
+                  {remotePin && (
+                    <p className="set-remoto-pin">
+                      PIN:{' '}
+                      <b>
+                        {remotePin.slice(0, 3)} {remotePin.slice(3)}
+                      </b>
+                      <small>Si escanea el QR, no hace falta escribirlo.</small>
+                    </p>
+                  )}
                   <div className="set-remoto-controles">
                     <input
                       className="set-ip"

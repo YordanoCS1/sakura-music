@@ -285,9 +285,7 @@ fn search_library_fts(query: String, limit: Option<usize>) -> Result<Vec<Scanned
 /// Comandos del control remoto local.
 #[tauri::command]
 fn remote_set_enabled(activo: bool) -> bool {
-    remote::remote()
-        .activo
-        .store(activo, std::sync::atomic::Ordering::Relaxed);
+    remote::set_activo(activo);
     activo
 }
 
@@ -301,6 +299,12 @@ fn remote_is_enabled() -> bool {
 #[tauri::command]
 fn remote_local_ip() -> String {
     remote::ip_local()
+}
+
+/// PIN del control remoto, para mostrarlo en Ajustes y armar el QR.
+#[tauri::command]
+fn remote_pin() -> String {
+    remote::pin_actual()
 }
 
 #[tauri::command]
@@ -861,6 +865,7 @@ pub fn run() {
             remote_set_enabled,
             remote_is_enabled,
             remote_local_ip,
+            remote_pin,
             remote_update_state,
             clear_library_cache,
             delete_library_track,

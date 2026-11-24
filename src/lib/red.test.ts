@@ -29,4 +29,10 @@ describe('urlControlRemoto', () => {
     expect(urlControlRemoto('192.168.1.23')).toBe(`http://192.168.1.23:${PUERTO_REMOTO}`);
     expect(PUERTO_REMOTO).toBe(17342);
   });
+
+  it('incluye el PIN en la URL del QR', () => {
+    expect(urlControlRemoto('192.168.1.23', '123456')).toBe(
+      `http://192.168.1.23:${PUERTO_REMOTO}/?pin=123456`,
+    );
+  });
 });

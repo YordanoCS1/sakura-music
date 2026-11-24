@@ -3,9 +3,13 @@
 /** Puerto del servidor HTTP del control remoto, igual al de `remote.rs`. */
 export const PUERTO_REMOTO = 17342;
 
-/** Construye la URL que se muestra y se codifica en el QR. */
-export function urlControlRemoto(ip: string): string {
-  return `http://${ip}:${PUERTO_REMOTO}`;
+/**
+ * Construye la URL que se muestra y se codifica en el QR. Si se pasa el PIN,
+ * el servidor lo valida, abre una sesión y redirige a la interfaz.
+ */
+export function urlControlRemoto(ip: string, pin = ''): string {
+  const base = `http://${ip}:${PUERTO_REMOTO}`;
+  return pin ? `${base}/?pin=${pin}` : base;
 }
 
 /**

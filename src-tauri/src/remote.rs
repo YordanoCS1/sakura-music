@@ -1,13 +1,18 @@
-//! Control remoto local: servidor HTTP mínimo para manejar la reproducción
-//! desde el teléfono móvil en la misma red. Usa sólo `std`, sin crates extra.
+//! Control remoto local: servidor HTTP para manejar la app desde el celular.
+//! Usa sólo `std`, sin crates extra. Todo lo que no sea leer el estado o
+//! emitir comandos se resuelve en el frontend de la PC, que sigue siendo el
+//! único que toca archivos y SQLite.
 
 use parking_lot::Mutex;
 use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
 use std::io::{Read, Write};
 use std::net::{TcpListener, TcpStream, UdpSocket};
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::path::{Path, PathBuf};
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::{Arc, OnceLock};
 use std::thread;
+use std::time::{SystemTime, UNIX_EPOCH};
 use tauri::Emitter;
 
 pub const PUERTO: u16 = 17342;
@@ -54,17 +59,66 @@ pub enum RemoteCommand {
 pub struct Remote {
     pub activo: AtomicBool,
     pub estado: Mutex<RemoteState>,
+    /// PIN de 6 dígitos que se muestra en Ajustes y viaja en el QR.
+    pin: Mutex<String>,
+    /// Tokens de sesión emitidos después de validar el PIN.
+    sesiones: Mutex<HashSet<String>>,
 }
 
 static REMOTO: OnceLock<Arc<Remote>> = OnceLock::new();
+static CONTADOR: AtomicU64 = AtomicU64::new(0);
 
 pub fn remote() -> &'static Arc<Remote> {
     REMOTO.get_or_init(|| {
         Arc::new(Remote {
             activo: AtomicBool::new(false),
             estado: Mutex::new(RemoteState::default()),
+            pin: Mutex::new(String::new()),
+            sesiones: Mutex::new(HashSet::new()),
         })
     })
+}
+
+/// Mezcla tiempo y contador. No es criptográfico: alcanza para evitar que
+/// cualquiera en la Wi-Fi entre accidentalmente al control remoto.
+fn semilla() -> u64 {
+    let nano = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|d| d.as_nanos() as u64)
+        .unwrap_or(0);
+    let n = CONTADOR.fetch_add(1, Ordering::Relaxed);
+    nano.wrapping_mul(6_364_136_223_846_793_005)
+        .wrapping_add(n.wrapping_mul(1_442_695_040_888_963_407))
+}
+
+fn generar_pin() -> String {
+    format!("{:06}", semilla() % 1_000_000)
+}
+
+fn generar_token() -> String {
+    format!("{:016x}{:016x}", semilla(), semilla())
+}
+
+/// Activa o desactiva el servidor. Al activar genera un PIN nuevo sólo si no
+/// había uno; al desactivar lo descarta junto con todas las sesiones.
+pub fn set_activo(activo: bool) {
+    let r = remote();
+    r.activo.store(activo, Ordering::Relaxed);
+    let mut pin = r.pin.lock();
+    let mut sesiones = r.sesiones.lock();
+    if activo {
+        if pin.is_empty() {
+            *pin = generar_pin();
+        }
+    } else {
+        pin.clear();
+        sesiones.clear();
+    }
+}
+
+/// PIN vigente. Se expone al frontend para mostrarlo y armar el QR.
+pub fn pin_actual() -> String {
+    remote().pin.lock().clone()
 }
 
 /// Arranca el servidor una sola vez. Si el puerto está ocupado, devuelve error
@@ -102,12 +156,156 @@ fn parametro(consulta: &str, clave: &str) -> Option<String> {
 }
 
 fn responder(stream: &mut TcpStream, codigo: &str, tipo: &str, cuerpo: &str) {
+    responder_extra(stream, codigo, tipo, cuerpo.as_bytes(), "");
+}
+
+fn responder_bytes(stream: &mut TcpStream, codigo: &str, tipo: &str, cuerpo: &[u8]) {
+    responder_extra(stream, codigo, tipo, cuerpo, "");
+}
+
+fn responder_extra(stream: &mut TcpStream, codigo: &str, tipo: &str, cuerpo: &[u8], extra: &str) {
     let cabecera = format!(
-        "HTTP/1.1 {codigo}\r\nContent-Type: {tipo}; charset=utf-8\r\nContent-Length: {}\r\nAccess-Control-Allow-Origin: *\r\nConnection: close\r\n\r\n",
+        "HTTP/1.1 {codigo}\r\nContent-Type: {tipo}; charset=utf-8\r\nContent-Length: {}\r\nAccess-Control-Allow-Origin: *\r\nCache-Control: no-store\r\n{extra}Connection: close\r\n\r\n",
         cuerpo.len()
     );
     let _ = stream.write_all(cabecera.as_bytes());
-    let _ = stream.write_all(cuerpo.as_bytes());
+    let _ = stream.write_all(cuerpo);
+}
+
+fn cookie_token(cabeceras: &str) -> Option<String> {
+    cabeceras.lines().find_map(|linea| {
+        let (clave, valor) = linea.split_once(':')?;
+        if !clave.trim().eq_ignore_ascii_case("cookie") {
+            return None;
+        }
+        valor
+            .split(';')
+            .find_map(|par| par.trim().strip_prefix("sakura_remote="))
+            .map(str::to_string)
+    })
+}
+
+fn sesion_valida(cabeceras: &str) -> bool {
+    cookie_token(cabeceras)
+        .map(|token| remote().sesiones.lock().contains(&token))
+        .unwrap_or(false)
+}
+
+fn abrir_sesion() -> String {
+    let token = generar_token();
+    remote().sesiones.lock().insert(token.clone());
+    token
+}
+
+fn pagina_login(error: bool) -> String {
+    let aviso = if error {
+        "<p style='color:#fbbf24'>PIN incorrecto. Intente de nuevo.</p>"
+    } else {
+        "<p>Escriba el PIN que aparece en Ajustes → Sistema → Control remoto.</p>"
+    };
+    format!(
+        r#"<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sakura · Control remoto</title><style>
+body{{margin:0;background:#14121b;color:#eee9f7;font:15px/1.5 system-ui;display:grid;place-items:center;min-height:100vh;padding:20px}}
+.card{{background:#1e1a2b;border:1px solid #332d48;border-radius:16px;padding:24px;width:100%;max-width:340px}}
+h1{{font-size:18px;margin:0 0 8px}}small{{color:#a49bbd}}input{{width:100%;box-sizing:border-box;margin:12px 0;padding:12px;border:1px solid #332d48;border-radius:10px;background:#14121b;color:#eee9f7;font:20px/1 'JetBrains Mono',monospace;letter-spacing:6px;text-align:center}}
+button{{width:100%;padding:12px;border:0;border-radius:10px;background:#b98cff;color:#14121b;font-weight:700;cursor:pointer}}
+</style></head><body><div class="card"><small>SAKURA MUSIC</small><h1>Control remoto</h1>{aviso}
+<form method="post" action="/login"><input name="pin" inputmode="numeric" maxlength="6" placeholder="······" autofocus required>
+<button type="submit">Entrar</button></form></div></body></html>"#
+    )
+}
+
+/// Busca el directorio con el frontend compilado. En desarrollo el CWD suele
+/// ser `src-tauri`; en un paquete, el ejecutable vive several niveles abajo.
+fn buscar_dist() -> Option<PathBuf> {
+    let mut candidatos = vec![
+        PathBuf::from("dist"),
+        PathBuf::from("../dist"),
+        PathBuf::from("../../dist"),
+    ];
+    if let Ok(exe) = std::env::current_exe() {
+        for ancestral in exe.ancestors().take(5) {
+            candidatos.push(ancestral.join("dist"));
+            candidatos.push(ancestral.join("../dist"));
+        }
+    }
+    candidatos
+        .into_iter()
+        .find(|ruta| ruta.join("index.html").is_file())
+}
+
+fn mime(ruta: &Path) -> &'static str {
+    match ruta.extension().and_then(|e| e.to_str()).unwrap_or("") {
+        "html" => "text/html",
+        "js" => "text/javascript",
+        "css" => "text/css",
+        "json" | "map" => "application/json",
+        "svg" => "image/svg+xml",
+        "png" => "image/png",
+        "jpg" | "jpeg" => "image/jpeg",
+        "webp" => "image/webp",
+        "woff2" => "font/woff2",
+        "ico" => "image/x-icon",
+        "bmp" => "image/bmp",
+        _ => "application/octet-stream",
+    }
+}
+
+/// Resuelve un archivo dentro de `dist` sin permitir `..` ni rutas absolutas.
+fn archivo_seguro(dist: &Path, ruta: &str) -> Option<PathBuf> {
+    let relativo = ruta.trim_start_matches('/');
+    let relativo = if relativo.is_empty() {
+        "index.html"
+    } else {
+        relativo
+    };
+    let destino = dist.join(relativo);
+    let raiz = dist.canonicalize().ok()?;
+    let resultado = destino.canonicalize().ok()?;
+    resultado.starts_with(&raiz).then_some(resultado)
+}
+
+fn servir_estatico(stream: &mut TcpStream, dist: &Path, ruta: &str) {
+    match archivo_seguro(dist, ruta) {
+        Some(archivo) => match std::fs::read(&archivo) {
+            Ok(bytes) => responder_bytes(stream, "200", mime(&archivo), &bytes),
+            Err(_) => responder(stream, "404", "text/plain", "No encontrado"),
+        },
+        None => responder(stream, "404", "text/plain", "No encontrado"),
+    }
+}
+
+fn json_o_vacio<T: Serialize>(resultado: Result<T, String>) -> String {
+    match resultado {
+        Ok(valor) => serde_json::to_string(&valor).unwrap_or_else(|_| "null".to_string()),
+        Err(_) => "null".to_string(),
+    }
+}
+
+/// La app espera un array de pistas, no las entradas internas con `modified_ns`.
+fn biblioteca_json() -> String {
+    match crate::library_db::cached_tracks() {
+        Ok(entradas) => {
+            let pistas: Vec<_> = entradas.into_iter().map(|entrada| entrada.track).collect();
+            serde_json::to_string(&pistas).unwrap_or_else(|_| "[]".to_string())
+        }
+        Err(_) => "[]".to_string(),
+    }
+}
+
+fn servir_cover(stream: &mut TcpStream, id: &str) {
+    let track = crate::library_db::track_by_id(id).ok().flatten();
+    let ruta = track.and_then(|t| t.cover_url).unwrap_or_default();
+    if ruta.is_empty() {
+        responder(stream, "404", "text/plain", "Sin carátula");
+        return;
+    }
+    let archivo = PathBuf::from(&ruta);
+    match std::fs::read(&archivo) {
+        Ok(bytes) => responder_bytes(stream, "200", mime(&archivo), &bytes),
+        Err(_) => responder(stream, "404", "text/plain", "Sin carátula"),
+    }
 }
 
 fn emitir(app: &tauri::AppHandle, comando: RemoteCommand) {
@@ -115,13 +313,14 @@ fn emitir(app: &tauri::AppHandle, comando: RemoteCommand) {
 }
 
 fn atender(mut stream: TcpStream, app: &tauri::AppHandle) {
-    let mut buffer = [0u8; 8192];
+    let mut buffer = [0u8; 16_384];
     let leidos = stream.read(&mut buffer).unwrap_or(0);
     if leidos == 0 {
         return;
     }
     let peticion = String::from_utf8_lossy(&buffer[..leidos]).to_string();
-    let primera = peticion.lines().next().unwrap_or("");
+    let (cabeceras, cuerpo) = peticion.split_once("\r\n\r\n").unwrap_or((&peticion, ""));
+    let primera = cabeceras.lines().next().unwrap_or("");
     let partes: Vec<&str> = primera.split_whitespace().collect();
     let metodo = partes.first().copied().unwrap_or("GET");
     let objetivo = partes.get(1).copied().unwrap_or("/");
@@ -132,23 +331,100 @@ fn atender(mut stream: TcpStream, app: &tauri::AppHandle) {
             &mut stream,
             "200",
             "text/html",
-            "<h1 style='font-family:system-ui'>Control remoto desactivado</h1><p>Activalo en Ajustes → Control remoto.</p>",
+            "<h1 style='font-family:system-ui'>Control remoto desactivado</h1><p>Activelo en Ajustes → Control remoto.</p>",
         );
         return;
     }
 
+    // El QR lleva el PIN en la URL: lo validamos y transformamos en cookie.
+    if let Some(pin) = parametro(consulta, "pin") {
+        if pin == pin_actual() {
+            let token = abrir_sesion();
+            responder_extra(
+                &mut stream,
+                "302",
+                "text/plain",
+                b"",
+                &format!(
+                    "Set-Cookie: sakura_remote={token}; Path=/; HttpOnly; SameSite=Lax\r\nLocation: /\r\n"
+                ),
+            );
+        } else {
+            responder(&mut stream, "401", "text/html", &pagina_login(true));
+        }
+        return;
+    }
+
+    // Formulario manual para quien escribió la URL sin el PIN del QR.
+    if metodo == "POST" && ruta == "/login" {
+        if parametro(cuerpo, "pin").as_deref() == Some(pin_actual().as_str()) {
+            let token = abrir_sesion();
+            responder_extra(
+                &mut stream,
+                "302",
+                "text/plain",
+                b"",
+                &format!(
+                    "Set-Cookie: sakura_remote={token}; Path=/; HttpOnly; SameSite=Lax\r\nLocation: /\r\n"
+                ),
+            );
+        } else {
+            responder(&mut stream, "401", "text/html", &pagina_login(true));
+        }
+        return;
+    }
+
+    if !sesion_valida(cabeceras) {
+        if ruta == "/" {
+            responder(&mut stream, "200", "text/html", &pagina_login(false));
+        } else {
+            responder(
+                &mut stream,
+                "401",
+                "application/json",
+                "{\"error\":\"no autorizado\"}",
+            );
+        }
+        return;
+    }
+
     match (metodo, ruta) {
-        ("GET", "/") => responder(&mut stream, "200", "text/html", pagina()),
+        ("GET", "/") | ("GET", "/index.html") => match buscar_dist() {
+            Some(dist) => servir_estatico(&mut stream, &dist, "index.html"),
+            None => responder(&mut stream, "200", "text/html", pagina()),
+        },
         ("GET", "/api/status") => {
             let estado = remote().estado.lock().clone();
             let json = serde_json::to_string(&estado).unwrap_or_else(|_| "{}".to_string());
             responder(&mut stream, "200", "application/json", &json);
         }
+        ("GET", "/api/pin") => {
+            let json = serde_json::json!({ "pin": pin_actual() }).to_string();
+            responder(&mut stream, "200", "application/json", &json);
+        }
+        ("GET", "/api/library") => {
+            responder(&mut stream, "200", "application/json", &biblioteca_json());
+        }
         ("GET", "/api/search") => {
             let q = parametro(consulta, "q").unwrap_or_default();
-            let resultados = crate::library_db::search_tracks(&q, 20).unwrap_or_default();
-            let json = serde_json::to_string(&resultados).unwrap_or_else(|_| "[]".to_string());
+            let json = json_o_vacio(crate::library_db::search_tracks(&q, 20));
             responder(&mut stream, "200", "application/json", &json);
+        }
+        ("GET", "/api/playlists") => {
+            let json = json_o_vacio(crate::playlists::list());
+            responder(&mut stream, "200", "application/json", &json);
+        }
+        ("GET", "/api/queue") => {
+            let estado = crate::downloader::get_status();
+            let json = serde_json::to_string(&estado).unwrap_or_else(|_| "{}".to_string());
+            responder(&mut stream, "200", "application/json", &json);
+        }
+        ("GET", "/api/doctor") => {
+            let json = json_o_vacio(crate::library_db::doctor_detallado());
+            responder(&mut stream, "200", "application/json", &json);
+        }
+        ("GET", ruta) if ruta.starts_with("/api/cover/") => {
+            servir_cover(&mut stream, ruta.trim_start_matches("/api/cover/"));
         }
         ("POST", "/api/playpause") => {
             emitir(app, RemoteCommand::PlayPause);
@@ -195,6 +471,13 @@ fn atender(mut stream: TcpStream, app: &tauri::AppHandle) {
                 );
             }
             responder(&mut stream, "200", "application/json", "{\"ok\":true}");
+        }
+        ("GET", ruta) => {
+            if let Some(dist) = buscar_dist() {
+                servir_estatico(&mut stream, &dist, ruta);
+            } else {
+                responder(&mut stream, "404", "text/plain", "No encontrado");
+            }
         }
         _ => responder(&mut stream, "404", "text/plain", "No encontrado"),
     }
@@ -271,5 +554,48 @@ mod tests {
         assert!(estado.title.is_empty());
         assert!(!estado.playing);
         assert_eq!(estado.position, 0.0);
+    }
+
+    #[test]
+    fn el_pin_tiene_seis_digitos_y_cambia_al_reactivar() {
+        set_activo(true);
+        let pin = pin_actual();
+        assert_eq!(pin.len(), 6);
+        assert!(pin.chars().all(|c| c.is_ascii_digit()));
+        set_activo(false);
+        assert!(pin_actual().is_empty());
+        set_activo(true);
+        assert_eq!(pin_actual().len(), 6);
+        set_activo(false);
+    }
+
+    #[test]
+    fn el_cookie_de_sesion_se_extrae_de_las_cabeceras() {
+        let cabeceras =
+            "GET / HTTP/1.1\r\nHost: localhost\r\nCookie: foo=bar; sakura_remote=abc123\r\n";
+        assert_eq!(cookie_token(cabeceras), Some("abc123".to_string()));
+        assert_eq!(cookie_token("GET / HTTP/1.1"), None);
+    }
+
+    #[test]
+    fn la_pagina_de_login_pide_el_pin() {
+        assert!(pagina_login(false).contains("name=\"pin\""));
+        assert!(pagina_login(true).contains("PIN incorrecto"));
+    }
+
+    #[test]
+    fn los_archivos_estaticos_no_pueden_salir_de_dist() {
+        let nano = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map(|d| d.as_nanos())
+            .unwrap_or(0);
+        let base =
+            PathBuf::from("target").join(format!("sakura-dist-{}-{nano}", std::process::id()));
+        std::fs::create_dir_all(&base).expect("no se pudo crear el directorio de prueba");
+        std::fs::write(base.join("index.html"), b"ok").expect("no se pudo escribir el archivo");
+        assert!(archivo_seguro(&base, "index.html").is_some());
+        assert!(archivo_seguro(&base, "").is_some());
+        assert!(archivo_seguro(&base, "../secreto.txt").is_none());
+        let _ = std::fs::remove_dir_all(&base);
     }
 }

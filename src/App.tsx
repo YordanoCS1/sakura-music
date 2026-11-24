@@ -1573,6 +1573,7 @@ export default function App() {
                 temasPersonalizadosIds={customThemes.map((tema) => tema.id)}
                 remoteEnabled={controlRemoto.enabled}
                 remoteIp={controlRemoto.ip}
+                remotePin={controlRemoto.pin}
                 onToggleRemote={controlRemoto.alternar}
                 concurrencia={concurrencia}
                 skipStartupScan={localStorage.getItem('sakura_skip_startup_scan') === 'true'}

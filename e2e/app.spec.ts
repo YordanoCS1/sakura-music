@@ -18,6 +18,7 @@ test.beforeEach(async ({ page }) => {
       search_library_fts: [],
       remote_is_enabled: false,
       remote_local_ip: '127.0.0.1',
+      remote_pin: '123456',
       remote_set_enabled: true,
       remote_update_state: null,
       search_catalog_songs: [],
@@ -812,7 +813,8 @@ test('el control remoto genera un QR con la IP indicada', async ({ page }) => {
   // Al escribir una IP privada aparece el QR y la URL se actualiza.
   await page.getByLabel('IP de la PC en la red local').fill('192.168.1.23');
   await expect(page.locator('.set-remoto-qr svg title')).toHaveText('QR del control remoto');
-  await expect(page.locator('.set-remoto-url')).toHaveText('http://192.168.1.23:17342');
+  await expect(page.locator('.set-remoto-url')).toHaveText('http://192.168.1.23:17342/?pin=123456');
+  await expect(page.locator('.set-remoto-pin')).toContainText('123 456');
 
   await page.getByRole('button', { name: 'Copiar URL del control remoto' }).click();
   await expect(page.getByRole('button', { name: 'Copiar URL del control remoto' })).toContainText(
@@ -850,6 +852,7 @@ test('el panel ahora suena muestra detalles, album y artista', async ({ page }) 
       search_library_fts: [],
       remote_is_enabled: false,
       remote_local_ip: '127.0.0.1',
+      remote_pin: '123456',
       remote_set_enabled: true,
       remote_update_state: null,
       search_catalog_songs: [],
