@@ -8483,15 +8483,30 @@ html[data-theme-transition='space'] #theme-panel.panel-enter { animation:t-estud
 .cover-full[data-skin='samurai'] .cover-full-copy h1 { font-family:'Cormorant Garamond',serif; font-size:52px; letter-spacing:.06em; }
 .cover-full[data-skin='samurai'] .cover-full-card-head button.is-fav { color:#b7352a; }
 
-/* --- 13 · Kawaii: pastel, corazones y nubes --- */
-.cover-full[data-skin='kawaii'] { --cf-bg:#fff7fb; --cf-fg:#61324f; --cf-soft:#9c6f88; --cf-accent:#ff8fbe; --cf-card:rgba(255,255,255,.82); --cf-line:rgba(255,143,190,.5); --cf-radius:28px; background:radial-gradient(circle at 15% 15%, #ffe3f1, #fff8fc 55%, #e8fff5); }
-.cover-full[data-skin='kawaii']::before { background-image:radial-gradient(circle, rgba(255,143,190,.25) 3px, transparent 4px); background-size:44px 44px; opacity:.5; }
-.cover-full[data-skin='kawaii'] .cover-full-deco span { border:3px dotted var(--cf-accent); border-radius:50%; opacity:.45; }
-.cover-full[data-skin='kawaii'] .cover-full-art { border:6px solid #fff; border-radius:28px; box-shadow:0 18px 50px rgba(255,143,190,.4); }
-.cover-full[data-skin='kawaii'] .cover-full-copy h1 { font-weight:800; letter-spacing:-.02em; }
-.cover-full[data-skin='kawaii'] .cover-full-copy h1::before { content:'♥ '; color:var(--cf-accent); font-size:.7em; }
-.cover-full[data-skin='kawaii'] .cover-full-card { border-radius:28px; box-shadow:0 12px 30px rgba(255,143,190,.2); }
-.cover-full[data-skin='kawaii'] .cover-full-sello { border-radius:28px; background:#fff; }
+/* --- 13 · Kawaii: cuaderno pastel, polaroid, cinta washi y pegatina --- */
+.cover-full[data-skin='kawaii'] { --cf-bg:#fff6fb; --cf-fg:#5b3350; --cf-soft:#9d708c; --cf-accent:#f278ad; --cf-card:#fffdfd; --cf-line:rgba(242,120,173,.4); --cf-radius:22px; background:
+  radial-gradient(circle at 12% 10%, rgba(255,190,220,.45), transparent 30%),
+  radial-gradient(circle at 88% 85%, rgba(170,235,215,.4), transparent 32%),
+  repeating-linear-gradient(0deg, transparent 0 31px, rgba(242,120,173,.12) 31px 32px),
+  #fff9fd; }
+.cover-full[data-skin='kawaii']::before { background:none; }
+.cover-full[data-skin='kawaii'] .cover-full-deco span { border:0; opacity:.5; }
+.cover-full[data-skin='kawaii'] .cover-full-deco span:nth-child(1) { width:130px; height:34px; left:7%; top:8%; border-radius:2px; background:repeating-linear-gradient(45deg, rgba(242,120,173,.4) 0 8px, rgba(255,182,207,.4) 8px 16px); transform:rotate(-12deg); }
+.cover-full[data-skin='kawaii'] .cover-full-deco span:nth-child(2) { width:110px; height:30px; right:9%; bottom:12%; border-radius:2px; background:repeating-linear-gradient(-45deg, rgba(150,220,200,.5) 0 8px, rgba(200,245,230,.5) 8px 16px); transform:rotate(9deg); }
+.cover-full[data-skin='kawaii'] .cover-full-deco span:nth-child(3) { width:54px; height:54px; right:14%; top:18%; left:auto; bottom:auto; border-radius:50% 50% 50% 12%; background:rgba(242,120,173,.22); transform:rotate(18deg); }
+.cover-full[data-skin='kawaii'] .cover-full-deco span:nth-child(4) { width:36px; height:36px; left:11%; bottom:22%; border-radius:50% 50% 12% 50%; background:rgba(255,190,220,.35); }
+.cover-full[data-skin='kawaii'] .cover-full-deco span:nth-child(5) { display:none; }
+.cover-full[data-skin='kawaii'] .cover-full-arte { padding:14px 14px 44px; background:#fff; border-radius:3px; box-shadow:0 20px 55px rgba(120,70,100,.22), 0 2px 6px rgba(120,70,100,.1); transform:rotate(-2deg); }
+.cover-full[data-skin='kawaii'] .cover-full-halo { display:none; }
+.cover-full[data-skin='kawaii'] .cover-full-art { border:0; border-radius:0; box-shadow:none; }
+.cover-full[data-skin='kawaii'] .cover-full-arte::after { content:'♥  nunca dejes de brillar'; position:absolute; bottom:12px; left:0; right:0; text-align:center; font-size:10px; color:#a87d96; font-family:'Cormorant Garamond',serif; letter-spacing:.04em; }
+.cover-full[data-skin='kawaii'] .cover-full-sello { bottom:-26px; border:0; background:#fff6bf; color:#8a6a3a; border-radius:999px; box-shadow:0 6px 14px rgba(120,70,100,.15); transform:translateX(-50%) rotate(3deg); }
+.cover-full[data-skin='kawaii'] .cover-full-copy h1 { font-weight:800; letter-spacing:-.03em; font-size:40px; }
+.cover-full[data-skin='kawaii'] .cover-full-copy h1::before { content:'♥'; display:inline-grid; place-items:center; width:34px; height:34px; margin-right:12px; border-radius:50%; background:var(--cf-accent); color:#fff; font-size:16px; vertical-align:middle; box-shadow:0 4px 0 rgba(120,50,90,.25); }
+.cover-full[data-skin='kawaii'] .cover-full-card { border-radius:22px 22px 22px 4px; border:1px dashed var(--cf-accent); box-shadow:0 10px 26px rgba(242,120,173,.16); transform:rotate(.6deg); }
+.cover-full[data-skin='kawaii'] .cover-full-card-head { font-family:'Cormorant Garamond',serif; letter-spacing:.1em; }
+.cover-full[data-skin='kawaii'] .cover-full-lyrics { border-left:2px solid rgba(242,120,173,.35); padding-left:12px; }
+.cover-full[data-skin='kawaii'] .cover-full-lyrics p.is-current::after { content:' ♥'; color:var(--cf-accent); }
 
 /* --- 14 · Manga: viñeta, halftone y tinta roja --- */
 .cover-full[data-skin='manga'] { --cf-bg:#fdfcf8; --cf-fg:#0d0d0d; --cf-soft:#4a4a4a; --cf-accent:#d62828; --cf-card:#fff; --cf-line:#0d0d0d; --cf-radius:0; background:#fdfcf8; }
