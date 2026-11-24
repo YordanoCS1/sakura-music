@@ -194,6 +194,10 @@ export default function App() {
   const handleSetPlayerStyle = async (s: PlayerStyle) => {
     setPlayerStyle(s);
     localStorage.setItem('sakura_player_style', s);
+    if (s === 'off' && isPlaying && audioRef.current) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    }
     try {
       const win = getCurrentWindow();
       if (s === 'mini') {
@@ -409,6 +413,9 @@ export default function App() {
           if (activeTrack)
             toggleFavorite(activeTrack.id, { stopPropagation() {} } as React.MouseEvent);
           break;
+        case 'reproductor':
+          void handleSetPlayerStyle(playerStyle === 'off' ? 'floating' : 'off');
+          break;
       }
     };
     window.addEventListener('keydown', alTeclar);
@@ -419,6 +426,7 @@ export default function App() {
     atajos,
     escuchandoAtajo,
     activeTrack,
+    playerStyle,
     handleNextTrack,
     handlePreviousTrack,
     togglePlay,
@@ -1803,34 +1811,46 @@ export default function App() {
           {/* ========================================================= */}
           {/* REPRODUCTOR TEMÁTICO (DOCK FLOTANTE / BARRA FIJA)         */}
           {/* ========================================================= */}
-          <PlayerBar
-            theme={temaBase}
-            tracks={tracks}
-            onPlayTrackFromPanel={handlePlayTrack}
-            playerStyle={playerStyle}
-            onSetPlayerStyle={handleSetPlayerStyle}
-            activeTrack={activeTrack}
-            favorites={favorites}
-            isPlaying={isPlaying}
-            isShuffle={isShuffle}
-            repeatMode={repeatMode}
-            audioRef={audioRef}
-            duration={duration}
-            volume={volume}
-            isMuted={isMuted}
-            getCoverSrc={getCoverSrc}
-            formatTime={formatTime}
-            onTogglePlay={togglePlay}
-            onNext={() => handleNextTrack()}
-            onPrevious={handlePreviousTrack}
-            onSeek={handleSeek}
-            onToggleShuffle={toggleShuffle}
-            onCycleRepeat={cycleRepeatMode}
-            onToggleMute={toggleMute}
-            onVolumeChange={handleVolumeChange}
-            onToggleFavorite={toggleFavorite}
-            onOpenFullscreen={() => setPortadaFull(true)}
-          />
+          {playerStyle !== 'off' ? (
+            <PlayerBar
+              theme={temaBase}
+              tracks={tracks}
+              onPlayTrackFromPanel={handlePlayTrack}
+              playerStyle={playerStyle}
+              onSetPlayerStyle={handleSetPlayerStyle}
+              activeTrack={activeTrack}
+              favorites={favorites}
+              isPlaying={isPlaying}
+              isShuffle={isShuffle}
+              repeatMode={repeatMode}
+              audioRef={audioRef}
+              duration={duration}
+              volume={volume}
+              isMuted={isMuted}
+              getCoverSrc={getCoverSrc}
+              formatTime={formatTime}
+              onTogglePlay={togglePlay}
+              onNext={() => handleNextTrack()}
+              onPrevious={handlePreviousTrack}
+              onSeek={handleSeek}
+              onToggleShuffle={toggleShuffle}
+              onCycleRepeat={cycleRepeatMode}
+              onToggleMute={toggleMute}
+              onVolumeChange={handleVolumeChange}
+              onToggleFavorite={toggleFavorite}
+              onOpenFullscreen={() => setPortadaFull(true)}
+            />
+          ) : (
+            <button
+              type="button"
+              className="player-off-btn"
+              onClick={() => void handleSetPlayerStyle('floating')}
+              title="Volver a activar el reproductor"
+              aria-label="Activar reproductor"
+            >
+              <Music2 className="w-3.5 h-3.5" /> Reproductor desactivado · activar
+            </button>
+          )}
 
           {/* ── MODAL EDITOR DE METADATOS PRO & CATÁLOGO ── */}
           {editingTrack && (

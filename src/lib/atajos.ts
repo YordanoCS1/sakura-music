@@ -1,7 +1,15 @@
 /** Atajos de teclado configurables, persistidos en localStorage. */
 
 export type AccionAtajo =
-  'paleta' | 'biblioteca' | 'buscar' | 'cola' | 'siguiente' | 'anterior' | 'playpause' | 'favorito';
+  | 'paleta'
+  | 'biblioteca'
+  | 'buscar'
+  | 'cola'
+  | 'siguiente'
+  | 'anterior'
+  | 'playpause'
+  | 'favorito'
+  | 'reproductor';
 
 export const ACCIONES: { id: AccionAtajo; etiqueta: string }[] = [
   { id: 'paleta', etiqueta: 'Paleta de comandos' },
@@ -12,6 +20,7 @@ export const ACCIONES: { id: AccionAtajo; etiqueta: string }[] = [
   { id: 'anterior', etiqueta: 'Pista anterior' },
   { id: 'playpause', etiqueta: 'Reproducir / pausar' },
   { id: 'favorito', etiqueta: 'Favorito' },
+  { id: 'reproductor', etiqueta: 'Activar / desactivar reproductor' },
 ];
 
 const POR_DEFECTO: Record<AccionAtajo, string> = {
@@ -23,6 +32,7 @@ const POR_DEFECTO: Record<AccionAtajo, string> = {
   anterior: 'Ctrl+Left',
   playpause: 'Space',
   favorito: 'Ctrl+F',
+  reproductor: 'Ctrl+P',
 };
 
 const CLAVE = 'sakura_atajos';

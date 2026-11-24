@@ -148,7 +148,7 @@ test('la app arranca, oculta el splash y navega entre pestañas', async ({ page 
   await page.getByRole('button', { name: 'Sistema' }).click();
   await expect(page.getByText(/Motor nativo/)).toBeVisible();
 
-  await page.getByRole('button', { name: 'Reproductor' }).click();
+  await page.getByRole('button', { name: 'Reproductor', exact: true }).click();
   const mini = page.getByRole('button', { name: 'Mini', exact: true });
   await mini.click();
   await expect(mini).toHaveAttribute('aria-pressed', 'true');

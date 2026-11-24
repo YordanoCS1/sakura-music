@@ -19,6 +19,7 @@ import {
   Smartphone,
   Copy,
   FileArchive,
+  Power,
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { invoke, open } from '../lib/puente';
@@ -398,6 +399,7 @@ export default function SettingsTab(props: SettingsTabProps) {
               { id: 'floating', label: 'Cápsula flotante', icono: Sparkles },
               { id: 'fixed', label: 'Barra fija', icono: Layers },
               { id: 'mini', label: 'Mini', icono: Minimize2 },
+              { id: 'off', label: 'Desactivado', icono: Power },
             ] as const
           ).map(({ id, label, icono: Icono }) => (
             <button
@@ -413,7 +415,9 @@ export default function SettingsTab(props: SettingsTabProps) {
           ))}
         </div>
         <p className="set-note">
-          El mini reproductor reduce la ventana y la mantiene siempre encima.
+          El mini reproductor reduce la ventana y la mantiene siempre encima. Con <b>Desactivado</b>{' '}
+          la barra se oculta y la música se pausa; el reproductor sigue accesible desde el panel
+          «Ahora suena».
         </p>
       </Tarjeta>
     ),

@@ -183,7 +183,7 @@ export interface ThemeOption {
   descripcion: string;
 }
 export type AppTab = 'home' | 'search' | 'library' | 'queue' | 'playlists' | 'stats' | 'settings';
-export type PlayerStyle = 'floating' | 'fixed' | 'mini';
+export type PlayerStyle = 'floating' | 'fixed' | 'mini' | 'off';
 export type ViewMode =
   'folders' | 'grid' | 'table' | 'albums' | 'mosaic' | 'cds' | 'tilt' | 'glow' | 'portadas';
 

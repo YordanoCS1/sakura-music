@@ -5,6 +5,7 @@ Todos los cambios destacables de este proyecto se registran aquí. El formato si
 ## [Sin publicar]
 
 ### Agregado
+- **Reproductor desactivable**: nueva opción *Desactivado* en Ajustes → Reproductor oculta la barra y pausa la música; un botón flotante (o `Ctrl+P`) lo reactiva. El estado se guarda en `localStorage`.
 - **Identidad visual reforzada**: fondo con gradiente teñido por la carátula y transición suave al cambiar de pista, animaciones de entrada por tema (respetando `prefers-reduced-motion`), insignia del tema con su glifo en la barra de título y microinteracciones sonoras al cambiar de pestaña, marcar favorito y terminar una descarga.
 - **Modo presentación**: doble clic en la portada abre una pantalla completa solo con arte y letras sincronizadas (Escape para salir).
 - **Atajos configurables** en Ajustes: reasigne las combinaciones para la paleta, navegación, reproducción y favorito; se guardan en `localStorage`.
