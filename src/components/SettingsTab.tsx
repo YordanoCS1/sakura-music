@@ -16,7 +16,11 @@ import {
   Wifi,
   Database,
   Link2,
+  Smartphone,
+  Copy,
 } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
+import { esIpRedLocal, urlControlRemoto } from '../lib/red';
 import type { AppInfo, DownloadHistoryItem, PlayerStyle, ThemeOption } from '../types';
 import { GLIFOS, PREVIEWS, SWATCHES } from '../themes/themeMeta';
 import ThemeGallery from './ThemeGallery';
@@ -108,9 +112,26 @@ export default function SettingsTab(props: SettingsTabProps) {
   const [seccion, setSeccion] = useState<Seccion>('tema');
   const [jsonTema, setJsonTema] = useState('');
   const [galeriaAbierta, setGaleriaAbierta] = useState(false);
+  const [ipManual, setIpManual] = useState('');
+  const [urlCopiada, setUrlCopiada] = useState(false);
 
   const nombreTema = temas.find((t) => t.id === theme)?.nombre ?? 'Sakura';
   const [bg, acento, suave] = PREVIEWS[theme] ?? PREVIEWS.space!;
+
+  // La IP detectada puede caer en 127.0.0.1; el campo manual permite corregirla.
+  const ipRemota = ipManual.trim() || remoteIp;
+  const urlRemota = urlControlRemoto(ipRemota);
+  const qrDisponible = esIpRedLocal(ipRemota);
+
+  const copiarUrlRemota = async () => {
+    try {
+      await navigator.clipboard.writeText(urlRemota);
+      setUrlCopiada(true);
+      window.setTimeout(() => setUrlCopiada(false), 1400);
+    } catch {
+      // El portapapeles puede no estar disponible; la URL sigue visible.
+    }
+  };
 
   const nav: { id: Seccion; label: string; icono: typeof Palette }[] = [
     { id: 'tema', label: 'Apariencia', icono: Palette },
@@ -471,9 +492,61 @@ export default function SettingsTab(props: SettingsTabProps) {
             </button>
           </div>
           {remoteEnabled && (
-            <p className="set-note">
-              Acceda a <b>http://{remoteIp}:17342</b> desde el teléfono móvil en la misma red.
-            </p>
+            <div className="set-remoto">
+              <div className="set-remoto-fila">
+                <div className="set-remoto-qr">
+                  {qrDisponible ? (
+                    <QRCodeSVG
+                      value={urlRemota}
+                      size={124}
+                      level="M"
+                      bgColor="#ffffff"
+                      fgColor="#14121b"
+                      title="QR del control remoto"
+                    />
+                  ) : (
+                    <div className="set-remoto-sin-qr">
+                      <Smartphone className="w-5 h-5" />
+                      <span>Escriba la IP de la PC para generar el código.</span>
+                    </div>
+                  )}
+                </div>
+                <div className="set-remoto-info">
+                  <p className="set-note">
+                    Escanee el código con el celular, en la <b>misma red Wi-Fi</b>, o abra:
+                  </p>
+                  <code className="set-remoto-url">{urlRemota}</code>
+                  <div className="set-remoto-controles">
+                    <input
+                      className="set-ip"
+                      value={ipManual}
+                      onChange={(evento) => setIpManual(evento.target.value)}
+                      placeholder={remoteIp || '192.168.1.23'}
+                      aria-label="IP de la PC en la red local"
+                      spellCheck={false}
+                    />
+                    <button
+                      type="button"
+                      className="set-copiar"
+                      onClick={() => void copiarUrlRemota()}
+                      aria-label="Copiar URL del control remoto"
+                    >
+                      {urlCopiada ? (
+                        <Check className="w-3.5 h-3.5" />
+                      ) : (
+                        <Copy className="w-3.5 h-3.5" />
+                      )}
+                      {urlCopiada ? 'Copiado' : 'Copiar'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+              {ipManual && !esIpRedLocal(ipManual.trim()) && (
+                <p className="set-note set-remoto-aviso">
+                  Use una IP privada (por ejemplo 192.168.1.23).
+                </p>
+              )}
+            </div>
           )}
         </Tarjeta>
         <Tarjeta

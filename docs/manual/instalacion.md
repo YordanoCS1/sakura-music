@@ -80,8 +80,19 @@ nuevo. No perdés tags ni audio.
    descargue su primera canción en el formato que prefiera.
 4. En **Cola** vea el porcentaje, velocidad y ETA; al terminar, la canción
    aparece sola en Biblioteca.
-5. En **Ajustes** seleccione uno de los 14 temas y ajuste los efectos visuales; en
-   **Ajustes → Sistema** puede verificar la base, vaciar la papelera y buscar
+5. En **Ajustes** seleccione uno de los 14 temas y ajuste los efectos visuales;
+   en **Ajustes → Sistema** puede verificar la base y vaciar la papelera.
+
+## Control remoto desde el celular
+
+En **Ajustes → Sistema → Control remoto**, active el servidor local y escanee el
+**código QR** con el teléfono (en la misma red Wi-Fi). También puede abrir la URL
+que se muestra o copiarla con el botón **Copiar**.
+
+Si la app no detecta la IP de la red (aparece `127.0.0.1`), escriba la IP de la
+PC en el campo y el QR se generará con ese valor. El control remoto maneja la
+reproducción en la computadora; **no transmite el audio al teléfono**. No tiene
+contraseña: úselo solo en una red de confianza.
 
 Los siguientes pasos están en [buscar-y-descargar.md](buscar-y-descargar.md) y
 [biblioteca.md](biblioteca.md).

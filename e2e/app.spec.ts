@@ -797,6 +797,29 @@ test('Ajustes → Sistema muestra la salud de la base y los registros', async ({
   await expect(panel.locator('.sys-estado')).toContainText('Base compactada');
 });
 
+test('el control remoto genera un QR con la IP indicada', async ({ page }) => {
+  await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+  await page.goto('/');
+  await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });
+  await page.getByRole('tab', { name: /Ajustes/ }).click();
+  await page.getByRole('button', { name: /Sistema/ }).click();
+  await page.getByRole('button', { name: 'Activar control remoto' }).click();
+
+  // Con 127.0.0.1 no se genera el QR: el celular se abriría a sí mismo.
+  await expect(page.locator('.set-remoto-qr svg title')).toHaveCount(0);
+  await expect(page.locator('.set-remoto-sin-qr')).toBeVisible();
+
+  // Al escribir una IP privada aparece el QR y la URL se actualiza.
+  await page.getByLabel('IP de la PC en la red local').fill('192.168.1.23');
+  await expect(page.locator('.set-remoto-qr svg title')).toHaveText('QR del control remoto');
+  await expect(page.locator('.set-remoto-url')).toHaveText('http://192.168.1.23:17342');
+
+  await page.getByRole('button', { name: 'Copiar URL del control remoto' }).click();
+  await expect(page.getByRole('button', { name: 'Copiar URL del control remoto' })).toContainText(
+    'Copiado',
+  );
+});
+
 test('el panel ahora suena muestra detalles, album y artista', async ({ page }) => {
   await page.addInitScript(() => {
     const tracks = Array.from({ length: 6 }, (_, i) => ({
