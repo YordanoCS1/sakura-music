@@ -13,6 +13,7 @@ interface ThemeLibraryProps {
   currentFolderNav: string[];
   folderExplorerData: FolderExplorerData;
   onPlayTrack: (track: ScannedTrack) => void;
+  onPresentTrack?: (track: ScannedTrack) => void;
   onToggleFavorite: (id: string, e: MouseEvent) => void;
   onOpenFolderDialog: () => void;
   onScanFolder: (folder: string) => void;
@@ -36,6 +37,7 @@ export default function ThemeLibrary({
   currentFolderNav,
   folderExplorerData,
   onPlayTrack,
+  onPresentTrack,
   onToggleFavorite,
   onOpenFolderDialog,
   onScanFolder,
@@ -385,6 +387,7 @@ export default function ThemeLibrary({
                   type="button"
                   className="recorte-play"
                   onClick={() => onPlayTrack(track)}
+                  onDoubleClick={() => onPresentTrack?.(track)}
                   aria-label={`Reproducir ${track.title}`}
                 >
                   <span className="recorte-portada">
@@ -462,7 +465,11 @@ export default function ThemeLibrary({
                       >
                         <span className="shoji-slata-num">{String(numero).padStart(2, '0')}</span>
                         <span className="shoji-slata-portada">{portadaDe(track)}</span>
-                        <button type="button" onClick={() => onPlayTrack(track)}>
+                        <button
+                          type="button"
+                          onClick={() => onPlayTrack(track)}
+                          onDoubleClick={() => onPresentTrack?.(track)}
+                        >
                           <strong>{track.title}</strong>
                           <small>
                             {track.artist} · {track.album}
@@ -508,6 +515,7 @@ export default function ThemeLibrary({
                   type="button"
                   className="origami-hoja-play"
                   onClick={() => onPlayTrack(track)}
+                  onDoubleClick={() => onPresentTrack?.(track)}
                 >
                   <span className="origami-hoja-cara">{portadaDe(track)}</span>
                   <strong>{track.title}</strong>
@@ -546,6 +554,7 @@ export default function ThemeLibrary({
                   type="button"
                   className="swiss-poster-btn"
                   onClick={() => onPlayTrack(track)}
+                  onDoubleClick={() => onPresentTrack?.(track)}
                 >
                   <div className="swiss-poster-img">
                     <span className="swiss-poster-num">{String(i + 1).padStart(2, '0')}</span>
@@ -593,6 +602,7 @@ export default function ThemeLibrary({
                   type="button"
                   className="sumiink-rollo-tit"
                   onClick={() => onPlayTrack(track)}
+                  onDoubleClick={() => onPresentTrack?.(track)}
                 >
                   {track.title}
                 </button>
@@ -633,6 +643,7 @@ export default function ThemeLibrary({
                   type="button"
                   className="moonlit-nodo-play"
                   onClick={() => onPlayTrack(track)}
+                  onDoubleClick={() => onPresentTrack?.(track)}
                 >
                   <strong>{track.title}</strong>
                   <small>
@@ -685,6 +696,7 @@ export default function ThemeLibrary({
                       type="button"
                       className="ledger-fila-tit"
                       onClick={() => onPlayTrack(track)}
+                      onDoubleClick={() => onPresentTrack?.(track)}
                     >
                       {track.title}
                     </button>
@@ -733,6 +745,7 @@ export default function ThemeLibrary({
                     type="button"
                     className="shonen-retador"
                     onClick={() => onPlayTrack(track)}
+                    onDoubleClick={() => onPresentTrack?.(track)}
                   >
                     <span className="shonen-avatar">{portadaDe(track)}</span>
                     <span className="shonen-datos">
@@ -769,7 +782,11 @@ export default function ThemeLibrary({
                 data-track-id={track.id}
                 className={`ghost-lapida ${activeTrack?.id === track.id ? 'is-active' : ''}`}
               >
-                <button type="button" onClick={() => onPlayTrack(track)}>
+                <button
+                  type="button"
+                  onClick={() => onPlayTrack(track)}
+                  onDoubleClick={() => onPresentTrack?.(track)}
+                >
                   <span className="ghost-retrato">{portadaDe(track)}</span>
                   <strong>{track.title}</strong>
                   <small>
@@ -806,7 +823,11 @@ export default function ThemeLibrary({
                   className={`samurai-kata ${activeTrack?.id === track.id ? 'is-active' : ''}`}
                 >
                   <span className="samurai-kanji">侍</span>
-                  <button type="button" onClick={() => onPlayTrack(track)}>
+                  <button
+                    type="button"
+                    onClick={() => onPlayTrack(track)}
+                    onDoubleClick={() => onPresentTrack?.(track)}
+                  >
                     <span className="samurai-portada">{portadaDe(track)}</span>
                     <strong>{track.title}</strong>
                     <small>
@@ -883,6 +904,7 @@ export default function ThemeLibrary({
                       type="button"
                       className="estudio-disco-funda"
                       onClick={() => onPlayTrack(track)}
+                      onDoubleClick={() => onPresentTrack?.(track)}
                       aria-label={`Reproducir ${track.title}`}
                       title={track.title}
                     >
@@ -946,6 +968,7 @@ export default function ThemeLibrary({
                   type="button"
                   className="manga-pagina-play"
                   onClick={() => onPlayTrack(track)}
+                  onDoubleClick={() => onPresentTrack?.(track)}
                   aria-label={`Reproducir ${track.title}`}
                 >
                   <span className="manga-vineta-cover">{portadaDe(track)}</span>
@@ -984,7 +1007,11 @@ export default function ThemeLibrary({
                   } as React.CSSProperties
                 }
               >
-                <button type="button" onClick={() => onPlayTrack(track)}>
+                <button
+                  type="button"
+                  onClick={() => onPlayTrack(track)}
+                  onDoubleClick={() => onPresentTrack?.(track)}
+                >
                   <span className="kawaii-foto">
                     {portadaDe(track)}
                     <span className="kawaii-ojitos">(◕‿◕)</span>
@@ -1017,7 +1044,12 @@ export default function ThemeLibrary({
               data-track-id={track.id}
               className={activeTrack?.id === track.id ? 'is-active' : ''}
             >
-              <button type="button" className="byobu-fila" onClick={() => onPlayTrack(track)}>
+              <button
+                type="button"
+                className="byobu-fila"
+                onClick={() => onPlayTrack(track)}
+                onDoubleClick={() => onPresentTrack?.(track)}
+              >
                 <span className="byobu-cover">
                   {track.cover_url ? (
                     <img src={getCoverSrc(track.cover_url)} alt="" />

@@ -212,6 +212,51 @@ test('se puede presentar la canción con el reproductor desactivado', async ({ p
   await expect(cartel).toHaveCount(0);
 });
 
+test('doble clic en una pista presenta la canción con el reproductor apagado', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('sakura_player_style', 'off');
+    const pista = {
+      id: 'doble1',
+      path: 'Disco\\doble1.flac',
+      title: 'Doble clic',
+      artist: 'Artista',
+      album: 'Álbum doble',
+      album_artist: null,
+      track_number: 1,
+      duration: 200,
+      duration_str: '3:20',
+      format: 'FLAC',
+      bitrate_kbps: 900,
+      cover_url: null,
+      year: 2024,
+      genre: 'Jazz',
+      file_size: 1000,
+    };
+    const w = window as unknown as {
+      __TAURI_INTERNALS__: { invoke: (cmd: string) => Promise<unknown> };
+    };
+    const anterior = w.__TAURI_INTERNALS__.invoke;
+    w.__TAURI_INTERNALS__.invoke = async (cmd: string, args?: unknown) =>
+      cmd === 'get_cached_library' ? [pista] : cmd === 'read_lyrics' ? [] : anterior(cmd, args);
+  });
+  await page.goto('/');
+  await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });
+  await page.getByRole('tab', { name: /Biblioteca/ }).click();
+
+  const fila = page.locator('[data-track-id="doble1"]').first();
+  await expect(fila).toBeVisible();
+  await fila.dblclick();
+
+  const cartel = page.getByRole('dialog', { name: /Presentación de Doble clic/ });
+  await expect(cartel).toBeVisible();
+  await expect(cartel).toContainText('Álbum doble');
+  expect(await page.locator('audio').evaluate((audio: HTMLAudioElement) => audio.paused)).toBe(
+    true,
+  );
+  await page.keyboard.press('Escape');
+  await expect(cartel).toHaveCount(0);
+});
+
 test('Byobu permite elegir una imagen de inicio', async ({ page }) => {
   await page.addInitScript(() => {
     localStorage.setItem('sakura_theme', 'byobu');

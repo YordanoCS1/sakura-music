@@ -191,6 +191,14 @@ export default function App() {
 
   // En mini modo la ventana se reduce y queda siempre encima; al salir
   // volvemos al tamaño normal. En el navegador (tests) simplemente se omite.
+  // Doble clic en una pista: la selecciona y abre su presentación, aunque el
+  // reproductor esté desactivado (no inicia audio).
+  const presentarPista = (track: ScannedTrack) => {
+    sonidoUI(temaBase, 'confirm');
+    setActiveTrack(track);
+    setPortadaFull(true);
+  };
+
   const handleSetPlayerStyle = async (s: PlayerStyle) => {
     setPlayerStyle(s);
     localStorage.setItem('sakura_player_style', s);
@@ -1418,6 +1426,7 @@ export default function App() {
                 currentFolderNav={currentFolderNav}
                 folderExplorerData={folderExplorerData}
                 onPlayTrack={handlePlayTrack}
+                onPresentTrack={presentarPista}
                 onToggleFavorite={toggleFavorite}
                 onOpenFolderDialog={handleOpenFolderDialog}
                 onScanFolder={scanFolder}
@@ -1456,6 +1465,7 @@ export default function App() {
                 onPlayFolderTracks={handlePlayFolderTracks}
                 onSelectFolderTracks={handleSelectFolderTracks}
                 onPlayTrack={handlePlayTrack}
+                onPresentTrack={presentarPista}
                 onOpenEdit={openEditModal}
                 onToggleFavorite={toggleFavorite}
                 onToggleSelectTrack={toggleSelectTrack}

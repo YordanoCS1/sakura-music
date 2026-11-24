@@ -66,6 +66,7 @@ interface LibraryTabProps {
   onPlayFolderTracks: (tracks: ScannedTrack[]) => void;
   onSelectFolderTracks: (tracks: ScannedTrack[], e: React.MouseEvent) => void;
   onPlayTrack: (track: ScannedTrack) => void;
+  onPresentTrack?: (track: ScannedTrack) => void;
   onOpenEdit: (track: ScannedTrack, e: React.MouseEvent) => void;
   onToggleFavorite: (id: string, e: React.MouseEvent) => void;
   onToggleSelectTrack: (id: string, e: React.MouseEvent) => void;
@@ -102,6 +103,7 @@ export default function LibraryTab({
   onPlayFolderTracks,
   onSelectFolderTracks,
   onPlayTrack,
+  onPresentTrack,
   onOpenEdit,
   onToggleFavorite,
   onToggleSelectTrack,
@@ -444,6 +446,7 @@ export default function LibraryTab({
                           key={track.id}
                           data-track-id={track.id}
                           onClick={() => onPlayTrack(track)}
+                          onDoubleClick={() => onPresentTrack?.(track)}
                           className={`cursor-pointer transition-colors ${
                             isSelected
                               ? 'bg-accent-500/20 text-accent-200'
@@ -572,6 +575,7 @@ export default function LibraryTab({
                 key={track.id}
                 data-track-id={track.id}
                 onClick={() => onPlayTrack(track)}
+                onDoubleClick={() => onPresentTrack?.(track)}
                 className={`group relative flex items-center gap-3.5 p-3 rounded-2xl glass-card transition-all duration-base cursor-pointer ${
                   isSelected
                     ? 'ring-2 ring-accent-500 bg-accent-500/15 shadow-lg'
@@ -784,6 +788,7 @@ export default function LibraryTab({
                             <button
                               type="button"
                               onClick={() => onPlayTrack(track)}
+                              onDoubleClick={() => onPresentTrack?.(track)}
                               className="makimono-play"
                               aria-label={`Reproducir ${track.title} de ${track.artist}`}
                             >
@@ -875,6 +880,7 @@ export default function LibraryTab({
                     type="button"
                     className="lantern-play-target"
                     onClick={() => onPlayTrack(track)}
+                    onDoubleClick={() => onPresentTrack?.(track)}
                     aria-label={`Reproducir ${track.title} de ${track.artist}`}
                   >
                     <span className="lantern-index">{String(index + 1).padStart(2, '0')}</span>
@@ -1005,6 +1011,7 @@ export default function LibraryTab({
                       type="button"
                       className="shoji-panel-copy shoji-song-play"
                       onClick={() => onPlayTrack(track)}
+                      onDoubleClick={() => onPresentTrack?.(track)}
                       aria-label={`Reproducir ${track.title} de ${track.artist}`}
                     >
                       <strong title={track.title}>{track.title}</strong>
@@ -1097,6 +1104,7 @@ export default function LibraryTab({
                       type="button"
                       className="hanafuda-play-target"
                       onClick={() => onPlayTrack(track)}
+                      onDoubleClick={() => onPresentTrack?.(track)}
                       aria-label={`Reproducir ${track.title} de ${track.artist}`}
                     >
                       <span className="hanafuda-card-top">
@@ -1236,6 +1244,7 @@ export default function LibraryTab({
                     key={track.id}
                     data-track-id={track.id}
                     onClick={() => onPlayTrack(track)}
+                    onDoubleClick={() => onPresentTrack?.(track)}
                     className={`h-7 cursor-pointer transition-colors ${
                       isSelected
                         ? 'bg-accent-500/20 text-accent-200'
@@ -1498,6 +1507,7 @@ export default function LibraryTab({
                           key={track.id}
                           data-track-id={track.id}
                           onClick={() => onPlayTrack(track)}
+                          onDoubleClick={() => onPresentTrack?.(track)}
                           className={`cursor-pointer transition-colors ${
                             isSelected
                               ? 'bg-accent-500/20 text-accent-200'

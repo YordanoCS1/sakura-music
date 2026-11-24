@@ -5,6 +5,7 @@ Todos los cambios destacables de este proyecto se registran aquí. El formato si
 ## [Sin publicar]
 
 ### Agregado
+- **Doble clic en una pista** de la biblioteca abre directamente su presentación, aunque el reproductor esté desactivado; selecciona la pista sin iniciar audio.
 - **Presentación de canción accesible con el reproductor desactivado**: botón *Presentar canción* junto al aviso flotante y atajo `Ctrl+Shift+P`. La pantalla muestra la carátula protagonista, una ficha editorial (álbum, año, género, formato, tamaño, duración, favorito) y letras LRC sincronizadas.
 - **Reproductor desactivable**: nueva opción *Desactivado* en Ajustes → Reproductor oculta la barra y pausa la música; un botón flotante (o `Ctrl+P`) lo reactiva. El estado se guarda en `localStorage`.
 - **Identidad visual reforzada**: fondo con gradiente teñido por la carátula y transición suave al cambiar de pista, animaciones de entrada por tema (respetando `prefers-reduced-motion`), insignia del tema con su glifo en la barra de título y microinteracciones sonoras al cambiar de pestaña, marcar favorito y terminar una descarga.
