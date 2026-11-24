@@ -155,11 +155,38 @@ pub fn ip_local() -> String {
     "127.0.0.1".to_string()
 }
 
+fn decodificar_url(valor: &str) -> String {
+    fn hex(c: u8) -> Option<u8> {
+        match c {
+            b'0'..=b'9' => Some(c - b'0'),
+            b'a'..=b'f' => Some(c - b'a' + 10),
+            b'A'..=b'F' => Some(c - b'A' + 10),
+            _ => None,
+        }
+    }
+    let bytes = valor.as_bytes();
+    let mut resultado = Vec::with_capacity(bytes.len());
+    let mut i = 0;
+    while i < bytes.len() {
+        if bytes[i] == b'%'
+            && i + 2 < bytes.len()
+            && let (Some(alto), Some(bajo)) = (hex(bytes[i + 1]), hex(bytes[i + 2]))
+        {
+            resultado.push(alto * 16 + bajo);
+            i += 3;
+            continue;
+        }
+        resultado.push(bytes[i]);
+        i += 1;
+    }
+    String::from_utf8_lossy(&resultado).to_string()
+}
+
 fn parametro(consulta: &str, clave: &str) -> Option<String> {
     consulta.split('&').find_map(|par| {
         let (k, v) = par.split_once('=')?;
         if k == clave {
-            Some(v.to_string())
+            Some(decodificar_url(v))
         } else {
             None
         }
@@ -677,8 +704,8 @@ async function estado(){const r=await fetch('/api/status');const s=await r.json(
  document.getElementById('play').textContent=s.playing?'⏸':'▶';
  document.getElementById('progreso').style.width=(s.duration?s.position/s.duration*100:0)+'%';}
 async function buscar(){const q=document.getElementById('q').value;if(!q.length){document.getElementById('resultados').innerHTML='';return;}
- const r=await fetch('/api/search?q='+encodeURIComponent(q));const items=await r.json();
- document.getElementById('resultados').innerHTML=items.map(t=>`<div class="item" onclick="accion('play?id='+encodeURIComponent('${t.id}'))"><span>${t.title}</span><small>${t.artist}</small></div>`).join('');}
+ const r=await fetch('/api/search?q='+codificar_uri(q));const items=await r.json();
+ document.getElementById('resultados').innerHTML=items.map(t=>`<div class="item" onclick="accion('play?id='+codificar_uri('${t.id}'))"><span>${t.title}</span><small>${t.artist}</small></div>`).join('');}
 estado();setInterval(estado,1500);
 </script></body></html>"#
 }
@@ -686,6 +713,26 @@ estado();setInterval(estado,1500);
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn parametro_decodifica_rutas_con_caracteres_especiales() {
+        let ruta = r"D:\Música\Álbum\cover.jpg";
+        let consulta = format!("path={}", codificar_uri(ruta));
+        // Simulamos codificar_uri con una codificación manual mínima.
+        fn codificar_uri(s: &str) -> String {
+            let mut out = String::new();
+            for b in s.bytes() {
+                match b {
+                    b'A'..=b'Z' | b'a'..=b'z' | b'0'..=b'9' | b'-' | b'_' | b'.' | b'~' => {
+                        out.push(b as char)
+                    }
+                    _ => out.push_str(&format!("%{:02X}", b)),
+                }
+            }
+            out
+        }
+        assert_eq!(parametro(&consulta, "path").unwrap(), ruta);
+    }
 
     #[test]
     fn parametro_extrae_valores_de_la_consulta() {
