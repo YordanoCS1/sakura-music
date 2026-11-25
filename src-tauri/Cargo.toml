@@ -38,7 +38,7 @@ notify = "8.2.2"
 parking_lot = "0.12"
 # Verificación de las herramientas que se descargan a `bin/`.
 sha2 = "0.10"
-zip = { version = "2", default-features = false, features = ["deflate"] }
+zip = { version = "9", default-features = false, features = ["deflate"] }
 image = { version = "0.25", default-features = false, features = ["jpeg", "png", "webp"] }
 
 [target.'cfg(windows)'.dependencies]
