@@ -637,3 +637,160 @@
   font-family: 'Cormorant Garamond', serif;
   font-size: 48px;
 }
+
+/* ==========================================================================
+   SAKURA · realce final con foto real y biblioteca de jardín
+   Foto: "Japanese Cherry Blossom Tree" de Kurt Kaiser, CC0 (dominio público).
+   ========================================================================== */
+@keyframes sakura-flotar {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-10px) scale(1.02);
+  }
+}
+@keyframes sakura-petalos {
+  0% {
+    background-position:
+      0 0,
+      0 0,
+      0 0;
+  }
+  100% {
+    background-position:
+      60px 420px,
+      -45px 520px,
+      30px 600px;
+  }
+}
+
+.app-shell[data-skin='sakura'] .sakura-taiju-foto {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: min(62vw, 760px);
+  height: 96%;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+  mask-image: linear-gradient(to right, #000 55%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, #000 55%, transparent 100%);
+}
+.app-shell[data-skin='sakura'] .sakura-taiju-foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: left bottom;
+  filter: saturate(1.05) contrast(1.05);
+  animation: sakura-flotar 12s ease-in-out infinite;
+}
+.app-shell[data-skin='sakura'] .sakura-taiju-foto::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(0deg, rgba(255, 247, 250, 0.92), transparent 42%),
+    linear-gradient(90deg, transparent 60%, rgba(255, 247, 250, 0.85));
+}
+.app-shell[data-skin='sakura'] .sakura-taiju-petalos {
+  position: absolute;
+  inset: 0;
+  opacity: 0.85;
+  background-image:
+    radial-gradient(ellipse 7px 11px at 12% 8%, #ff8fb8 60%, transparent 62%),
+    radial-gradient(ellipse 6px 10px at 58% 16%, #ffb3ce 60%, transparent 62%),
+    radial-gradient(ellipse 8px 12px at 82% 4%, #ff6fa4 60%, transparent 62%);
+  background-size:
+    320px 380px,
+    280px 420px,
+    360px 460px;
+  animation: sakura-petalos 14s linear infinite;
+}
+.app-shell[data-skin='sakura'] .sakura-taiju-copy {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(229, 77, 134, 0.25);
+  border-radius: 28px 10px 28px 10px;
+  padding: 30px 34px;
+  box-shadow: 0 24px 60px rgba(150, 50, 90, 0.14);
+}
+.app-shell[data-skin='sakura'] .sakura-taiju-copy h1 {
+  font-size: 54px;
+  text-shadow: none;
+}
+
+/* Biblioteca: jardín con la misma foto desenfocada de fondo. */
+.app-shell[data-skin='sakura'] .sakura-library {
+  position: relative;
+  isolation: isolate;
+}
+.app-shell[data-skin='sakura'] .sakura-library::before {
+  content: '';
+  position: absolute;
+  inset: -30px -18px;
+  z-index: -1;
+  pointer-events: none;
+  background: url('/images/sakura-tree.jpg') center/cover no-repeat;
+  opacity: 0.16;
+  filter: blur(7px) saturate(1.2);
+  mask-image: linear-gradient(180deg, transparent, #000 20%, #000 80%, transparent);
+}
+.app-shell[data-skin='sakura'] .sakura-lib-cabecera {
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0.86), rgba(255, 224, 238, 0.7));
+  border: 1px solid rgba(229, 77, 134, 0.28);
+  border-radius: 26px 8px 26px 8px;
+  padding: 16px 22px;
+  box-shadow: 0 14px 36px rgba(150, 50, 90, 0.12);
+}
+.app-shell[data-skin='sakura'] .sakura-lib-cabecera h1 {
+  font-size: 30px;
+  letter-spacing: -0.02em;
+}
+.app-shell[data-skin='sakura'] .sakura-lib-count {
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: #e54d86;
+  color: #fff;
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  letter-spacing: 0.06em;
+}
+.app-shell[data-skin='sakura'] .sakura-ramas-grid {
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+}
+.app-shell[data-skin='sakura'] .sakura-flor-card {
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(14px);
+  border-radius: 26px 8px 26px 8px;
+  border: 1px solid rgba(229, 77, 134, 0.3);
+}
+.app-shell[data-skin='sakura'] .sakura-flor-cover {
+  width: 86px;
+  height: 86px;
+  border-radius: 24px 6px 24px 6px;
+  box-shadow: 0 10px 24px rgba(150, 50, 90, 0.2);
+}
+.app-shell[data-skin='sakura'] .sakura-flor-info strong {
+  font-size: 14px;
+}
+.app-shell[data-skin='sakura'] .sakura-flor-acc button {
+  border: 1px solid rgba(229, 77, 134, 0.3);
+  border-radius: 999px;
+  color: #a83261;
+}
+.app-shell[data-skin='sakura'] .sakura-flor-acc button:hover {
+  background: #e54d86;
+  color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell[data-skin='sakura'] .sakura-taiju-foto img,
+  .app-shell[data-skin='sakura'] .sakura-taiju-petalos {
+    animation: none !important;
+  }
+}

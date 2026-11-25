@@ -878,6 +878,13 @@ test('los cinco temas nuevos conservan home y biblioteca propias', async ({ page
     await expect(page.locator('.app-shell')).toHaveAttribute('data-skin', tema.id);
     await page.getByRole('tab', { name: /Inicio/ }).click();
     await expect(page.locator(tema.home)).toBeVisible();
+    if (tema.id === 'sakura') {
+      await expect(page.locator('.sakura-taiju-foto img')).toHaveAttribute(
+        'src',
+        '/images/sakura-tree.jpg',
+      );
+      await expect(page.locator('.sakura-taiju-foto img')).toBeVisible();
+    }
     await page.getByRole('tab', { name: /Biblioteca/ }).click();
     await expect(page.locator(tema.lib)).toBeVisible();
   }

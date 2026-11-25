@@ -1,6 +1,6 @@
 # Apariencia
 
-Sakura Music 2.0 ofrece **14 temas visuales, todos propios con estructura
+Sakura Music 2.0 ofrece **19 temas visuales, todos propios con estructura
 completa**: ningún tema oficial es genérico. Seleccione el que desee en **Ajustes →
 Diseño Visual**; el cambio es inmediato y se recuerda al reabrir la app.
 
@@ -10,12 +10,18 @@ Diseño Visual**; el cambio es inmediato y se recuerda al reabrir la app.
 |---|---|
 | **Estudio** (`space`) | **Consola de mezcla y medidores VU**: grafito, ámbar y verde LED sobre tipografía monospace. Antes se llamaba M3 Zen y era el tema genérico; hoy tiene identidad propia. |
 
-## Los otros 13 temas propios
+## Los otros 18 temas propios
 
-Cada uno de estos trece tiene **Home, biblioteca, cabecera, Buscar, Cola,
+Cada uno de estos dieciocho tiene **Home, biblioteca, cabecera, Buscar, Cola,
 ajustes, diálogos y transiciones propios**, igual que Estudio: no se limitan a
 recolorear la interfaz. El selector base queda fijo en `data-theme='space'` y cada tema se
-aplica con `data-skin` (en Estudio, `data-skin="space"`). `LibraryTab` y
+aplica con `data-skin` (en Estudio, `data-skin="space"`).
+
+El tema **Árbol de Sakura** usa una fotografía real de un cerezo en flor
+(`public/images/sakura-tree.jpg`, *Japanese Cherry Blossom Tree* de Kurt Kaiser,
+CC0 / dominio público), almacenada localmente para que la app funcione sin red.
+
+`LibraryTab` y
 `ZenTopNav` siguen en el código como fallback para temas importados.
 
 | Tema | Cómo se ve |

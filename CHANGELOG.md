@@ -5,6 +5,7 @@ Todos los cambios destacables de este proyecto se registran aquí. El formato si
 ## [2.0.0] - 2026-11-25
 
 ### Agregado
+- **Sakura con foto real**: el SVG del árbol se reemplazó por una fotografía de un cerezo en flor (CC0, guardada en `public/images/`, sin red), con pétalos animados y desvanecido; la biblioteca usa la misma foto desenfocada de fondo y tarjetas de jardín más ricas.
 - **19 temas con identidad completa**: a los 14 originales se suman Árbol de Sakura, Loto Imperial, La Gran Ola, Tocadiscos 3D y Karesansui, con Home y biblioteca propias. Un módulo de realce añade atmósfera animada (pétalos, seda y oro, ola y halftone, plato giratorio, arena rastrillada), nav, reproductor, paneles, modales y presentación diferenciados para cada uno, respetando `prefers-reduced-motion`.
 - **CSS modular**: `App.css` se dividió en `src/styles/` y `src/themes/styles/`, con carga diferida (`lazy`) de modales y paneles y hooks separados para ajustes de tema, biblioteca y atajos.
 - **Miniaturas de carátulas (`covers/thumbs/`)**: al extraer carátulas embebidas o leer portadas locales en `scanner.rs`, se genera automáticamente una miniatura de hasta 256×256 px en `covers/thumbs/` para reducir el consumo de memoria en cuadrículas y mosaicos.

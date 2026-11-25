@@ -103,43 +103,10 @@ export default function ThemeHome({
     return (
       <div className="sakura-taiju-home">
         <div className="sakura-taiju-sol" aria-hidden="true" />
-        <svg className="sakura-taiju-arbol" viewBox="0 0 520 720" fill="none" aria-hidden="true">
-          <path
-            d="M90 720 C110 560 120 440 165 320 C190 255 245 195 340 150"
-            stroke="#4d2b33"
-            strokeWidth="34"
-            strokeLinecap="round"
-          />
-          <path
-            d="M138 420 C215 360 280 330 410 315"
-            stroke="#4d2b33"
-            strokeWidth="18"
-            strokeLinecap="round"
-          />
-          <path
-            d="M160 325 C120 250 80 210 35 170"
-            stroke="#4d2b33"
-            strokeWidth="16"
-            strokeLinecap="round"
-          />
-          <path
-            d="M225 235 C270 160 320 125 430 95"
-            stroke="#4d2b33"
-            strokeWidth="14"
-            strokeLinecap="round"
-          />
-          <g opacity=".92">
-            <circle cx="290" cy="145" r="85" fill="#ff9cc0" />
-            <circle cx="385" cy="120" r="72" fill="#ffb8d2" />
-            <circle cx="215" cy="175" r="78" fill="#ff7cae" />
-            <circle cx="105" cy="180" r="68" fill="#ffb3ce" />
-            <circle cx="350" cy="240" r="80" fill="#ffa3c5" />
-            <circle cx="430" cy="295" r="65" fill="#ffc7dc" />
-            <circle cx="170" cy="275" r="62" fill="#ff8db8" />
-            <circle cx="275" cy="255" r="70" fill="#ffd9e8" />
-            <circle cx="450" cy="185" r="58" fill="#ff7cae" />
-          </g>
-        </svg>
+        <div className="sakura-taiju-foto" aria-hidden="true">
+          <img src="/images/sakura-tree.jpg" alt="" />
+          <span className="sakura-taiju-petalos" />
+        </div>
         <div className="sakura-taiju-copy">
           <span className="sakura-taiju-eyebrow">桜大樹 · JARDÍN DE CEREZOS EN FLOR</span>
           <h1>Bajo la lluvia de pétalos</h1>
