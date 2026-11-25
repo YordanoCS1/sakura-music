@@ -181,7 +181,12 @@ export default function CoverFullscreen({
       ctx.fillStyle = 'rgba(0,0,0,.25)';
       ctx.fillRect(0, 0, 1000, 1000);
 
-      if (portada) {
+      // La carátula viene de asset:// o de una URL externa: dibujarla tal cual
+      // contamina el canvas y toDataURL falla. La leemos como data URL desde Rust.
+      const fuente = track.cover_url
+        ? await invoke<string>('leer_imagen_base64', { ruta: track.cover_url }).catch(() => null)
+        : null;
+      if (fuente) {
         await new Promise<void>((resolver) => {
           const imagen = new Image();
           imagen.onload = () => {
@@ -189,7 +194,7 @@ export default function CoverFullscreen({
             resolver();
           };
           imagen.onerror = () => resolver();
-          imagen.src = portada;
+          imagen.src = fuente;
         });
       }
       ctx.fillStyle = texto;

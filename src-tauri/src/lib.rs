@@ -926,6 +926,7 @@ pub fn run() {
             exportar_biblioteca,
             importar_biblioteca,
             guardar_imagen,
+            leer_imagen_base64,
             read_lyrics,
             search_lyrics,
             save_track_lyrics,
@@ -1058,6 +1059,44 @@ fn importar_biblioteca(ruta: String) -> Result<String, String> {
         }
     }
     Ok("Biblioteca importada correctamente".to_string())
+}
+
+/// Lee una imagen local como data URL para que el canvas del frontend no se
+/// contamine (las URLs `asset://` o externas hacen fallar `toDataURL`).
+#[tauri::command]
+fn leer_imagen_base64(ruta: String) -> Result<String, String> {
+    use base64::Engine;
+
+    val::ruta(&ruta, "Ruta de imagen")?;
+    let destino = PathBuf::from(&ruta);
+    let mut bases = vec![paths::covers_dir(), paths::data_dir()];
+    if let Ok(raiz) = library_db::root_path() {
+        bases.push(PathBuf::from(raiz));
+    }
+    let permitido = bases
+        .iter()
+        .filter_map(|base| base.canonicalize().ok())
+        .any(|base| {
+            destino
+                .canonicalize()
+                .map(|d| d.starts_with(&base))
+                .unwrap_or(false)
+        });
+    if !permitido {
+        return Err("Ruta de imagen no permitida".to_string());
+    }
+    let bytes = std::fs::read(&destino).map_err(|error| error.to_string())?;
+    let tipo = match destino.extension().and_then(|e| e.to_str()).unwrap_or("") {
+        "png" => "png",
+        "jpg" | "jpeg" => "jpeg",
+        "webp" => "webp",
+        "gif" => "gif",
+        _ => "png",
+    };
+    Ok(format!(
+        "data:image/{tipo};base64,{}",
+        base64::engine::general_purpose::STANDARD.encode(bytes)
+    ))
 }
 
 fn carpeta_de_descargas(app: &tauri::AppHandle) -> Option<PathBuf> {
