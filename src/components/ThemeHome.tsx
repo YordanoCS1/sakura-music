@@ -41,7 +41,12 @@ export default function ThemeHome({
     theme !== 'samurai' &&
     theme !== 'kawaii' &&
     theme !== 'manga' &&
-    theme !== 'space'
+    theme !== 'space' &&
+    theme !== 'sakura' &&
+    theme !== 'loto' &&
+    theme !== 'ukiyo' &&
+    theme !== 'vinilo' &&
+    theme !== 'karesansui'
   ) {
     return null;
   }
@@ -93,6 +98,267 @@ export default function ThemeHome({
   const fondo = imagen ?? portada;
   const cssUrl = (src: string) => `url("${src.replace(/"/g, '%22')}")`;
   const portadas = tracks.filter((t) => t.cover_url).slice(0, 8);
+
+  if (theme === 'sakura') {
+    return (
+      <div className="sakura-taiju-home">
+        <div className="sakura-taiju-sol" aria-hidden="true" />
+        <svg className="sakura-taiju-arbol" viewBox="0 0 520 720" fill="none" aria-hidden="true">
+          <path
+            d="M90 720 C110 560 120 440 165 320 C190 255 245 195 340 150"
+            stroke="#4d2b33"
+            strokeWidth="34"
+            strokeLinecap="round"
+          />
+          <path
+            d="M138 420 C215 360 280 330 410 315"
+            stroke="#4d2b33"
+            strokeWidth="18"
+            strokeLinecap="round"
+          />
+          <path
+            d="M160 325 C120 250 80 210 35 170"
+            stroke="#4d2b33"
+            strokeWidth="16"
+            strokeLinecap="round"
+          />
+          <path
+            d="M225 235 C270 160 320 125 430 95"
+            stroke="#4d2b33"
+            strokeWidth="14"
+            strokeLinecap="round"
+          />
+          <g opacity=".92">
+            <circle cx="290" cy="145" r="85" fill="#ff9cc0" />
+            <circle cx="385" cy="120" r="72" fill="#ffb8d2" />
+            <circle cx="215" cy="175" r="78" fill="#ff7cae" />
+            <circle cx="105" cy="180" r="68" fill="#ffb3ce" />
+            <circle cx="350" cy="240" r="80" fill="#ffa3c5" />
+            <circle cx="430" cy="295" r="65" fill="#ffc7dc" />
+            <circle cx="170" cy="275" r="62" fill="#ff8db8" />
+            <circle cx="275" cy="255" r="70" fill="#ffd9e8" />
+            <circle cx="450" cy="185" r="58" fill="#ff7cae" />
+          </g>
+        </svg>
+        <div className="sakura-taiju-copy">
+          <span className="sakura-taiju-eyebrow">桜大樹 · JARDÍN DE CEREZOS EN FLOR</span>
+          <h1>Bajo la lluvia de pétalos</h1>
+          <p>
+            Un cerezo vivo enmarca tu colección, los pétalos caen con la brisa y tu música florece
+            en tarjetas translúcidas ({trackCount} piezas listas).
+          </p>
+          <div className="sakura-taiju-actions">
+            <button type="button" className="is-primary" onClick={() => onNavigate('library')}>
+              Explorar ramas en flor <ArrowRight className="w-4 h-4" />
+            </button>
+            <button type="button" onClick={() => onNavigate('search')}>
+              <Search className="w-4 h-4" /> Buscar música
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (theme === 'loto') {
+    const destacada = tracks[0];
+    return (
+      <div className="loto-triptico-home">
+        <aside className="loto-panel loto-izq">
+          <div>
+            <small>TRÍPTICO IMPERIAL</small>
+            <h2>Palacio de Loto</h2>
+            <div className="loto-nav-v">
+              <button type="button" onClick={() => onNavigate('library')}>
+                I · Biblioteca de Seda
+              </button>
+              <button type="button" onClick={() => onNavigate('playlists')}>
+                II · Listas Imperiales
+              </button>
+              <button type="button" onClick={() => onNavigate('search')}>
+                III · Buscar Música
+              </button>
+              <button type="button" onClick={() => onNavigate('settings')}>
+                IV · Ajustes
+              </button>
+            </div>
+          </div>
+          <span>SEDA & ORO · {trackCount} PISTAS</span>
+        </aside>
+
+        <section className="loto-panel loto-centro">
+          <small>CENTRO DEL BIOMBO</small>
+          <div className="loto-flor" aria-hidden="true">
+            🪷
+          </div>
+          <div>
+            <h1>{destacada ? destacada.title : 'Loto de Medianoche'}</h1>
+            <p>{destacada ? `${destacada.artist} · ${destacada.album}` : 'Colección local'}</p>
+            <button type="button" className="loto-btn" onClick={() => onNavigate('library')}>
+              Abrir pergamino <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+        </section>
+
+        <aside className="loto-panel loto-der">
+          <div>
+            <small>PERGAMINO RECIENTE</small>
+            <div className="loto-recientes">
+              {tracks.slice(0, 5).map((t, i) => (
+                <div key={t.id} className="loto-reciente-fila">
+                  <span>
+                    {String(i + 1).padStart(2, '0')} · {t.title}
+                  </span>
+                  <small>{t.duration_str}</small>
+                </div>
+              ))}
+            </div>
+          </div>
+          <span className="loto-sello" aria-hidden="true">
+            蓮
+          </span>
+        </aside>
+      </div>
+    );
+  }
+
+  if (theme === 'ukiyo') {
+    return (
+      <div className="ukiyo-ola-home">
+        <div className="ukiyo-fuji" aria-hidden="true" />
+        <svg className="ukiyo-ola-svg" viewBox="0 0 900 420" fill="none" aria-hidden="true">
+          <path
+            d="M0 420 L0 180 C120 70 280 20 390 95 C430 120 435 165 390 190 C320 225 270 185 320 140 C240 125 165 180 225 255 C315 350 510 265 690 295 C790 310 855 355 900 390 L900 420 Z"
+            fill="#163a5f"
+          />
+          <path
+            d="M0 245 C140 165 265 215 360 285 C480 370 675 305 900 375 L900 420 L0 420 Z"
+            fill="#2c5f8a"
+          />
+          <path
+            d="M290 70 Q340 40 395 88 Q435 120 405 162"
+            stroke="#fff9ec"
+            strokeWidth="14"
+            strokeLinecap="round"
+          />
+        </svg>
+        <div className="ukiyo-principal">
+          <div className="ukiyo-cartucho">
+            <small>富嶽三十六景 · UKIYO-E</small>
+            <h1>La Gran Ola sonora</h1>
+            <p>
+              Xilografía de papel ocre, azul de Prusia y un rollo lateral vertical con sello
+              bermellón ({trackCount} piezas).
+            </p>
+            <div className="ukiyo-acciones">
+              <button type="button" onClick={() => onNavigate('library')}>
+                Abrir estampas <ArrowRight className="w-4 h-4" />
+              </button>
+              <button type="button" onClick={() => onNavigate('search')}>
+                Buscar
+              </button>
+            </div>
+          </div>
+        </div>
+        <aside className="ukiyo-kakemono" aria-hidden="true">
+          <span className="ukiyo-sello">波</span>
+          <span className="ukiyo-kanji">神奈川沖浪裏</span>
+        </aside>
+      </div>
+    );
+  }
+
+  if (theme === 'vinilo') {
+    const primera = tracks[0];
+    return (
+      <div className="vinilo-3d-home">
+        <section className="vinilo-plato-lado">
+          <div className="vinilo-brazo" aria-hidden="true" />
+          <div className="vinilo-disco">
+            <div className="vinilo-etiqueta">
+              {primera?.cover_url ? (
+                <img src={getCoverSrc(primera.cover_url)} alt="" />
+              ) : (
+                <span>
+                  SIDE A
+                  <br />
+                  33 RPM
+                </span>
+              )}
+            </div>
+          </div>
+          <p className="vinilo-plato-pie">
+            <strong>{primera ? primera.title : 'Plato Analógico'}</strong> · {trackCount} discos
+          </p>
+        </section>
+        <section className="vinilo-fundas-lado">
+          <small>ESTANTERÍA ANALÓGICA 3D</small>
+          <h1>Fundas de Vinilo</h1>
+          <div className="vinilo-pila">
+            {tracks.slice(0, 4).map((t, i) => (
+              <button
+                key={t.id}
+                type="button"
+                className={`vinilo-funda ${i === 0 ? 'is-on' : ''}`}
+                onClick={() => onNavigate('library')}
+              >
+                <div>
+                  <strong>
+                    {String(i + 1).padStart(2, '0')} · {t.title}
+                  </strong>
+                  <span>
+                    {t.artist} · {t.duration_str}
+                  </span>
+                </div>
+                <em>{i === 0 ? '● 33 RPM' : 'ABRIR'}</em>
+              </button>
+            ))}
+          </div>
+          <button type="button" className="vinilo-cta" onClick={() => onNavigate('library')}>
+            Explorar estantería completa <ArrowRight className="w-4 h-4" />
+          </button>
+        </section>
+      </div>
+    );
+  }
+
+  if (theme === 'karesansui') {
+    const primera = tracks[0];
+    return (
+      <div className="karesansui-home">
+        <div className="karesansui-marco">
+          <div className="karesansui-top">
+            <strong>枯山水 · JARDÍN DE ARENA RASTRILLADA</strong>
+            <span>{trackCount} PIEDRAS EN EL JARDÍN</span>
+          </div>
+          <button
+            type="button"
+            className="karesansui-roca"
+            onClick={() => onNavigate('library')}
+            title="Entrar a la biblioteca"
+          >
+            <small>EN LA ROCA CENTRAL</small>
+            <h1>{primera ? primera.title : 'Silencio en Ryōan-ji'}</h1>
+            <span>{primera ? `${primera.artist} · ${primera.duration_str}` : 'Abrir jardín'}</span>
+          </button>
+          <div className="karesansui-piedras">
+            <button type="button" onClick={() => onNavigate('library')}>
+              Piedra 01 · Biblioteca
+            </button>
+            <button type="button" onClick={() => onNavigate('search')}>
+              Piedra 02 · Buscar
+            </button>
+            <button type="button" onClick={() => onNavigate('playlists')}>
+              Piedra 03 · Listas
+            </button>
+            <button type="button" onClick={() => onNavigate('settings')}>
+              Piedra 04 · Ajustes
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (theme === 'sumie') {
     return (

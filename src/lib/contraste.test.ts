@@ -38,11 +38,16 @@ const PAREJAS: { tema: string; fondo: string; texto: string; suave?: string }[] 
   { tema: 'samurai', fondo: '#1a1512', texto: '#efe6d6', suave: '#9e8f7c' },
   { tema: 'kawaii', fondo: '#fff7fb', texto: '#7a4a6a', suave: '#8a5c74' },
   { tema: 'manga', fondo: '#fbfaf7', texto: '#101010', suave: '#666666' },
+  { tema: 'sakura', fondo: '#fff7fa', texto: '#3d1626', suave: '#7a3b52' },
+  { tema: 'loto', fondo: '#180b10', texto: '#f8eed8', suave: '#cbb59a' },
+  { tema: 'ukiyo', fondo: '#f2e4c9', texto: '#162a45', suave: '#354e6b' },
+  { tema: 'vinilo', fondo: '#141210', texto: '#f6f2eb', suave: '#a89f94' },
+  { tema: 'karesansui', fondo: '#ece8df', texto: '#24221f', suave: '#5e574e' },
 ];
 
-describe('contraste de los 14 temas (WCAG AA)', () => {
-  it('cada tema tiene 14 pares de texto sobre superficie', () => {
-    expect(PAREJAS).toHaveLength(14);
+describe('contraste de los 19 temas (WCAG AA)', () => {
+  it('cada tema tiene 19 pares de texto sobre superficie', () => {
+    expect(PAREJAS).toHaveLength(19);
   });
 
   it.for(PAREJAS)('$tema: el texto principal supera 4.5:1', ({ tema, fondo, texto }) => {

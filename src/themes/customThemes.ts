@@ -29,6 +29,11 @@ const ARQUETIPOS: Arquetipo[] = [
   'samurai',
   'kawaii',
   'manga',
+  'sakura',
+  'loto',
+  'ukiyo',
+  'vinilo',
+  'karesansui',
 ];
 
 function esValido(dato: unknown): dato is TemaPersonalizado {
@@ -67,8 +72,32 @@ export function borrarTemaPersonalizado(id: string): TemaPersonalizado[] {
   return lista;
 }
 
+const TEMAS_OFICIALES: ThemeMode[] = [
+  'space',
+  'sumie',
+  'byobu',
+  'shoji',
+  'origami',
+  'swiss',
+  'sumiink',
+  'moonlit',
+  'ledger',
+  'shonen',
+  'ghost',
+  'samurai',
+  'kawaii',
+  'manga',
+  'sakura',
+  'loto',
+  'ukiyo',
+  'vinilo',
+  'karesansui',
+];
+
 export function baseDelTema(id: string, temas = temasPersonalizados()): ThemeMode {
-  return temas.find((tema) => tema.id === id)?.base ?? (id as ThemeMode);
+  const encontrado = temas.find((tema) => tema.id === id)?.base;
+  if (encontrado && TEMAS_OFICIALES.includes(encontrado)) return encontrado;
+  return TEMAS_OFICIALES.includes(id as ThemeMode) ? (id as ThemeMode) : 'space';
 }
 
 export function esTemaPersonalizado(id: string, temas = temasPersonalizados()): boolean {

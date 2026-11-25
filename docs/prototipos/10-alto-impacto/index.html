@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>10 diseños de alto impacto · Sakura Music</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 36px; background: #09090c; color: #f4f4f6; font-family: 'Segoe UI', system-ui, sans-serif; }
+    header { max-width: 1360px; margin: 0 auto 28px; }
+    h1 { font-size: 34px; margin: 0 0 8px; letter-spacing: -0.02em; }
+    .sub { color: #9ca3af; font-size: 14px; margin: 0; max-width: 760px; line-height: 1.6; }
+    .grid { max-width: 1360px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 24px; }
+    .card {
+      display: block; text-decoration: none; color: inherit;
+      border: 1px solid #242630; border-radius: 14px; overflow: hidden; background: #121319;
+      transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+    }
+    .card:hover { transform: translateY(-6px); border-color: #ff699e; box-shadow: 0 18px 40px rgba(255, 105, 158, .18); }
+    .card.destacado { border-color: rgba(255, 105, 158, .55); }
+    .vista { position: relative; height: 240px; overflow: hidden; background: #000; }
+    .vista iframe { position: absolute; top: 0; left: 0; width: 1280px; height: 720px; border: 0; transform: scale(0.32); transform-origin: top left; pointer-events: none; }
+    .pie { padding: 15px 18px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .pie strong { display: block; font-size: 15px; margin-bottom: 3px; }
+    .pie small { color: #94a3b8; font-size: 12px; }
+    .badge { font-size: 10px; padding: 4px 9px; border-radius: 999px; background: #1f222d; color: #e2e8f0; text-transform: uppercase; letter-spacing: .06em; white-space: nowrap; }
+    .card.destacado .badge { background: #ff3d85; color: #fff; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🌸 10 diseños radicales · Alto impacto visual</h1>
+    <p class="sub">Cada propuesta rompe el layout tradicional (top bar + grilla + dock) con composiciones orbitales, trípticos, escenas SVG vivas, tocadiscos 3D y un tema protagonista de <strong>Árbol de Sakura</strong>. Abrí cualquiera en pantalla completa.</p>
+  </header>
+  <div class="grid" id="grid"></div>
+  <script>
+    const temas = [
+      ['01-sakura-taiju', '🌸 01 · Árbol de Sakura (桜大樹)', 'Escena viva con cerezo gigante, pétalos cayendo y reproductor floral', 'estrella', true],
+      ['02-eclipse-solar', '🌑 02 · Eclipse Solar', 'Interfaz 100% orbital alrededor de un eclipse incandescente', 'radial', false],
+      ['03-ukiyo-ola', '🌊 03 · La Gran Ola (Ukiyo-e)', 'Estampa diagonal de Hokusai, Monte Fuji y rollo vertical', 'arte', false],
+      ['04-invernadero', '🌺 04 · Invernadero Art Nouveau', 'Arco de hierro forjado, vitral botánico y láminas de herbario', 'naturaleza', false],
+      ['05-shinkansen-80s', '🚄 05 · Shinkansen City Pop 80s', 'Ventana panorámica nocturna + tablero analógico con casete', 'anime', false],
+      ['06-karesansui', '🪨 06 · Jardín Karesansui', 'Arena rastrillada a pantalla completa y reproductor en roca zen', 'zen', false],
+      ['07-palacio-loto', '🪷 07 · Tríptico Loto Imperial', 'Biombo chino de 3 paneles verticales en seda carmesí y oro', 'tríptico', false],
+      ['08-aurora-glaciar', '🌌 08 · Aurora Boreal & Glaciar', 'Cortinas de aurora animadas e islas de hielo flotantes', 'naturaleza', false],
+      ['09-torii-crepusculo', '⛩️ 09 · Portal Torii en el Mar', 'Torii gigante reflejado en el mar con UI entre sus columnas', 'escena', false],
+      ['10-tocadiscos-3d', '💿 10 · Tocadiscos Monumental', 'Plato giratorio gigante a la izquierda y fundas 3D a la derecha', '3d', false],
+    ];
+    document.getElementById('grid').innerHTML = temas.map(([f, n, d, tag, top]) => `
+      <a class="card ${top ? 'destacado' : ''}" href="${f}.html" target="_blank">
+        <div class="vista"><iframe src="${f}.html" loading="lazy"></iframe></div>
+        <div class="pie">
+          <div><strong>${n}</strong><small>${d}</small></div>
+          <span class="badge">${tag}</span>
+        </div>
+      </a>
+    `).join('');
+  </script>
+</body>
+</html>

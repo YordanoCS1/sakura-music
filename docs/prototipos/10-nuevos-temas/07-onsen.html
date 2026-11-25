@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>07 · Onsen & Musgo (温泉) · Naturaleza</title>
+  <style>
+    :root { --piedra: #222220; --hinoki: #c7a26f; --musgo: #627d4d; --vapor: #ece6db; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--piedra); color: var(--vapor); font-family: Georgia, serif; height: 100vh; display: flex; flex-direction: column; }
+    .nav { height: 54px; background: #1a1a18; border-bottom: 2px solid var(--hinoki); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; }
+    .nav button { background: none; border: 0; color: #a39d93; padding: 6px 14px; cursor: pointer; font: inherit; }
+    .nav button.on { color: var(--hinoki); border-bottom: 2px solid var(--musgo); }
+    main { flex: 1; overflow: auto; padding: 32px 42px; background: radial-gradient(circle at 50% 0%, rgba(236,230,219,.12), transparent 60%); }
+    .vista { display: none; max-width: 1040px; margin: 0 auto; }
+    .vista.on { display: block; }
+    .banio { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: center; min-height: 430px; }
+    .tina { background: #2d2c28; border: 10px solid var(--hinoki); border-radius: 20px; height: 300px; display: grid; place-items: center; position: relative; box-shadow: inset 0 0 60px rgba(0,0,0,.5); }
+    .tina span { font-size: 62px; color: rgba(236,230,219,.35); }
+    .peldaños { display: flex; flex-direction: column; gap: 12px; }
+    .piedra { background: #2c2d29; border-left: 6px solid var(--musgo); border-radius: 12px; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; }
+    .piedra:nth-child(even) { margin-left: 28px; border-left-color: var(--hinoki); }
+    .dock { height: 70px; background: #1a1a18; border-top: 2px solid var(--hinoki); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <strong>♨ 温泉 · ONSEN & MUSGO</strong>
+    <nav><button class="on" data-v="home">Termas</button><button data-v="lib">Peldaños</button></nav>
+  </header>
+  <main>
+    <section class="vista on" id="home">
+      <div class="banio">
+        <div>
+          <small style="color:var(--hinoki);letter-spacing:.18em">HAKONE · PIEDRA, MADERA HINOKI Y VAPOR</small>
+          <h1 style="font-size:44px;font-weight:400;margin:10px 0">Calidez mineral en cada pista</h1>
+          <p style="color:#b7b0a4;line-height:1.8">Piedra volcánica mate, marcos de ciprés hinoki y musgo húmedo. Un diseño orgánico pensado para música ambiental, lo-fi o acústica.</p>
+          <button onclick="ir('lib')" style="background:var(--musgo);color:#fff;border:0;padding:11px 22px;border-radius:999px;cursor:pointer;font:inherit">Caminar por los peldaños →</button>
+        </div>
+        <div class="tina"><span>湯</span></div>
+      </div>
+    </section>
+    <section class="vista" id="lib">
+      <div class="peldaños">
+        <div class="piedra"><div><strong>Vapor de Hakone</strong><div style="font-size:12px;color:#9f998e">Takashi · Álbum Termas</div></div><span>4:12</span></div>
+        <div class="piedra"><div><strong>Ciprés Hinoki</strong><div style="font-size:12px;color:#9f998e">Mori Acoustic · 2025</div></div><span>3:45</span></div>
+        <div class="piedra"><div><strong>Musgo y Lluvia</strong><div style="font-size:12px;color:#9f998e">Yuki Ambient · FLAC</div></div><span>5:20</span></div>
+        <div class="piedra"><div><strong>Cascada de Kusatsu</strong><div style="font-size:12px;color:#9f998e">Sora Field · 2024</div></div><span>4:02</span></div>
+      </div>
+    </section>
+  </main>
+  <footer class="dock">
+    <div><strong style="color:var(--hinoki)">Ciprés Hinoki</strong> · <small style="color:#9f998e">Mori Acoustic</small></div>
+    <div>◀◀ &nbsp; ▶ &nbsp; ▶▶</div>
+  </footer>
+  <script>
+    function ir(id) {
+      document.querySelectorAll('.vista').forEach((v) => v.classList.remove('on'));
+      document.getElementById(id).classList.add('on');
+      document.querySelectorAll('.nav button').forEach((b) => b.classList.toggle('on', b.dataset.v === id));
+    }
+    document.querySelectorAll('.nav button').forEach((b) => (b.onclick = () => ir(b.dataset.v)));
+  </script>
+</body>
+</html>

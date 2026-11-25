@@ -1,0 +1,639 @@
+/* ========================================================================
+   REALCE DE LOS 5 TEMAS NUEVOS — se importa después de nuevos-5-temas.css
+   Aporta atmósfera animada,NAV, reproductor, biblioteca, paneles y modales.
+   ======================================================================== */
+
+@keyframes sakura-caer {
+  0% {
+    transform: translate(0, -8vh) rotate(0deg);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(90px, 105vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+@keyframes loto-brillo {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.08);
+  }
+}
+@keyframes ukiyo-ola {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-18px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+@keyframes vinilo-girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes kares-senda {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes realce-entrar {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ─────────────── 1 · SAKURA: hanami vivo ─────────────── */
+.app-shell[data-skin='sakura'] .app-rail-row {
+  position: relative;
+}
+.app-shell[data-skin='sakura'] .app-rail-row::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+  background-image:
+    radial-gradient(circle at 18% 12%, rgba(255, 150, 190, 0.35), transparent 32%),
+    radial-gradient(circle at 82% 74%, rgba(229, 77, 134, 0.22), transparent 36%);
+  animation: loto-brillo 9s ease-in-out infinite;
+}
+.app-shell[data-skin='sakura'] .sakura-taiju-home::after {
+  content: '✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿ ✿';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  color: rgba(229, 77, 134, 0.45);
+  font-size: 18px;
+  letter-spacing: 2.4em;
+  writing-mode: vertical-rl;
+  line-height: 2.4;
+  opacity: 0.55;
+  animation: sakura-caer 12s linear infinite;
+}
+.app-shell[data-skin='sakura'] .sakura-taiju-arbol {
+  filter: drop-shadow(0 18px 30px rgba(150, 40, 85, 0.25));
+}
+.app-shell[data-skin='sakura'] .sakura-taiju-copy {
+  animation: realce-entrar 600ms ease both;
+}
+.app-shell[data-skin='sakura'] .sakura-taiju-copy h1 {
+  text-shadow: 0 2px 0 rgba(255, 255, 255, 0.7);
+}
+.app-shell[data-skin='sakura'] .sakura-flor-card {
+  border-radius: 26px 8px 26px 8px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(255, 228, 240, 0.72));
+  box-shadow: 0 14px 34px rgba(150, 50, 90, 0.12);
+  transition:
+    transform 0.25s,
+    box-shadow 0.25s;
+  animation: realce-entrar 420ms ease both;
+}
+.app-shell[data-skin='sakura'] .sakura-flor-card:hover {
+  transform: translateY(-6px) rotate(-1deg);
+  box-shadow: 0 24px 50px rgba(214, 48, 108, 0.28);
+}
+.app-shell[data-skin='sakura'] .sakura-flor-card.is-active {
+  border-color: #e54d86;
+  box-shadow:
+    0 0 0 2px rgba(229, 77, 134, 0.35),
+    0 18px 40px rgba(214, 48, 108, 0.25);
+}
+.app-shell[data-skin='sakura'] .sakura-flor-cover {
+  border-radius: 22px 6px 22px 6px;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+}
+.app-shell[data-skin='sakura'] .theme-nav {
+  box-shadow:
+    0 12px 34px rgba(130, 40, 78, 0.14),
+    inset 0 1px rgba(255, 255, 255, 0.8);
+}
+.app-shell[data-skin='sakura'] .player-dock {
+  background: rgba(255, 255, 255, 0.82) !important;
+  border: 1px solid rgba(229, 77, 134, 0.3) !important;
+  border-radius: 999px !important;
+  box-shadow: 0 18px 44px rgba(130, 40, 78, 0.2) !important;
+  backdrop-filter: blur(16px);
+  color: #3d1626 !important;
+}
+.app-shell[data-skin='sakura'] .theme-modal,
+.app-shell[data-skin='sakura'] .np-panel {
+  border-color: rgba(229, 77, 134, 0.35) !important;
+  background: rgba(255, 249, 252, 0.97) !important;
+  color: #3d1626 !important;
+}
+
+/* ─────────────── 2 · LOTO: seda y oro imperial ─────────────── */
+.app-shell[data-skin='loto'] .app-rail-row::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    repeating-linear-gradient(90deg, rgba(212, 175, 55, 0.06) 0 2px, transparent 2px 46px),
+    radial-gradient(ellipse at 50% 0%, rgba(212, 175, 55, 0.18), transparent 55%);
+}
+.app-shell[data-skin='loto'] .loto-triptico-home {
+  filter: drop-shadow(0 20px 50px rgba(0, 0, 0, 0.35));
+}
+.app-shell[data-skin='loto'] .loto-panel {
+  background: linear-gradient(180deg, rgba(94, 16, 35, 0.96), rgba(38, 8, 18, 0.98));
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  box-shadow:
+    inset 0 0 0 4px rgba(212, 175, 55, 0.12),
+    0 20px 50px rgba(0, 0, 0, 0.4);
+}
+.app-shell[data-skin='loto'] .loto-flor {
+  animation: loto-brillo 6s ease-in-out infinite;
+  text-shadow: 0 0 40px rgba(255, 190, 120, 0.45);
+}
+.app-shell[data-skin='loto'] .loto-nav-v button {
+  border-left: 2px solid rgba(212, 175, 55, 0.3);
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+}
+.app-shell[data-skin='loto'] .loto-nav-v button:hover {
+  background: rgba(212, 175, 55, 0.14);
+  border-left-color: #d4af37;
+}
+.app-shell[data-skin='loto'] .loto-sello {
+  border: 3px double #d4af37;
+  color: #f0d68a;
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+}
+.app-shell[data-skin='loto'] .loto-fila {
+  background: linear-gradient(90deg, rgba(255, 250, 240, 0.94), rgba(246, 232, 204, 0.88));
+  border-bottom: 1px solid rgba(212, 175, 55, 0.32);
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+.app-shell[data-skin='loto'] .loto-fila:hover {
+  transform: translateX(5px);
+  box-shadow: 0 12px 28px rgba(90, 20, 40, 0.16);
+}
+.app-shell[data-skin='loto'] .loto-fila.is-active {
+  border-left: 4px solid #d4af37;
+  box-shadow:
+    0 0 0 1px rgba(212, 175, 55, 0.45),
+    0 12px 30px rgba(90, 20, 40, 0.2);
+}
+.app-shell[data-skin='loto'] .loto-cover {
+  border: 1px solid rgba(212, 175, 55, 0.6);
+  box-shadow: 0 6px 16px rgba(90, 20, 40, 0.2);
+}
+.app-shell[data-skin='loto'] .theme-nav {
+  border: 1px solid rgba(212, 175, 55, 0.4) !important;
+  background: rgba(38, 8, 18, 0.9) !important;
+  color: #f4e6c8 !important;
+}
+.app-shell[data-skin='loto'] .theme-nav-tabs button.is-active {
+  background: #d4af37 !important;
+  color: #260812 !important;
+}
+.app-shell[data-skin='loto'] .player-dock {
+  background: rgba(38, 8, 18, 0.94) !important;
+  border: 1px solid rgba(212, 175, 55, 0.45) !important;
+  color: #f7ead0 !important;
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.45) !important;
+}
+.app-shell[data-skin='loto'] .theme-modal,
+.app-shell[data-skin='loto'] .np-panel {
+  background: #1a0910 !important;
+  color: #f4e6c8 !important;
+  border: 1px solid rgba(212, 175, 55, 0.4) !important;
+}
+
+/* ─────────────── 3 · UKIYO: ola y halftone ─────────────── */
+.app-shell[data-skin='ukiyo'] .app-rail-row::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: radial-gradient(rgba(22, 58, 95, 0.14) 1px, transparent 1px);
+  background-size: 7px 7px;
+}
+.app-shell[data-skin='ukiyo'] .ukiyo-ola-svg {
+  animation: ukiyo-ola 8s ease-in-out infinite;
+  filter: drop-shadow(0 14px 24px rgba(22, 58, 95, 0.3));
+}
+.app-shell[data-skin='ukiyo'] .ukiyo-fuji {
+  filter: drop-shadow(0 8px 18px rgba(120, 40, 30, 0.2));
+}
+.app-shell[data-skin='ukiyo'] .ukiyo-cartucho {
+  animation: realce-entrar 560ms ease both;
+  border-left: 4px solid #b93829;
+  padding-left: 18px;
+}
+.app-shell[data-skin='ukiyo'] .ukiyo-estampa {
+  background: #f6ead2;
+  border: 1px solid rgba(22, 58, 95, 0.35);
+  border-radius: 4px;
+  box-shadow: 4px 6px 0 rgba(22, 58, 95, 0.16);
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+.app-shell[data-skin='ukiyo'] .ukiyo-estampa:hover {
+  transform: translate(-2px, -4px);
+  box-shadow: 8px 10px 0 rgba(185, 56, 41, 0.25);
+}
+.app-shell[data-skin='ukiyo'] .ukiyo-estampa.is-active {
+  outline: 3px solid #b93829;
+  outline-offset: 2px;
+}
+.app-shell[data-skin='ukiyo'] .ukiyo-cover {
+  border: 2px solid #163a5f;
+  border-radius: 2px;
+  filter: sepia(0.15) saturate(1.1);
+}
+.app-shell[data-skin='ukiyo'] .ukiyo-sello {
+  border: 4px double #b93829;
+  color: #b93829;
+  background: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 24px rgba(185, 56, 41, 0.25);
+}
+.app-shell[data-skin='ukiyo'] .theme-nav {
+  background: rgba(246, 234, 210, 0.92) !important;
+  border: 2px solid #163a5f !important;
+  color: #163a5f !important;
+  border-radius: 6px !important;
+}
+.app-shell[data-skin='ukiyo'] .theme-nav-tabs button.is-active {
+  background: #163a5f !important;
+  color: #f6ead2 !important;
+}
+.app-shell[data-skin='ukiyo'] .player-dock {
+  background: #f6ead2 !important;
+  border: 2px solid #163a5f !important;
+  color: #163a5f !important;
+  border-radius: 6px !important;
+  box-shadow: 6px 6px 0 rgba(185, 56, 41, 0.3) !important;
+}
+
+/* ─────────────── 4 · VINILO: plato y fundas 3D ─────────────── */
+.app-shell[data-skin='vinilo'] .app-rail-row::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: repeating-radial-gradient(
+    circle at 78% 60%,
+    rgba(255, 94, 58, 0.05) 0 2px,
+    transparent 2px 22px
+  );
+}
+.app-shell[data-skin='vinilo'] .vinilo-disco {
+  background: repeating-radial-gradient(circle at 50% 50%, #161412 0 3px, #26221d 3px 5px);
+  box-shadow:
+    inset 0 0 60px rgba(0, 0, 0, 0.7),
+    0 20px 50px rgba(0, 0, 0, 0.5);
+  animation: vinilo-girar 6s linear infinite;
+}
+.app-shell[data-skin='vinilo'] .vinilo-brazo {
+  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.6));
+}
+.app-shell[data-skin='vinilo'] .vinilo-funda {
+  background: linear-gradient(135deg, #2a2520, #151210);
+  border: 1px solid rgba(255, 94, 58, 0.4);
+  box-shadow:
+    8px 10px 24px rgba(0, 0, 0, 0.5),
+    inset 0 1px rgba(255, 255, 255, 0.06);
+  transition:
+    transform 0.25s,
+    box-shadow 0.25s;
+}
+.app-shell[data-skin='vinilo'] .vinilo-funda:hover,
+.app-shell[data-skin='vinilo'] .vinilo-funda.is-on {
+  transform: translateX(12px) rotateY(-8deg);
+  box-shadow: 14px 16px 32px rgba(0, 0, 0, 0.6);
+  border-color: #ff5e3a;
+}
+.app-shell[data-skin='vinilo'] .vinilo-funda-card {
+  background: linear-gradient(120deg, #211d19, #12100e);
+  border: 1px solid rgba(255, 94, 58, 0.28);
+  box-shadow: 6px 8px 20px rgba(0, 0, 0, 0.45);
+  transition: transform 0.2s;
+}
+.app-shell[data-skin='vinilo'] .vinilo-funda-card:hover {
+  transform: translateY(-4px) rotateX(4deg);
+}
+.app-shell[data-skin='vinilo'] .vinilo-cover {
+  border: 2px solid rgba(255, 94, 58, 0.5);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+}
+.app-shell[data-skin='vinilo'] .vinilo-rpm {
+  color: #ff7a52;
+  font-family: 'JetBrains Mono', monospace;
+}
+.app-shell[data-skin='vinilo'] .theme-nav {
+  background: rgba(18, 16, 14, 0.94) !important;
+  border: 1px solid rgba(255, 94, 58, 0.4) !important;
+  color: #f0e5dc !important;
+}
+.app-shell[data-skin='vinilo'] .theme-nav-tabs button.is-active {
+  background: #ff5e3a !important;
+  color: #120e0b !important;
+}
+.app-shell[data-skin='vinilo'] .player-dock {
+  background: rgba(18, 16, 14, 0.96) !important;
+  border: 1px solid rgba(255, 94, 58, 0.45) !important;
+  color: #f0e5dc !important;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.6) !important;
+}
+.app-shell[data-skin='vinilo'] .theme-modal,
+.app-shell[data-skin='vinilo'] .np-panel {
+  background: #12100e !important;
+  color: #f0e5dc !important;
+  border: 1px solid rgba(255, 94, 58, 0.4) !important;
+}
+
+/* ─────────────── 5 · KARESANSUI: arena rastrillada ─────────────── */
+.app-shell[data-skin='karesansui'] .app-rail-row::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: repeating-radial-gradient(
+    ellipse at 30% 40%,
+    rgba(60, 51, 42, 0.06) 0 2px,
+    transparent 2px 26px
+  );
+}
+.app-shell[data-skin='karesansui'] .karesansui-marco {
+  background: linear-gradient(145deg, #f2eee5, #ddd7ca);
+  border: 1px solid rgba(60, 51, 42, 0.25);
+  box-shadow:
+    inset 0 0 0 8px rgba(255, 255, 255, 0.35),
+    0 24px 60px rgba(60, 51, 42, 0.18);
+}
+.app-shell[data-skin='karesansui'] .karesansui-roca {
+  background: linear-gradient(145deg, #4b453d, #26221e);
+  color: #f2eee5;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    inset 0 2px 8px rgba(255, 255, 255, 0.08),
+    0 18px 36px rgba(30, 26, 22, 0.4);
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
+}
+.app-shell[data-skin='karesansui'] .karesansui-roca:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 28px 50px rgba(30, 26, 22, 0.5);
+}
+.app-shell[data-skin='karesansui'] .karesansui-piedras button {
+  border: 1px solid rgba(60, 51, 42, 0.25);
+  border-radius: 50% 50% 8px 8px;
+  background: linear-gradient(180deg, #eae5da, #cfc8ba);
+  color: #2b2721;
+  transition:
+    transform 0.2s,
+    background 0.2s;
+}
+.app-shell[data-skin='karesansui'] .karesansui-piedras button:hover {
+  transform: translateY(-4px);
+  background: #fffdf8;
+}
+.app-shell[data-skin='karesansui'] .karesansui-piedra {
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.7), rgba(220, 214, 202, 0.8));
+  border: 1px solid rgba(60, 51, 42, 0.22);
+  border-radius: 50% 50% 12px 12px;
+  box-shadow: 0 12px 26px rgba(60, 51, 42, 0.14);
+  transition: transform 0.2s;
+}
+.app-shell[data-skin='karesansui'] .karesansui-piedra:hover {
+  transform: translateY(-5px);
+}
+.app-shell[data-skin='karesansui'] .karesansui-piedra.is-active {
+  outline: 2px solid #3c332a;
+  outline-offset: 3px;
+  background: #fffdf8;
+}
+.app-shell[data-skin='karesansui'] .karesansui-cover {
+  border-radius: 50% 50% 8px 8px;
+  border: 2px solid rgba(60, 51, 42, 0.35);
+}
+.app-shell[data-skin='karesansui'] .theme-nav {
+  background: rgba(240, 236, 227, 0.94) !important;
+  border: 1px solid rgba(60, 51, 42, 0.3) !important;
+  color: #2b2721 !important;
+}
+.app-shell[data-skin='karesansui'] .theme-nav-tabs button.is-active {
+  background: #3c332a !important;
+  color: #f2eee5 !important;
+  border-radius: 999px !important;
+}
+.app-shell[data-skin='karesansui'] .player-dock {
+  background: rgba(240, 236, 227, 0.96) !important;
+  border: 1px solid rgba(60, 51, 42, 0.35) !important;
+  color: #2b2721 !important;
+  border-radius: 18px !important;
+  box-shadow: 0 18px 44px rgba(60, 51, 42, 0.22) !important;
+}
+.app-shell[data-skin='karesansui'] .theme-modal,
+.app-shell[data-skin='karesansui'] .np-panel {
+  background: #f2eee5 !important;
+  color: #2b2721 !important;
+  border: 1px solid rgba(60, 51, 42, 0.35) !important;
+}
+
+/* ─────────────── Compartido: búsqueda, cola, tooltips y scroll ─────────────── */
+.app-shell[data-skin='sakura'] .tsearch,
+.app-shell[data-skin='loto'] .tsearch,
+.app-shell[data-skin='ukiyo'] .tsearch,
+.app-shell[data-skin='vinilo'] .tsearch,
+.app-shell[data-skin='karesansui'] .tsearch {
+  animation: realce-entrar 380ms ease both;
+}
+.app-shell[data-skin='sakura'] .tqueue:hover,
+.app-shell[data-skin='loto'] .tqueue:hover,
+.app-shell[data-skin='ukiyo'] .tqueue:hover,
+.app-shell[data-skin='vinilo'] .tqueue:hover,
+.app-shell[data-skin='karesansui'] .tqueue:hover {
+  transform: translateY(-2px);
+}
+.app-shell[data-skin='sakura'] .theme-library-head,
+.app-shell[data-skin='loto'] .theme-library-head,
+.app-shell[data-skin='ukiyo'] .theme-library-head,
+.app-shell[data-skin='vinilo'] .theme-library-head,
+.app-shell[data-skin='karesansui'] .theme-library-head {
+  animation: realce-entrar 320ms ease both;
+}
+.app-shell[data-skin='sakura'] .undo-toast,
+.app-shell[data-skin='loto'] .undo-toast,
+.app-shell[data-skin='ukiyo'] .undo-toast,
+.app-shell[data-skin='vinilo'] .undo-toast,
+.app-shell[data-skin='karesansui'] .undo-toast {
+  bottom: 110px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell[data-skin] .sakura-taiju-home::after,
+  .app-shell[data-skin] .vinilo-disco,
+  .app-shell[data-skin] .ukiyo-ola-svg,
+  .app-shell[data-skin] .loto-flor,
+  .app-shell[data-skin] .app-rail-row::after,
+  .app-shell[data-skin] .app-rail-row::before {
+    animation: none !important;
+  }
+}
+
+/* Presentación: los 5 temas nuevos también tienen identidad propia. */
+.cover-full[data-skin='sakura'] {
+  --cf-bg: #fff7fa;
+  --cf-fg: #3d1626;
+  --cf-soft: #7a3b52;
+  --cf-accent: #e54d86;
+  --cf-card: rgba(255, 255, 255, 0.82);
+  --cf-line: rgba(229, 77, 134, 0.35);
+  --cf-radius: 26px;
+  --cf-enter: cf-tinta;
+  background:
+    radial-gradient(circle at 14% 10%, rgba(255, 150, 190, 0.5), transparent 38%),
+    radial-gradient(circle at 86% 84%, rgba(229, 77, 134, 0.35), transparent 40%), #fff7fa;
+}
+.cover-full[data-skin='sakura']::before {
+  background: radial-gradient(rgba(229, 77, 134, 0.18) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+.cover-full[data-skin='sakura'] .cover-full-art {
+  border-radius: 26px 8px 26px 8px;
+  box-shadow: 0 20px 50px rgba(150, 50, 90, 0.28);
+}
+.cover-full[data-skin='sakura'] .cover-full-copy h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 50px;
+}
+.cover-full[data-skin='loto'] {
+  --cf-bg: #180b10;
+  --cf-fg: #f6e7c8;
+  --cf-soft: #b99b6a;
+  --cf-accent: #d4af37;
+  --cf-card: linear-gradient(145deg, rgba(212, 175, 55, 0.14), rgba(94, 16, 35, 0.5));
+  --cf-line: rgba(212, 175, 55, 0.4);
+  --cf-radius: 2px;
+  --cf-enter: cf-giro;
+  background:
+    repeating-linear-gradient(90deg, rgba(212, 175, 55, 0.04) 0 3px, transparent 3px 48px),
+    radial-gradient(ellipse at 50% 20%, #5e1023, #0d0508 75%);
+}
+.cover-full[data-skin='loto'] .cover-full-deco span:nth-child(3) {
+  border: 4px double var(--cf-accent);
+  border-radius: 2px;
+  transform: rotate(6deg);
+}
+.cover-full[data-skin='loto'] .cover-full-art {
+  border: 5px double var(--cf-accent);
+  filter: sepia(0.3);
+}
+.cover-full[data-skin='loto'] .cover-full-copy h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 52px;
+  color: #f0d68a;
+}
+.cover-full[data-skin='ukiyo'] {
+  --cf-bg: #f2e4c9;
+  --cf-fg: #0d2138;
+  --cf-soft: #46617d;
+  --cf-accent: #b93829;
+  --cf-card: #faf1dd;
+  --cf-line: rgba(22, 58, 95, 0.45);
+  --cf-radius: 3px;
+  --cf-enter: cf-barrido;
+  background: radial-gradient(circle at 20% 100%, rgba(22, 58, 95, 0.22), transparent 45%), #f2e4c9;
+}
+.cover-full[data-skin='ukiyo']::before {
+  background-image: radial-gradient(rgba(22, 58, 95, 0.18) 1px, transparent 1px);
+  background-size: 7px 7px;
+  opacity: 0.5;
+}
+.cover-full[data-skin='ukiyo'] .cover-full-art {
+  border: 4px solid #163a5f;
+  border-radius: 2px;
+  box-shadow: 10px 10px 0 rgba(185, 56, 41, 0.5);
+}
+.cover-full[data-skin='ukiyo'] .cover-full-copy h1 {
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.cover-full[data-skin='vinilo'] {
+  --cf-bg: #141210;
+  --cf-fg: #f0e5dc;
+  --cf-soft: #a99a8d;
+  --cf-accent: #ff5e3a;
+  --cf-card: rgba(30, 26, 22, 0.85);
+  --cf-line: rgba(255, 94, 58, 0.4);
+  --cf-radius: 6px;
+  --cf-enter: cf-giro;
+  background:
+    repeating-radial-gradient(
+      circle at 78% 30%,
+      rgba(255, 94, 58, 0.06) 0 3px,
+      transparent 3px 26px
+    ),
+    #141210;
+}
+.cover-full[data-skin='vinilo'] .cover-full-art {
+  border: 5px solid #2a2520;
+  box-shadow:
+    0 0 0 3px rgba(255, 94, 58, 0.3),
+    0 24px 60px rgba(0, 0, 0, 0.6);
+}
+.cover-full[data-skin='vinilo'] .cover-full-copy h1 {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+.cover-full[data-skin='vinilo'] .cover-full-halo {
+  background: conic-gradient(#ff5e3a, #29231d, #ff5e3a);
+}
+.cover-full[data-skin='karesansui'] {
+  --cf-bg: #ece8df;
+  --cf-fg: #24221f;
+  --cf-soft: #6b655b;
+  --cf-accent: #3c332a;
+  --cf-card: rgba(255, 255, 255, 0.7);
+  --cf-line: rgba(60, 51, 42, 0.3);
+  --cf-radius: 18px;
+  --cf-enter: cf-tinta;
+  background:
+    repeating-radial-gradient(
+      ellipse at 28% 38%,
+      rgba(60, 51, 42, 0.07) 0 2px,
+      transparent 2px 26px
+    ),
+    #ece8df;
+}
+.cover-full[data-skin='karesansui'] .cover-full-art {
+  border-radius: 50% 50% 14px 14px;
+  border: 3px solid rgba(60, 51, 42, 0.4);
+  box-shadow: 0 20px 44px rgba(60, 51, 42, 0.2);
+}
+.cover-full[data-skin='karesansui'] .cover-full-copy h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 48px;
+}

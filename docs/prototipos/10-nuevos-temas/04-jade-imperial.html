@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>04 · Jade Imperial (玉玺) · China</title>
+  <style>
+    :root { --laca: #0c1210; --panel: #131e1a; --jade: #229972; --oro: #d4af37; --texto: #f3efe2; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--laca); color: var(--texto); font-family: Georgia, serif; height: 100vh; display: flex; flex-direction: column; }
+    .nav { height: 54px; border-bottom: 1px solid rgba(212,175,55,.35); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; background: #090e0c; }
+    .nav b { color: var(--oro); letter-spacing: .2em; font-size: 13px; }
+    .nav button { background: none; border: 1px solid rgba(212,175,55,.25); color: #9db0a8; padding: 6px 14px; cursor: pointer; margin-left: 6px; }
+    .nav button.on { background: var(--oro); color: #0c1210; font-weight: 700; }
+    main { flex: 1; overflow: auto; padding: 34px; }
+    .vista { display: none; max-width: 1060px; margin: 0 auto; }
+    .vista.on { display: block; }
+    .home { display: flex; align-items: center; gap: 48px; min-height: 430px; }
+    .medallon {
+      width: 260px; height: 260px; flex: none; border: 3px solid var(--oro);
+      clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+      background: radial-gradient(circle, #2a8a69, #0f2f24); display: grid; place-items: center;
+      font-size: 64px; color: var(--oro);
+    }
+    .home h1 { font-size: 46px; font-weight: 400; margin: 8px 0 14px; color: var(--oro); }
+    .btn { background: transparent; border: 1.5px solid var(--oro); color: var(--oro); padding: 11px 22px; cursor: pointer; letter-spacing: .12em; font-size: 12px; }
+    .relicarios { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .cofre { background: var(--panel); border: 1px solid rgba(212,175,55,.35); padding: 18px; position: relative; }
+    .cofre::before { content: ''; position: absolute; inset: 5px; border: 1px solid rgba(34,153,114,.35); pointer-events: none; }
+    .cofre .emblema { height: 110px; background: linear-gradient(135deg, #1a4f3d, #0d231b); display: grid; place-items: center; color: var(--oro); font-size: 32px; margin-bottom: 12px; }
+    .dock { height: 70px; background: #090e0c; border-top: 1px solid rgba(212,175,55,.35); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <b>玉玺 · JADE IMPERIAL</b>
+    <nav><button class="on" data-v="home">Palacio</button><button data-v="lib">Relicarios</button></nav>
+  </header>
+  <main>
+    <section class="vista on" id="home">
+      <div class="home">
+        <div class="medallon">玉</div>
+        <div>
+          <small style="color:var(--jade);letter-spacing:.22em">CHINA · DINASTÍA TANG</small>
+          <h1>Laca oscura, esmeralda y oro</h1>
+          <p style="color:#a7b5ae;line-height:1.8;max-width:460px">Marcos octogonales, filetes dorados de doble línea y contraste alto para colecciones clásicas y bandas sonoras épicas.</p>
+          <button class="btn" onclick="ir('lib')">ABRIR RELICARIOS</button>
+        </div>
+      </div>
+    </section>
+    <section class="vista" id="lib">
+      <div class="relicarios">
+        <div class="cofre"><div class="emblema">龍</div><strong>Ciudad Prohibida</strong><div style="color:#8ca198;font-size:12px;margin-top:4px">Guqin Solo · 4:32</div></div>
+        <div class="cofre"><div class="emblema">鳳</div><strong>Corte de Chang'an</strong><div style="color:#8ca198;font-size:12px;margin-top:4px">Erhu Ensemble · 3:55</div></div>
+        <div class="cofre"><div class="emblema">雲</div><strong>Nubes sobre Huangshan</strong><div style="color:#8ca198;font-size:12px;margin-top:4px">Pipa & Flauta · 5:18</div></div>
+        <div class="cofre"><div class="emblema">劍</div><strong>Sello del Emperador</strong><div style="color:#8ca198;font-size:12px;margin-top:4px">Orchestra · 4:40</div></div>
+      </div>
+    </section>
+  </main>
+  <footer class="dock">
+    <div><strong style="color:var(--oro)">Ciudad Prohibida</strong> · <small style="color:#8ca198">Guqin Solo</small></div>
+    <div style="color:var(--oro)">◀◀ &nbsp; ▶ &nbsp; ▶▶</div>
+  </footer>
+  <script>
+    function ir(id) {
+      document.querySelectorAll('.vista').forEach((v) => v.classList.remove('on'));
+      document.getElementById(id).classList.add('on');
+      document.querySelectorAll('.nav button').forEach((b) => b.classList.toggle('on', b.dataset.v === id));
+    }
+    document.querySelectorAll('.nav button').forEach((b) => (b.onclick = () => ir(b.dataset.v)));
+  </script>
+</body>
+</html>

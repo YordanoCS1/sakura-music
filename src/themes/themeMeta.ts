@@ -15,6 +15,11 @@ export const SWATCHES: Partial<Record<string, string>> = {
   samurai: '#c9a961',
   kawaii: '#ff9ec4',
   manga: '#d62828',
+  sakura: '#e54d86',
+  loto: '#d4af37',
+  ukiyo: '#163a5f',
+  vinilo: '#ff5e3a',
+  karesansui: '#3c332a',
 };
 
 export const PREVIEWS: Partial<Record<string, [string, string, string]>> = {
@@ -32,6 +37,11 @@ export const PREVIEWS: Partial<Record<string, [string, string, string]>> = {
   samurai: ['#1a1512', '#c9a961', '#b7352a'],
   kawaii: ['#fff7fb', '#ff9ec4', '#9ee0c8'],
   manga: ['#fbfaf7', '#101010', '#d62828'],
+  sakura: ['#fff5f8', '#e54d86', '#ff9cc0'],
+  loto: ['#180b10', '#d4af37', '#6e1120'],
+  ukiyo: ['#f2e4c9', '#163a5f', '#b93829'],
+  vinilo: ['#141210', '#ff5e3a', '#29231d'],
+  karesansui: ['#ece8df', '#24221f', '#8c8376'],
 };
 
 export const GLIFOS: Partial<Record<string, string>> = {
@@ -49,9 +59,14 @@ export const GLIFOS: Partial<Record<string, string>> = {
   samurai: '侍',
   kawaii: '♡',
   manga: '漫',
+  sakura: '桜',
+  loto: '蓮',
+  ukiyo: '波',
+  vinilo: '◉',
+  karesansui: '石',
 };
 
-/** Los 14 temas oficiales, todos con vistas estructurales propias. */
+/** Los 19 temas oficiales, todos con vistas estructurales propias. */
 export const TEMAS_PROPIOS = new Set([
   'space',
   'sumie',
@@ -67,4 +82,9 @@ export const TEMAS_PROPIOS = new Set([
   'samurai',
   'kawaii',
   'manga',
+  'sakura',
+  'loto',
+  'ukiyo',
+  'vinilo',
+  'karesansui',
 ]);

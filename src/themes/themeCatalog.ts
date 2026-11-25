@@ -1,0 +1,173 @@
+import type { ThemeMode, ThemeOption } from '../types';
+
+export const TEMAS_CON_VISTAS_PROPIAS: ThemeMode[] = [
+  'space',
+  'sumie',
+  'byobu',
+  'shoji',
+  'origami',
+  'swiss',
+  'sumiink',
+  'moonlit',
+  'ledger',
+  'shonen',
+  'ghost',
+  'samurai',
+  'kawaii',
+  'manga',
+  'sakura',
+  'loto',
+  'ukiyo',
+  'vinilo',
+  'karesansui',
+];
+
+export const TEMAS_DISPONIBLES: ThemeOption[] = [
+  { id: 'space', nombre: 'Estudio', descripcion: 'Consola de mezcla y medidores VU' },
+  { id: 'sumie', nombre: 'Sumi-e', descripcion: 'Pergamino flotante y tinta' },
+  { id: 'byobu', nombre: 'Byōbu', descripcion: 'Pantalla dividida de tinta' },
+  { id: 'shoji', nombre: 'Shoji', descripcion: 'Biombo de papel y madera' },
+  { id: 'origami', nombre: 'Origami', descripcion: 'Papel plegado rosa' },
+  { id: 'swiss', nombre: 'Swiss', descripcion: 'Grid estricto y Helvetica' },
+  { id: 'sumiink', nombre: 'Sumi Ink', descripcion: 'Pincelada blanca sobre negro' },
+  { id: 'moonlit', nombre: 'Moonlit', descripcion: 'Noche azul y luna' },
+  { id: 'ledger', nombre: 'Ledger', descripcion: 'Libro mayor y sellos rojos' },
+  { id: 'shonen', nombre: 'Shōnen', descripcion: 'Energía, combate y dramatismo' },
+  { id: 'ghost', nombre: 'Fantasmas', descripcion: 'Espectros y niebla azul' },
+  { id: 'samurai', nombre: 'Samurái', descripcion: 'Lacado rojo, acero y oro' },
+  { id: 'kawaii', nombre: 'Kawaii', descripcion: 'Pastel, ternura y caritas' },
+  { id: 'manga', nombre: 'Manga', descripcion: 'Viñetas, tinta y screentone' },
+  {
+    id: 'sakura',
+    nombre: 'Árbol de Sakura',
+    descripcion: 'Cerezo en flor, pétalos vivos y hanami',
+  },
+  { id: 'loto', nombre: 'Loto Imperial', descripcion: 'Tríptico de seda carmesí, loto y oro' },
+  {
+    id: 'ukiyo',
+    nombre: 'La Gran Ola',
+    descripcion: 'Estampa ukiyo-e de Hokusai y rollo vertical',
+  },
+  { id: 'vinilo', nombre: 'Tocadiscos 3D', descripcion: 'Plato giratorio analógico y fundas 3D' },
+  { id: 'karesansui', nombre: 'Karesansui', descripcion: 'Jardín zen de arena rastrillada y roca' },
+];
+
+export const THEME_GLOWS: Record<
+  string,
+  { glow1: string; glow2: string; accent: string; badge: string }
+> = {
+  space: {
+    glow1: 'bg-purple-500/25',
+    glow2: 'bg-indigo-700/20',
+    accent: 'from-purple-500 to-indigo-500',
+    badge: 'bg-purple-500/15 text-purple-100 border-purple-400/30',
+  },
+  sumie: {
+    glow1: 'bg-red-800/15',
+    glow2: 'bg-amber-100/40',
+    accent: 'from-red-800 to-rose-700',
+    badge: 'bg-red-800/10 text-red-900 border-red-800/30',
+  },
+  byobu: {
+    glow1: 'bg-red-700/20',
+    glow2: 'bg-stone-900/25',
+    accent: 'from-red-700 to-stone-800',
+    badge: 'bg-red-700/15 text-red-100 border-red-600/30',
+  },
+  shoji: {
+    glow1: 'bg-amber-100/20',
+    glow2: 'bg-stone-500/15',
+    accent: 'from-red-800 to-amber-700',
+    badge: 'bg-red-800/10 text-red-900 border-red-800/30',
+  },
+  origami: {
+    glow1: 'bg-pink-300/25',
+    glow2: 'bg-rose-500/15',
+    accent: 'from-pink-500 to-rose-600',
+    badge: 'bg-pink-500/10 text-pink-700 border-pink-400/30',
+  },
+  swiss: {
+    glow1: 'bg-neutral-300/20',
+    glow2: 'bg-neutral-600/20',
+    accent: 'from-neutral-800 to-neutral-600',
+    badge: 'bg-neutral-800/10 text-neutral-900 border-neutral-700/30',
+  },
+  sumiink: {
+    glow1: 'bg-stone-200/10',
+    glow2: 'bg-black/40',
+    accent: 'from-neutral-200 to-neutral-500',
+    badge: 'bg-neutral-200/10 text-neutral-100 border-neutral-300/30',
+  },
+  moonlit: {
+    glow1: 'bg-blue-300/15',
+    glow2: 'bg-indigo-950/40',
+    accent: 'from-sky-300 to-blue-500',
+    badge: 'bg-sky-300/10 text-sky-100 border-sky-300/30',
+  },
+  shonen: {
+    glow1: 'bg-orange-400/25',
+    glow2: 'bg-amber-600/20',
+    accent: 'from-orange-500 to-amber-400',
+    badge: 'bg-orange-500/15 text-orange-100 border-orange-400/30',
+  },
+  ghost: {
+    glow1: 'bg-cyan-300/15',
+    glow2: 'bg-slate-800/30',
+    accent: 'from-cyan-300 to-slate-400',
+    badge: 'bg-cyan-300/10 text-cyan-100 border-cyan-300/30',
+  },
+  samurai: {
+    glow1: 'bg-red-700/20',
+    glow2: 'bg-amber-800/20',
+    accent: 'from-red-700 to-amber-600',
+    badge: 'bg-red-700/15 text-red-100 border-red-600/30',
+  },
+  manga: {
+    glow1: 'bg-neutral-300/20',
+    glow2: 'bg-red-700/15',
+    accent: 'from-neutral-900 to-red-700',
+    badge: 'bg-red-700/10 text-neutral-900 border-red-700/30',
+  },
+  kawaii: {
+    glow1: 'bg-pink-300/25',
+    glow2: 'bg-emerald-200/20',
+    accent: 'from-pink-400 to-emerald-300',
+    badge: 'bg-pink-400/10 text-pink-100 border-pink-300/30',
+  },
+  ledger: {
+    glow1: 'bg-amber-100/20',
+    glow2: 'bg-stone-500/15',
+    accent: 'from-red-800 to-amber-800',
+    badge: 'bg-red-800/10 text-red-900 border-red-800/30',
+  },
+  sakura: {
+    glow1: 'bg-pink-300/35',
+    glow2: 'bg-rose-400/25',
+    accent: 'from-pink-500 to-rose-500',
+    badge: 'bg-pink-500/15 text-rose-900 border-pink-400/40',
+  },
+  loto: {
+    glow1: 'bg-rose-900/35',
+    glow2: 'bg-amber-600/20',
+    accent: 'from-rose-800 to-amber-500',
+    badge: 'bg-amber-500/15 text-amber-100 border-amber-400/30',
+  },
+  ukiyo: {
+    glow1: 'bg-sky-800/20',
+    glow2: 'bg-red-700/15',
+    accent: 'from-sky-900 to-red-700',
+    badge: 'bg-sky-900/15 text-sky-950 border-sky-800/30',
+  },
+  vinilo: {
+    glow1: 'bg-orange-600/25',
+    glow2: 'bg-stone-700/20',
+    accent: 'from-orange-500 to-amber-600',
+    badge: 'bg-orange-500/15 text-orange-100 border-orange-400/30',
+  },
+  karesansui: {
+    glow1: 'bg-stone-300/25',
+    glow2: 'bg-stone-500/15',
+    accent: 'from-stone-700 to-stone-500',
+    badge: 'bg-stone-700/10 text-stone-900 border-stone-600/30',
+  },
+};

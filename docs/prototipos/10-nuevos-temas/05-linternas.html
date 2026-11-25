@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>05 · Linternas (灯笼) · China</title>
+  <style>
+    :root { --noche: #120d19; --farol: #d93829; --ambar: #ffb347; --crema: #fff3e0; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: radial-gradient(circle at 70% 20%, #2b1420, var(--noche) 65%); color: var(--crema); font-family: system-ui, sans-serif; height: 100vh; display: flex; flex-direction: column; }
+    .nav { height: 52px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px; border-bottom: 1px solid rgba(255,179,71,.2); }
+    .nav button { background: none; border: 0; color: #b79ea8; padding: 6px 14px; cursor: pointer; border-radius: 999px; }
+    .nav button.on { background: var(--farol); color: #fff; }
+    main { flex: 1; overflow: auto; padding: 28px 38px; }
+    .vista { display: none; max-width: 1060px; margin: 0 auto; }
+    .vista.on { display: block; }
+    .cielo { display: flex; justify-content: space-between; align-items: center; min-height: 430px; gap: 40px; }
+    .faroles { display: flex; gap: 26px; align-items: flex-start; }
+    .farol {
+      width: 96px; height: 128px; border-radius: 44px; background: radial-gradient(circle at 50% 45%, var(--ambar), var(--farol) 65%, #7c1810);
+      box-shadow: 0 0 42px rgba(255,130,50,.45); display: grid; place-items: center; font-size: 32px; color: #fff7e6;
+      border-top: 6px solid #2b1810; border-bottom: 6px solid #2b1810;
+    }
+    .rio { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .reflejo { background: rgba(255,255,255,.04); border: 1px solid rgba(255,179,71,.28); border-radius: 18px; padding: 18px; box-shadow: 0 8px 26px rgba(217,56,41,.14); }
+    .reflejo strong { display: block; color: var(--ambar); font-size: 16px; margin-bottom: 4px; }
+    .dock { height: 70px; background: rgba(12,8,16,.9); border-top: 1px solid rgba(255,179,71,.22); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <strong>🏮 灯笼 · FESTIVAL DE LINTERNAS</strong>
+    <nav><button class="on" data-v="home">Cielo</button><button data-v="lib">Río nocturno</button></nav>
+  </header>
+  <main>
+    <section class="vista on" id="home">
+      <div class="cielo">
+        <div>
+          <small style="color:var(--ambar);letter-spacing:.18em">FESTIVAL YUANXIAO · NOCHE CÁLIDA</small>
+          <h1 style="font-size:46px;margin:10px 0">Luces rojas sobre el río</h1>
+          <p style="color:#ccb9c4;max-width:450px;line-height:1.8">Oscuridad aterciopelada con resplandor ámbar y faroles flotantes. Pensado para escuchar música de noche sin fatiga visual.</p>
+          <button onclick="ir('lib')" style="background:var(--ambar);color:#1b0f12;border:0;padding:11px 22px;border-radius:999px;font-weight:700;cursor:pointer">Ver tarjetas luminosas →</button>
+        </div>
+        <div class="faroles">
+          <div class="farol" style="margin-top:34px">福</div>
+          <div class="farol">樂</div>
+          <div class="farol" style="margin-top:52px">夜</div>
+        </div>
+      </div>
+    </section>
+    <section class="vista" id="lib">
+      <div class="rio">
+        <div class="reflejo"><strong>Noche en Pingxi</strong><small style="color:#b79ea8">Taipei Strings · 4:08</small></div>
+        <div class="reflejo"><strong>Río Qinhuai</strong><small style="color:#b79ea8">Nanjing Folk · 3:51</small></div>
+        <div class="reflejo"><strong>Farol de Seda</strong><small style="color:#b79ea8">Zhou Lin · 4:33</small></div>
+        <div class="reflejo"><strong>Mercado Nocturno</strong><small style="color:#b79ea8">Lo-Fi Canton · 2:57</small></div>
+        <div class="reflejo"><strong>Reflejo Ámbar</strong><small style="color:#b79ea8">Xiao Mei · 3:44</small></div>
+        <div class="reflejo"><strong>Medianoche Lunar</strong><small style="color:#b79ea8">Guilin Ambient · 5:10</small></div>
+      </div>
+    </section>
+  </main>
+  <footer class="dock">
+    <div><strong style="color:var(--ambar)">Río Qinhuai</strong> · <small style="color:#b79ea8">Nanjing Folk</small></div>
+    <div>◀◀ &nbsp; ▶ &nbsp; ▶▶</div>
+  </footer>
+  <script>
+    function ir(id) {
+      document.querySelectorAll('.vista').forEach((v) => v.classList.remove('on'));
+      document.getElementById(id).classList.add('on');
+      document.querySelectorAll('.nav button').forEach((b) => b.classList.toggle('on', b.dataset.v === id));
+    }
+    document.querySelectorAll('.nav button').forEach((b) => (b.onclick = () => ir(b.dataset.v)));
+  </script>
+</body>
+</html>

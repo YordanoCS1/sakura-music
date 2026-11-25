@@ -22,6 +22,11 @@ const ARQUETIPOS: { id: Arquetipo; nombre: string }[] = [
   { id: 'ghost', nombre: 'Fantasmas · etéreo' },
   { id: 'samurai', nombre: 'Samurái · lacado' },
   { id: 'kawaii', nombre: 'Kawaii · pastel' },
+  { id: 'sakura', nombre: 'Árbol de Sakura · hanami' },
+  { id: 'loto', nombre: 'Loto Imperial · tríptico' },
+  { id: 'ukiyo', nombre: 'La Gran Ola · ukiyo-e' },
+  { id: 'vinilo', nombre: 'Tocadiscos 3D · vinilo' },
+  { id: 'karesansui', nombre: 'Karesansui · arena zen' },
 ];
 
 function canal(hex: string, indice: number) {

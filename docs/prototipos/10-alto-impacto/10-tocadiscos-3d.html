@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>10 · Tocadiscos Monumental 3D</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; height: 100vh; overflow: hidden; font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #141210; color: #f6f2eb; display: grid; grid-template-columns: 46% 54%;
+    }
+    .plato-lado {
+      background: linear-gradient(145deg, #25211c, #12100e); border-right: 2px solid #352e27;
+      display: grid; place-items: center; position: relative; padding: 30px;
+    }
+    .vinilo {
+      width: 390px; height: 390px; border-radius: 50%;
+      background: repeating-radial-gradient(circle, #141414 0 3px, #222 3px 5px);
+      display: grid; place-items: center; box-shadow: 0 24px 60px rgba(0,0,0,.75);
+      animation: girar 7s linear infinite;
+    }
+    .etiqueta { width: 128px; height: 128px; border-radius: 50%; background: radial-gradient(circle, #ff5e3a, #b82914); display: grid; place-items: center; text-align: center; font-weight: 800; color: #fff; }
+    @keyframes girar { to { transform: rotate(360deg); } }
+    .brazo {
+      position: absolute; right: 48px; top: 48px; width: 16px; height: 240px;
+      background: linear-gradient(90deg, #d1d5db, #6b7280); border-radius: 8px;
+      transform: rotate(22deg); transform-origin: top center; box-shadow: 0 10px 20px rgba(0,0,0,.5);
+    }
+    .fundas-lado { padding: 42px 48px; display: flex; flex-direction: column; justify-content: center; gap: 18px; perspective: 900px; }
+    .funda {
+      background: #201c18; border: 1px solid #3d352d; padding: 18px 24px; border-radius: 10px;
+      display: flex; justify-content: space-between; align-items: center;
+      transform: rotateY(-8deg); transition: transform .25s, border-color .25s; cursor: pointer;
+    }
+    .funda:hover, .funda.on { transform: rotateY(0deg) translateX(12px); border-color: #ff5e3a; background: #29231d; }
+  </style>
+</head>
+<body>
+  <section class="plato-lado">
+    <div class="brazo"></div>
+    <div class="vinilo">
+      <div class="etiqueta"><div>SIDE A<br>33 RPM</div></div>
+    </div>
+    <div style="position:absolute;bottom:24px;left:30px;right:30px;display:flex;justify-content:space-between;align-items:center">
+      <div><strong>Tokyo Jazz Vinyl</strong> · <small style="color:#a89f94">2:34 / 4:48</small></div>
+      <div style="color:#ff5e3a;font-weight:bold">◀◀ &nbsp; ⏸ &nbsp; ▶▶</div>
+    </div>
+  </section>
+
+  <section class="fundas-lado">
+    <small style="color:#ff5e3a;letter-spacing:.2em">ESTANTERÍA ANALÓGICA 3D</small>
+    <h1 style="margin:0 0 8px;font-size:34px">Fundas de Vinilo</h1>
+    <div class="funda on"><div><strong>01 · Tokyo Jazz Vinyl</strong><div style="font-size:12px;color:#a89f94">Ryo Fukui · 4:48</div></div><span>● SONANDO</span></div>
+    <div class="funda"><div><strong>02 · Blue Note Shibuya</strong><div style="font-size:12px;color:#a89f94">Quartet 77 · 5:12</div></div><span>33 RPM</span></div>
+    <div class="funda"><div><strong>03 · Vinyl Rain</strong><div style="font-size:12px;color:#a89f94">Nujabes Tribute · 3:59</div></div><span>33 RPM</span></div>
+    <div class="funda"><div><strong>04 · Analog Sunset</strong><div style="font-size:12px;color:#a89f94">Casiopea · 4:21</div></div><span>45 RPM</span></div>
+  </section>
+</body>
+</html>

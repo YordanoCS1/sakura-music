@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>06 · Estanque Koi (錦鯉) · Naturaleza</title>
+  <style>
+    :root { --agua: #0c2430; --onda: #53b8c9; --koi: #f26430; --espuma: #e6f4f7; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--agua); color: var(--espuma); font-family: system-ui, sans-serif; height: 100vh; display: flex; flex-direction: column; }
+    .nav { height: 52px; border-bottom: 1px solid rgba(83,184,201,.25); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; }
+    .nav button { background: none; border: 1px solid rgba(83,184,201,.3); color: #9ad1db; padding: 6px 14px; border-radius: 999px; cursor: pointer; margin-left: 6px; }
+    .nav button.on { background: var(--koi); border-color: var(--koi); color: #fff; font-weight: 600; }
+    main { flex: 1; overflow: auto; padding: 30px 40px; background: radial-gradient(circle at 25% 30%, #153c4d, var(--agua) 70%); }
+    .vista { display: none; max-width: 1060px; margin: 0 auto; }
+    .vista.on { display: block; }
+    .estanque { display: grid; grid-template-columns: 320px 1fr; gap: 40px; align-items: center; min-height: 430px; }
+    .ondas {
+      width: 300px; height: 300px; border-radius: 50%; border: 2px solid rgba(83,184,201,.35);
+      display: grid; place-items: center; position: relative;
+      box-shadow: 0 0 0 24px rgba(83,184,201,.08), 0 0 0 50px rgba(83,184,201,.04);
+    }
+    .pez { width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, var(--koi) 45%, #fff 45%, #fff 70%, #1b1b1b 70%); display: grid; place-items: center; font-size: 38px; box-shadow: 0 10px 28px rgba(0,0,0,.35); }
+    .nenufares { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    .nenufar { background: rgba(19, 53, 68, .75); border: 1px solid rgba(83,184,201,.3); border-radius: 26px; padding: 20px; text-align: center; }
+    .nenufar .circ { width: 96px; height: 96px; margin: 0 auto 12px; border-radius: 50%; border: 3px solid var(--onda); background: radial-gradient(circle, var(--koi), #8c2f14); display: grid; place-items: center; font-size: 24px; }
+    .dock { height: 70px; background: #081922; border-top: 1px solid rgba(83,184,201,.25); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <strong>錦鯉 · ESTANQUE KOI</strong>
+    <nav><button class="on" data-v="home">Estanque</button><button data-v="lib">Nenúfares</button></nav>
+  </header>
+  <main>
+    <section class="vista on" id="home">
+      <div class="estanque">
+        <div class="ondas"><div class="pez">鯉</div></div>
+        <div>
+          <small style="color:var(--onda);letter-spacing:.18em">NATURALEZA · JARDÍN DE AGUA</small>
+          <h1 style="font-size:44px;margin:10px 0">Ondas suaves y color bermellón</h1>
+          <p style="color:#9ec4ce;line-height:1.8;max-width:460px">Azul profundo de estanque con anillos concéntricos y portadas circulares como hojas de nenúfar flotando en el agua.</p>
+          <button onclick="ir('lib')" style="background:var(--koi);color:#fff;border:0;padding:11px 22px;border-radius:999px;font-weight:600;cursor:pointer">Explorar nenúfares →</button>
+        </div>
+      </div>
+    </section>
+    <section class="vista" id="lib">
+      <div class="nenufares">
+        <div class="nenufar"><div class="circ">波</div><strong>Ondas en Kyoto</strong><div style="color:#8bb9c4;font-size:12px">Kenji Sato · 3:50</div></div>
+        <div class="nenufar"><div class="circ">水</div><strong>Agua Clara</strong><div style="color:#8bb9c4;font-size:12px">Natsu · 4:14</div></div>
+        <div class="nenufar"><div class="circ">鯉</div><strong>Koi Blanco</strong><div style="color:#8bb9c4;font-size:12px">Hana Trio · 3:38</div></div>
+        <div class="nenufar"><div class="circ">蓮</div><strong>Loto al Alba</strong><div style="color:#8bb9c4;font-size:12px">Mizu Ambient · 5:01</div></div>
+      </div>
+    </section>
+  </main>
+  <footer class="dock">
+    <div><strong style="color:var(--koi)">Ondas en Kyoto</strong> · <small style="color:#8bb9c4">Kenji Sato</small></div>
+    <div>◀◀ &nbsp; ▶ &nbsp; ▶▶</div>
+  </footer>
+  <script>
+    function ir(id) {
+      document.querySelectorAll('.vista').forEach((v) => v.classList.remove('on'));
+      document.getElementById(id).classList.add('on');
+      document.querySelectorAll('.nav button').forEach((b) => b.classList.toggle('on', b.dataset.v === id));
+    }
+    document.querySelectorAll('.nav button').forEach((b) => (b.onclick = () => ir(b.dataset.v)));
+  </script>
+</body>
+</html>

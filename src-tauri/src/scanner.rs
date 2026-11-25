@@ -111,6 +111,33 @@ fn write_atomic_with_retries(path: &Path, bytes: &[u8], attempts: u32) -> std::i
     Err(last_err.unwrap_or_else(|| std::io::Error::other("la escritura atómica falló")))
 }
 
+fn ensure_cover_thumbnail(data: &[u8], hash: u128) {
+    write_cover_thumbnail(data, &paths::cover_thumbs_dir(), hash);
+}
+
+fn write_cover_thumbnail(data: &[u8], thumbs_dir: &Path, hash: u128) {
+    let thumb_path = thumbs_dir.join(format!("{hash:x}.jpg"));
+    if thumb_path.exists() {
+        return;
+    }
+    let Ok(img) = image::load_from_memory(data) else {
+        return;
+    };
+    let thumb = if img.width() > 256 || img.height() > 256 {
+        img.thumbnail(256, 256)
+    } else {
+        img
+    };
+    let mut buf = std::io::Cursor::new(Vec::new());
+    if thumb
+        .to_rgb8()
+        .write_to(&mut buf, image::ImageFormat::Jpeg)
+        .is_ok()
+    {
+        let _ = write_atomic(&thumb_path, buf.get_ref());
+    }
+}
+
 fn extract_cover_art(tag: Option<&lofty::tag::Tag>, parent_dir: &Path) -> Option<String> {
     // 1. Intentar la portada incrustada en el archivo y guardarla en caché.
     // Elegir la más grande: los tags pueden traer una miniatura (64x64)
@@ -126,6 +153,7 @@ fn extract_cover_art(tag: Option<&lofty::tag::Tag>, parent_dir: &Path) -> Option
             if !cover_path.exists() {
                 let _ = write_atomic(&cover_path, data);
             }
+            ensure_cover_thumbnail(data, hash);
             if cover_path.exists() {
                 return Some(cover_path.to_string_lossy().to_string());
             }
@@ -149,6 +177,9 @@ fn extract_cover_art(tag: Option<&lofty::tag::Tag>, parent_dir: &Path) -> Option
     ] {
         let p = parent_dir.join(candidate);
         if p.exists() {
+            if let Ok(data) = std::fs::read(&p) {
+                ensure_cover_thumbnail(&data, fnv1a_128(&data));
+            }
             return Some(p.to_string_lossy().to_string());
         }
     }
@@ -648,6 +679,35 @@ mod tests {
             .filter(|entry| entry.file_name().to_string_lossy().ends_with(".tmp"))
             .collect();
         assert!(leftovers.is_empty(), "quedaron temporales");
+
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn genera_miniatura_de_portada_en_covers_thumbs() {
+        let dir = std::path::PathBuf::from("target").join(format!(
+            "sakura-thumb-{}-{}",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ));
+        std::fs::create_dir_all(&dir).unwrap();
+
+        let img = image::RgbaImage::from_pixel(512, 512, image::Rgba([244, 63, 130, 255]));
+        let mut png_bytes = std::io::Cursor::new(Vec::new());
+        image::DynamicImage::ImageRgba8(img)
+            .write_to(&mut png_bytes, image::ImageFormat::Png)
+            .unwrap();
+        let data = png_bytes.into_inner();
+        let hash = fnv1a_128(&data);
+
+        write_cover_thumbnail(&data, &dir, hash);
+        let thumb_path = dir.join(format!("{hash:x}.jpg"));
+        assert!(thumb_path.exists());
+        let decoded = image::open(&thumb_path).unwrap();
+        assert!(decoded.width() <= 256 && decoded.height() <= 256);
 
         let _ = std::fs::remove_dir_all(&dir);
     }

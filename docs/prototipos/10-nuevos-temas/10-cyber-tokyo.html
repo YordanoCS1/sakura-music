@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>10 · Neo-Tokyo 2099 (電脳) · Anime</title>
+  <style>
+    :root { --asfalto: #07060f; --magenta: #ff2a85; --cian: #00f0ff; --texto: #f5f7ff; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--asfalto); color: var(--texto); font-family: system-ui, sans-serif; height: 100vh; display: flex; flex-direction: column; }
+    .nav { height: 54px; background: #0c0a1a; border-bottom: 1px solid rgba(0,240,255,.35); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; }
+    .nav b { color: var(--cian); text-shadow: 0 0 12px rgba(0,240,255,.6); letter-spacing: .14em; }
+    .nav button { background: transparent; border: 1px solid rgba(255,42,133,.4); color: #c4c9e2; padding: 6px 14px; cursor: pointer; margin-left: 6px; }
+    .nav button.on { background: var(--magenta); border-color: var(--magenta); color: #fff; box-shadow: 0 0 16px rgba(255,42,133,.6); }
+    main {
+      flex: 1; overflow: auto; padding: 30px 40px;
+      background: linear-gradient(135deg, rgba(255,42,133,.12), transparent 45%), linear-gradient(315deg, rgba(0,240,255,.12), transparent 50%), var(--asfalto);
+    }
+    .vista { display: none; max-width: 1060px; margin: 0 auto; }
+    .vista.on { display: block; }
+    .valla { display: grid; grid-template-columns: 1fr 240px; gap: 34px; align-items: center; min-height: 430px; }
+    .neon-box { border: 2px solid var(--cian); padding: 28px; box-shadow: 0 0 28px rgba(0,240,255,.22), inset 0 0 24px rgba(255,42,133,.12); background: rgba(12,10,26,.85); }
+    .kanji-col { writing-mode: vertical-rl; font-size: 56px; font-weight: 800; color: var(--magenta); text-shadow: 0 0 20px rgba(255,42,133,.7); justify-self: center; }
+    .tarjetas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .cyber-card { background: #100e20; border: 1px solid rgba(0,240,255,.35); padding: 18px; border-left: 4px solid var(--magenta); }
+    .cyber-card strong { display: block; color: var(--cian); margin-bottom: 4px; }
+    .dock { height: 70px; background: #0c0a1a; border-top: 1px solid var(--magenta); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; box-shadow: 0 -6px 24px rgba(255,42,133,.18); }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <b>電脳 // NEO-TOKYO 2099</b>
+    <nav><button class="on" data-v="home">Distrito</button><button data-v="lib">Señales</button></nav>
+  </header>
+  <main>
+    <section class="vista on" id="home">
+      <div class="valla">
+        <div class="neon-box">
+          <small style="color:var(--magenta);letter-spacing:.2em">ANIME CYBERPUNK · SHIBUYA LLUVIOSA</small>
+          <h1 style="font-size:44px;margin:10px 0">Neón sobre asfalto mojado</h1>
+          <p style="color:#b8bed9;line-height:1.8;max-width:460px">Tipografía vertical en kanji luminoso, contraste eléctrico magenta/cian y tarjetas de señal para synthwave, J-Rock y electrónica.</p>
+          <button onclick="ir('lib')" style="background:var(--cian);color:#07060f;border:0;padding:11px 22px;font-weight:800;cursor:pointer">CONECTAR SEÑALES →</button>
+        </div>
+        <div class="kanji-col">電脳都市</div>
+      </div>
+    </section>
+    <section class="vista" id="lib">
+      <div class="tarjetas">
+        <div class="cyber-card"><strong>Nightfall in Akihabara</strong><small style="color:#9da4c4">Synth Runner · 3:55</small></div>
+        <div class="cyber-card"><strong>Rain on Monorail</strong><small style="color:#9da4c4">Kenji 2099 · 4:18</small></div>
+        <div class="cyber-card"><strong>Ghost Protocol</strong><small style="color:#9da4c4">Kusanagi · 4:40</small></div>
+        <div class="cyber-card"><strong>Shibuya Crossing</strong><small style="color:#9da4c4">Neon Pulse · 3:32</small></div>
+        <div class="cyber-card"><strong>Chrome Sakura</strong><small style="color:#9da4c4">Midori · 4:07</small></div>
+        <div class="cyber-card"><strong>Subway 02:14</strong><small style="color:#9da4c4">CityPop FM · 3:49</small></div>
+      </div>
+    </section>
+  </main>
+  <footer class="dock">
+    <div><strong style="color:var(--cian)">Rain on Monorail</strong> · <small style="color:#9da4c4">Kenji 2099</small></div>
+    <div style="color:var(--magenta)">◀◀ &nbsp; ▶ &nbsp; ▶▶</div>
+  </footer>
+  <script>
+    function ir(id) {
+      document.querySelectorAll('.vista').forEach((v) => v.classList.remove('on'));
+      document.getElementById(id).classList.add('on');
+      document.querySelectorAll('.nav button').forEach((b) => b.classList.toggle('on', b.dataset.v === id));
+    }
+    document.querySelectorAll('.nav button').forEach((b) => (b.onclick = () => ir(b.dataset.v)));
+  </script>
+</body>
+</html>

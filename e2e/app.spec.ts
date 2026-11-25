@@ -857,10 +857,30 @@ test('la galería de temas aplica una apariencia', async ({ page }) => {
 
   const galeria = page.getByRole('dialog', { name: 'Galería de temas' });
   await expect(galeria).toBeVisible();
-  await expect(galeria.locator('.galeria-tema')).toHaveCount(14);
+  await expect(galeria.locator('.galeria-tema')).toHaveCount(19);
   await galeria.locator('.galeria-tema', { hasText: 'Manga' }).click();
   await expect(page.locator('.app-shell')).toHaveAttribute('data-skin', 'manga');
   await expect(galeria).toHaveCount(0);
+});
+
+test('los cinco temas nuevos conservan home y biblioteca propias', async ({ page }) => {
+  const temas = [
+    { id: 'sakura', home: '.sakura-taiju-home', lib: '.sakura-library' },
+    { id: 'loto', home: '.loto-triptico-home', lib: '.loto-library' },
+    { id: 'ukiyo', home: '.ukiyo-ola-home', lib: '.ukiyo-library' },
+    { id: 'vinilo', home: '.vinilo-3d-home', lib: '.vinilo-library' },
+    { id: 'karesansui', home: '.karesansui-home', lib: '.karesansui-library' },
+  ];
+  for (const tema of temas) {
+    await page.addInitScript((id) => localStorage.setItem('sakura_theme', id), tema.id);
+    await page.goto('/');
+    await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });
+    await expect(page.locator('.app-shell')).toHaveAttribute('data-skin', tema.id);
+    await page.getByRole('tab', { name: /Inicio/ }).click();
+    await expect(page.locator(tema.home)).toBeVisible();
+    await page.getByRole('tab', { name: /Biblioteca/ }).click();
+    await expect(page.locator(tema.lib)).toBeVisible();
+  }
 });
 
 test('la pestaña de estadísticas resume la biblioteca', async ({ page }) => {
@@ -1175,16 +1195,20 @@ test('la transición de Swiss es rápida y continua', async ({ page }) => {
 
   // Medir el elemento es flaky: la clase panel-enter se retira al terminar.
   // Leemos la regla del CSS directamente.
-  const css = readFileSync('src/App.css', 'utf-8');
-  const regla = css
-    .split('\n')
-    .find(
-      (linea) => linea.includes("data-theme-transition='swiss'") && linea.includes('panel-enter'),
-    );
-  expect(regla).toBeDefined();
-  expect(regla).toContain('130ms');
-  expect(regla).toContain('cubic-bezier(.2,.7,.3,1)');
-  expect(regla).not.toContain('steps(');
+  const css = [
+    readFileSync('src/App.css', 'utf-8'),
+    readFileSync('src/themes/styles/shonen-ghost-samurai-kawaii.css', 'utf-8'),
+  ].join('\n');
+  const lineas = css.split('\n');
+  const indice = lineas.findIndex(
+    (linea) => linea.includes("data-theme-transition='swiss'") && linea.includes('panel-enter'),
+  );
+  expect(indice).toBeGreaterThanOrEqual(0);
+  const regla = lineas.slice(indice, indice + 3).join('\n');
+  const normalizada = regla.replace(/\s/g, '').replace(/(^|[,(])0\./g, '$1.');
+  expect(normalizada).toContain('130ms');
+  expect(normalizada).toContain('cubic-bezier(.2,.7,.3,1)');
+  expect(normalizada).not.toContain('steps(');
 });
 
 test('se pueden borrar temas personalizados', async ({ page }) => {

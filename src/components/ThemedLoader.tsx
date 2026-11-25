@@ -22,6 +22,11 @@ const VARIANTES: Partial<Record<ThemeMode, string>> = {
   samurai: 'sello',
   kawaii: 'latido',
   manga: 'tramado',
+  sakura: 'petalo',
+  loto: 'enso',
+  ukiyo: 'pincel',
+  vinilo: 'barras',
+  karesansui: 'enso',
 };
 
 export default function ThemedLoader({ theme, etiqueta, pequeno }: ThemedLoaderProps) {

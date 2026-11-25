@@ -269,3 +269,62 @@ fn ayuda() {
     println!("  help                        Muestra esta ayuda");
     println!("\nOpciones globales: --data <carpeta> (por defecto, src-tauri/.tauri_data)");
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn rgb_y_mezclar_calculan_colores_validos() {
+        assert_eq!(rgb("#ff8000"), (255, 128, 0));
+        assert_eq!(rgb("invalido"), (128, 128, 128));
+        assert_eq!(mezclar("#000000", (255, 255, 255), 0.5), "#808080");
+    }
+
+    #[test]
+    fn opcion_extrae_el_valor_siguiente_al_flag() {
+        let args = vec![
+            "--name".to_string(),
+            "Noche".to_string(),
+            "--accent".to_string(),
+            "#e11d48".to_string(),
+        ];
+        assert_eq!(opcion(&args, "--name").as_deref(), Some("Noche"));
+        assert_eq!(opcion(&args, "--accent").as_deref(), Some("#e11d48"));
+        assert_eq!(opcion(&args, "--bg"), None);
+    }
+
+    #[test]
+    fn comando_theme_escribe_css_con_tokens_esperados() {
+        let dir = std::path::PathBuf::from("target")
+            .join(format!("sakura_cli_theme_test_{}", std::process::id()));
+        let _ = std::fs::create_dir_all(&dir);
+        let out = dir.join("tema.css");
+        let args = vec![
+            "--name".to_string(),
+            "Sakura Test".to_string(),
+            "--bg".to_string(),
+            "#101014".to_string(),
+            "--accent".to_string(),
+            "#ec4899".to_string(),
+            "--out".to_string(),
+            out.to_string_lossy().to_string(),
+        ];
+
+        let res = comando_theme(&args);
+        assert!(res.is_ok());
+        let css = std::fs::read_to_string(&out).expect("el archivo CSS debe existir");
+        assert!(css.contains("[data-skin='sakura-test']"));
+        assert!(css.contains("--m3-surface:#101014"));
+        assert!(css.contains("--m3-primary:#ec4899"));
+        assert!(css.contains("--accent-500:"));
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn comandos_validan_argumentos_faltantes() {
+        assert!(comando_scan(&[]).is_err());
+        assert!(comando_search(&[]).is_err());
+        assert!(comando_import(&[]).is_err());
+    }
+}

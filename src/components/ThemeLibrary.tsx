@@ -63,7 +63,12 @@ export default function ThemeLibrary({
     theme !== 'samurai' &&
     theme !== 'kawaii' &&
     theme !== 'manga' &&
-    theme !== 'space'
+    theme !== 'space' &&
+    theme !== 'sakura' &&
+    theme !== 'loto' &&
+    theme !== 'ukiyo' &&
+    theme !== 'vinilo' &&
+    theme !== 'karesansui'
   ) {
     return null;
   }
@@ -1022,6 +1027,267 @@ export default function ThemeLibrary({
                   </small>
                 </button>
                 <div className="kawaii-acc">{acciones(track)}</div>
+              </article>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (theme === 'sakura') {
+    return (
+      <div className="sakura-library">
+        <header className="sakura-lib-cabecera">
+          <div>
+            <small>桜大樹 · RAMAS EN FLOR</small>
+            <h1>Biblioteca Primaveral</h1>
+          </div>
+          {navCarpetas}
+          <span className="sakura-lib-count">{total} flores</span>
+        </header>
+        {selectorCarpetas}
+        {vistaTracks.length === 0 ? (
+          vacio
+        ) : (
+          <div className="sakura-ramas-grid">
+            {vistaTracks.map((track) => (
+              <article
+                key={track.id}
+                data-track-id={track.id}
+                className={`sakura-flor-card ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+              >
+                <button
+                  type="button"
+                  className="sakura-flor-btn"
+                  onClick={() => onPlayTrack(track)}
+                  onDoubleClick={() => onPresentTrack?.(track)}
+                >
+                  <span className="sakura-flor-cover">
+                    {track.cover_url ? (
+                      <img src={getCoverSrc(track.cover_url)} alt="" />
+                    ) : (
+                      <span aria-hidden="true">🌸</span>
+                    )}
+                  </span>
+                  <span className="sakura-flor-info">
+                    <strong>{track.title}</strong>
+                    <small>
+                      {track.artist} · {track.duration_str}
+                    </small>
+                  </span>
+                </button>
+                <div className="sakura-flor-acc">{acciones(track)}</div>
+              </article>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (theme === 'loto') {
+    return (
+      <div className="loto-library">
+        <header className="loto-lib-cabecera">
+          <div>
+            <small>蓮 · PERGAMINO IMPERIAL</small>
+            <h1>Biblioteca de Seda</h1>
+          </div>
+          {navCarpetas}
+          <span className="loto-lib-count">{total} piezas</span>
+        </header>
+        {selectorCarpetas}
+        {vistaTracks.length === 0 ? (
+          vacio
+        ) : (
+          <div className="loto-pergamino">
+            {vistaTracks.map((track, i) => (
+              <article
+                key={track.id}
+                data-track-id={track.id}
+                className={`loto-fila ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+              >
+                <button
+                  type="button"
+                  className="loto-fila-btn"
+                  onClick={() => onPlayTrack(track)}
+                  onDoubleClick={() => onPresentTrack?.(track)}
+                >
+                  <span className="loto-num">{String(i + 1).padStart(2, '0')}</span>
+                  <span className="loto-cover">
+                    {track.cover_url ? (
+                      <img src={getCoverSrc(track.cover_url)} alt="" />
+                    ) : (
+                      <span aria-hidden="true">🪷</span>
+                    )}
+                  </span>
+                  <span className="loto-meta">
+                    <strong>{track.title}</strong>
+                    <small>
+                      {track.artist} · {track.album}
+                    </small>
+                  </span>
+                  <span className="loto-dur">{track.duration_str}</span>
+                </button>
+                <div className="loto-acc">{acciones(track)}</div>
+              </article>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (theme === 'ukiyo') {
+    return (
+      <div className="ukiyo-library">
+        <header className="ukiyo-lib-cabecera">
+          <span className="ukiyo-sello">波</span>
+          <div>
+            <small>富嶽三十六景 · XILOGRAFÍA</small>
+            <h1>Estampas Musicales</h1>
+          </div>
+          {navCarpetas}
+          <span className="ukiyo-lib-count">{total} láminas</span>
+        </header>
+        {selectorCarpetas}
+        {vistaTracks.length === 0 ? (
+          vacio
+        ) : (
+          <div className="ukiyo-estampas">
+            {vistaTracks.map((track) => (
+              <article
+                key={track.id}
+                data-track-id={track.id}
+                className={`ukiyo-estampa ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+              >
+                <button
+                  type="button"
+                  className="ukiyo-estampa-btn"
+                  onClick={() => onPlayTrack(track)}
+                  onDoubleClick={() => onPresentTrack?.(track)}
+                >
+                  <span className="ukiyo-cover">
+                    {track.cover_url ? (
+                      <img src={getCoverSrc(track.cover_url)} alt="" />
+                    ) : (
+                      <span aria-hidden="true">波</span>
+                    )}
+                  </span>
+                  <strong>{track.title}</strong>
+                  <small>
+                    {track.artist} · {track.duration_str}
+                  </small>
+                </button>
+                <div className="ukiyo-acc">{acciones(track)}</div>
+              </article>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (theme === 'vinilo') {
+    return (
+      <div className="vinilo-library">
+        <header className="vinilo-lib-cabecera">
+          <div>
+            <small>33 RPM · ESTANTERÍA ANALÓGICA</small>
+            <h1>Fundas de Vinilo</h1>
+          </div>
+          {navCarpetas}
+          <span className="vinilo-lib-count">{total} LPs</span>
+        </header>
+        {selectorCarpetas}
+        {vistaTracks.length === 0 ? (
+          vacio
+        ) : (
+          <div className="vinilo-estanteria">
+            {vistaTracks.map((track, i) => (
+              <article
+                key={track.id}
+                data-track-id={track.id}
+                className={`vinilo-funda-card ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+              >
+                <button
+                  type="button"
+                  className="vinilo-funda-btn"
+                  onClick={() => onPlayTrack(track)}
+                  onDoubleClick={() => onPresentTrack?.(track)}
+                >
+                  <span className="vinilo-cover">
+                    {track.cover_url ? (
+                      <img src={getCoverSrc(track.cover_url)} alt="" />
+                    ) : (
+                      <span aria-hidden="true">◉</span>
+                    )}
+                  </span>
+                  <span className="vinilo-meta">
+                    <strong>
+                      {String(i + 1).padStart(2, '0')} · {track.title}
+                    </strong>
+                    <small>
+                      {track.artist} · {track.album}
+                    </small>
+                  </span>
+                  <span className="vinilo-rpm">
+                    {activeTrack?.id === track.id ? '● SONANDO' : track.duration_str}
+                  </span>
+                </button>
+                <div className="vinilo-acc">{acciones(track)}</div>
+              </article>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (theme === 'karesansui') {
+    return (
+      <div className="karesansui-library">
+        <header className="karesansui-lib-cabecera">
+          <div>
+            <small>枯山水 · JARDÍN DE ARENA</small>
+            <h1>Piedras de Paso</h1>
+          </div>
+          {navCarpetas}
+          <span className="karesansui-lib-count">{total} piedras</span>
+        </header>
+        {selectorCarpetas}
+        {vistaTracks.length === 0 ? (
+          vacio
+        ) : (
+          <div className="karesansui-senda">
+            {vistaTracks.map((track) => (
+              <article
+                key={track.id}
+                data-track-id={track.id}
+                className={`karesansui-piedra ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+              >
+                <button
+                  type="button"
+                  className="karesansui-piedra-btn"
+                  onClick={() => onPlayTrack(track)}
+                  onDoubleClick={() => onPresentTrack?.(track)}
+                >
+                  <span className="karesansui-cover">
+                    {track.cover_url ? (
+                      <img src={getCoverSrc(track.cover_url)} alt="" />
+                    ) : (
+                      <span aria-hidden="true">石</span>
+                    )}
+                  </span>
+                  <span className="karesansui-meta">
+                    <strong>{track.title}</strong>
+                    <small>
+                      {track.artist} · {track.duration_str}
+                    </small>
+                  </span>
+                </button>
+                <div className="karesansui-acc">{acciones(track)}</div>
               </article>
             ))}
           </div>

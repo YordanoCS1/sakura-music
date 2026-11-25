@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>10 nuevos temas · Sakura Music</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 36px;
+      background: #0d0e11;
+      color: #f2f2f4;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+    header { max-width: 1320px; margin: 0 auto 28px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px; }
+    h1 { font-size: 32px; font-weight: 700; margin: 0 0 6px; letter-spacing: -0.02em; }
+    .sub { color: #9ca3af; font-size: 14px; margin: 0; }
+    .filtros { display: flex; gap: 8px; flex-wrap: wrap; }
+    .filtros button {
+      background: #181a20; border: 1px solid #2b2f3a; color: #cbd5e1;
+      padding: 7px 14px; border-radius: 999px; font-size: 12px; cursor: pointer;
+    }
+    .filtros button.on { background: #f43f82; border-color: #f43f82; color: #fff; font-weight: 600; }
+    .grid { max-width: 1320px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 22px; }
+    .card {
+      display: block; text-decoration: none; color: inherit;
+      border: 1px solid #272a34; border-radius: 10px; overflow: hidden;
+      background: #15171d; transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+    .card:hover { transform: translateY(-4px); border-color: #f43f82; box-shadow: 0 12px 30px rgba(0,0,0,.45); }
+    .vista { position: relative; height: 228px; overflow: hidden; background: #000; }
+    .vista iframe {
+      position: absolute; top: 0; left: 0; width: 1280px; height: 720px;
+      border: 0; transform: scale(0.305); transform-origin: top left; pointer-events: none;
+    }
+    .pie { padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .pie strong { display: block; font-size: 15px; margin-bottom: 2px; }
+    .pie small { color: #94a3b8; font: 12px/1.4 Consolas, monospace; }
+    .tag {
+      font-size: 10px; text-transform: uppercase; letter-spacing: .08em;
+      padding: 4px 8px; border-radius: 999px; background: #222632; color: #e2e8f0; white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>10 propuestas de tema · Sakura Music</h1>
+      <p class="sub">Naturaleza, cultura oriental (Corea, China, Japón) y anime. Hacé clic en cualquiera para probar Inicio, Biblioteca y Reproductor.</p>
+    </div>
+    <div class="filtros">
+      <button class="on" data-cat="todos">Todos (10)</button>
+      <button data-cat="oriente">China · Corea · Japón (5)</button>
+      <button data-cat="naturaleza">Naturaleza (3)</button>
+      <button data-cat="anime">Anime (3)</button>
+    </div>
+  </header>
+  <div class="grid" id="grid"></div>
+  <script>
+    const temas = [
+      ['01-celadon', '01 · Celadón (청자)', 'Corea · cerámica Goryeo, jade pálido y coral', 'oriente'],
+      ['02-hanok', '02 · Hanok (한옥)', 'Corea · madera cálida, papel hanji y tejas giwa', 'oriente'],
+      ['03-bamboo', '03 · Bambú (竹林)', 'China · cañas verdes, niebla y columnas', 'naturaleza'],
+      ['04-jade-imperial', '04 · Jade Imperial (玉玺)', 'China · laca negra, jade y oro imperial', 'oriente'],
+      ['05-linternas', '05 · Linternas (灯笼)', 'China · festival nocturno, faroles rojos y ámbar', 'oriente'],
+      ['06-koi', '06 · Estanque Koi (錦鯉)', 'Naturaleza · agua profunda, ondas y nenúfares', 'naturaleza'],
+      ['07-onsen', '07 · Onsen & Musgo (温泉)', 'Naturaleza · piedra volcánica, hinoki y vapor', 'naturaleza'],
+      ['08-mecha', '08 · Mecha HUD (機甲)', 'Anime · cabina táctica, naranja alerta y fósforo', 'anime'],
+      ['09-isekai', '09 · Grimorio Isekai (異世界)', 'Anime · pergamino, runas arcanas y gremio', 'anime'],
+      ['10-cyber-tokyo', '10 · Neo-Tokyo 2099 (電脳)', 'Anime · lluvia nocturna, neón magenta y cian', 'anime'],
+    ];
+    const grid = document.getElementById('grid');
+    function render(cat) {
+      grid.innerHTML = temas
+        .filter((t) => cat === 'todos' || t[3] === cat)
+        .map(([archivo, nombre, desc, c]) => `
+          <a class="card" href="${archivo}.html" target="_blank">
+            <div class="vista"><iframe src="${archivo}.html" loading="lazy"></iframe></div>
+            <div class="pie">
+              <div><strong>${nombre}</strong><small>${desc}</small></div>
+              <span class="tag">${c}</span>
+            </div>
+          </a>
+        `).join('');
+    }
+    render('todos');
+    document.querySelectorAll('.filtros button').forEach((btn) => {
+      btn.onclick = () => {
+        document.querySelectorAll('.filtros button').forEach((b) => b.classList.remove('on'));
+        btn.classList.add('on');
+        render(btn.dataset.cat);
+      };
+    });
+  </script>
+</body>
+</html>

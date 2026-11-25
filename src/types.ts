@@ -175,7 +175,12 @@ export type ThemeMode =
   | 'ghost'
   | 'samurai'
   | 'kawaii'
-  | 'manga';
+  | 'manga'
+  | 'sakura'
+  | 'loto'
+  | 'ukiyo'
+  | 'vinilo'
+  | 'karesansui';
 
 export interface ThemeOption {
   id: string;

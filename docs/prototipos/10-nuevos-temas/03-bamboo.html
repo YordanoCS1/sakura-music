@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>03 · Bambú (竹林) · Naturaleza</title>
+  <style>
+    :root { --bosque: #183028; --hoja: #7fb069; --niebla: #eef4ea; --tinta: #16241d; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--niebla); color: var(--tinta); font-family: system-ui, sans-serif; height: 100vh; display: flex; flex-direction: column; }
+    .nav { height: 50px; background: var(--bosque); color: var(--niebla); display: flex; align-items: center; justify-content: space-between; padding: 0 26px; }
+    .nav button { background: none; border: 0; color: #9db8aa; padding: 6px 14px; cursor: pointer; border-radius: 6px; }
+    .nav button.on { background: var(--hoja); color: var(--bosque); font-weight: 700; }
+    main { flex: 1; overflow: auto; padding: 28px 38px; background: linear-gradient(180deg, #eef4ea 0%, #dce8d5 100%); }
+    .vista { display: none; max-width: 1060px; margin: 0 auto; }
+    .vista.on { display: block; }
+    .home { display: grid; grid-template-columns: 220px 1fr; gap: 40px; align-items: center; min-height: 430px; }
+    .canas { display: flex; gap: 16px; height: 340px; align-items: flex-end; justify-content: center; }
+    .cana {
+      width: 28px; border-radius: 6px; background: linear-gradient(90deg, #4b7843, #7fb069, #3c6436);
+      display: flex; flex-direction: column; justify-content: space-evenly; padding: 12px 0;
+    }
+    .cana span { height: 3px; background: #264223; opacity: .7; }
+    .home h1 { font-size: 46px; margin: 8px 0 12px; color: var(--bosque); }
+    .btn { background: var(--bosque); color: #fff; border: 0; padding: 11px 22px; border-radius: 999px; cursor: pointer; }
+    .nudos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .col-bambu { border-left: 6px solid var(--hoja); background: rgba(255,255,255,.78); padding: 16px; border-radius: 0 14px 14px 0; display: flex; flex-direction: column; gap: 10px; }
+    .pista { padding: 10px 12px; border-bottom: 2px dashed #c4d7bc; display: flex; justify-content: space-between; align-items: center; }
+    .pista:last-child { border-bottom: 0; }
+    .dock { height: 68px; background: var(--bosque); color: var(--niebla); display: flex; align-items: center; justify-content: space-between; padding: 0 26px; }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div><strong>竹林 · BAMBÚ</strong></div>
+    <nav><button class="on" data-v="home">Bosque</button><button data-v="lib">Cañas</button></nav>
+  </header>
+  <main>
+    <section class="vista on" id="home">
+      <div class="home">
+        <div class="canas">
+          <div class="cana" style="height:260px"><span></span><span></span><span></span></div>
+          <div class="cana" style="height:330px"><span></span><span></span><span></span><span></span></div>
+          <div class="cana" style="height:290px"><span></span><span></span><span></span></div>
+        </div>
+        <div>
+          <small style="color:#4b7843;letter-spacing:.18em">NATURALEZA · ARASHIYAMA & SICHUAN</small>
+          <h1>Viento entre hojas de bambú</h1>
+          <p style="color:#42594c;line-height:1.8;max-width:460px">Columnas orgánicas divididas en nudos, niebla matinal y verde jade para sesiones largas de estudio o descanso.</p>
+          <button class="btn" onclick="ir('lib')">Ver biblioteca →</button>
+        </div>
+      </div>
+    </section>
+    <section class="vista" id="lib">
+      <div class="nudos">
+        <div class="col-bambu">
+          <strong style="color:var(--bosque)">RAMA 01 · MAÑANA</strong>
+          <div class="pista"><span>Niebla en Chengdu</span><small>3:40</small></div>
+          <div class="pista"><span>Rocío Verde</span><small>4:15</small></div>
+          <div class="pista"><span>Paso de Grulla</span><small>3:52</small></div>
+        </div>
+        <div class="col-bambu">
+          <strong style="color:var(--bosque)">RAMA 02 · LLUVIA</strong>
+          <div class="pista"><span>Gotas en el tallo</span><small>5:02</small></div>
+          <div class="pista"><span>Sendero Sagano</span><small>4:28</small></div>
+          <div class="pista"><span>Eco del valle</span><small>3:17</small></div>
+        </div>
+        <div class="col-bambu">
+          <strong style="color:var(--bosque)">RAMA 03 · NOCHE</strong>
+          <div class="pista"><span>Flauta de jade</span><small>4:45</small></div>
+          <div class="pista"><span>Sombra tranquila</span><small>3:59</small></div>
+          <div class="pista"><span>Cielo claro</span><small>4:11</small></div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="dock">
+    <div><strong>Sendero Sagano</strong> · <small style="color:#9db8aa">Arashiyama Acoustic</small></div>
+    <div>◀◀ &nbsp; ▶ &nbsp; ▶▶</div>
+  </footer>
+  <script>
+    function ir(id) {
+      document.querySelectorAll('.vista').forEach((v) => v.classList.remove('on'));
+      document.getElementById(id).classList.add('on');
+      document.querySelectorAll('.nav button').forEach((b) => b.classList.toggle('on', b.dataset.v === id));
+    }
+    document.querySelectorAll('.nav button').forEach((b) => (b.onclick = () => ir(b.dataset.v)));
+  </script>
+</body>
+</html>

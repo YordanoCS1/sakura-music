@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>07 · Tríptico Loto Imperial</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; height: 100vh; overflow: hidden; font-family: Georgia, serif; background: #14080c; color: #f8eed8; display: grid; grid-template-columns: 240px 1fr 340px; gap: 10px; padding: 14px; }
+    .panel { border: 2px solid #d4af37; padding: 26px; display: flex; flex-direction: column; justify-content: space-between; position: relative; }
+    .izq { background: linear-gradient(180deg, #5e0e1d, #2d070e); }
+    .centro { background: radial-gradient(circle at 50% 45%, #24131c, #0f070a 75%); align-items: center; text-align: center; }
+    .der { background: #180b10; }
+    .loto { font-size: 96px; filter: drop-shadow(0 0 32px rgba(212,175,55,.45)); }
+    .nav-v button { display: block; width: 100%; text-align: left; background: none; border: 0; border-bottom: 1px solid rgba(212,175,55,.25); color: #f8eed8; padding: 12px 4px; font: inherit; cursor: pointer; }
+    .nav-v button.on { color: #ffd970; font-weight: bold; }
+    .pista { padding: 12px 0; border-bottom: 1px solid rgba(212,175,55,.2); display: flex; justify-content: space-between; }
+  </style>
+</head>
+<body>
+  <section class="panel izq">
+    <div>
+      <small style="color:#ffd970;letter-spacing:.2em">TRÍPTICO IMPERIAL</small>
+      <h2 style="margin:8px 0 24px;font-weight:400">Palacio de Loto</h2>
+      <div class="nav-v">
+        <button class="on">I · Salón Carmesí</button>
+        <button>II · Biblioteca de Seda</button>
+        <button>III · Estanque</button>
+        <button>IV · Ajustes</button>
+      </div>
+    </div>
+    <div style="font-size:12px;color:#e0c389">SEDA & ORO · 142 PISTAS</div>
+  </section>
+
+  <section class="panel centro">
+    <small style="color:#ffd970;letter-spacing:.26em">SONANDO EN EL CENTRO DEL BIOMBO</small>
+    <div class="loto">🪷</div>
+    <div>
+      <h1 style="font-size:36px;font-weight:400;margin:0 0 8px">Loto de Medianoche</h1>
+      <p style="margin:0 0 18px;color:#cbb59a">Erhu & Orquesta Imperial · 4:36</p>
+      <div style="letter-spacing:10px;color:#ffd970;font-size:18px">◀◀ &nbsp; ⏸ &nbsp; ▶▶</div>
+    </div>
+  </section>
+
+  <section class="panel der">
+    <div>
+      <small style="color:#ffd970;letter-spacing:.2em">PERGAMINO DE PISTAS</small>
+      <div style="margin-top:16px">
+        <div class="pista"><span>01 · Danza de Seda</span><small>3:44</small></div>
+        <div class="pista"><span>02 · Loto de Medianoche</span><small>4:36</small></div>
+        <div class="pista"><span>03 · Jardín Prohibido</span><small>5:12</small></div>
+        <div class="pista"><span>04 · Dragón Dorado</span><small>4:05</small></div>
+        <div class="pista"><span>05 · Flauta de Bambú</span><small>3:29</small></div>
+      </div>
+    </div>
+    <div style="text-align:right;color:#d4af37;font-size:28px">蓮</div>
+  </section>
+</body>
+</html>

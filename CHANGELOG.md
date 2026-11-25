@@ -2,9 +2,13 @@
 
 Todos los cambios destacables de este proyecto se registran aquí. El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y el versionado, [Semantic Versioning](https://semver.org/lang/es/).
 
-## [Sin publicar]
+## [2.0.0] - 2026-11-25
 
 ### Agregado
+- **19 temas con identidad completa**: a los 14 originales se suman Árbol de Sakura, Loto Imperial, La Gran Ola, Tocadiscos 3D y Karesansui, con Home y biblioteca propias. Un módulo de realce añade atmósfera animada (pétalos, seda y oro, ola y halftone, plato giratorio, arena rastrillada), nav, reproductor, paneles, modales y presentación diferenciados para cada uno, respetando `prefers-reduced-motion`.
+- **CSS modular**: `App.css` se dividió en `src/styles/` y `src/themes/styles/`, con carga diferida (`lazy`) de modales y paneles y hooks separados para ajustes de tema, biblioteca y atajos.
+- **Miniaturas de carátulas (`covers/thumbs/`)**: al extraer carátulas embebidas o leer portadas locales en `scanner.rs`, se genera automáticamente una miniatura de hasta 256×256 px en `covers/thumbs/` para reducir el consumo de memoria en cuadrículas y mosaicos.
+- **Tests unitarios en `sakura-cli`**: cobertura para los helpers de color, parseo de flags, validación de argumentos y generación de CSS en `comando_theme`.
 - **Notificaciones nativas del sistema** al terminar una descarga: título, carátula y botón **Ver biblioteca** (Tauri notification plugin), con registro de acción y permiso al arrancar. El toast web sigue como respaldo.
 - **Presentación con identidad única por tema**: los 14 temas tienen diseño propio y exclusivo —consola ámbar, tinta sobre arroz, caligrafía con sello rojo, biombo dorado, washi con listones, origami plegado, rejilla suiza, luna estrellada, libro mayor, velocidad shōnen, bruma cian glitch, laca y oro samurái, pastel kawaii y viñeta manga— con fondos, tipografías, formas de carátula, tarjeta y decoración diferenciadas.
 - **Presentación autocontenida**: carrusel con las pistas del álbum, ficha de álbum (nº de pistas y duración total) con lista navegable, letras clicables con scroll suave, transición propia por tema al cambiar de pista, exportación de la tarjeta a PNG en Descargas (o en `exports/` de la carpeta de datos si no se puede) con un **diseño de póster** (carátula redondeada con sombra, luz del tema, título, artista, álbum, chips de metadatos y pie), aviso de la **ruta completa** y botón **Abrir imagen** (abre el PNG con la app por defecto); se puede elegir la carpeta de destino desde la barra de la presentación o desde Ajustes → Archivos, y se guarda en `localStorage`; la carátula se lee como data URL desde Rust para no contaminar el canvas y que `toDataURL` no falle; y atajos (`←/→` pistas, `F` favorito, `L` letras, `A` solo arte, `Esc` salir).
@@ -55,9 +59,12 @@ Todos los cambios destacables de este proyecto se registran aquí. El formato si
 - **Control remoto local** en el puerto `17342` y **CLI `sakura-cli`** para escaneo, búsqueda y generación de temas.
 - **Migraciones versionadas** con `PRAGMA user_version=2` (1 = FTS5 y disparadores, 2 = índices en artista/álbum/año/genero), respaldo automático `VACUUM INTO` con retención de 3 y PRAGMAs WAL + `synchronous=NORMAL` + `temp_store=MEMORY` + `foreign_keys=ON`.
 - **Benchmark de escaneo** `node scripts/benchmark_scan.mjs [cantidad]`: 10.000 pistas tardaron ~12,6 s en release en esta máquina; el CLI `scan` imprime los milisegundos.
-- **`npm run pipeline`** como comando único para todo lo que corre el CI: 60 unitarios Vitest, 33 E2E Playwright y 47 tests Rust.
+- **`npm run pipeline`** como comando único para todo lo que corre el CI: 84 unitarios Vitest, 33 E2E Playwright y 59 tests Rust (55 en `sakura_desktop_lib` y 4 en `sakura-cli`).
 
 ### Cambiado
+- **CSS modularizado:** `src/App.css` (~8.500 líneas) se dividió en 12 archivos temáticos y de componentes bajo `src/styles/` y `src/themes/styles/`, manteniendo el orden exacto de cascada.
+- **Desacoplamiento de `App.tsx`:** el estado de temas, biblioteca y atajos globales pasó a `useThemeSettings`, `useLibraryState` y `useAppShortcuts`, y las vistas secundarias/modales cargan con `React.lazy`.
+- **Herencia directa de arquetipo en temas importados:** `baseDelTema` siempre resuelve a uno de los 14 arquetipos propios, eliminando las vistas de respaldo duplicadas (`LibraryTab`, `LibraryToolbar`, `HomeTab`, `SearchTab`, `QueueTab`, `ZenTopNav`).
 - Los archivos descargados se nombran `Artista - Canción.opus`, sin el `[IDdeYouTube]`. Si ya existe, se agrega `(2)`, `(3)`… en vez de saltear la descarga; la misma URL repetida en la cola sí se rechaza con un aviso.
 - La biblioteca de **Estudio** pasó de una fila de datos a una **mesa de mezcla**: canales verticales con EQ de 3 bandas, fader con escala dB, medidor VU, pan, transporte y bus master, con las acciones rápidas visibles en cada canal.
 - El tema por defecto M3 Zen fue rediseñado como Estudio, con vistas propias de consola de mezcla; dejó de ser el tema genérico. Mantiene el id interno `space` y `data-theme="space"` fijo, y ahora también aplica `data-skin="space"`: los 14 temas oficiales son propios y la vista genérica queda sólo como fallback para temas importados.

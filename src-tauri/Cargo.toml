@@ -39,6 +39,7 @@ parking_lot = "0.12"
 # Verificación de las herramientas que se descargan a `bin/`.
 sha2 = "0.10"
 zip = { version = "2", default-features = false, features = ["deflate"] }
+image = { version = "0.25", default-features = false, features = ["jpeg", "png", "webp"] }
 
 [target.'cfg(windows)'.dependencies]
 windows-sys = { version = "0.61", features = [

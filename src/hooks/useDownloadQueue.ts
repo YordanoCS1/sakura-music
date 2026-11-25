@@ -4,7 +4,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { invoke } from '../lib/puente';
 import { listen } from '../lib/puente';
-import { notificarDescarga } from '../lib/notificaciones';
+import { notificarDescarga, pedirPermisoNotificaciones } from '../lib/notificaciones';
 import type { DownloadItem, DownloadProgressEvent } from '../types';
 import type { PersistedDownload } from '../lib/queue';
 import { toPersisted, fromPersisted } from '../lib/queue';
@@ -160,7 +160,7 @@ export function useDownloadQueue({
       window.dispatchEvent(new CustomEvent('sakura-enfocar-descarga', { detail: duplicada.id }));
       return;
     }
-    void import('../lib/notificaciones').then((m) => m.pedirPermisoNotificaciones());
+    void pedirPermisoNotificaciones();
     const jobId = `dl-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
     const destFolder = customFolder || downloadFolder || currentFolder || defaultMusicDir || '.';
     const newJob: DownloadItem = {

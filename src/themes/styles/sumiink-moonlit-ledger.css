@@ -1,0 +1,3198 @@
+/* ========================================================= */
+/* SUMI INK · pincelada blanca sobre negro                    */
+/* ========================================================= */
+.app-shell[data-skin='sumiink'] {
+  --m3-surface: #0c0c0c;
+  --m3-surface-card: #181818;
+  --m3-on-surface: #e8e5dd;
+  --m3-on-surface-muted: #9a968c;
+  --m3-primary: #e8e5dd;
+  --m3-primary-dim: #b8b5ae;
+  --space-text: #e8e5dd;
+  --space-muted: #9a968c;
+  --space-border: rgba(232, 229, 221, 0.16);
+  --accent-200: 60 60 60;
+  --accent-300: 90 90 90;
+  --accent-400: 130 130 130;
+  --accent-500: 232 229 221;
+  --accent-600: 200 197 189;
+  --accent-800: 150 147 139;
+  --accent-900: 120 117 109;
+  --accent-950: 20 20 20;
+  --tema-accent: #e8e5dd;
+  --tema-accent-soft: rgba(232, 229, 221, 0.08);
+  --tema-texto: #e8e5dd;
+  --tema-texto-suave: #9a968c;
+  --tema-linea: rgba(232, 229, 221, 0.16);
+  background: #0c0c0c !important;
+  color: #e8e5dd !important;
+}
+.app-shell[data-skin='sumiink'] .titlebar,
+.app-shell[data-skin='sumiink'] .zen-topnav,
+.app-shell[data-skin='sumiink'] .npr-shell {
+  background: #101010 !important;
+  border-color: rgba(232, 229, 221, 0.15) !important;
+  color: #e8e5dd !important;
+}
+.app-shell[data-skin='sumiink'] .glass-card {
+  background: #161616 !important;
+  border-color: rgba(232, 229, 221, 0.14) !important;
+  box-shadow: none !important;
+}
+.app-shell[data-skin='sumiink'] .gh-search,
+.app-shell[data-skin='sumiink'] .gh-search-input {
+  background: rgba(232, 229, 221, 0.05) !important;
+  color: #e8e5dd !important;
+}
+.sumiink-library {
+  padding: 6px 4px 60px;
+}
+.sumiink-lista {
+  border-top: 1px solid rgba(232, 229, 221, 0.22);
+  margin-top: 4px;
+}
+.sumiink-fila {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) minmax(120px, 0.8fr) 160px;
+  align-items: center;
+  padding: 15px 8px;
+  border-bottom: 1px solid rgba(232, 229, 221, 0.13);
+}
+.sumiink-fila:hover {
+  background: rgba(232, 229, 221, 0.05);
+}
+.sumiink-fila.is-active {
+  background: rgba(232, 229, 221, 0.08);
+}
+.sumiink-n {
+  font:
+    11px 'JetBrains Mono',
+    monospace;
+  color: #9a968c;
+}
+.sumiink-t {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 21px;
+  text-align: left;
+  color: #e8e5dd;
+  padding: 0;
+}
+.sumiink-a {
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  color: #9a968c;
+}
+.sumiink-final {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.sumiink-final small {
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  color: #9a968c;
+}
+.sumiink-home {
+  display: flex;
+  align-items: center;
+  gap: 50px;
+  min-height: calc(100vh - 150px);
+}
+.sumiink-trazo {
+  width: 130px;
+  height: 340px;
+  flex: none;
+  background: linear-gradient(180deg, transparent, #e8e5dd 18%, #e8e5dd 82%, transparent);
+  border-radius: 50% 45% 52% 48%/12% 10% 14% 12%;
+  transform: rotate(6deg);
+  box-shadow: 0 0 40px rgba(232, 229, 221, 0.1);
+}
+.sumiink-kicker {
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  letter-spacing: 0.3em;
+  color: #9a968c;
+}
+.sumiink-copy h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 64px;
+  font-weight: 400;
+  line-height: 1;
+  margin: 12px 0;
+}
+.sumiink-copy > p {
+  max-width: 400px;
+  line-height: 1.9;
+  color: #9a968c;
+}
+.sumiink-botones {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+}
+.sumiink-botones button {
+  border: 1px solid #e8e5dd;
+  background: transparent;
+  color: #e8e5dd;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 11px;
+}
+.sumiink-botones button:first-child {
+  background: #e8e5dd;
+  color: #0c0c0c;
+}
+.sumiink-dato {
+  margin-top: 22px;
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  color: #9a968c;
+}
+
+/* ========================================================= */
+/* MOONLIT · noche azul y luna                                */
+/* ========================================================= */
+.app-shell[data-skin='moonlit'] {
+  --m3-surface: #0b1324;
+  --m3-surface-card: #101c33;
+  --m3-on-surface: #dfe8f7;
+  --m3-on-surface-muted: #7f92b4;
+  --m3-primary: #8fb6e8;
+  --m3-primary-dim: #6a90c4;
+  --space-text: #dfe8f7;
+  --space-muted: #7f92b4;
+  --space-border: rgba(143, 182, 232, 0.24);
+  --accent-200: 30 50 82;
+  --accent-300: 45 72 116;
+  --accent-400: 80 120 175;
+  --accent-500: 143 182 232;
+  --accent-600: 110 150 205;
+  --accent-800: 70 105 155;
+  --accent-900: 45 70 110;
+  --accent-950: 11 19 36;
+  --tema-accent: #8fb6e8;
+  --tema-accent-soft: rgba(143, 182, 232, 0.08);
+  --tema-texto: #dfe8f7;
+  --tema-texto-suave: #7f92b4;
+  --tema-linea: rgba(143, 182, 232, 0.24);
+  background:
+    radial-gradient(circle at 80% 12%, rgba(143, 182, 232, 0.14), transparent 38%), #0b1324 !important;
+  color: #dfe8f7 !important;
+}
+.app-shell[data-skin='moonlit'] .titlebar,
+.app-shell[data-skin='moonlit'] .zen-topnav,
+.app-shell[data-skin='moonlit'] .npr-shell {
+  background: #0c1629 !important;
+  border-color: rgba(143, 182, 232, 0.2) !important;
+  color: #dfe8f7 !important;
+}
+.app-shell[data-skin='moonlit'] .glass-card {
+  background: #101c33 !important;
+  border-color: rgba(143, 182, 232, 0.2) !important;
+  box-shadow: none !important;
+}
+.app-shell[data-skin='moonlit'] .gh-search,
+.app-shell[data-skin='moonlit'] .gh-search-input {
+  background: rgba(143, 182, 232, 0.07) !important;
+  color: #dfe8f7 !important;
+}
+.moonlit-library {
+  padding: 6px 4px 60px;
+}
+.moonlit-tarjetas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 24px;
+  margin-top: 14px;
+}
+.moonlit-tarj {
+  position: relative;
+  padding: 14px;
+  border: 1px solid rgba(143, 182, 232, 0.3);
+  background: rgba(143, 182, 232, 0.05);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+.moonlit-tarj.is-active {
+  border-color: #8fb6e8;
+  background: rgba(143, 182, 232, 0.1);
+}
+.moonlit-play {
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: inherit;
+  text-align: left;
+  padding: 0;
+}
+.moonlit-portada {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 120px;
+  overflow: hidden;
+  background: rgba(143, 182, 232, 0.08);
+  color: #8fb6e8;
+  font-size: 26px;
+}
+.moonlit-portada img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.85) saturate(0.8);
+}
+.moonlit-play strong {
+  display: block;
+  margin-top: 12px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-weight: 400;
+}
+.moonlit-tarj > small {
+  display: block;
+  margin-top: 5px;
+  font:
+    9px 'JetBrains Mono',
+    monospace;
+  color: #7f92b4;
+  line-height: 1.6;
+}
+.moonlit-tarj .theme-row-actions {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+}
+.moonlit-home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: calc(100vh - 150px);
+}
+.moonlit-disco {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 35%, #fff, #8fb6e8);
+  box-shadow: 0 0 60px rgba(143, 182, 232, 0.35);
+  margin-bottom: 26px;
+}
+.moonlit-kicker {
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  letter-spacing: 0.3em;
+  color: #8fb6e8;
+}
+.moonlit-home h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 54px;
+  font-weight: 400;
+  margin: 18px 0 8px;
+}
+.moonlit-home > p {
+  max-width: 390px;
+  line-height: 1.9;
+  color: #7f92b4;
+}
+.moonlit-botones {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+}
+.moonlit-botones button {
+  border: 1px solid #8fb6e8;
+  background: transparent;
+  color: #8fb6e8;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 11px;
+}
+.moonlit-botones button:first-child {
+  background: #8fb6e8;
+  color: #0b1324;
+}
+.moonlit-dato {
+  margin-top: 22px;
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  color: #7f92b4;
+}
+
+/* ========================================================= */
+/* LEDGER · libro mayor y sellos                              */
+/* ========================================================= */
+.app-shell[data-skin='ledger'] {
+  --m3-surface: #f4eddc;
+  --m3-surface-card: #faf4e6;
+  --m3-on-surface: #33291d;
+  --m3-on-surface-muted: #6b5c46;
+  --m3-primary: #a33a2a;
+  --m3-primary-dim: #8a2d20;
+  --space-text: #33291d;
+  --space-muted: #6b5c46;
+  --space-border: #c9b99a;
+  --accent-200: 238 224 198;
+  --accent-300: 220 200 164;
+  --accent-400: 180 150 105;
+  --accent-500: 163 58 42;
+  --accent-600: 138 45 32;
+  --accent-800: 100 30 21;
+  --accent-900: 76 22 15;
+  --accent-950: 44 12 8;
+  --tema-accent: #a33a2a;
+  --tema-accent-soft: rgba(163, 58, 42, 0.08);
+  --tema-texto: #33291d;
+  --tema-texto-suave: #6b5c46;
+  --tema-linea: #c9b99a;
+  background:
+    repeating-linear-gradient(0deg, rgba(120, 95, 55, 0.04) 0 1px, transparent 1px 26px), #f4eddc !important;
+  color: #33291d !important;
+  font-family: 'IBM Plex Mono', 'Courier New', monospace !important;
+}
+.app-shell[data-skin='ledger'] .titlebar,
+.app-shell[data-skin='ledger'] .zen-topnav,
+.app-shell[data-skin='ledger'] .npr-shell {
+  background: #faf4e6 !important;
+  border-color: #c9b99a !important;
+  color: #33291d !important;
+}
+.app-shell[data-skin='ledger'] .glass-card {
+  background: #faf4e6 !important;
+  border-color: #c9b99a !important;
+  box-shadow: none !important;
+}
+.app-shell[data-skin='ledger'] .gh-search,
+.app-shell[data-skin='ledger'] .gh-search-input {
+  background: rgba(255, 255, 255, 0.6) !important;
+  color: #33291d !important;
+}
+.ledger-library {
+  padding: 6px 4px 60px;
+}
+.ledger-mayor {
+  border: 1px solid #33291d;
+  margin-top: 4px;
+}
+.ledger-fila {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) minmax(120px, 0.9fr) 190px;
+  align-items: center;
+  border-bottom: 1px solid #c9b99a;
+}
+.ledger-fila:last-child {
+  border: 0;
+}
+.ledger-fila > span,
+.ledger-fila > button {
+  padding: 11px 12px;
+  border-right: 1px solid #c9b99a;
+  font:
+    11px 'IBM Plex Mono',
+    'Courier New',
+    monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #33291d;
+}
+.ledger-fila > *:last-child {
+  border: 0;
+}
+.ledger-cab {
+  background: rgba(201, 185, 154, 0.3);
+  font-size: 9px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+.ledger-cab > span {
+  color: #6b5c46 !important;
+}
+.ledger-num {
+  color: #a33a2a !important;
+}
+.ledger-titulo {
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+}
+.ledger-fila.is-active {
+  background: rgba(163, 58, 42, 0.06);
+}
+.ledger-final {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.ledger-final > small {
+  border: 0 !important;
+  padding: 0 !important;
+  color: #a33a2a !important;
+  font-size: 9px !important;
+  letter-spacing: 0.08em;
+}
+.ledger-home {
+  display: flex;
+  align-items: center;
+  gap: 46px;
+  min-height: calc(100vh - 150px);
+}
+.ledger-diario {
+  width: min(560px, 70%);
+  padding: 44px;
+  border: 1px solid #33291d;
+  background: #faf4e6;
+  box-shadow:
+    inset 0 0 0 6px #f4eddc,
+    inset 0 0 0 7px #c9b99a;
+}
+.ledger-kicker {
+  font:
+    10px 'IBM Plex Mono',
+    'Courier New',
+    monospace;
+  letter-spacing: 0.2em;
+  color: #a33a2a;
+}
+.ledger-diario h1 {
+  font-family: 'IBM Plex Mono', 'Courier New', monospace;
+  font-size: 46px;
+  font-weight: 700;
+  line-height: 1.05;
+  margin: 12px 0;
+}
+.ledger-diario > p {
+  color: #6b5c46;
+  line-height: 1.9;
+  font-size: 12px;
+}
+.ledger-diario button {
+  border: 1px solid #a33a2a;
+  background: transparent;
+  color: #a33a2a;
+  padding: 10px 16px;
+  cursor: pointer;
+  font:
+    11px 'IBM Plex Mono',
+    'Courier New',
+    monospace;
+  margin-top: 18px;
+}
+.ledger-timbre {
+  width: 70px;
+  height: 70px;
+  flex: none;
+  border: 3px double #a33a2a;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #a33a2a;
+  font-size: 24px;
+  transform: rotate(-12deg);
+}
+
+/* Las vistas propias no muestran el selector genérico de 9 vistas. */
+.app-shell[data-skin='sumiink'] .lt-view-select,
+.app-shell[data-skin='moonlit'] .lt-view-select,
+.app-shell[data-skin='ledger'] .lt-view-select {
+  display: none !important;
+}
+
+/* Texto de los homes propios con color explícito (herencia del shell). */
+.app-shell[data-skin='sumiink'] .sumiink-home h1,
+.app-shell[data-skin='sumiink'] .sumiink-kicker,
+.app-shell[data-skin='sumiink'] .sumiink-dato,
+.app-shell[data-skin='sumiink'] .sumiink-botones button {
+  color: var(--tema-texto) !important;
+}
+.app-shell[data-skin='sumiink'] .sumiink-copy > p,
+.app-shell[data-skin='sumiink'] .sumiink-kicker,
+.app-shell[data-skin='sumiink'] .sumiink-dato {
+  color: var(--tema-texto-suave) !important;
+}
+.app-shell[data-skin='moonlit'] .moonlit-home h1,
+.app-shell[data-skin='moonlit'] .moonlit-kicker,
+.app-shell[data-skin='moonlit'] .moonlit-dato {
+  color: var(--tema-texto) !important;
+}
+.app-shell[data-skin='moonlit'] .moonlit-home > p,
+.app-shell[data-skin='moonlit'] .moonlit-dato {
+  color: var(--tema-texto-suave) !important;
+}
+.app-shell[data-skin='ledger'] .ledger-home h1,
+.app-shell[data-skin='ledger'] .ledger-kicker,
+.app-shell[data-skin='ledger'] .ledger-diario button {
+  color: var(--tema-texto) !important;
+}
+.app-shell[data-skin='ledger'] .ledger-kicker,
+.app-shell[data-skin='ledger'] .ledger-diario button {
+  color: var(--tema-accent) !important;
+}
+
+/* Cabecera y acciones compartidas por Sumi Ink, Moonlit y Ledger. */
+.app-shell[data-skin='sumiink'] .theme-library-head,
+.app-shell[data-skin='moonlit'] .theme-library-head,
+.app-shell[data-skin='ledger'] .theme-library-head {
+  border-bottom-color: var(--tema-linea) !important;
+}
+.app-shell[data-skin='sumiink'] .theme-library-nav button,
+.app-shell[data-skin='moonlit'] .theme-library-nav button,
+.app-shell[data-skin='ledger'] .theme-library-nav button,
+.app-shell[data-skin='sumiink'] .theme-folders button,
+.app-shell[data-skin='moonlit'] .theme-folders button,
+.app-shell[data-skin='ledger'] .theme-folders button {
+  background: var(--tema-accent-soft) !important;
+  border-color: var(--tema-linea) !important;
+  color: var(--tema-texto-suave) !important;
+}
+.app-shell[data-skin='sumiink'] .theme-library-nav button:hover,
+.app-shell[data-skin='moonlit'] .theme-library-nav button:hover,
+.app-shell[data-skin='ledger'] .theme-library-nav button:hover,
+.app-shell[data-skin='sumiink'] .theme-folders button:hover,
+.app-shell[data-skin='moonlit'] .theme-folders button:hover,
+.app-shell[data-skin='ledger'] .theme-folders button:hover {
+  color: var(--tema-accent) !important;
+}
+.app-shell[data-skin='sumiink'] .theme-library-nav button.is-active,
+.app-shell[data-skin='moonlit'] .theme-library-nav button.is-active,
+.app-shell[data-skin='ledger'] .theme-library-nav button.is-active {
+  background: var(--tema-accent) !important;
+  border-color: var(--tema-accent) !important;
+  color: var(--tema-texto) !important;
+}
+.app-shell[data-skin='ledger'] .theme-library-nav button.is-active {
+  color: #faf4e6 !important;
+}
+.app-shell[data-skin='sumiink'] .theme-library-count,
+.app-shell[data-skin='moonlit'] .theme-library-count,
+.app-shell[data-skin='ledger'] .theme-library-count {
+  color: var(--tema-texto-suave) !important;
+}
+.app-shell[data-skin='sumiink'] .theme-folders-label,
+.app-shell[data-skin='moonlit'] .theme-folders-label,
+.app-shell[data-skin='ledger'] .theme-folders-label,
+.app-shell[data-skin='sumiink'] .theme-folders button small,
+.app-shell[data-skin='moonlit'] .theme-folders button small,
+.app-shell[data-skin='ledger'] .theme-folders button small {
+  color: var(--tema-accent) !important;
+}
+.app-shell[data-skin='sumiink'] .theme-row-actions button,
+.app-shell[data-skin='moonlit'] .theme-row-actions button,
+.app-shell[data-skin='ledger'] .theme-row-actions button {
+  color: var(--tema-texto-suave) !important;
+}
+.app-shell[data-skin='sumiink'] .theme-row-actions button:hover,
+.app-shell[data-skin='moonlit'] .theme-row-actions button:hover,
+.app-shell[data-skin='ledger'] .theme-row-actions button:hover,
+.app-shell[data-skin='sumiink'] .theme-row-actions button.is-fav,
+.app-shell[data-skin='moonlit'] .theme-row-actions button.is-fav,
+.app-shell[data-skin='ledger'] .theme-row-actions button.is-fav {
+  color: var(--tema-accent) !important;
+}
+
+/* Contraste del chip activo en los temas de fondo oscuro. */
+.app-shell[data-skin='sumiink'] .theme-library-nav button.is-active {
+  color: #0c0c0c !important;
+}
+.app-shell[data-skin='moonlit'] .theme-library-nav button.is-active {
+  color: #0b1324 !important;
+}
+
+/* El botón principal de Sumi Ink va en negro sobre la pincelada clara. */
+.app-shell[data-skin='sumiink'] .sumiink-botones button:first-child {
+  color: #0c0c0c !important;
+}
+
+/* ========================================================= */
+/* CABECERAS DE BIBLIOTECA PROPIAS (una por tema)             */
+/* ========================================================= */
+
+/* SHOJI · sello rojo, rejilla y madera. */
+.shoji-cabecera {
+  display: grid;
+  grid-template-columns: 52px auto 1fr auto;
+  align-items: center;
+  gap: 18px;
+  padding: 0 0 18px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--tema-linea);
+}
+.shoji-cabecera-sello {
+  width: 46px;
+  height: 46px;
+  border: 2px solid #a8442f;
+  color: #a8442f;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+}
+.shoji-cabecera-tit small {
+  font:
+    9px 'JetBrains Mono',
+    monospace;
+  letter-spacing: 0.24em;
+  color: #a8442f;
+}
+.shoji-cabecera-tit h1 {
+  font:
+    400 40px 'Cormorant Garamond',
+    serif;
+  margin: 4px 0 0;
+}
+.shoji-cabecera-count {
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  color: var(--tema-texto-suave);
+  white-space: nowrap;
+}
+.shoji-cabecera .theme-library-nav {
+  justify-content: flex-end;
+}
+.tema-shoji .theme-folders button {
+  border-radius: 0;
+}
+
+/* ORIGAMI · pestaña plegada y esquina doblada. */
+.origami-cabecera {
+  position: relative;
+  display: grid;
+  grid-template-columns: 56px auto 1fr auto;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 18px 20px;
+  margin-bottom: 22px;
+  background: #fff;
+  box-shadow: 6px 8px 0 rgba(217, 84, 127, 0.12);
+}
+.origami-cabecera::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  border-left: 30px solid transparent;
+  border-bottom: 30px solid #f3c9d8;
+}
+.origami-cabecera-pestana {
+  width: 48px;
+  height: 48px;
+  background: #d9547f;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  clip-path: polygon(0 0, 100% 0, 100% 74%, 74% 100%, 0 100%);
+}
+.origami-cabecera-tit small {
+  font:
+    9px 'JetBrains Mono',
+    monospace;
+  letter-spacing: 0.2em;
+  color: #d9547f;
+}
+.origami-cabecera-tit h1 {
+  font:
+    300 38px 'Cormorant Garamond',
+    serif;
+  margin: 4px 0 0;
+}
+.origami-cabecera-count {
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  color: var(--tema-texto-suave);
+  white-space: nowrap;
+}
+.tema-origami .theme-folders button {
+  clip-path: polygon(0 0, 100% 0, 94% 100%, 0 100%);
+}
+
+/* SWISS · retícula estricta de 12 columnas. */
+.swiss-cabecera {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  align-items: end;
+  row-gap: 14px;
+  padding: 18px 0;
+  margin-bottom: 18px;
+  border-bottom: 2px solid #111;
+}
+.swiss-cabecera-id {
+  grid-column: 1/7;
+  grid-row: 1;
+  font:
+    10px 'Plus Jakarta Sans',
+    sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+}
+.swiss-cabecera h1 {
+  grid-column: 7/13;
+  grid-row: 1;
+  margin: 0;
+  text-align: right;
+  font-size: 40px;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+.swiss-cabecera .theme-library-nav {
+  grid-column: 1/10;
+  grid-row: 2;
+}
+.swiss-cabecera-count {
+  grid-column: 10/13;
+  grid-row: 2;
+  text-align: right;
+  font:
+    10px 'Plus Jakarta Sans',
+    sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+.tema-swiss .theme-folders {
+  border-top: 1px solid #111;
+  padding-top: 14px;
+}
+.tema-swiss .theme-folders button {
+  border-radius: 0;
+  text-transform: uppercase;
+}
+
+/* SUMI INK · titular serif y pincelada horizontal. */
+.sumiink-cabecera {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: 22px;
+  row-gap: 12px;
+  padding: 0 0 18px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--tema-linea);
+}
+.sumiink-cabecera-tit {
+  grid-column: 1/2;
+  grid-row: 1;
+}
+.sumiink-cabecera-tit small {
+  font:
+    9px 'JetBrains Mono',
+    monospace;
+  letter-spacing: 0.24em;
+  color: var(--tema-texto-suave);
+}
+.sumiink-cabecera-tit h1 {
+  font:
+    400 42px 'Cormorant Garamond',
+    serif;
+  margin: 4px 0 0;
+}
+.sumiink-cabecera-trazo {
+  grid-column: 2/3;
+  grid-row: 1;
+  height: 6px;
+  background: linear-gradient(90deg, transparent, #e8e5dd 20%, #e8e5dd 80%, transparent);
+  border-radius: 3px;
+  opacity: 0.55;
+}
+.sumiink-cabecera .theme-library-nav {
+  grid-column: 1/3;
+  grid-row: 2;
+}
+.sumiink-cabecera-count {
+  grid-column: 3/4;
+  grid-row: 1/3;
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  color: var(--tema-texto-suave);
+}
+.tema-sumiink .theme-folders button {
+  border-left: 2px solid #e8e5dd;
+  border-radius: 0;
+}
+
+/* MOONLIT · luna pequeña y resplandor azul. */
+.moonlit-cabecera {
+  display: grid;
+  grid-template-columns: 48px auto 1fr auto;
+  align-items: center;
+  gap: 18px;
+  padding: 0 0 18px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--tema-linea);
+}
+.moonlit-cabecera-luna {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 35%, #fff, #8fb6e8);
+  box-shadow: 0 0 18px rgba(143, 182, 232, 0.4);
+}
+.moonlit-cabecera-tit small {
+  font:
+    9px 'JetBrains Mono',
+    monospace;
+  letter-spacing: 0.24em;
+  color: #8fb6e8;
+}
+.moonlit-cabecera-tit h1 {
+  font:
+    400 38px 'Cormorant Garamond',
+    serif;
+  margin: 4px 0 0;
+}
+.moonlit-cabecera-count {
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  color: var(--tema-texto-suave);
+  white-space: nowrap;
+}
+.tema-moonlit .theme-folders button {
+  border-radius: 20px;
+}
+
+/* LEDGER · doble filete, sello y monoespacio. */
+.ledger-cabecera {
+  display: grid;
+  grid-template-columns: 54px auto 1fr auto;
+  align-items: center;
+  gap: 16px;
+  padding: 0 0 14px;
+  margin-bottom: 18px;
+  border-bottom: 3px double #33291d;
+}
+.ledger-cabecera-sello {
+  width: 44px;
+  height: 44px;
+  border: 2px double #a33a2a;
+  border-radius: 50%;
+  color: #a33a2a;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  transform: rotate(-10deg);
+}
+.ledger-cabecera-tit small {
+  font:
+    9px 'IBM Plex Mono',
+    'Courier New',
+    monospace;
+  letter-spacing: 0.2em;
+  color: #a33a2a;
+}
+.ledger-cabecera-tit h1 {
+  font:
+    700 32px 'IBM Plex Mono',
+    'Courier New',
+    monospace;
+  margin: 4px 0 0;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.ledger-cabecera-count {
+  font:
+    10px 'IBM Plex Mono',
+    'Courier New',
+    monospace;
+  color: var(--tema-texto-suave);
+  white-space: nowrap;
+}
+.tema-ledger .theme-folders button {
+  border-radius: 0;
+  font-family: 'IBM Plex Mono', 'Courier New', monospace;
+}
+
+/* El espacio que dejaba el toolbar genérico se aprovecha en las vistas propias. */
+.app-shell[data-skin='shoji'] .main-scroll-region,
+.app-shell[data-skin='origami'] .main-scroll-region,
+.app-shell[data-skin='swiss'] .main-scroll-region,
+.app-shell[data-skin='sumiink'] .main-scroll-region,
+.app-shell[data-skin='moonlit'] .main-scroll-region,
+.app-shell[data-skin='ledger'] .main-scroll-region {
+  padding-top: 28px !important;
+}
+
+/* ========================================================= */
+/* BARRA SUPERIOR PROPIA (reemplaza sidebar + cabecera global) */
+/* ========================================================= */
+.app-shell .app-rail-row.app-rail-column {
+  flex-direction: column !important;
+}
+
+.theme-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 52px;
+  flex: none;
+  padding: 0 26px;
+  border-bottom: 2px solid var(--tema-linea, rgba(0, 0, 0, 0.18));
+  background: var(--m3-surface-card, #fff);
+  color: var(--tema-texto, #111);
+  font-family: inherit;
+}
+.theme-nav-glifo {
+  font-size: 19px;
+  line-height: 1;
+  color: var(--tema-accent, #a8442f);
+}
+.theme-nav-name {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  white-space: nowrap;
+}
+.theme-nav-tabs {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: 20px;
+}
+.theme-nav-tabs button {
+  background: transparent;
+  border: 0;
+  padding: 7px 13px;
+  cursor: pointer;
+  font-size: 11px;
+  font-family: inherit;
+  color: var(--tema-texto-suave, #777);
+  white-space: nowrap;
+}
+.theme-nav-tabs button.is-active {
+  color: var(--tema-accent, #a8442f);
+  background: var(--tema-accent-soft, transparent);
+}
+.theme-nav-search {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid var(--tema-linea, rgba(0, 0, 0, 0.18));
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.4);
+}
+.theme-nav-search input {
+  background: transparent;
+  border: 0;
+  outline: 0;
+  width: 170px;
+  font-family: inherit;
+  font-size: 11px;
+  color: inherit;
+}
+.theme-nav-search input::placeholder {
+  color: var(--tema-texto-suave, #888);
+}
+.theme-nav-search button {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: inherit;
+  display: grid;
+  place-items: center;
+  padding: 0;
+}
+.theme-nav-count {
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  color: var(--tema-texto-suave, #777);
+  white-space: nowrap;
+}
+
+/* SHOJI · papel, madera y sello rojo. */
+.tema-shoji.theme-nav {
+  background: #f6f0e3;
+  border-bottom: 2px solid #b9a17d;
+  font-family: 'Cormorant Garamond', serif;
+}
+.tema-shoji .theme-nav-name {
+  font-weight: 400;
+  letter-spacing: 0.24em;
+  font-size: 15px;
+}
+.tema-shoji .theme-nav-tabs button {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 14px;
+  border-right: 1px solid rgba(90, 70, 45, 0.18);
+}
+.tema-shoji .theme-nav-tabs button.is-active {
+  color: #a8442f;
+  background: rgba(168, 68, 47, 0.07);
+}
+
+/* ORIGAMI · pestañas de papel plegado. */
+.tema-origami.theme-nav {
+  background: #fff8fa;
+  border-bottom: 1px solid #f3c9d8;
+}
+.tema-origami .theme-nav-tabs button {
+  background: #fdf0f4;
+  clip-path: polygon(0 0, 100% 0, 92% 100%, 0 100%);
+}
+.tema-origami .theme-nav-tabs button.is-active {
+  background: #d9547f;
+  color: #fff;
+}
+
+/* SWISS · retícula y Helvetica. */
+.tema-swiss.theme-nav {
+  background: #fff;
+  border-bottom: 2px solid #111;
+  font-family: 'Plus Jakarta Sans', Helvetica, sans-serif;
+}
+.tema-swiss .theme-nav-glifo {
+  color: #111;
+}
+.tema-swiss .theme-nav-tabs button {
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+}
+.tema-swiss .theme-nav-tabs button.is-active {
+  background: #111;
+  color: #fff;
+}
+.tema-swiss .theme-nav-search {
+  background: #fff;
+  border-color: #111;
+}
+
+/* SUMI INK · blanco sobre negro. */
+.tema-sumiink.theme-nav {
+  background: #101010;
+  border-bottom: 1px solid rgba(232, 229, 221, 0.18);
+  font-family: 'Cormorant Garamond', serif;
+}
+.tema-sumiink .theme-nav-name {
+  font-weight: 400;
+  letter-spacing: 0.3em;
+}
+.tema-sumiink .theme-nav-tabs button {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 14px;
+}
+.tema-sumiink .theme-nav-tabs button.is-active {
+  border-bottom: 2px solid #e8e5dd;
+  background: transparent;
+}
+.tema-sumiink .theme-nav-search {
+  background: rgba(232, 229, 221, 0.05);
+  border-color: rgba(232, 229, 221, 0.18);
+}
+
+/* MOONLIT · azul noche y luna. */
+.tema-moonlit.theme-nav {
+  background: #0c1629;
+  border-bottom: 1px solid rgba(143, 182, 232, 0.24);
+  font-family: 'Cormorant Garamond', serif;
+}
+.tema-moonlit .theme-nav-glifo {
+  text-shadow: 0 0 12px rgba(143, 182, 232, 0.7);
+}
+.tema-moonlit .theme-nav-tabs button {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 14px;
+}
+.tema-moonlit .theme-nav-tabs button.is-active {
+  border-bottom: 2px solid #8fb6e8;
+  background: transparent;
+}
+.tema-moonlit .theme-nav-search {
+  background: rgba(143, 182, 232, 0.07);
+  border-color: rgba(143, 182, 232, 0.24);
+  border-radius: 18px;
+}
+
+/* LEDGER · libro mayor a máquina. */
+.tema-ledger.theme-nav {
+  background: #faf4e6;
+  border-bottom: 3px double #33291d;
+  font-family: 'IBM Plex Mono', 'Courier New', monospace;
+}
+.tema-ledger .theme-nav-tabs button {
+  font-family: 'IBM Plex Mono', 'Courier New', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.tema-ledger .theme-nav-tabs button.is-active {
+  color: #a33a2a;
+  background: transparent;
+  text-decoration: underline;
+}
+.tema-ledger .theme-nav-search {
+  background: #fff;
+  border-color: #c9b99a;
+}
+
+/* El buscador de la barra propia no hereda el fondo de los inputs globales. */
+.app-shell .theme-nav-search input {
+  background: transparent !important;
+  border: 0 !important;
+  color: var(--tema-texto) !important;
+}
+.app-shell .theme-nav-search input::placeholder {
+  color: var(--tema-texto-suave) !important;
+}
+
+/* ========================================================= */
+/* BIBLIOTECAS CON ESTRUCTURA ÚNICA POR TEMA                  */
+/* ========================================================= */
+
+/* SHOJI · biombo corredizo de tres paños con listones. */
+.shoji-biombo {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 6px solid #c9b28a;
+  background: #f3ebd9;
+  min-height: 440px;
+}
+.shoji-panel-screen {
+  position: relative;
+  padding: 22px 16px;
+  border-right: 3px solid #c9b28a;
+}
+.shoji-panel-screen:last-child {
+  border-right: 0;
+}
+.shoji-panel-kanji {
+  position: absolute;
+  right: 8px;
+  top: -8px;
+  font-size: 74px;
+  line-height: 1;
+  color: rgba(90, 70, 45, 0.1);
+  pointer-events: none;
+}
+.shoji-panel-slats {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-top: 24px;
+}
+.shoji-slata {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 8px;
+  border: 1px solid rgba(90, 70, 45, 0.24);
+  background: rgba(255, 252, 244, 0.72);
+}
+.shoji-slata-num {
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  color: #a8442f;
+}
+.shoji-slata button {
+  background: transparent;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+  color: #2c241a;
+  padding: 0;
+  min-width: 0;
+}
+.shoji-slata strong {
+  display: block;
+  font:
+    400 17px 'Cormorant Garamond',
+    serif;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.shoji-slata small {
+  display: block;
+  font:
+    9px 'JetBrains Mono',
+    monospace;
+  color: #6f604a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.shoji-slata-dur {
+  font:
+    9px 'JetBrains Mono',
+    monospace;
+  color: #8a7b62;
+}
+.shoji-slata.is-active {
+  border-color: #a8442f;
+  background: rgba(168, 68, 47, 0.09);
+}
+
+/* ORIGAMI · abanico de hojas superpuestas y giradas. */
+.origami-abanico {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  padding: 36px 12px 60px 30px;
+}
+.origami-hoja {
+  position: relative;
+  width: 210px;
+  height: 292px;
+  flex: none;
+  margin-left: -26px;
+  padding: 14px;
+  background: #fff;
+  box-shadow: 8px 10px 0 rgba(217, 84, 127, 0.14);
+  clip-path: polygon(0 0, 84% 0, 100% 16%, 100% 100%, 0 100%);
+  transform: translateY(var(--sube)) rotate(var(--giro));
+  transition: transform 0.25s ease;
+}
+.origami-hoja:hover {
+  transform: translateY(calc(var(--sube) - 16px)) rotate(0deg);
+  z-index: 5;
+}
+.origami-hoja.is-active {
+  box-shadow:
+    0 0 0 2px rgba(217, 84, 127, 0.5),
+    8px 10px 0 rgba(217, 84, 127, 0.14);
+}
+.origami-hoja-play {
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: inherit;
+  text-align: left;
+  padding: 0;
+}
+.origami-hoja-cara {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 164px;
+  overflow: hidden;
+  background: rgba(217, 84, 127, 0.08);
+  color: #d9547f;
+  font-size: 28px;
+}
+.origami-hoja-cara img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.origami-hoja-play strong {
+  display: block;
+  margin-top: 12px;
+  font:
+    400 19px 'Cormorant Garamond',
+    serif;
+}
+.origami-hoja-play small {
+  display: block;
+  margin-top: 4px;
+  font:
+    9px 'JetBrains Mono',
+    monospace;
+  color: #9c8490;
+}
+.origami-hoja-pie {
+  position: absolute;
+  left: 14px;
+  right: 18px;
+  bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font:
+    9px 'JetBrains Mono',
+    monospace;
+  color: #9c8490;
+}
+
+/* SWISS · retícula modular de doce columnas. */
+.swiss-modulos {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 2px solid #111;
+  border-left: 1px solid #111;
+  margin-top: 4px;
+}
+.swiss-modulo {
+  position: relative;
+  min-height: 202px;
+  padding: 18px;
+  border-right: 1px solid #111;
+  border-bottom: 1px solid #111;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.swiss-modulo-num {
+  font-size: 46px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.07em;
+}
+.swiss-modulo-tit {
+  margin-top: auto;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+  font:
+    700 16px 'Plus Jakarta Sans',
+    sans-serif;
+  color: #111;
+}
+.swiss-modulo-art {
+  font:
+    10px 'Plus Jakarta Sans',
+    sans-serif;
+  color: #111;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.swiss-modulo-alb {
+  font:
+    10px 'Plus Jakarta Sans',
+    sans-serif;
+  color: #777;
+}
+.swiss-modulo-pie {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #ddd;
+  padding-top: 8px;
+  font:
+    10px 'Plus Jakarta Sans',
+    sans-serif;
+  color: #777;
+}
+.swiss-modulo.is-active {
+  background: #111;
+}
+.swiss-modulo.is-active .swiss-modulo-num,
+.swiss-modulo.is-active .swiss-modulo-tit,
+.swiss-modulo.is-active .swiss-modulo-art,
+.swiss-modulo.is-active .swiss-modulo-alb,
+.swiss-modulo.is-active .swiss-modulo-pie {
+  color: #fff;
+}
+.swiss-modulo.is-active .swiss-modulo-pie {
+  border-color: #444;
+}
+
+/* SUMI INK · rollos colgantes de lectura vertical. */
+.sumiink-rollos {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding: 18px 4px 40px;
+  min-height: 470px;
+}
+.sumiink-rollo {
+  width: 106px;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 8px;
+  border: 1px solid rgba(232, 229, 221, 0.2);
+  background: #121212;
+}
+.sumiink-rollo-barra {
+  width: 116px;
+  height: 8px;
+  flex: none;
+  background: linear-gradient(90deg, transparent, #e8e5dd, transparent);
+  opacity: 0.6;
+}
+.sumiink-rollo-num {
+  font:
+    9px 'JetBrains Mono',
+    monospace;
+  color: #9a968c;
+}
+.sumiink-rollo-tit {
+  writing-mode: vertical-rl;
+  height: 184px;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font:
+    400 20px 'Cormorant Garamond',
+    serif;
+  color: #e8e5dd;
+  letter-spacing: 0.06em;
+}
+.sumiink-rollo small {
+  writing-mode: vertical-rl;
+  height: 72px;
+  overflow: hidden;
+  font:
+    8px 'JetBrains Mono',
+    monospace;
+  color: #9a968c;
+}
+.sumiink-rollo-dur {
+  margin-top: auto;
+  font:
+    9px 'JetBrains Mono',
+    monospace;
+  color: #9a968c;
+}
+.sumiink-rollo .theme-row-actions {
+  flex-direction: column;
+  gap: 2px;
+}
+.sumiink-rollo.is-active {
+  border-color: #e8e5dd;
+  background: #1d1d1d;
+}
+
+/* MOONLIT · constelación de-estrellas sobre el cielo nocturno. */
+.moonlit-cielo {
+  position: relative;
+  min-height: 560px;
+  margin-top: 10px;
+  overflow: hidden;
+  background: radial-gradient(circle at 86% 16%, rgba(143, 182, 232, 0.1), transparent 42%);
+}
+.moonlit-luna-fondo {
+  position: absolute;
+  right: 6%;
+  top: 5%;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 38% 35%,
+    rgba(255, 255, 255, 0.92),
+    rgba(143, 182, 232, 0.5)
+  );
+  box-shadow: 0 0 80px rgba(143, 182, 232, 0.25);
+  pointer-events: none;
+}
+.moonlit-estrella {
+  position: absolute;
+  width: 122px;
+  text-align: center;
+  transform: translateX(-50%);
+}
+.moonlit-estrella button {
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: inherit;
+  padding: 0;
+}
+.moonlit-orbe {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 8px;
+  border-radius: 50%;
+  border: 1px solid rgba(143, 182, 232, 0.4);
+  background: rgba(143, 182, 232, 0.08);
+  color: #8fb6e8;
+  font-size: 18px;
+  overflow: hidden;
+  transition: box-shadow 0.25s ease;
+}
+.moonlit-orbe img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+.moonlit-estrella strong {
+  display: block;
+  font:
+    400 13px 'Cormorant Garamond',
+    serif;
+  color: #dfe8f7;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.moonlit-estrella small {
+  display: block;
+  margin-top: 3px;
+  font:
+    8px 'JetBrains Mono',
+    monospace;
+  color: #7f92b4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.moonlit-estrella-acc {
+  display: flex;
+  justify-content: center;
+  margin-top: 5px;
+}
+.moonlit-estrella:hover .moonlit-orbe,
+.moonlit-estrella.is-active .moonlit-orbe {
+  box-shadow: 0 0 22px rgba(143, 182, 232, 0.55);
+  border-color: #8fb6e8;
+}
+
+/* LEDGER · libro abierto con índice a la izquierda y asientos a la derecha. */
+.ledger-libro {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1.25fr;
+  margin-top: 8px;
+  background: #faf4e6;
+  border: 1px solid #33291d;
+  box-shadow: 10px 12px 0 rgba(163, 58, 42, 0.08);
+}
+.ledger-libro::after {
+  content: '';
+  position: absolute;
+  left: 44%;
+  top: 0;
+  bottom: 0;
+  width: 14px;
+  background: linear-gradient(
+    90deg,
+    rgba(51, 41, 29, 0.14),
+    rgba(51, 41, 29, 0.02),
+    rgba(51, 41, 29, 0.14)
+  );
+  pointer-events: none;
+}
+.ledger-pagina {
+  padding: 24px 28px;
+  min-height: 470px;
+}
+.ledger-pagina-izq {
+  border-right: 1px solid #c9b99a;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0 27px,
+    rgba(201, 185, 154, 0.4) 27px 28px
+  );
+}
+.ledger-pagina-der {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0 34px,
+    rgba(201, 185, 154, 0.35) 34px 35px
+  );
+}
+.ledger-pagina h2 {
+  margin: 0 0 18px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #33291d;
+  font:
+    700 11px 'IBM Plex Mono',
+    'Courier New',
+    monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #a33a2a;
+}
+.ledger-indice {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 10px;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #c9b99a;
+  padding: 7px 2px;
+  text-align: left;
+  cursor: pointer;
+  font:
+    11px 'IBM Plex Mono',
+    'Courier New',
+    monospace;
+  color: #33291d;
+}
+.ledger-indice span:first-child {
+  color: #a33a2a;
+}
+.ledger-indice.is-active {
+  background: rgba(163, 58, 42, 0.07);
+}
+.ledger-asiento {
+  position: relative;
+  padding: 8px 96px 8px 0;
+  border-bottom: 1px solid #c9b99a;
+}
+.ledger-asiento strong {
+  display: block;
+  font:
+    700 13px 'IBM Plex Mono',
+    'Courier New',
+    monospace;
+  color: #33291d;
+}
+.ledger-asiento small {
+  display: block;
+  margin-top: 3px;
+  font:
+    9px 'IBM Plex Mono',
+    'Courier New',
+    monospace;
+  color: #6b5c46;
+}
+.ledger-asiento-sello {
+  position: absolute;
+  right: 104px;
+  top: 8px;
+  font:
+    8px 'IBM Plex Mono',
+    'Courier New',
+    monospace;
+  color: #a33a2a;
+  transform: rotate(-6deg);
+}
+.ledger-asiento .theme-row-actions {
+  position: absolute;
+  right: 0;
+  top: 6px;
+}
+.ledger-asiento.is-active {
+  background: rgba(163, 58, 42, 0.07);
+}
+
+/* ========================================================= */
+/* HOMES CON ESTRUCTURA ÚNICA POR TEMA                        */
+/* ========================================================= */
+
+/* SHOJI · biombo de cuatro paños con rieles de madera. */
+.shoji-home {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 190px);
+}
+.shoji-riel {
+  height: 12px;
+  flex: none;
+  background: linear-gradient(180deg, #b9a17d, #9d845f);
+  box-shadow: 0 2px 6px rgba(90, 70, 45, 0.25);
+}
+.shoji-paneles {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 0.7fr 1.2fr 1.2fr 0.85fr;
+  border-left: 6px solid #c9b28a;
+  border-right: 6px solid #c9b28a;
+}
+.shoji-pano {
+  position: relative;
+  padding: 38px 26px;
+  border-right: 3px solid #c9b28a;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: rgba(255, 252, 244, 0.4);
+}
+.shoji-pano:last-child {
+  border-right: 0;
+}
+.shoji-pano-kanji {
+  align-items: center;
+  justify-content: center;
+  background: rgba(185, 161, 125, 0.12);
+}
+.shoji-pano-glifo {
+  font-size: 116px;
+  line-height: 1;
+  color: rgba(90, 70, 45, 0.5);
+}
+.shoji-pano-sello {
+  position: absolute;
+  bottom: 28px;
+  width: 38px;
+  height: 38px;
+  border: 2px solid #a8442f;
+  color: #a8442f;
+  display: grid;
+  place-items: center;
+}
+.shoji-pano-num {
+  font:
+    9px 'JetBrains Mono',
+    monospace;
+  letter-spacing: 0.24em;
+  color: #a8442f;
+}
+.shoji-pano h1 {
+  margin: 0;
+  font:
+    400 36px/1.15 'Cormorant Garamond',
+    serif;
+}
+.shoji-pano p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.9;
+  color: #6f604a;
+}
+.shoji-datos {
+  display: flex;
+  gap: 24px;
+  margin: 8px 0;
+}
+.shoji-datos div {
+  display: flex;
+  flex-direction: column;
+}
+.shoji-datos strong {
+  font:
+    400 42px/1 'Cormorant Garamond',
+    serif;
+  color: #a8442f;
+}
+.shoji-datos small {
+  font:
+    9px 'JetBrains Mono',
+    monospace;
+  color: #6f604a;
+  letter-spacing: 0.12em;
+}
+.shoji-pano-cta {
+  justify-content: center;
+  gap: 12px;
+}
+.shoji-pano-cta button {
+  border: 1px solid #a8442f;
+  background: transparent;
+  color: #a8442f;
+  padding: 12px 14px;
+  cursor: pointer;
+  font-size: 11px;
+}
+.shoji-pano-cta button:first-child {
+  background: #a8442f;
+  color: #fff;
+}
+
+/* ORIGAMI · grulla de papel y diagrama de plegados. */
+.origami-home {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr;
+  gap: 24px 50px;
+  align-items: center;
+  min-height: calc(100vh - 190px);
+}
+.origami-figura {
+  grid-column: 1;
+  grid-row: 1/3;
+  position: relative;
+  height: 380px;
+}
+.origami-ala {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-style: solid;
+}
+.origami-ala-uno {
+  left: 20px;
+  top: 54px;
+  border-width: 0 0 200px 200px;
+  border-color: transparent transparent #d9547f transparent;
+  transform: rotate(-8deg);
+}
+.origami-ala-dos {
+  left: 150px;
+  top: 96px;
+  border-width: 0 200px 180px 0;
+  border-color: transparent #f3c9d8 transparent transparent;
+  transform: rotate(10deg);
+}
+.origami-cuerpo {
+  position: absolute;
+  left: 130px;
+  top: 150px;
+  width: 120px;
+  height: 170px;
+  background: #d9547f;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  transform: rotate(4deg);
+}
+.origami-cola {
+  position: absolute;
+  left: 56px;
+  top: 238px;
+  width: 0;
+  height: 0;
+  border-top: 60px solid transparent;
+  border-bottom: 60px solid transparent;
+  border-right: 120px solid #d9547f;
+  transform: rotate(24deg);
+}
+.origami-pasos {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  letter-spacing: 0.2em;
+  color: #d9547f;
+}
+.origami-linea {
+  height: 1px;
+  flex: 1;
+  background: #f3c9d8;
+}
+.origami-texto {
+  grid-column: 2;
+  grid-row: 2;
+}
+.origami-texto h1 {
+  margin: 0 0 20px;
+  font:
+    300 54px/1.08 'Cormorant Garamond',
+    serif;
+}
+.origami-texto > p {
+  margin: 0;
+  color: #8c7180;
+  line-height: 1.9;
+  max-width: 480px;
+}
+.origami-acciones {
+  display: flex;
+  gap: 10px;
+  margin-top: 26px;
+}
+.origami-acciones button {
+  border: 1px solid #d9547f;
+  background: #d9547f;
+  color: #fff;
+  padding: 11px 16px;
+  cursor: pointer;
+  font-size: 11px;
+}
+.origami-acciones button:last-child {
+  background: transparent;
+  color: #d9547f;
+}
+.origami-nota {
+  margin-top: 24px;
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  color: #9c8490;
+}
+
+/* SWISS · póster tipográfico en retícula. */
+.swiss-home {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 190px);
+}
+.swiss-poster {
+  width: 100%;
+  max-width: 1100px;
+  border: 1px solid #111;
+  background: #fff;
+  font-family: 'Plus Jakarta Sans', Helvetica, sans-serif;
+}
+.swiss-poster-cab {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 18px;
+  border-bottom: 2px solid #111;
+  font:
+    9px 'Plus Jakarta Sans',
+    sans-serif;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.swiss-poster-cuerpo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 300px;
+}
+.swiss-poster-num {
+  display: grid;
+  place-items: center;
+  border-right: 2px solid #111;
+  font-size: 200px;
+  font-weight: 700;
+  letter-spacing: -0.08em;
+  line-height: 1;
+}
+.swiss-poster-tipo {
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.swiss-poster-kicker {
+  font:
+    10px 'Plus Jakarta Sans',
+    sans-serif;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+.swiss-poster-tipo h1 {
+  margin: 20px 0;
+  font-size: 58px;
+  line-height: 0.94;
+  letter-spacing: -0.05em;
+}
+.swiss-poster-tipo p {
+  margin: 0;
+  color: #777;
+  line-height: 1.6;
+  max-width: 380px;
+}
+.swiss-poster-pie {
+  display: flex;
+  align-items: stretch;
+  border-top: 2px solid #111;
+}
+.swiss-poster-stat {
+  flex: 1;
+  padding: 16px 18px;
+  border-right: 1px solid #111;
+  display: flex;
+  flex-direction: column;
+}
+.swiss-poster-stat strong {
+  font-size: 32px;
+  line-height: 1;
+}
+.swiss-poster-stat span {
+  margin-top: 6px;
+  font:
+    9px 'Plus Jakarta Sans',
+    sans-serif;
+  letter-spacing: 0.16em;
+}
+.swiss-poster-pie button {
+  border: 0;
+  background: #111;
+  color: #fff;
+  padding: 0 30px;
+  cursor: pointer;
+  font:
+    10px 'Plus Jakarta Sans',
+    sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+/* SUMI INK · pergamino colgante con rodillos. */
+.sumiink-home {
+  display: flex;
+  justify-content: center;
+  min-height: calc(100vh - 190px);
+  padding: 10px 0;
+}
+.sumiink-pergamino {
+  width: min(680px, 94%);
+  display: flex;
+  flex-direction: column;
+}
+.sumiink-rodillo {
+  height: 16px;
+  flex: none;
+  background: linear-gradient(180deg, #4a4a4a, #1a1a1a, #4a4a4a);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+.sumiink-hoja {
+  position: relative;
+  flex: 1;
+  padding: 42px 50px;
+  border-left: 1px solid rgba(232, 229, 221, 0.18);
+  border-right: 1px solid rgba(232, 229, 221, 0.18);
+  background: #121212;
+}
+.sumiink-kanji {
+  position: absolute;
+  right: 40px;
+  top: 18px;
+  font-size: 110px;
+  line-height: 1;
+  color: rgba(232, 229, 221, 0.06);
+}
+.sumiink-kicker {
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  letter-spacing: 0.3em;
+  color: #9a968c;
+}
+.sumiink-hoja h1 {
+  margin: 16px 0;
+  font:
+    400 54px 'Cormorant Garamond',
+    serif;
+}
+.sumiink-hoja > p {
+  margin: 0;
+  color: #9a968c;
+  line-height: 1.9;
+  max-width: 440px;
+}
+.sumiink-pincelada {
+  display: block;
+  width: 100%;
+  height: 8px;
+  margin: 28px 0;
+  background: linear-gradient(90deg, transparent, #e8e5dd 15%, #e8e5dd 85%, transparent);
+  border-radius: 4px;
+  opacity: 0.7;
+}
+.sumiink-acciones {
+  display: flex;
+  gap: 10px;
+}
+.sumiink-acciones button {
+  border: 1px solid #e8e5dd;
+  background: transparent;
+  color: #e8e5dd;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 11px;
+}
+.sumiink-acciones button:first-child {
+  background: #e8e5dd;
+  color: #0c0c0c;
+}
+.sumiink-dato {
+  margin: 22px 0 0;
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  color: #9a968c;
+}
+
+/* MOONLIT · paisaje nocturno con horizonte y reflejo. */
+.moonlit-home {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: calc(100vh - 190px);
+  overflow: hidden;
+}
+.moonlit-cielo-fondo {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.moonlit-luna-grande {
+  position: absolute;
+  right: 10%;
+  top: 8%;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 35%, #fff, #8fb6e8);
+  box-shadow: 0 0 90px rgba(143, 182, 232, 0.4);
+}
+.moonlit-brillo {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #dfe8f7;
+  box-shadow: 0 0 8px #dfe8f7;
+}
+.moonlit-brillo.s1 {
+  left: 12%;
+  top: 18%;
+}
+.moonlit-brillo.s2 {
+  left: 28%;
+  top: 10%;
+}
+.moonlit-brillo.s3 {
+  left: 44%;
+  top: 24%;
+}
+.moonlit-brillo.s4 {
+  left: 66%;
+  top: 14%;
+}
+.moonlit-brillo.s5 {
+  left: 80%;
+  top: 32%;
+}
+.moonlit-horizonte {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 26%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(143, 182, 232, 0.35), transparent);
+}
+.moonlit-reflejo {
+  position: absolute;
+  right: 14%;
+  bottom: 8%;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(143, 182, 232, 0.18), transparent 70%);
+  filter: blur(6px);
+}
+.moonlit-contenido {
+  position: relative;
+  z-index: 1;
+  max-width: 620px;
+}
+.moonlit-kicker {
+  margin: 0;
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  letter-spacing: 0.3em;
+  color: #8fb6e8;
+}
+.moonlit-contenido h1 {
+  margin: 18px 0;
+  font:
+    400 58px 'Cormorant Garamond',
+    serif;
+}
+.moonlit-contenido > p {
+  margin: 0;
+  color: #7f92b4;
+  line-height: 1.9;
+  max-width: 420px;
+}
+.moonlit-acciones {
+  display: flex;
+  gap: 10px;
+  margin-top: 26px;
+}
+.moonlit-acciones button {
+  border: 1px solid #8fb6e8;
+  background: transparent;
+  color: #8fb6e8;
+  padding: 11px 16px;
+  cursor: pointer;
+  font-size: 11px;
+}
+.moonlit-acciones button:first-child {
+  background: #8fb6e8;
+  color: #0b1324;
+}
+.moonlit-dato {
+  margin: 24px 0 0;
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  color: #7f92b4;
+}
+
+/* LEDGER · libro abierto sobre el escritorio. */
+.ledger-home {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 190px);
+}
+.ledger-libro-home {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  width: min(1000px, 100%);
+  background: #faf4e6;
+  border: 1px solid #33291d;
+  box-shadow: 14px 16px 0 rgba(163, 58, 42, 0.08);
+}
+.ledger-libro-home::after {
+  content: '';
+  position: absolute;
+  left: 60%;
+  top: 0;
+  bottom: 0;
+  width: 16px;
+  background: linear-gradient(
+    90deg,
+    rgba(51, 41, 29, 0.15),
+    rgba(51, 41, 29, 0.02),
+    rgba(51, 41, 29, 0.15)
+  );
+  pointer-events: none;
+}
+.ledger-pagina-home {
+  position: relative;
+  padding: 48px 44px;
+  min-height: 420px;
+}
+.ledger-izq {
+  border-right: 1px solid #c9b99a;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0 31px,
+    rgba(201, 185, 154, 0.35) 31px 32px
+  );
+}
+.ledger-der {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0 31px,
+    rgba(201, 185, 154, 0.35) 31px 32px
+  );
+}
+.ledger-cabecera {
+  font:
+    9px 'IBM Plex Mono',
+    'Courier New',
+    monospace;
+  letter-spacing: 0.2em;
+  color: #a33a2a;
+  text-transform: uppercase;
+}
+.ledger-pagina-home h1 {
+  margin: 20px 0;
+  font:
+    700 44px/1.1 'IBM Plex Mono',
+    'Courier New',
+    monospace;
+  color: #33291d;
+}
+.ledger-pagina-home > p {
+  margin: 0;
+  color: #6b5c46;
+  line-height: 1.9;
+  font-size: 12px;
+  max-width: 440px;
+}
+.ledger-pagina-home button {
+  margin-top: 24px;
+  border: 1px solid #a33a2a;
+  background: transparent;
+  color: #a33a2a;
+  padding: 11px 16px;
+  cursor: pointer;
+  font:
+    11px 'IBM Plex Mono',
+    'Courier New',
+    monospace;
+}
+.ledger-fila-home {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 12px 0;
+  border-bottom: 1px solid #c9b99a;
+  font:
+    11px 'IBM Plex Mono',
+    'Courier New',
+    monospace;
+  color: #6b5c46;
+}
+.ledger-fila-home strong {
+  font-size: 18px;
+  color: #33291d;
+}
+.ledger-sello-home {
+  position: absolute;
+  right: 36px;
+  bottom: 36px;
+  width: 70px;
+  height: 70px;
+  border: 3px double #a33a2a;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #a33a2a;
+  font-size: 24px;
+  transform: rotate(-12deg);
+}
+
+/* El rótulo del libro mayor va en una sola línea. */
+.app-shell[data-skin='ledger'] .ledger-cabecera {
+  white-space: nowrap;
+}
+
+/* ========================================================= */
+/* EDITOR DE METADATOS CON IDENTIDAD POR TEMA                 */
+/* ========================================================= */
+.theme-modal {
+  --modal-fondo: #141018;
+  --modal-panel: rgba(255, 255, 255, 0.04);
+  --modal-borde: rgba(255, 255, 255, 0.14);
+  --modal-texto: #f4f0ff;
+  --modal-suave: #9a8fa8;
+  --modal-accento: #a78bfa;
+  --modal-on-accent: #fff;
+  --modal-radio: 24px;
+  --modal-input: rgba(255, 255, 255, 0.05);
+  --modal-cover-radio: 16px;
+  --modal-font: inherit;
+  --modal-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+  background: var(--modal-fondo) !important;
+  border: 1px solid var(--modal-borde) !important;
+  border-radius: var(--modal-radio) !important;
+  color: var(--modal-texto) !important;
+  font-family: var(--modal-font);
+  box-shadow: var(--modal-shadow) !important;
+}
+.theme-modal > :first-child {
+  background: var(--modal-panel) !important;
+  border-bottom: 1px solid var(--modal-borde) !important;
+}
+.theme-modal > :last-child {
+  background: var(--modal-panel) !important;
+  border-top: 1px solid var(--modal-borde) !important;
+}
+.theme-modal input,
+.theme-modal textarea,
+.theme-modal select {
+  background: var(--modal-input) !important;
+  border: 1px solid var(--modal-borde) !important;
+  color: var(--modal-texto) !important;
+  border-radius: calc(var(--modal-radio) / 2) !important;
+  font-family: var(--modal-font) !important;
+}
+.theme-modal input::placeholder {
+  color: var(--modal-suave) !important;
+}
+.theme-modal [class*='from-accent-500'] {
+  background: var(--modal-accento) !important;
+  color: var(--modal-on-accent) !important;
+  border-radius: calc(var(--modal-radio) / 2) !important;
+}
+.theme-modal button[class*='bg-white/'] {
+  background: var(--modal-panel) !important;
+  border-color: var(--modal-borde) !important;
+  color: var(--modal-texto) !important;
+  border-radius: calc(var(--modal-radio) / 2) !important;
+}
+.theme-modal .text-white {
+  color: var(--modal-texto) !important;
+}
+.theme-modal [class*='text-ink-4'],
+.theme-modal [class*='text-ink-5'] {
+  color: var(--modal-suave) !important;
+}
+.theme-modal [class*='text-accent-'] {
+  color: var(--modal-accento) !important;
+}
+.theme-modal [class*='aspect-square'] {
+  border-radius: var(--modal-cover-radio) !important;
+  border-color: var(--modal-borde) !important;
+}
+
+/* SHOJI · papel, rejilla y madera. */
+.theme-modal.tema-shoji {
+  --modal-fondo: #f3ebd9;
+  --modal-panel: #faf5e9;
+  --modal-borde: #c9b28a;
+  --modal-texto: #2c241a;
+  --modal-suave: #6f604a;
+  --modal-accento: #a8442f;
+  --modal-on-accent: #fffaf0;
+  --modal-radio: 2px;
+  --modal-input: #fffdf6;
+  --modal-cover-radio: 0px;
+  --modal-font: 'Cormorant Garamond', serif;
+  --modal-shadow: 10px 12px 0 rgba(90, 70, 45, 0.2);
+  border-top: 6px solid #c9b28a !important;
+}
+.theme-modal-backdrop.tema-shoji {
+  background: rgba(60, 45, 25, 0.6) !important;
+}
+
+/* ORIGAMI · papel plegado rosa. */
+.theme-modal.tema-origami {
+  --modal-fondo: #fff8fa;
+  --modal-panel: #fff;
+  --modal-borde: #f3c9d8;
+  --modal-texto: #402631;
+  --modal-suave: #9c8490;
+  --modal-accento: #d9547f;
+  --modal-on-accent: #fff;
+  --modal-radio: 0px;
+  --modal-input: #fff;
+  --modal-cover-radio: 0px;
+  --modal-font: 'Cormorant Garamond', serif;
+  --modal-shadow: 12px 14px 0 rgba(217, 84, 127, 0.16);
+  clip-path: polygon(0 0, 96% 0, 100% 4%, 100% 100%, 0 100%);
+}
+.theme-modal.tema-origami [class*='aspect-square'] {
+  clip-path: polygon(0 0, 100% 0, 100% 80%, 80% 100%, 0 100%);
+}
+.theme-modal-backdrop.tema-origami {
+  background: rgba(90, 30, 55, 0.5) !important;
+}
+
+/* SWISS · retícula estricta. */
+.theme-modal.tema-swiss {
+  --modal-fondo: #fff;
+  --modal-panel: #f2f2f0;
+  --modal-borde: #111;
+  --modal-texto: #111;
+  --modal-suave: #777;
+  --modal-accento: #111;
+  --modal-on-accent: #fff;
+  --modal-radio: 0px;
+  --modal-input: #fff;
+  --modal-cover-radio: 0px;
+  --modal-font: 'Plus Jakarta Sans', Helvetica, sans-serif;
+  --modal-shadow: 12px 12px 0 rgba(0, 0, 0, 0.12);
+  border-width: 2px !important;
+}
+.theme-modal-backdrop.tema-swiss {
+  background: rgba(0, 0, 0, 0.7) !important;
+}
+
+/* SUMI INK · blanco sobre negro y tinta. */
+.theme-modal.tema-sumiink {
+  --modal-fondo: #121212;
+  --modal-panel: #1a1a1a;
+  --modal-borde: rgba(232, 229, 221, 0.28);
+  --modal-texto: #e8e5dd;
+  --modal-suave: #9a968c;
+  --modal-accento: #e8e5dd;
+  --modal-on-accent: #0c0c0c;
+  --modal-radio: 0px;
+  --modal-input: #1a1a1a;
+  --modal-cover-radio: 0px;
+  --modal-font: 'Cormorant Garamond', serif;
+  --modal-shadow: 0 0 0 1px rgba(232, 229, 221, 0.1), 0 30px 80px rgba(0, 0, 0, 0.7);
+}
+.theme-modal.tema-sumiink > div:first-child {
+  border-bottom: 2px solid rgba(232, 229, 221, 0.28) !important;
+}
+.theme-modal-backdrop.tema-sumiink {
+  background: rgba(0, 0, 0, 0.88) !important;
+}
+
+/* MOONLIT · noche azul, portada circular. */
+.theme-modal.tema-moonlit {
+  --modal-fondo: #0c1629;
+  --modal-panel: #101c33;
+  --modal-borde: rgba(143, 182, 232, 0.3);
+  --modal-texto: #dfe8f7;
+  --modal-suave: #7f92b4;
+  --modal-accento: #8fb6e8;
+  --modal-on-accent: #0b1324;
+  --modal-radio: 18px;
+  --modal-input: rgba(143, 182, 232, 0.07);
+  --modal-cover-radio: 50%;
+  --modal-font: 'Cormorant Garamond', serif;
+  --modal-shadow: 0 0 60px rgba(143, 182, 232, 0.18);
+}
+.theme-modal.tema-moonlit [class*='aspect-square'] {
+  box-shadow: 0 0 24px rgba(143, 182, 232, 0.2) !important;
+}
+.theme-modal-backdrop.tema-moonlit {
+  background: rgba(6, 12, 26, 0.8) !important;
+}
+
+/* LEDGER · libro mayor a máquina. */
+.theme-modal.tema-ledger {
+  --modal-fondo: #faf4e6;
+  --modal-panel: #f4eddc;
+  --modal-borde: #c9b99a;
+  --modal-texto: #33291d;
+  --modal-suave: #6b5c46;
+  --modal-accento: #a33a2a;
+  --modal-on-accent: #fffaf0;
+  --modal-radio: 0px;
+  --modal-input: #fffdf6;
+  --modal-cover-radio: 0px;
+  --modal-font: 'IBM Plex Mono', 'Courier New', monospace;
+  --modal-shadow: 10px 12px 0 rgba(163, 58, 42, 0.12);
+  border: 3px double #33291d !important;
+}
+.theme-modal.tema-ledger > div:first-child {
+  border-bottom: 3px double #33291d !important;
+}
+.theme-modal-backdrop.tema-ledger {
+  background: rgba(60, 45, 25, 0.62) !important;
+}
+
+/* Ajustes finales del editor: botones acentuados y acentos heredados. */
+.theme-modal button[class*='from-accent-500'],
+.theme-modal button[class*='from-accent-500'] * {
+  color: var(--modal-on-accent) !important;
+}
+.theme-modal [class*='text-purple-'],
+.theme-modal [class*='text-fuchsia-'],
+.theme-modal [class*='text-cyan-'],
+.theme-modal [class*='text-sky-'],
+.theme-modal [class*='text-violet-'],
+.theme-modal [class*='text-emerald-'],
+.theme-modal [class*='text-rose-'],
+.theme-modal [class*='text-green-'] {
+  color: var(--modal-accento) !important;
+}
+.theme-modal [class*='border-accent-'],
+.theme-modal [class*='border-purple-'],
+.theme-modal [class*='border-fuchsia-'],
+.theme-modal [class*='border-cyan-'],
+.theme-modal [class*='border-white/'] {
+  border-color: var(--modal-borde) !important;
+}
+.theme-modal [class*='bg-black/'],
+.theme-modal [class*='bg-white/'] {
+  background: var(--modal-input) !important;
+}
+.theme-modal [class*='aspect-square'] {
+  background: var(--modal-input) !important;
+}
+
+/* Los bordes de las secciones siguen siempre el color del tema. */
+.theme-modal div {
+  border-color: var(--modal-borde) !important;
+}
+
+/* Los avisos de eliminación siguen la paleta del tema. */
+.theme-modal [class*='text-amber-'] {
+  color: var(--modal-suave) !important;
+}
+
+/* Cuerpo y textos de los diálogos de eliminación y lote. */
+.theme-modal > :nth-child(2) {
+  background: var(--modal-fondo) !important;
+}
+.theme-modal [class*='text-ink-1'],
+.theme-modal [class*='text-ink-2'],
+.theme-modal [class*='text-ink-3'] {
+  color: var(--modal-texto) !important;
+}
+
+/* ========================================================= */
+/* LEDGER · libro mayor contable (diseño de biblioteca)       */
+/* ========================================================= */
+.ledger-mayor {
+  position: relative;
+  display: flex;
+  margin-top: 8px;
+  border: 1px solid #33291d;
+  background: #faf4e6;
+  box-shadow: 8px 10px 0 rgba(163, 58, 42, 0.1);
+  min-height: 420px;
+}
+.ledger-lomo {
+  width: 46px;
+  flex: none;
+  background: linear-gradient(90deg, #43130e, #6e231a 45%, #43130e);
+  border-right: 2px solid #d4af7a;
+  box-shadow: inset -6px 0 12px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #d4af7a;
+}
+.ledger-lomo span {
+  border: 1px solid rgba(212, 175, 122, 0.55);
+  padding: 7px 4px;
+  font-size: 19px;
+  line-height: 1;
+}
+.ledger-hoja {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  padding-bottom: 44px;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0 39px,
+    rgba(201, 185, 154, 0.45) 39px 40px
+  );
+}
+.ledger-hoja::before {
+  content: '';
+  position: absolute;
+  left: 52px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(163, 58, 42, 0.5);
+  box-shadow: 5px 0 0 rgba(163, 58, 42, 0.18);
+  pointer-events: none;
+}
+.ledger-hoja-cab {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 24px 12px 74px;
+  border-bottom: 3px double #33291d;
+  font:
+    9px 'IBM Plex Mono',
+    'Courier New',
+    monospace;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #a33a2a;
+}
+.ledger-columnas,
+.ledger-fila {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1.1fr) minmax(0, 1.3fr) 200px;
+  align-items: center;
+  column-gap: 12px;
+  padding-left: 74px;
+  padding-right: 24px;
+}
+.ledger-columnas {
+  padding-top: 9px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid #33291d;
+  font:
+    9px 'IBM Plex Mono',
+    'Courier New',
+    monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #6b5c46;
+}
+.ledger-fila {
+  min-height: 44px;
+  border-bottom: 1px solid #c9b99a;
+  font:
+    11px 'IBM Plex Mono',
+    'Courier New',
+    monospace;
+  color: #33291d;
+}
+.ledger-fila.is-active {
+  background: rgba(163, 58, 42, 0.07);
+}
+.ledger-num-sello {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid #a33a2a;
+  border-radius: 50%;
+  color: #a33a2a;
+  font-size: 10px;
+  transform: rotate(-8deg);
+}
+.ledger-fila-tit {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+  font:
+    700 13px 'IBM Plex Mono',
+    'Courier New',
+    monospace;
+  color: #33291d;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ledger-fila-art {
+  font:
+    10px 'IBM Plex Mono',
+    'Courier New',
+    monospace;
+  color: #6b5c46;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ledger-fila-est {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.ledger-fila-est small {
+  font:
+    8px 'IBM Plex Mono',
+    'Courier New',
+    monospace;
+  color: #a33a2a;
+  transform: rotate(-4deg);
+  white-space: nowrap;
+}
+.ledger-sello-final {
+  position: absolute;
+  right: 28px;
+  bottom: 14px;
+  width: 54px;
+  height: 54px;
+  border: 3px double #a33a2a;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #a33a2a;
+  font-size: 20px;
+  transform: rotate(-14deg);
+  opacity: 0.85;
+}
+
+/* ========================================================= */
+/* PORTADAS EN LAS VISTAS PROPIAS                             */
+/* ========================================================= */
+.shoji-slata {
+  grid-template-columns: 22px 36px minmax(0, 1fr) auto auto !important;
+}
+.shoji-slata-portada {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(90, 70, 45, 0.28);
+  background: rgba(255, 255, 255, 0.55);
+  color: #a8442f;
+  font-size: 14px;
+  overflow: hidden;
+}
+.shoji-slata-portada img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.swiss-modulo {
+  min-height: 272px;
+}
+.swiss-modulo-portada {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 86px;
+  overflow: hidden;
+  background: #f2f2f0;
+  border: 1px solid #111;
+  color: #111;
+  font-size: 24px;
+}
+.swiss-modulo-portada img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(1);
+}
+.swiss-modulo.is-active .swiss-modulo-portada {
+  background: #000;
+  border-color: #fff;
+  color: #fff;
+}
+
+.sumiink-rollo-portada {
+  display: grid;
+  place-items: center;
+  width: 62px;
+  height: 62px;
+  overflow: hidden;
+  border: 1px solid rgba(232, 229, 221, 0.3);
+  background: #1a1a1a;
+  color: #e8e5dd;
+  font-size: 20px;
+}
+.sumiink-rollo-portada img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.1);
+}
+
+.ledger-columnas,
+.ledger-fila {
+  grid-template-columns: 64px 44px minmax(0, 1.1fr) minmax(0, 1.3fr) 200px !important;
+}
+.ledger-portada {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  overflow: hidden;
+  border: 1px solid #c9b99a;
+  background: #fffdf6;
+  color: #a33a2a;
+  font-size: 14px;
+}
+.ledger-portada img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: sepia(0.3);
+}
+
+/* ========================================================= */
+/* MOONLIT · biblioteca orbital (rediseño completo)           */
+/* ========================================================= */
+.moonlit-library {
+  padding: 6px 4px 60px;
+  overflow-x: auto;
+}
+.moonlit-cielo-orbitas {
+  position: relative;
+  width: 900px;
+  height: 900px;
+  margin: 10px auto 30px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, rgba(143, 182, 232, 0.07), transparent 62%);
+}
+.moonlit-anillo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border: 1px solid rgba(143, 182, 232, 0.16);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.moonlit-anillo-int {
+  width: 280px;
+  height: 280px;
+}
+.moonlit-anillo-med {
+  width: 510px;
+  height: 510px;
+  border-style: dashed;
+  opacity: 0.75;
+}
+.moonlit-anillo-ext {
+  width: 760px;
+  height: 760px;
+  opacity: 0.5;
+}
+.moonlit-brillo {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #dfe8f7;
+  box-shadow: 0 0 9px #dfe8f7;
+  pointer-events: none;
+}
+.moonlit-brillo.s1 {
+  left: 12%;
+  top: 16%;
+}
+.moonlit-brillo.s2 {
+  left: 82%;
+  top: 22%;
+}
+.moonlit-brillo.s3 {
+  left: 20%;
+  top: 78%;
+}
+.moonlit-brillo.s4 {
+  left: 74%;
+  top: 84%;
+}
+.moonlit-luna-centro {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 120px;
+  height: 120px;
+  margin: -60px 0 0 -60px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 35%, #fff, #8fb6e8);
+  box-shadow: 0 0 70px rgba(143, 182, 232, 0.42);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #0b1324;
+}
+.moonlit-luna-centro span {
+  font-size: 28px;
+  line-height: 1;
+}
+.moonlit-luna-centro small {
+  margin-top: 5px;
+  font:
+    7px 'JetBrains Mono',
+    monospace;
+  letter-spacing: 0.08em;
+}
+.moonlit-astro {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 118px;
+  margin: -58px 0 0 -59px;
+  text-align: center;
+  transform: rotate(var(--ang)) translateX(var(--rad)) rotate(calc(-1 * var(--ang)));
+}
+.moonlit-astro button {
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: inherit;
+  padding: 0;
+}
+.moonlit-orbe {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 8px;
+  border-radius: 50%;
+  border: 1px solid rgba(143, 182, 232, 0.5);
+  background: rgba(143, 182, 232, 0.1);
+  box-shadow: 0 0 18px rgba(143, 182, 232, 0.2);
+  color: #8fb6e8;
+  font-size: 18px;
+  overflow: hidden;
+  transition:
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
+}
+.moonlit-orbe img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+.moonlit-astro strong {
+  display: block;
+  font:
+    400 13px 'Cormorant Garamond',
+    serif;
+  color: #dfe8f7;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.moonlit-astro > small {
+  display: block;
+  margin-top: 2px;
+  font:
+    8px 'JetBrains Mono',
+    monospace;
+  color: #7f92b4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.moonlit-astro-acc {
+  display: flex;
+  justify-content: center;
+  margin-top: 4px;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+.moonlit-astro:hover .moonlit-orbe,
+.moonlit-astro.is-active .moonlit-orbe {
+  box-shadow: 0 0 26px rgba(143, 182, 232, 0.6);
+  transform: scale(1.1);
+  border-color: #8fb6e8;
+}
+.moonlit-astro:hover .moonlit-astro-acc,
+.moonlit-astro.is-active .moonlit-astro-acc {
+  opacity: 1;
+}
+
+/* Ajuste de escala para que el sistema orbital completo quede a la vista. */
+.moonlit-luna-centro {
+  width: 86px;
+  height: 86px;
+  margin: -43px 0 0 -43px;
+}
+.moonlit-luna-centro span {
+  font-size: 22px;
+}
+.moonlit-luna-centro small {
+  font-size: 6px;
+}
+.moonlit-astro {
+  width: 88px;
+  margin: -42px 0 0 -44px;
+}
+.moonlit-orbe {
+  width: 52px;
+  height: 52px;
+  margin-bottom: 6px;
+  font-size: 15px;
+}
+.moonlit-astro strong {
+  font-size: 12px;
+}
+.moonlit-astro > small {
+  font-size: 7px;
+}
+
+/* Escala final del sistema orbital. */
+.moonlit-luna-centro {
+  width: 72px;
+  height: 72px;
+  margin: -36px 0 0 -36px;
+}
+.moonlit-luna-centro span {
+  font-size: 19px;
+}
+.moonlit-luna-centro small {
+  font-size: 5px;
+}
+.moonlit-astro {
+  width: 76px;
+  margin: -38px 0 0 -38px;
+}
+.moonlit-orbe {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 5px;
+  font-size: 13px;
+}
+.moonlit-astro strong {
+  font-size: 11px;
+}
+.moonlit-astro > small {
+  font-size: 7px;
+}
+
+/* Posicionamiento elíptico de los astros. */
+.moonlit-astro {
+  transform: translate(var(--x), var(--y));
+}
+
+/* ========================================================= */
+/* MOONLIT · camino de estrellas (diseño de biblioteca)        */
+/* ========================================================= */
+.moonlit-library {
+  padding: 6px 4px 60px;
+}
+.moonlit-senda {
+  position: relative;
+  margin-top: 16px;
+  padding: 26px 0 20px;
+  background: radial-gradient(circle at 60px 0, rgba(143, 182, 232, 0.1), transparent 220px);
+}
+.moonlit-senda::before {
+  content: '';
+  position: absolute;
+  left: 47px;
+  top: 96px;
+  bottom: 40px;
+  width: 1px;
+  background: linear-gradient(180deg, rgba(143, 182, 232, 0.65), rgba(143, 182, 232, 0.18));
+}
+.moonlit-luna-inicio {
+  position: absolute;
+  left: 16px;
+  top: 8px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 35%, #fff, #8fb6e8);
+  box-shadow: 0 0 42px rgba(143, 182, 232, 0.45);
+  display: grid;
+  place-items: center;
+  color: #0b1324;
+  font-size: 22px;
+  z-index: 1;
+}
+.moonlit-nodo {
+  position: relative;
+  display: grid;
+  grid-template-columns: 66px minmax(0, 1fr) 160px;
+  align-items: center;
+  gap: 22px;
+  min-height: 92px;
+  padding: 12px 18px 12px 104px;
+  border-bottom: 1px solid rgba(143, 182, 232, 0.14);
+}
+.moonlit-nodo::before {
+  content: '';
+  position: absolute;
+  left: 41px;
+  top: 50%;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #6f92c4;
+  border: 2px solid #dfe8f7;
+  box-shadow: 0 0 12px rgba(143, 182, 232, 0.5);
+  transform: translateY(-50%);
+  z-index: 1;
+}
+.moonlit-nodo:hover {
+  background: rgba(143, 182, 232, 0.04);
+}
+.moonlit-nodo.is-active {
+  background: rgba(143, 182, 232, 0.08);
+}
+.moonlit-nodo.is-active::before,
+.moonlit-nodo:hover::before {
+  background: #8fb6e8;
+  box-shadow: 0 0 18px rgba(143, 182, 232, 0.9);
+}
+.moonlit-nodo-cover {
+  display: grid;
+  place-items: center;
+  width: 66px;
+  height: 66px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid rgba(143, 182, 232, 0.45);
+  background: rgba(143, 182, 232, 0.07);
+  box-shadow: 0 0 18px rgba(143, 182, 232, 0.15);
+  color: #8fb6e8;
+  font-size: 20px;
+}
+.moonlit-nodo-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+.moonlit-nodo-play {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: inherit;
+  text-align: left;
+  padding: 0;
+  min-width: 0;
+}
+.moonlit-nodo-play strong {
+  display: block;
+  font:
+    400 21px 'Cormorant Garamond',
+    serif;
+  color: #dfe8f7;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.moonlit-nodo-play small {
+  display: block;
+  margin-top: 5px;
+  font:
+    9px 'JetBrains Mono',
+    monospace;
+  color: #7f92b4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.moonlit-nodo-acc {
+  display: flex;
+  justify-content: flex-end;
+}

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>08 · Aurora Boreal & Glaciar</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; height: 100vh; overflow: hidden; font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #060a14; color: #eef7ff; position: relative; padding: 32px;
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .aurora {
+      position: absolute; inset: -20%; pointer-events: none; z-index: 0;
+      background:
+        radial-gradient(ellipse at 30% 25%, rgba(45, 255, 196, .35), transparent 55%),
+        radial-gradient(ellipse at 70% 30%, rgba(139, 92, 246, .36), transparent 55%),
+        radial-gradient(ellipse at 50% 60%, rgba(14, 165, 233, .22), transparent 60%);
+      filter: blur(42px); animation: ondular 10s ease-in-out infinite alternate;
+    }
+    @keyframes ondular { from { transform: translateY(-18px) scale(1); } to { transform: translateY(18px) scale(1.06); } }
+    .isla {
+      position: relative; z-index: 2; background: rgba(16, 28, 46, .55); backdrop-filter: blur(18px);
+      border: 1px solid rgba(165, 243, 252, .25); border-radius: 26px; padding: 22px 28px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, .4);
+    }
+    .islas-grid { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .glaciar { border-radius: 34px 12px 34px 12px; }
+    .espectro { display: flex; align-items: flex-end; gap: 5px; height: 34px; }
+    .espectro i { display: block; width: 5px; border-radius: 99px; background: linear-gradient(180deg, #5eead4, #8b5cf6); }
+  </style>
+</head>
+<body>
+  <div class="aurora"></div>
+  <header class="isla" style="display:flex;justify-content:space-between;align-items:center">
+    <strong>🌌 AURORA BOREAL · GLACIAR</strong>
+    <span style="font-size:12px;color:#99f6e4;letter-spacing:.14em">ISLAS FLOTANTES DE HIELO</span>
+  </header>
+
+  <section class="islas-grid">
+    <div class="isla glaciar">
+      <small style="color:#5eead4">PISTA 01</small>
+      <h3 style="margin:6px 0">Cortina Esmeralda</h3>
+      <p style="margin:0;font-size:13px;color:#b8d4e8">Ólafur · 4:32</p>
+    </div>
+    <div class="isla glaciar">
+      <small style="color:#c4b5fd">PISTA 02</small>
+      <h3 style="margin:6px 0">Hielo Cristalino</h3>
+      <p style="margin:0;font-size:13px;color:#b8d4e8">Nils Frahm · 5:14</p>
+    </div>
+    <div class="isla glaciar">
+      <small style="color:#7dd3fc">PISTA 03</small>
+      <h3 style="margin:6px 0">Noche Polar</h3>
+      <p style="margin:0;font-size:13px;color:#b8d4e8">Sigur Rós · 6:02</p>
+    </div>
+  </section>
+
+  <footer class="isla" style="display:flex;justify-content:space-between;align-items:center">
+    <div><strong>Cortina Esmeralda</strong> · <small style="color:#99f6e4">Ólafur</small></div>
+    <div class="espectro">
+      <i style="height:14px"></i><i style="height:28px"></i><i style="height:20px"></i><i style="height:34px"></i><i style="height:18px"></i><i style="height:26px"></i><i style="height:12px"></i>
+    </div>
+    <div>◀◀ &nbsp; ⏸ &nbsp; ▶▶</div>
+  </footer>
+</body>
+</html>

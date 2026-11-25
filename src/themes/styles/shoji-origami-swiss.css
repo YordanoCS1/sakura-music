@@ -1,0 +1,672 @@
+/* ========================================================= */
+/* SHOJI · papel y madera                                     */
+/* ========================================================= */
+.app-shell[data-skin='shoji'] {
+  --m3-surface: #f3ebd9;
+  --m3-surface-card: #faf5e9;
+  --m3-on-surface: #2c241a;
+  --m3-on-surface-muted: #6f604a;
+  --m3-primary: #a8442f;
+  --m3-primary-dim: #8a3522;
+  --space-text: #2c241a;
+  --space-muted: #6f604a;
+  --space-border: rgba(90, 70, 45, 0.2);
+  --accent-200: 242 222 210;
+  --accent-300: 232 188 170;
+  --accent-400: 200 110 88;
+  --accent-500: 168 68 47;
+  --accent-600: 138 53 34;
+  --accent-800: 96 35 22;
+  --accent-900: 76 27 17;
+  --accent-950: 42 14 9;
+  background:
+    repeating-linear-gradient(90deg, rgba(90, 70, 45, 0.05) 0 1px, transparent 1px 60px),
+    repeating-linear-gradient(0deg, rgba(90, 70, 45, 0.05) 0 1px, transparent 1px 60px), #f3ebd9 !important;
+  color: #2c241a !important;
+}
+.app-shell[data-skin='shoji'] .titlebar,
+.app-shell[data-skin='shoji'] .zen-topnav,
+.app-shell[data-skin='shoji'] .npr-shell {
+  background: #f6f0e3 !important;
+  border-color: rgba(90, 70, 45, 0.2) !important;
+  color: #2c241a !important;
+}
+.app-shell[data-skin='shoji'] .glass-card {
+  background: #faf5e9 !important;
+  border-color: rgba(90, 70, 45, 0.2) !important;
+  box-shadow: none !important;
+}
+.app-shell[data-skin='shoji'] .zen-topnav-tab {
+  color: #6f604a !important;
+}
+.app-shell[data-skin='shoji'] .zen-topnav-tab.is-active {
+  color: #a8442f !important;
+}
+.app-shell[data-skin='shoji'] .gh-search,
+.app-shell[data-skin='shoji'] .gh-search-input {
+  background: rgba(255, 255, 255, 0.5) !important;
+  color: #2c241a !important;
+}
+.shoji-library {
+  padding: 6px 4px 60px;
+}
+.shoji-tabla {
+  border: 1px solid rgba(90, 70, 45, 0.28);
+  margin-top: 14px;
+}
+.shoji-fila {
+  display: grid;
+  grid-template-columns: 42px 50px minmax(0, 1fr) minmax(90px, 0.7fr) minmax(90px, 0.7fr) 140px;
+  align-items: center;
+  border-bottom: 1px solid rgba(90, 70, 45, 0.2);
+  min-height: 58px;
+}
+.shoji-fila:last-child {
+  border: 0;
+}
+.shoji-fila > span,
+.shoji-fila > button {
+  padding: 8px 10px;
+  border-right: 1px solid rgba(90, 70, 45, 0.2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  color: #6f604a;
+}
+.shoji-fila > *:last-child {
+  border: 0;
+}
+.shoji-cab {
+  background: rgba(185, 161, 125, 0.18);
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  letter-spacing: 0.14em;
+  color: #6b5b45;
+}
+.shoji-num {
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  color: #a8442f;
+}
+.shoji-portada img,
+.shoji-portada > span {
+  width: 36px;
+  height: 36px;
+  object-fit: cover;
+  display: grid;
+  place-items: center;
+  background: rgba(90, 70, 45, 0.1);
+  color: #a8442f;
+}
+.shoji-titulo {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px;
+  color: #2c241a;
+  text-align: left;
+}
+.shoji-fila.is-active {
+  background: rgba(168, 68, 47, 0.07);
+}
+.shoji-final {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.shoji-final small {
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  color: #8a7b62;
+}
+.shoji-home {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  min-height: calc(100vh - 150px);
+  border: 1px solid rgba(90, 70, 45, 0.25);
+}
+.shoji-panel {
+  padding: 36px;
+  border-right: 1px solid rgba(90, 70, 45, 0.25);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 18px;
+}
+.shoji-panel:last-child {
+  border: 0;
+}
+.shoji-glifo {
+  font-size: 64px;
+  color: rgba(90, 70, 45, 0.16);
+}
+.shoji-panel h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 32px;
+  font-weight: 400;
+}
+.shoji-panel p {
+  font-size: 12px;
+  line-height: 2;
+  color: #6f604a;
+}
+.shoji-panel button {
+  border: 1px solid #a8442f;
+  background: transparent;
+  color: #a8442f;
+  padding: 9px 14px;
+  cursor: pointer;
+  font-size: 11px;
+}
+.shoji-dato {
+  color: #a8442f;
+}
+
+/* ========================================================= */
+/* ORIGAMI · papel plegado                                    */
+/* ========================================================= */
+.app-shell[data-skin='origami'] {
+  --m3-surface: #fdf5f7;
+  --m3-surface-card: #fff;
+  --m3-on-surface: #402631;
+  --m3-on-surface-muted: #8c7180;
+  --m3-primary: #d9547f;
+  --m3-primary-dim: #b83f68;
+  --space-text: #402631;
+  --space-muted: #8c7180;
+  --space-border: rgba(217, 84, 127, 0.2);
+  --accent-200: 252 226 236;
+  --accent-300: 248 190 210;
+  --accent-400: 235 122 163;
+  --accent-500: 217 84 127;
+  --accent-600: 184 63 104;
+  --accent-800: 130 40 72;
+  --accent-900: 100 28 54;
+  --accent-950: 58 12 30;
+  background: #fdf5f7 !important;
+  color: #402631 !important;
+}
+.app-shell[data-skin='origami'] .titlebar,
+.app-shell[data-skin='origami'] .zen-topnav,
+.app-shell[data-skin='origami'] .npr-shell {
+  background: #fff8fa !important;
+  border-color: rgba(217, 84, 127, 0.2) !important;
+  color: #402631 !important;
+}
+.app-shell[data-skin='origami'] .glass-card {
+  background: #fff !important;
+  border-color: rgba(217, 84, 127, 0.18) !important;
+  box-shadow: 4px 6px 0 rgba(217, 84, 127, 0.1) !important;
+}
+.app-shell[data-skin='origami'] .gh-search,
+.app-shell[data-skin='origami'] .gh-search-input {
+  background: #fff !important;
+  color: #402631 !important;
+}
+.origami-library {
+  padding: 6px 4px 60px;
+}
+.origami-papeles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 24px;
+  margin-top: 14px;
+}
+.origami-papel {
+  position: relative;
+  background: #fff;
+  padding: 14px 14px 44px;
+  box-shadow: 6px 8px 0 rgba(217, 84, 127, 0.14);
+}
+.origami-papel::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  border-left: 26px solid transparent;
+  border-bottom: 26px solid #f3c9d8;
+}
+.origami-play {
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: inherit;
+  text-align: left;
+  padding: 0;
+}
+.origami-portada {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 126px;
+  overflow: hidden;
+  clip-path: polygon(0 0, 100% 0, 100% 80%, 80% 100%, 0 100%);
+  background: rgba(217, 84, 127, 0.08);
+  color: #d9547f;
+  font-size: 28px;
+}
+.origami-portada img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.origami-play strong {
+  display: block;
+  margin-top: 12px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-weight: 500;
+}
+.origami-papel > small {
+  display: block;
+  margin-top: 5px;
+  font:
+    9px 'JetBrains Mono',
+    monospace;
+  color: #9c8490;
+  line-height: 1.6;
+}
+.origami-papel .theme-row-actions {
+  position: absolute;
+  right: 12px;
+  bottom: 10px;
+}
+.origami-papel.is-active {
+  box-shadow:
+    0 0 0 2px rgba(217, 84, 127, 0.5),
+    6px 8px 0 rgba(217, 84, 127, 0.14);
+}
+.origami-home {
+  display: flex;
+  align-items: center;
+  gap: 44px;
+  min-height: calc(100vh - 150px);
+}
+.origami-triangulo {
+  width: 0;
+  height: 0;
+  border-left: 120px solid #d9547f;
+  border-top: 85px solid transparent;
+  border-bottom: 85px solid transparent;
+}
+.origami-kicker {
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  letter-spacing: 0.3em;
+  color: #d9547f;
+}
+.origami-copy h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 56px;
+  font-weight: 300;
+  line-height: 1.05;
+  margin: 14px 0;
+}
+.origami-copy > p {
+  color: #8c7180;
+  line-height: 1.9;
+  max-width: 400px;
+}
+.origami-botones {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+.origami-botones button {
+  border: 1px solid #d9547f;
+  background: #d9547f;
+  color: #fff;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 11px;
+}
+.origami-botones button:last-child {
+  background: transparent;
+  color: #d9547f;
+}
+.origami-dato {
+  margin-top: 22px;
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  color: #8c7180;
+}
+
+/* ========================================================= */
+/* SWISS · retícula estricta                                  */
+/* ========================================================= */
+.app-shell[data-skin='swiss'] {
+  --m3-surface: #f2f2f0;
+  --m3-surface-card: #fff;
+  --m3-on-surface: #111;
+  --m3-on-surface-muted: #777;
+  --m3-primary: #111;
+  --m3-primary-dim: #333;
+  --space-text: #111;
+  --space-muted: #777;
+  --space-border: rgba(0, 0, 0, 0.18);
+  --accent-200: 220 220 220;
+  --accent-300: 190 190 190;
+  --accent-400: 120 120 120;
+  --accent-500: 17 17 17;
+  --accent-600: 10 10 10;
+  --accent-800: 5 5 5;
+  --accent-900: 0 0 0;
+  --accent-950: 0 0 0;
+  background: #f2f2f0 !important;
+  color: #111 !important;
+  font-family: 'Plus Jakarta Sans', Helvetica, Arial, sans-serif !important;
+}
+.app-shell[data-skin='swiss'] .titlebar,
+.app-shell[data-skin='swiss'] .zen-topnav,
+.app-shell[data-skin='swiss'] .npr-shell {
+  background: #fff !important;
+  border-color: rgba(0, 0, 0, 0.18) !important;
+  color: #111 !important;
+}
+.app-shell[data-skin='swiss'] .glass-card {
+  background: #fff !important;
+  border-color: rgba(0, 0, 0, 0.18) !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+.app-shell[data-skin='swiss'] .zen-topnav-tab {
+  color: #777 !important;
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+}
+.app-shell[data-skin='swiss'] .zen-topnav-tab.is-active {
+  color: #111 !important;
+}
+.app-shell[data-skin='swiss'] .gh-search,
+.app-shell[data-skin='swiss'] .gh-search-input {
+  background: #fff !important;
+  color: #111 !important;
+}
+.swiss-library {
+  padding: 6px 4px 60px;
+}
+.swiss-tabla {
+  margin-top: 14px;
+  border: 1px solid #111;
+}
+.swiss-fila {
+  display: grid;
+  grid-template-columns: 60px 46px minmax(0, 1fr) minmax(100px, 0.7fr) minmax(100px, 0.7fr) 140px;
+  align-items: center;
+  min-height: 58px;
+  border-bottom: 1px solid #ddd;
+}
+.swiss-fila:last-child {
+  border: 0;
+}
+.swiss-fila > span,
+.swiss-fila > button {
+  padding: 9px 12px;
+  border-right: 1px solid #ddd;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #111;
+}
+.swiss-fila > *:last-child {
+  border: 0;
+}
+.swiss-cab {
+  background: #fff;
+  font:
+    9px 'Plus Jakarta Sans',
+    sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+.swiss-portada img,
+.swiss-portada > span {
+  width: 34px;
+  height: 34px;
+  object-fit: cover;
+  display: grid;
+  place-items: center;
+  filter: grayscale(1);
+  background: #eee;
+}
+.swiss-titulo {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  text-align: left;
+}
+.swiss-fila.is-active {
+  background: #111;
+}
+.swiss-fila.is-active > span,
+.swiss-fila.is-active > button {
+  color: #fff;
+  border-color: #444;
+}
+.swiss-final {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.swiss-final small {
+  font:
+    10px 'Plus Jakarta Sans',
+    sans-serif;
+}
+.swiss-home {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  min-height: calc(100vh - 150px);
+}
+.swiss-numero {
+  grid-column: 1/6;
+  border-right: 1px solid #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 190px;
+  font-weight: 700;
+  letter-spacing: -0.08em;
+  line-height: 1;
+}
+.swiss-copy {
+  grid-column: 6/13;
+  padding: 50px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.swiss-kicker {
+  font:
+    10px 'Plus Jakarta Sans',
+    sans-serif;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.swiss-copy h1 {
+  font-size: 62px;
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+  margin: 18px 0 22px;
+}
+.swiss-copy > p {
+  max-width: 380px;
+  line-height: 1.6;
+  color: #777;
+}
+.swiss-copy button {
+  border: 1px solid #111;
+  background: #111;
+  color: #fff;
+  padding: 11px 16px;
+  width: max-content;
+  cursor: pointer;
+  font-size: 11px;
+  margin-top: 24px;
+}
+.swiss-dato {
+  margin-top: 20px;
+  font:
+    10px 'Plus Jakarta Sans',
+    sans-serif;
+  color: #777;
+}
+
+/* ========================================================= */
+/* AJUSTES FINALES DE TEMAS PROPIOS                           */
+/* ========================================================= */
+
+/* Las vistas propias traen su propia navegación por carpetas:
+   el selector genérico de 9 vistas resulta redundante. */
+.app-shell[data-skin='sumie'] .lt-view-select,
+.app-shell[data-skin='byobu'] .lt-view-select,
+.app-shell[data-skin='shoji'] .lt-view-select,
+.app-shell[data-skin='origami'] .lt-view-select,
+.app-shell[data-skin='swiss'] .lt-view-select {
+  display: none !important;
+}
+
+/* SHOJI: acento rojo, tinta oscura y rejilla. */
+.app-shell[data-skin='shoji'] {
+  --tema-accent: #a8442f;
+  --tema-accent-soft: rgba(168, 68, 47, 0.1);
+  --tema-texto: #2c241a;
+  --tema-texto-suave: #6f604a;
+  --tema-linea: rgba(90, 70, 45, 0.2);
+}
+/* ORIGAMI: acento rosa. */
+.app-shell[data-skin='origami'] {
+  --tema-accent: #d9547f;
+  --tema-accent-soft: rgba(217, 84, 127, 0.1);
+  --tema-texto: #402631;
+  --tema-texto-suave: #8c7180;
+  --tema-linea: rgba(217, 84, 127, 0.2);
+}
+/* SWISS: acento negro, tipografía sans. */
+.app-shell[data-skin='swiss'] {
+  --tema-accent: #111;
+  --tema-accent-soft: rgba(0, 0, 0, 0.07);
+  --tema-texto: #111;
+  --tema-texto-suave: #777;
+  --tema-linea: rgba(0, 0, 0, 0.18);
+}
+
+/* Cabecera y acciones compartidas por las 5 vistas propias. */
+.app-shell[data-skin='shoji'] .theme-library-head,
+.app-shell[data-skin='origami'] .theme-library-head,
+.app-shell[data-skin='swiss'] .theme-library-head {
+  border-bottom-color: var(--tema-linea) !important;
+}
+.app-shell[data-skin='shoji'] .theme-library-nav button,
+.app-shell[data-skin='shoji'] .theme-folders button,
+.app-shell[data-skin='origami'] .theme-library-nav button,
+.app-shell[data-skin='origami'] .theme-folders button,
+.app-shell[data-skin='swiss'] .theme-library-nav button,
+.app-shell[data-skin='swiss'] .theme-folders button {
+  background: var(--tema-accent-soft) !important;
+  border-color: var(--tema-linea) !important;
+  color: var(--tema-texto-suave) !important;
+}
+.app-shell[data-skin='shoji'] .theme-library-nav button:hover,
+.app-shell[data-skin='shoji'] .theme-folders button:hover,
+.app-shell[data-skin='origami'] .theme-library-nav button:hover,
+.app-shell[data-skin='origami'] .theme-folders button:hover,
+.app-shell[data-skin='swiss'] .theme-library-nav button:hover,
+.app-shell[data-skin='swiss'] .theme-folders button:hover {
+  color: var(--tema-accent) !important;
+}
+.app-shell[data-skin='shoji'] .theme-library-nav button.is-active,
+.app-shell[data-skin='origami'] .theme-library-nav button.is-active,
+.app-shell[data-skin='swiss'] .theme-library-nav button.is-active {
+  background: var(--tema-accent) !important;
+  border-color: var(--tema-accent) !important;
+  color: #fff !important;
+}
+.app-shell[data-skin='shoji'] .theme-library-count,
+.app-shell[data-skin='origami'] .theme-library-count,
+.app-shell[data-skin='swiss'] .theme-library-count {
+  color: var(--tema-texto-suave) !important;
+}
+.app-shell[data-skin='shoji'] .theme-folders-label,
+.app-shell[data-skin='shoji'] .theme-folders button small,
+.app-shell[data-skin='origami'] .theme-folders-label,
+.app-shell[data-skin='origami'] .theme-folders button small,
+.app-shell[data-skin='swiss'] .theme-folders-label,
+.app-shell[data-skin='swiss'] .theme-folders button small {
+  color: var(--tema-accent) !important;
+}
+.app-shell[data-skin='shoji'] .theme-row-actions button,
+.app-shell[data-skin='origami'] .theme-row-actions button,
+.app-shell[data-skin='swiss'] .theme-row-actions button {
+  color: var(--tema-texto-suave) !important;
+}
+.app-shell[data-skin='shoji'] .theme-row-actions button:hover,
+.app-shell[data-skin='shoji'] .theme-row-actions button.is-fav,
+.app-shell[data-skin='origami'] .theme-row-actions button:hover,
+.app-shell[data-skin='origami'] .theme-row-actions button.is-fav,
+.app-shell[data-skin='swiss'] .theme-row-actions button:hover,
+.app-shell[data-skin='swiss'] .theme-row-actions button.is-fav {
+  color: var(--tema-accent) !important;
+}
+
+/* Texto de los homes propios con color explícito (herencia del shell). */
+.app-shell[data-skin='shoji'] .shoji-panel h1,
+.app-shell[data-skin='shoji'] .shoji-panel p,
+.app-shell[data-skin='shoji'] .shoji-panel button,
+.app-shell[data-skin='shoji'] .shoji-glifo {
+  color: var(--tema-texto) !important;
+}
+.app-shell[data-skin='shoji'] .shoji-panel p,
+.app-shell[data-skin='shoji'] .shoji-dato {
+  color: var(--tema-texto-suave) !important;
+}
+.app-shell[data-skin='shoji'] .shoji-panel button,
+.app-shell[data-skin='shoji'] .shoji-dato {
+  color: var(--tema-accent) !important;
+}
+.app-shell[data-skin='origami'] .origami-copy h1,
+.app-shell[data-skin='origami'] .origami-copy p,
+.app-shell[data-skin='origami'] .origami-kicker,
+.app-shell[data-skin='origami'] .origami-dato {
+  color: var(--tema-texto) !important;
+}
+.app-shell[data-skin='origami'] .origami-copy p,
+.app-shell[data-skin='origami'] .origami-dato {
+  color: var(--tema-texto-suave) !important;
+}
+.app-shell[data-skin='origami'] .origami-kicker,
+.app-shell[data-skin='origami'] .origami-botones button {
+  color: var(--tema-accent) !important;
+}
+.app-shell[data-skin='swiss'] .swiss-copy h1,
+.app-shell[data-skin='swiss'] .swiss-copy p,
+.app-shell[data-skin='swiss'] .swiss-kicker,
+.app-shell[data-skin='swiss'] .swiss-numero,
+.app-shell[data-skin='swiss'] .swiss-dato {
+  color: var(--tema-texto) !important;
+}
+.app-shell[data-skin='swiss'] .swiss-copy p,
+.app-shell[data-skin='swiss'] .swiss-dato {
+  color: var(--tema-texto-suave) !important;
+}
+
+/* El botón principal de Origami va en blanco sobre rosa; el secundario, al revés. */
+.app-shell[data-skin='origami'] .origami-botones button:first-child {
+  color: #fff !important;
+}
+.app-shell[data-skin='origami'] .origami-botones button:last-child {
+  color: var(--tema-accent) !important;
+}

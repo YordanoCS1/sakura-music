@@ -51,6 +51,11 @@ const COLORES: Record<string, [string, string, string]> = {
   samurai: ['#17120e', '#c9a961', '#f0e7d7'],
   kawaii: ['#150820', '#ff2e88', '#fff4ff'],
   manga: ['#fdfcf8', '#d62828', '#0d0d0d'],
+  sakura: ['#fff7fa', '#e54d86', '#3d1626'],
+  loto: ['#180b10', '#d4af37', '#f6e7c8'],
+  ukiyo: ['#f2e4c9', '#163a5f', '#0d2138'],
+  vinilo: ['#141210', '#ff5e3a', '#f0e5dc'],
+  karesansui: ['#ece8df', '#3c332a', '#24221f'],
 };
 
 function Decoracion() {

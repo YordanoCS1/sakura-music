@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>02 · Eclipse Solar (Orbital)</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; height: 100vh; overflow: hidden; font-family: 'Segoe UI', system-ui, sans-serif;
+      background: radial-gradient(circle at center, #1b1106 0%, #060609 68%); color: #f6efe2;
+      display: grid; place-items: center; position: relative;
+    }
+    .orbita {
+      position: absolute; border-radius: 50%; border: 1px solid rgba(255, 194, 92, .16);
+      pointer-events: none;
+    }
+    .o1 { width: 380px; height: 380px; }
+    .o2 { width: 580px; height: 580px; border-style: dashed; }
+    .o3 { width: 780px; height: 780px; }
+    .eclipse {
+      width: 210px; height: 210px; border-radius: 50%; background: #040406; position: relative;
+      box-shadow: 0 0 60px 14px rgba(255, 166, 43, .65), 0 0 130px 40px rgba(255, 102, 0, .22), inset 0 0 24px rgba(255, 208, 122, .45);
+      display: grid; place-items: center; text-align: center; z-index: 5; cursor: pointer;
+    }
+    .eclipse small { color: #ffb84d; letter-spacing: .24em; font-size: 10px; display: block; }
+    .eclipse strong { font-size: 18px; display: block; margin: 6px 0; }
+    .planeta {
+      position: absolute; z-index: 6; background: rgba(18, 15, 12, .85); backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 184, 77, .42); border-radius: 999px; padding: 10px 18px;
+      cursor: pointer; transition: transform .2s, border-color .2s;
+    }
+    .planeta:hover { transform: scale(1.08); border-color: #ffd480; }
+    .planeta b { display: block; font-size: 13px; color: #ffe5b4; }
+    .planeta span { font-size: 11px; color: #a89578; }
+    .arco-nav {
+      position: absolute; top: 22px; left: 50%; transform: translateX(-50%); z-index: 10;
+      display: flex; gap: 18px; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: #b59d79;
+    }
+    .arco-nav span.on { color: #ffb84d; border-bottom: 2px solid #ffb84d; padding-bottom: 4px; }
+    .estado { position: absolute; bottom: 26px; font-size: 12px; letter-spacing: .2em; color: #a89578; }
+  </style>
+</head>
+<body>
+  <div class="arco-nav"><span class="on">ECLIPSE TOTAL</span><span>·</span><span>ÓRBITAS (6)</span><span>·</span><span>CORONA</span></div>
+  <div class="orbita o1"></div>
+  <div class="orbita o2"></div>
+  <div class="orbita o3"></div>
+
+  <div class="eclipse" title="Play / Pause">
+    <div>
+      <small>SONANDO EN ÓRBITA</small>
+      <strong>Solaris Nocturne</strong>
+      <small>2:41 / 5:12 · ⏸</small>
+    </div>
+  </div>
+
+  <div class="planeta" style="top:18%;left:22%"><b>01 · Corona Dorada</b><span>3:48 · Ambient</span></div>
+  <div class="planeta" style="top:20%;right:20%"><b>02 · Sombra Lunar</b><span>4:20 · Synth</span></div>
+  <div class="planeta" style="bottom:24%;left:17%"><b>03 · Anillo de Fuego</b><span>5:05 · OST</span></div>
+  <div class="planeta" style="bottom:20%;right:19%"><b>04 · Cenit Oscuro</b><span>3:59 · Piano</span></div>
+  <div class="planeta" style="top:50%;left:8%"><b>05 · Viento Solar</b><span>4:12 · Post-Rock</span></div>
+  <div class="planeta" style="top:48%;right:8%"><b>06 · Amanecer</b><span>6:01 · FLAC</span></div>
+
+  <div class="estado">SIN BARRAS · NAVEGACIÓN ORBITAL PURA</div>
+</body>
+</html>

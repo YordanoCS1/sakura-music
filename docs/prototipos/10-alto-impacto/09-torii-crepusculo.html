@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>09 · Portal Torii en el Mar</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; height: 100vh; overflow: hidden; font-family: Georgia, serif;
+      background: linear-gradient(180deg, #1b102c 0%, #7d2643 48%, #ff7a52 72%, #131c2e 73%, #090e1a 100%);
+      color: #fff3eb; position: relative; display: grid; place-items: center;
+    }
+    .torii-svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+    .centro-torii {
+      position: relative; z-index: 3; width: 460px; text-align: center; margin-top: -30px;
+      background: rgba(15, 10, 24, .64); backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 140, 102, .4); padding: 28px; border-radius: 14px;
+    }
+    .centro-torii h1 { font-size: 36px; font-weight: 400; margin: 8px 0 14px; }
+    .pista-mar { display: flex; justify-content: space-between; padding: 9px 12px; border-bottom: 1px solid rgba(255,255,255,.12); font-size: 14px; }
+    .reflejo-player {
+      position: absolute; bottom: 22px; z-index: 4; background: rgba(9, 14, 26, .85);
+      border: 1px solid rgba(255, 122, 82, .45); padding: 10px 26px; border-radius: 999px;
+      display: flex; gap: 22px; align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <svg class="torii-svg" viewBox="0 0 1280 720" preserveAspectRatio="none">
+    <path d="M220 130 Q640 165 1060 130 L1085 160 Q640 190 195 160 Z" fill="#d93829"/>
+    <rect x="270" y="210" width="740" height="24" fill="#b8281c"/>
+    <rect x="340" y="155" width="38" height="410" fill="#c93022"/>
+    <rect x="902" y="155" width="38" height="410" fill="#c93022"/>
+    <rect x="615" y="165" width="50" height="58" fill="#1b102c" stroke="#f6c56f" stroke-width="4"/>
+  </svg>
+
+  <main class="centro-torii">
+    <small style="color:#ff9e7d;letter-spacing:.24em">⛩️ MIYAJIMA · CREPÚSCULO</small>
+    <h1>Umbral sobre la Marea</h1>
+    <div class="pista-mar"><span>Marea Alta</span><span>4:12</span></div>
+    <div class="pista-mar"><span>Campana de Itsukushima</span><span>3:50</span></div>
+    <div class="pista-mar"><span>Horizonte Bermellón</span><span>5:05</span></div>
+  </main>
+
+  <footer class="reflejo-player">
+    <strong>Marea Alta</strong>
+    <span style="color:#ff9e7d">◀◀ &nbsp; ▶ &nbsp; ▶▶</span>
+    <small style="opacity:.75">2:18 / 4:12</small>
+  </footer>
+</body>
+</html>

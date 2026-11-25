@@ -37,6 +37,11 @@ const GLIFOS: Partial<Record<ThemeMode, string>> = {
   samurai: '侍',
   kawaii: '♡',
   manga: '漫',
+  sakura: '桜',
+  loto: '蓮',
+  ukiyo: '波',
+  vinilo: '◉',
+  karesansui: '石',
 };
 
 /**

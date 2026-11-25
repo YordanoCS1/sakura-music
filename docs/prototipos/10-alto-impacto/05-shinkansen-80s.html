@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>05 · Shinkansen City Pop 80s</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; height: 100vh; overflow: hidden; font-family: 'Segoe UI', system-ui, sans-serif; background: #140c24; color: #fff; display: flex; flex-direction: column; }
+    .ventana {
+      flex: 1.15; position: relative; overflow: hidden; padding: 28px 40px;
+      background: linear-gradient(180deg, #1b0f3a 0%, #5b1d68 58%, #ff6e7f 100%);
+      border-bottom: 12px solid #2b2738; display: flex; justify-content: space-between; align-items: flex-end;
+    }
+    .sol-retro {
+      position: absolute; left: 50%; top: 18%; transform: translateX(-50%); width: 220px; height: 220px; border-radius: 50%;
+      background: repeating-linear-gradient(180deg, #ffd464 0 18px, #ff5e7e 18px 26px);
+      opacity: .9;
+    }
+    .ciudad { position: relative; z-index: 2; }
+    .ciudad h1 { font-size: 44px; margin: 0; text-shadow: 0 4px 20px rgba(0,0,0,.5); }
+    .tablero {
+      flex: .85; background: #1c1926; padding: 24px 40px; display: grid; grid-template-columns: 280px 1fr; gap: 28px; align-items: center;
+    }
+    .casete {
+      background: #2b2638; border: 3px solid #48405c; border-radius: 14px; padding: 16px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .carretes { display: flex; justify-content: space-around; background: #14111c; padding: 14px; border-radius: 8px; }
+    .carrete { width: 42px; height: 42px; border-radius: 50%; border: 5px dashed #ff6e7f; animation: spin 4s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .dial { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .emisora { background: #262233; border: 1px solid #494161; padding: 14px; border-radius: 8px; }
+    .emisora.on { border-color: #00f0ff; box-shadow: 0 0 16px rgba(0,240,255,.25); }
+  </style>
+</head>
+<body>
+  <section class="ventana">
+    <div class="sol-retro"></div>
+    <div class="ciudad">
+      <small style="letter-spacing:.24em;color:#ffd464">SHINKANSEN 1986 · TOKYO → KYOTO</small>
+      <h1>City Pop en el Tren Bala</h1>
+    </div>
+    <div style="z-index:2;background:rgba(0,0,0,.45);padding:8px 16px;border-radius:999px;font-family:Consolas,monospace">285 km/h · NIGHT EXPRESS</div>
+  </section>
+  <section class="tablero">
+    <div class="casete">
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:#ffd464"><span>SIDE A · TDK 90</span><span>▶ PLAY</span></div>
+      <div class="carretes"><div class="carrete"></div><div class="carrete"></div></div>
+      <strong style="font-size:14px">Plastic Love (Live 86)</strong>
+    </div>
+    <div class="dial">
+      <div class="emisora on"><strong style="color:#00f0ff">FM 84.5 · Midnight Drive</strong><div style="font-size:12px;color:#a9a2bf">Tatsuro · 4:12</div></div>
+      <div class="emisora"><strong>FM 89.2 · Bayshore</strong><div style="font-size:12px;color:#a9a2bf">Anri · 3:55</div></div>
+      <div class="emisora"><strong>FM 92.0 · Neon Rain</strong><div style="font-size:12px;color:#a9a2bf">Miki · 4:31</div></div>
+    </div>
+  </section>
+</body>
+</html>

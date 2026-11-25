@@ -1,0 +1,1841 @@
+/* ========================================================= */
+/* SHŌNEN · manga, energía naranja                            */
+/* ========================================================= */
+.app-shell[data-skin='shonen'] {
+  --m3-surface: #fff6e8;
+  --m3-surface-card: #fff;
+  --m3-on-surface: #1c1c1c;
+  --m3-on-surface-muted: #8a6a45;
+  --m3-primary: #ff6b1a;
+  --space-text: #1c1c1c;
+  --space-muted: #8a6a45;
+  --space-border: rgba(0, 0, 0, 0.2);
+  --tema-accent: #ff6b1a;
+  --tema-accent-soft: rgba(255, 107, 26, 0.1);
+  --tema-texto: #1c1c1c;
+  --tema-texto-suave: #8a6a45;
+  --tema-linea: rgba(0, 0, 0, 0.2);
+  background-image:
+    repeating-conic-gradient(
+      from 0deg at 50% 50%,
+      rgba(255, 107, 26, 0.05) 0deg 8deg,
+      transparent 8deg 16deg
+    ),
+    #fff6e8 !important;
+  color: #1c1c1c !important;
+  font-weight: 700;
+}
+.app-shell[data-skin='shonen'] .titlebar,
+.app-shell[data-skin='shonen'] .zen-topnav {
+  background: #fff !important;
+  border-bottom: 4px solid #ff6b1a !important;
+  color: #1c1c1c !important;
+}
+.shonen-home {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: calc(100vh - 190px);
+  transform: skewX(-4deg);
+}
+.shonen-energia {
+  font-size: 76px;
+  font-weight: 900;
+  font-style: italic;
+  color: #ff6b1a;
+  text-shadow: 5px 5px 0 #ffb800;
+  letter-spacing: -0.05em;
+}
+.shonen-copy h1 {
+  font-size: 46px;
+  font-style: italic;
+  margin: 12px 0;
+}
+.shonen-copy > p {
+  max-width: 440px;
+  line-height: 1.6;
+}
+.shonen-botones {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+.shonen-botones button {
+  border: 0;
+  background: #ff6b1a;
+  color: #fff;
+  padding: 11px 16px;
+  cursor: pointer;
+  font-style: italic;
+  font-weight: 900;
+}
+.shonen-botones button:last-child {
+  background: #ffb800;
+  color: #1c1c1c;
+}
+.shonen-dato {
+  margin-top: 20px;
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  color: #8a6a45;
+}
+.shonen-cab {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #1c1c1c;
+  color: #fff;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+.shonen-cab-glifo {
+  font-size: 24px;
+  color: #ffb800;
+}
+.shonen-cab-tit small {
+  font:
+    9px 'JetBrains Mono',
+    monospace;
+  letter-spacing: 0.14em;
+  color: #ff6b1a;
+}
+.shonen-cab-tit h1 {
+  margin: 2px 0 0;
+  font-style: italic;
+  font-size: 22px;
+}
+.shonen-cab .theme-library-nav {
+  margin-left: auto;
+}
+.shonen-cab-count {
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  color: #ffb800;
+}
+.shonen-manga {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+.shonen-vigneta {
+  position: relative;
+  aspect-ratio: 3/4;
+  border: 4px solid #1c1c1c;
+  background: repeating-linear-gradient(45deg, #fff 0 6px, #f5f5f5 6px 12px);
+  overflow: hidden;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.shonen-vigneta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-conic-gradient(
+    from 0deg at 50% 50%,
+    rgba(255, 107, 26, 0.07) 0deg 6deg,
+    transparent 6deg 12deg
+  );
+}
+.shonen-go {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 2;
+  background: #ffb800;
+  color: #000;
+  font:
+    700 9px 'JetBrains Mono',
+    monospace;
+  padding: 3px 6px;
+  transform: rotate(-8deg);
+}
+.shonen-vigneta button {
+  position: relative;
+  z-index: 1;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: inherit;
+  text-align: left;
+  padding: 0;
+}
+.shonen-portada {
+  display: grid;
+  place-items: center;
+  width: 70%;
+  aspect-ratio: 1/1;
+  margin: 0 auto 10px;
+  overflow: hidden;
+  border: 3px solid #1c1c1c;
+  box-shadow: 3px 3px 0 rgba(255, 107, 26, 0.4);
+}
+.shonen-portada img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.shonen-vigneta strong {
+  display: block;
+  font-size: 13px;
+  font-style: italic;
+  text-shadow: 1px 1px #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.shonen-vigneta > small {
+  position: relative;
+  z-index: 1;
+  font-size: 9px;
+  color: #8a6a45;
+}
+.shonen-num {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  z-index: 2;
+  font:
+    9px 'JetBrains Mono',
+    monospace;
+  color: #ff6b1a;
+}
+.shonen-vigneta .theme-row-actions {
+  position: relative;
+  z-index: 2;
+  justify-content: flex-end;
+  margin-top: 6px;
+}
+.shonen-vigneta.is-active {
+  box-shadow: 0 0 0 3px #ff6b1a;
+}
+
+/* ========================================================= */
+/* FANTASMAS · etéreo, niebla azul                            */
+/* ========================================================= */
+.app-shell[data-skin='ghost'] {
+  --m3-surface: #0a1018;
+  --m3-surface-card: #101a24;
+  --m3-on-surface: #dff1f5;
+  --m3-on-surface-muted: #7a9ba8;
+  --m3-primary: #67e8f9;
+  --space-text: #dff1f5;
+  --space-muted: #7a9ba8;
+  --space-border: rgba(103, 232, 249, 0.24);
+  --tema-accent: #67e8f9;
+  --tema-accent-soft: rgba(103, 232, 249, 0.08);
+  --tema-texto: #dff1f5;
+  --tema-texto-suave: #7a9ba8;
+  --tema-linea: rgba(103, 232, 249, 0.24);
+  background: linear-gradient(180deg, #0d1a26, #0a1018) !important;
+  color: #dff1f5 !important;
+  font-family: Georgia, serif;
+}
+.app-shell[data-skin='ghost'] .titlebar,
+.app-shell[data-skin='ghost'] .zen-topnav {
+  background: #0a1018 !important;
+  border-color: rgba(103, 232, 249, 0.2) !important;
+  color: #dff1f5 !important;
+}
+.ghost-home {
+  display: flex;
+  align-items: center;
+  gap: 50px;
+  min-height: calc(100vh - 190px);
+  position: relative;
+}
+.ghost-brillo {
+  position: absolute;
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(103, 232, 249, 0.18), transparent);
+  filter: blur(30px);
+  left: 40px;
+  pointer-events: none;
+}
+.ghost-espiritu {
+  width: 170px;
+  height: 190px;
+  flex: none;
+  border-radius: 50% 50% 0 0;
+  background: linear-gradient(180deg, rgba(103, 232, 249, 0.45), transparent);
+  display: grid;
+  place-items: center;
+  font-size: 70px;
+  color: #67e8f9;
+  filter: drop-shadow(0 0 20px rgba(103, 232, 249, 0.4));
+}
+.ghost-copy h1 {
+  font-size: 46px;
+  font-weight: 400;
+  margin: 10px 0;
+}
+.ghost-copy > p {
+  max-width: 340px;
+  line-height: 1.9;
+  color: #7a9ba8;
+}
+.ghost-botones {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+.ghost-botones button {
+  border: 1px solid #67e8f9;
+  background: transparent;
+  color: #67e8f9;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 11px;
+}
+.ghost-botones button:first-child {
+  background: #67e8f9;
+  color: #0a1018;
+}
+.ghost-dato {
+  margin-top: 20px;
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  color: #7a9ba8;
+}
+.ghost-cab {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 14px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid rgba(103, 232, 249, 0.3);
+}
+.ghost-cab-glifo {
+  font-size: 26px;
+  color: #67e8f9;
+}
+.ghost-cab-tit small {
+  font:
+    9px 'JetBrains Mono',
+    monospace;
+  letter-spacing: 0.2em;
+  color: #67e8f9;
+}
+.ghost-cab-tit h1 {
+  margin: 4px 0 0;
+  font-weight: 400;
+  font-size: 26px;
+}
+.ghost-cab .theme-library-nav {
+  margin-left: auto;
+}
+.ghost-cab-count {
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  color: #7a9ba8;
+}
+.ghost-espiritus {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+.ghost-espiritu {
+  width: auto;
+  height: auto;
+  aspect-ratio: 5/6;
+  border: 1px solid rgba(103, 232, 249, 0.35);
+  border-radius: 50% 50% 8px 8px;
+  background: rgba(103, 232, 249, 0.06);
+  filter: none;
+  backdrop-filter: blur(3px);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  text-align: center;
+  transition: box-shadow 0.2s;
+}
+.ghost-espiritu .ghost-cara {
+  display: block;
+  font-size: 38px;
+  color: #67e8f9;
+  margin-bottom: 8px;
+}
+.ghost-espiritu button {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: inherit;
+  padding: 0;
+}
+.ghost-espiritu strong {
+  display: block;
+  font-size: 13px;
+}
+.ghost-espiritu small {
+  display: block;
+  font-size: 9px;
+  color: #7a9ba8;
+  margin-top: 4px;
+}
+.ghost-espiritu.is-active {
+  box-shadow: 0 0 24px rgba(103, 232, 249, 0.4);
+  border-color: #67e8f9;
+}
+.ghost-acc {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+.ghost-espiritu:hover {
+  box-shadow: 0 0 22px rgba(103, 232, 249, 0.3);
+}
+
+/* ========================================================= */
+/* SAMURÁI · lacado rojo, acero y oro                         */
+/* ========================================================= */
+.app-shell[data-skin='samurai'] {
+  --m3-surface: #1a1512;
+  --m3-surface-card: #241c17;
+  --m3-on-surface: #efe6d6;
+  --m3-on-surface-muted: #9e8f7c;
+  --m3-primary: #c9a961;
+  --space-text: #efe6d6;
+  --space-muted: #9e8f7c;
+  --space-border: rgba(201, 169, 97, 0.3);
+  --tema-accent: #c9a961;
+  --tema-accent-soft: rgba(183, 53, 42, 0.12);
+  --tema-texto: #efe6d6;
+  --tema-texto-suave: #9e8f7c;
+  --tema-linea: rgba(201, 169, 97, 0.3);
+  background: #1a1512 !important;
+  color: #efe6d6 !important;
+  font-family: Georgia, serif;
+}
+.app-shell[data-skin='samurai'] .titlebar,
+.app-shell[data-skin='samurai'] .zen-topnav {
+  background: #120e0b !important;
+  border-color: rgba(201, 169, 97, 0.3) !important;
+  color: #efe6d6 !important;
+}
+.samurai-home {
+  display: flex;
+  align-items: center;
+  gap: 52px;
+  min-height: calc(100vh - 190px);
+}
+.samurai-katana {
+  width: 200px;
+  height: 200px;
+  flex: none;
+  border: 3px solid #c9a961;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 70px;
+  color: #b7352a;
+  background: linear-gradient(135deg, rgba(183, 53, 42, 0.15), transparent);
+}
+.samurai-copy h1 {
+  font-size: 48px;
+  font-weight: 400;
+  margin: 10px 0;
+}
+.samurai-copy > p {
+  max-width: 340px;
+  line-height: 1.9;
+  color: #9e8f7c;
+}
+.samurai-botones {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+.samurai-botones button {
+  border: 1px solid #c9a961;
+  background: transparent;
+  color: #c9a961;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 11px;
+}
+.samurai-botones button:first-child {
+  background: #b7352a;
+  color: #efe6d6;
+  border-color: #b7352a;
+}
+.samurai-dato {
+  margin-top: 20px;
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  color: #9e8f7c;
+}
+.samurai-cab {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 14px;
+  margin-bottom: 16px;
+  border-bottom: 2px solid #b7352a;
+}
+.samurai-cab-glifo {
+  font-size: 26px;
+  color: #c9a961;
+}
+.samurai-cab-tit small {
+  font:
+    9px 'JetBrains Mono',
+    monospace;
+  letter-spacing: 0.2em;
+  color: #b7352a;
+}
+.samurai-cab-tit h1 {
+  margin: 4px 0 0;
+  font-weight: 400;
+  font-size: 26px;
+}
+.samurai-cab .theme-library-nav {
+  margin-left: auto;
+}
+.samurai-cab-count {
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  color: #9e8f7c;
+}
+.samurai-lamas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.samurai-lama {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  border: 1px solid rgba(201, 169, 97, 0.35);
+  background: linear-gradient(120deg, rgba(183, 53, 42, 0.12), transparent);
+  clip-path: polygon(0 0, 100% 0, 100% 78%, 92% 100%, 0 100%);
+}
+.samurai-num {
+  width: 46px;
+  height: 46px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border: 2px solid #c9a961;
+  border-radius: 50%;
+  color: #b7352a;
+  font:
+    11px 'JetBrains Mono',
+    monospace;
+}
+.samurai-lama button {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: inherit;
+  text-align: left;
+}
+.samurai-lama strong {
+  display: block;
+  font-size: 15px;
+}
+.samurai-lama small {
+  display: block;
+  font-size: 10px;
+  color: #9e8f7c;
+  margin-top: 4px;
+}
+.samurai-lama.is-active {
+  box-shadow: inset 0 0 0 2px #c9a961;
+}
+
+/* ========================================================= */
+/* KAWAII · pastel, ternura                                   */
+/* ========================================================= */
+.app-shell[data-skin='kawaii'] {
+  --m3-surface: #fff7fb;
+  --m3-surface-card: #fff;
+  --m3-on-surface: #7a4a6a;
+  --m3-on-surface-muted: #b98ca3;
+  --m3-primary: #ff9ec4;
+  --space-text: #7a4a6a;
+  --space-muted: #b98ca3;
+  --space-border: rgba(255, 158, 196, 0.35);
+  --tema-accent: #ff9ec4;
+  --tema-accent-soft: rgba(255, 158, 196, 0.12);
+  --tema-texto: #7a4a6a;
+  --tema-texto-suave: #b98ca3;
+  --tema-linea: rgba(255, 158, 196, 0.35);
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(255, 158, 196, 0.22) 0 12px, transparent 13px),
+    radial-gradient(circle at 80% 70%, rgba(158, 224, 200, 0.22) 0 10px, transparent 11px), #fff7fb !important;
+  color: #7a4a6a !important;
+  font-weight: 700;
+}
+.app-shell[data-skin='kawaii'] .titlebar,
+.app-shell[data-skin='kawaii'] .zen-topnav {
+  background: #fff !important;
+  border-color: rgba(255, 158, 196, 0.35) !important;
+  color: #7a4a6a !important;
+}
+.kawaii-home {
+  display: flex;
+  align-items: center;
+  gap: 48px;
+  min-height: calc(100vh - 190px);
+}
+.kawaii-cara {
+  width: 180px;
+  height: 180px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #9ee0c8;
+  box-shadow: 0 12px 30px rgba(158, 224, 200, 0.4);
+  font-size: 34px;
+  color: #7a4a6a;
+}
+.kawaii-copy h1 {
+  font-size: 46px;
+  margin: 10px 0;
+}
+.kawaii-copy > p {
+  max-width: 340px;
+  line-height: 1.7;
+  color: #b98ca3;
+}
+.kawaii-botones {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+.kawaii-botones button {
+  border: 0;
+  background: #ff9ec4;
+  color: #fff;
+  padding: 11px 18px;
+  cursor: pointer;
+  font-size: 11px;
+  border-radius: 20px;
+}
+.kawaii-botones button:last-child {
+  background: #9ee0c8;
+  color: #7a4a6a;
+}
+.kawaii-dato {
+  margin-top: 20px;
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  color: #ff8ac4;
+}
+.kawaii-cab {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 15px 18px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(255, 46, 136, 0.45);
+  border-radius: 24px;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 46, 136, 0.28),
+    rgba(139, 92, 246, 0.26) 55%,
+    rgba(34, 211, 238, 0.12)
+  );
+  box-shadow:
+    0 12px 36px rgba(255, 46, 136, 0.22),
+    inset 0 1px rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+}
+.kawaii-cab-glifo {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  flex: none;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #ff2e88, #ff7ac2);
+  color: #fff;
+  font-size: 24px;
+  box-shadow: 0 8px 24px rgba(255, 46, 136, 0.65);
+  transform: rotate(-8deg);
+}
+.kawaii-cab-tit small {
+  font:
+    9px 'JetBrains Mono',
+    monospace;
+  letter-spacing: 0.18em;
+  color: #ff8ac4;
+}
+.kawaii-cab-tit h1 {
+  margin: 3px 0 0;
+  font-size: 27px;
+  letter-spacing: -0.02em;
+  color: #fff4ff;
+}
+.kawaii-cab .theme-library-nav {
+  margin-left: auto;
+}
+.kawaii-cab-count {
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  color: #ff8ac4;
+  white-space: nowrap;
+}
+.kawaii-amigos {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.kawaii-amigo {
+  border-radius: 24px;
+  padding: 16px 12px;
+  background: var(--c);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
+  text-align: center;
+}
+.kawaii-amigo button {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: #fff;
+  padding: 0;
+}
+.kawaii-amigo .kawaii-cara {
+  display: block;
+  width: auto;
+  height: auto;
+  background: transparent;
+  box-shadow: none;
+  font-size: 26px;
+  margin-bottom: 8px;
+}
+.kawaii-amigo strong {
+  display: block;
+  font-size: 13px;
+}
+.kawaii-amigo small {
+  display: block;
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 4px;
+}
+.kawaii-amigo .theme-row-actions {
+  justify-content: center;
+  margin-top: 8px;
+}
+.kawaii-amigo.is-active {
+  box-shadow:
+    0 0 0 3px #ff9ec4,
+    0 8px 18px rgba(0, 0, 0, 0.06);
+}
+
+/* Transiciones de los seis temas originales */
+html[data-theme-transition='shoji'] #theme-panel.panel-enter {
+  animation: t-shoji 200ms cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+@keyframes t-shoji {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+}
+html[data-theme-transition='origami'] #theme-panel.panel-enter {
+  animation: t-origami 210ms cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+@keyframes t-origami {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) skewY(1.2deg);
+  }
+}
+html[data-theme-transition='swiss'] #theme-panel.panel-enter {
+  animation: t-swiss 130ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+@keyframes t-swiss {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+}
+html[data-theme-transition='sumiink'] #theme-panel.panel-enter {
+  animation: t-sumi 200ms ease-out both;
+}
+@keyframes t-sumi {
+  from {
+    opacity: 0;
+    transform: scale(0.995);
+  }
+}
+html[data-theme-transition='moonlit'] #theme-panel.panel-enter {
+  animation: t-moonlit 220ms cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+@keyframes t-moonlit {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+html[data-theme-transition='ledger'] #theme-panel.panel-enter {
+  animation: t-ledger 200ms ease-out both;
+  transform-origin: left;
+}
+@keyframes t-ledger {
+  from {
+    opacity: 0;
+    transform: scaleX(0.97);
+  }
+}
+html[data-theme-transition='sumie'] #theme-panel.panel-enter {
+  animation: t-sumie 200ms ease-out both;
+}
+@keyframes t-sumie {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+html[data-theme-transition='byobu'] #theme-panel.panel-enter {
+  animation: t-byobu 200ms ease-out both;
+}
+@keyframes t-byobu {
+  from {
+    opacity: 0;
+    transform: scaleX(0.98);
+  }
+}
+
+/* Transiciones propias */
+html[data-theme-transition='shonen'] #theme-panel.panel-enter {
+  animation: t-shonen 160ms cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+@keyframes t-shonen {
+  from {
+    opacity: 0;
+    transform: translate(20px, -8px) skewX(-3deg);
+  }
+}
+html[data-theme-transition='ghost'] #theme-panel.panel-enter {
+  animation: t-ghost 220ms ease-out both;
+}
+@keyframes t-ghost {
+  from {
+    opacity: 0;
+    transform: scale(0.99);
+    filter: blur(2px);
+  }
+}
+html[data-theme-transition='samurai'] #theme-panel.panel-enter {
+  animation: t-samurai 200ms ease-out both;
+}
+@keyframes t-samurai {
+  from {
+    opacity: 0;
+    transform: translateX(22px);
+  }
+}
+html[data-theme-transition='kawaii'] #theme-panel.panel-enter {
+  animation: t-kawaii 200ms cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+@keyframes t-kawaii {
+  from {
+    opacity: 0;
+    transform: scale(0.94) rotate(-1deg);
+  }
+}
+
+/* Ocultar selector 9 vistas y adaptar ajustes/buscar/cola */
+.app-shell[data-skin='shonen'] .lt-view-select,
+.app-shell[data-skin='ghost'] .lt-view-select,
+.app-shell[data-skin='samurai'] .lt-view-select,
+.app-shell[data-skin='kawaii'] .lt-view-select {
+  display: none !important;
+}
+.app-shell[data-skin='shonen'] {
+  --set-panel-base: #fff;
+  --set-radio-base: 8px;
+  --set-font-base: system-ui;
+}
+.app-shell[data-skin='ghost'] {
+  --set-panel-base: #101a24;
+  --set-radio-base: 18px;
+  --set-font-base: Georgia, serif;
+}
+.app-shell[data-skin='samurai'] {
+  --set-panel-base: #241c17;
+  --set-radio-base: 2px;
+  --set-font-base: Georgia, serif;
+}
+.app-shell[data-skin='kawaii'] {
+  --set-panel-base: #fff;
+  --set-radio-base: 24px;
+  --set-font-base: system-ui;
+}
+
+/* ===== Portadas en Fantasmas ===== */
+.ghost-espiritu .ghost-cara {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 10px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid rgba(103, 232, 249, 0.5);
+  box-shadow: 0 0 18px rgba(103, 232, 249, 0.3);
+  font-size: 0;
+}
+.ghost-espiritu .ghost-cara img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  filter: saturate(0.7) brightness(0.9);
+}
+
+/* ===== Portadas en Samurái ===== */
+.samurai-lama {
+  grid-template-columns: 52px 46px minmax(0, 1fr) auto !important;
+}
+.samurai-portada {
+  width: 46px;
+  height: 46px;
+  overflow: hidden;
+  border: 2px solid #c9a961;
+  display: grid;
+  place-items: center;
+  background: #241c17;
+  color: #b7352a;
+  font-size: 14px;
+}
+.samurai-portada img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ===== Portadas en Kawaii ===== */
+.kawaii-amigo .kawaii-cara {
+  display: grid;
+  place-items: center;
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 10px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  font-size: 0;
+}
+.kawaii-amigo .kawaii-cara img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+/* ========================================================= */
+/* EDITOR DE METADATOS · 4 temas nuevos                        */
+/* ========================================================= */
+/* Shōnen · viñeta de manga con borde grueso */
+.theme-modal.tema-shonen {
+  --modal-fondo: #fff6e8;
+  --modal-panel: #fff;
+  --modal-borde: #1c1c1c;
+  --modal-texto: #1c1c1c;
+  --modal-suave: #8a6a45;
+  --modal-accento: #ff6b1a;
+  --modal-on-accent: #fff;
+  --modal-radio: 4px;
+  --modal-input: #fff;
+  --modal-cover-radio: 0px;
+  --modal-font: system-ui;
+  --modal-shadow: 6px 6px 0 rgba(255, 107, 26, 0.35);
+  border-width: 4px !important;
+}
+.theme-modal-backdrop.tema-shonen {
+  background: rgba(60, 30, 5, 0.6) !important;
+}
+
+/* Fantasmas · vidrio azul translúcido */
+.theme-modal.tema-ghost {
+  --modal-fondo: #0d1a26;
+  --modal-panel: rgba(16, 26, 36, 0.75);
+  --modal-borde: rgba(103, 232, 249, 0.35);
+  --modal-texto: #dff1f5;
+  --modal-suave: #7a9ba8;
+  --modal-accento: #67e8f9;
+  --modal-on-accent: #0a1018;
+  --modal-radio: 18px;
+  --modal-input: rgba(103, 232, 249, 0.07);
+  --modal-cover-radio: 50%;
+  --modal-font: Georgia, serif;
+  --modal-shadow: 0 0 60px rgba(103, 232, 249, 0.25);
+  backdrop-filter: blur(14px);
+}
+.theme-modal.tema-ghost [class*='aspect-square'] {
+  box-shadow: 0 0 24px rgba(103, 232, 249, 0.25) !important;
+}
+.theme-modal-backdrop.tema-ghost {
+  background: rgba(4, 10, 16, 0.82) !important;
+}
+
+/* Samurái · lacado rojo y oro */
+.theme-modal.tema-samurai {
+  --modal-fondo: #1a1512;
+  --modal-panel: #241c17;
+  --modal-borde: rgba(201, 169, 97, 0.35);
+  --modal-texto: #efe6d6;
+  --modal-suave: #9e8f7c;
+  --modal-accento: #c9a961;
+  --modal-on-accent: #1a1512;
+  --modal-radio: 2px;
+  --modal-input: #1f1813;
+  --modal-cover-radio: 0px;
+  --modal-font: Georgia, serif;
+  --modal-shadow: 8px 10px 0 rgba(183, 53, 42, 0.2);
+  border-top: 5px solid #b7352a !important;
+}
+.theme-modal.tema-samurai [class*='aspect-square'] {
+  border: 2px solid #c9a961 !important;
+}
+.theme-modal-backdrop.tema-samurai {
+  background: rgba(20, 8, 6, 0.8) !important;
+}
+
+/* Kawaii · pastel redondeado */
+.theme-modal.tema-kawaii {
+  --modal-fondo: #fff7fb;
+  --modal-panel: #fff;
+  --modal-borde: rgba(255, 158, 196, 0.5);
+  --modal-texto: #7a4a6a;
+  --modal-suave: #b98ca3;
+  --modal-accento: #ff9ec4;
+  --modal-on-accent: #fff;
+  --modal-radio: 24px;
+  --modal-input: #fff;
+  --modal-cover-radio: 50%;
+  --modal-font: system-ui;
+  --modal-shadow: 0 18px 50px rgba(255, 158, 196, 0.35);
+}
+.theme-modal.tema-kawaii [class*='aspect-square'] {
+  border: 3px solid #fff !important;
+  box-shadow: 0 8px 18px rgba(158, 224, 200, 0.4) !important;
+}
+.theme-modal-backdrop.tema-kawaii {
+  background: rgba(120, 60, 90, 0.45) !important;
+}
+
+/* ========================================================= */
+/* SHŌNEN · rediseño completo                                 */
+/* ========================================================= */
+.shonen-home {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  align-items: center;
+  gap: 40px;
+  min-height: calc(100vh - 190px);
+  overflow: hidden;
+}
+.shonen-luz {
+  position: absolute;
+  inset: 0;
+  background: repeating-conic-gradient(
+    from 0deg at 78% 45%,
+    rgba(255, 107, 26, 0.1) 0deg 5deg,
+    transparent 5deg 10deg
+  );
+  pointer-events: none;
+}
+.shonen-panel {
+  position: relative;
+  z-index: 1;
+}
+.shonen-kicker {
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  letter-spacing: 0.22em;
+  color: #ff6b1a;
+}
+.shonen-panel h1 {
+  margin: 14px 0 18px;
+  font-size: 62px;
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+  transform: skewX(-5deg);
+}
+.shonen-panel h1 em {
+  font-style: italic;
+  color: #ff6b1a;
+  text-shadow: 5px 5px 0 #ffb800;
+}
+.shonen-panel > p {
+  max-width: 430px;
+  line-height: 1.7;
+  color: #8a6a45;
+}
+.shonen-acciones {
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+  transform: skewX(-5deg);
+}
+.shonen-acciones button {
+  border: 0;
+  background: #ff6b1a;
+  color: #fff;
+  padding: 12px 18px;
+  cursor: pointer;
+  font-weight: 900;
+  font-style: italic;
+}
+.shonen-acciones button:last-child {
+  background: #ffb800;
+  color: #1c1c1c;
+}
+.shonen-dato {
+  margin-top: 22px;
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  color: #8a6a45;
+}
+.shonen-vigneta {
+  position: relative;
+  height: 340px;
+  border: 6px solid #1c1c1c;
+  background: repeating-linear-gradient(45deg, #fff 0 8px, #f6f6f6 8px 16px);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  transform: rotate(2deg);
+  box-shadow: 10px 12px 0 rgba(255, 107, 26, 0.25);
+}
+.shonen-grito {
+  position: absolute;
+  top: 16px;
+  left: 18px;
+  font-size: 54px;
+  font-weight: 900;
+  font-style: italic;
+  color: #ff6b1a;
+  text-shadow: 4px 4px 0 #ffb800;
+  transform: rotate(-6deg);
+}
+.shonen-silueta {
+  font-size: 120px;
+  color: #1c1c1c;
+}
+.shonen-lineas {
+  position: absolute;
+  inset: 0;
+  background: repeating-conic-gradient(
+    from 0deg at 50% 55%,
+    rgba(255, 107, 26, 0.16) 0deg 4deg,
+    transparent 4deg 9deg
+  );
+}
+.shonen-cabecera-lista {
+  display: flex;
+  justify-content: space-between;
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  letter-spacing: 0.16em;
+  color: #8a6a45;
+  padding: 8px 0 14px;
+  border-bottom: 3px solid #1c1c1c;
+  margin-bottom: 14px;
+}
+.shonen-ronda {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.shonen-oponente {
+  display: grid;
+  grid-template-columns: 44px 1fr 50px 90px;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border: 3px solid #1c1c1c;
+  background: #fff;
+}
+.shonen-rango {
+  font:
+    700 18px 'JetBrains Mono',
+    monospace;
+  color: #ff6b1a;
+  font-style: italic;
+}
+.shonen-retador {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: inherit;
+  text-align: left;
+  padding: 0;
+  min-width: 0;
+}
+.shonen-avatar {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  flex: none;
+  border: 3px solid #1c1c1c;
+  overflow: hidden;
+  font-size: 0;
+}
+.shonen-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.shonen-datos {
+  min-width: 0;
+}
+.shonen-datos strong {
+  display: block;
+  font-size: 15px;
+  font-style: italic;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.shonen-datos small {
+  display: block;
+  font-size: 10px;
+  color: #8a6a45;
+}
+.shonen-vs {
+  font:
+    900 15px 'JetBrains Mono',
+    monospace;
+  color: #ffb800;
+  text-align: center;
+}
+.shonen-acc {
+  display: flex;
+  justify-content: flex-end;
+}
+.shonen-oponente.is-active {
+  background: #ffb800;
+}
+
+/* ========================================================= */
+/* FANTASMAS · rediseño completo                              */
+/* ========================================================= */
+.ghost-home {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: calc(100vh - 190px);
+  overflow: hidden;
+}
+.ghost-niebla {
+  position: absolute;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  filter: blur(60px);
+  pointer-events: none;
+}
+.ghost-niebla.s1 {
+  left: -60px;
+  top: 10%;
+  background: rgba(103, 232, 249, 0.12);
+}
+.ghost-niebla.s2 {
+  right: 22%;
+  bottom: -10%;
+  background: rgba(148, 163, 184, 0.1);
+}
+.ghost-luna {
+  position: absolute;
+  left: 14%;
+  top: 16%;
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 35%, #e0f7fa, #67e8f9);
+  box-shadow: 0 0 70px rgba(103, 232, 249, 0.4);
+  opacity: 0.85;
+}
+.ghost-figura {
+  position: absolute;
+  left: 18%;
+  bottom: 8%;
+  width: 150px;
+  height: 200px;
+  border-radius: 50% 50% 0 0;
+  background: linear-gradient(180deg, rgba(103, 232, 249, 0.35), transparent);
+  display: grid;
+  place-items: center;
+  filter: drop-shadow(0 0 26px rgba(103, 232, 249, 0.45));
+}
+.ghost-figura span {
+  font-size: 72px;
+  color: #dff1f5;
+}
+.ghost-panel {
+  position: relative;
+  z-index: 1;
+  width: min(560px, 100%);
+  padding: 34px;
+  border: 1px solid rgba(103, 232, 249, 0.3);
+  border-radius: 20px;
+  background: rgba(16, 26, 36, 0.55);
+  backdrop-filter: blur(12px);
+}
+.ghost-kicker {
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  letter-spacing: 0.24em;
+  color: #67e8f9;
+}
+.ghost-panel h1 {
+  margin: 14px 0 16px;
+  font-size: 50px;
+  font-weight: 400;
+}
+.ghost-panel > p {
+  color: #7a9ba8;
+  line-height: 1.9;
+  max-width: 440px;
+}
+.ghost-acciones {
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+}
+.ghost-acciones button {
+  border: 1px solid #67e8f9;
+  background: transparent;
+  color: #67e8f9;
+  padding: 11px 16px;
+  cursor: pointer;
+  font-size: 11px;
+}
+.ghost-acciones button:first-child {
+  background: #67e8f9;
+  color: #0a1018;
+}
+.ghost-dato {
+  margin-top: 20px;
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  color: #7a9ba8;
+}
+.ghost-cementerio {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  padding-top: 8px;
+}
+.ghost-niebla-fondo {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 100%, rgba(103, 232, 249, 0.1), transparent 70%);
+  pointer-events: none;
+}
+.ghost-lapida {
+  position: relative;
+  min-height: 250px;
+  padding: 22px 14px 18px;
+  border: 1px solid rgba(103, 232, 249, 0.3);
+  border-radius: 90px 90px 8px 8px;
+  background: linear-gradient(180deg, rgba(103, 232, 249, 0.08), rgba(16, 26, 36, 0.4));
+  text-align: center;
+  backdrop-filter: blur(3px);
+}
+.ghost-lapida button {
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: inherit;
+  padding: 0;
+}
+.ghost-retrato {
+  display: grid;
+  place-items: center;
+  width: 86px;
+  height: 86px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid rgba(103, 232, 249, 0.5);
+  box-shadow: 0 0 24px rgba(103, 232, 249, 0.3);
+}
+.ghost-retrato img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  filter: saturate(0.7) brightness(0.9);
+}
+.ghost-lapida strong {
+  display: block;
+  font-size: 14px;
+}
+.ghost-lapida small {
+  display: block;
+  font-size: 9px;
+  color: #7a9ba8;
+  margin-top: 5px;
+}
+.ghost-anos {
+  display: block;
+  margin-top: 12px;
+  font:
+    9px 'JetBrains Mono',
+    monospace;
+  letter-spacing: 0.12em;
+  color: #67e8f9;
+}
+.ghost-acc {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+.ghost-lapida.is-active {
+  box-shadow: 0 0 30px rgba(103, 232, 249, 0.35);
+  border-color: #67e8f9;
+}
+
+/* ========================================================= */
+/* SAMURÁI · rediseño completo                               */
+/* ========================================================= */
+.samurai-home {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+  min-height: calc(100vh - 190px);
+}
+.samurai-patio {
+  position: relative;
+  height: 400px;
+  border: 1px solid rgba(201, 169, 97, 0.25);
+  overflow: hidden;
+  background: linear-gradient(180deg, #241c17, #16100c);
+}
+.samurai-sol {
+  position: absolute;
+  left: 50%;
+  top: 12%;
+  transform: translateX(-50%);
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #b7352a, #7a1f18);
+  box-shadow: 0 0 60px rgba(183, 53, 42, 0.45);
+}
+.samurai-suelo {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 34%;
+  background:
+    repeating-linear-gradient(90deg, rgba(201, 169, 97, 0.08) 0 2px, transparent 2px 30px), #1c1410;
+  border-top: 3px solid #c9a961;
+}
+.samurai-guerrero {
+  position: absolute;
+  left: 50%;
+  bottom: 16%;
+  transform: translateX(-50%);
+  font-size: 150px;
+  color: #efe6d6;
+  text-shadow: 0 0 40px rgba(201, 169, 97, 0.35);
+  line-height: 1;
+}
+.samurai-panel {
+  position: relative;
+}
+.samurai-kicker {
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  letter-spacing: 0.24em;
+  color: #c9a961;
+}
+.samurai-panel h1 {
+  margin: 14px 0 18px;
+  font-size: 54px;
+  font-weight: 400;
+  line-height: 1.05;
+}
+.samurai-panel > p {
+  color: #9e8f7c;
+  line-height: 1.9;
+  max-width: 400px;
+}
+.samurai-acciones {
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+}
+.samurai-acciones button {
+  border: 1px solid #c9a961;
+  background: transparent;
+  color: #c9a961;
+  padding: 11px 16px;
+  cursor: pointer;
+  font-size: 11px;
+}
+.samurai-acciones button:first-child {
+  background: #b7352a;
+  color: #efe6d6;
+  border-color: #b7352a;
+}
+.samurai-dato {
+  margin-top: 20px;
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  color: #9e8f7c;
+}
+.samurai-dojo {
+  position: relative;
+}
+.samurai-muro {
+  display: none;
+}
+.samurai-dojo .samurai-sol {
+  display: none;
+}
+.samurai-tatami {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding-top: 16px;
+}
+.samurai-kata {
+  position: relative;
+  display: grid;
+  grid-template-columns: 44px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid rgba(201, 169, 97, 0.3);
+  background: linear-gradient(120deg, rgba(183, 53, 42, 0.1), transparent);
+  clip-path: polygon(0 0, 100% 0, 100% 78%, 92% 100%, 0 100%);
+}
+.samurai-kanji {
+  font-size: 22px;
+  color: rgba(201, 169, 97, 0.5);
+  line-height: 1;
+  opacity: 0.7;
+}
+.samurai-kata button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: inherit;
+  text-align: left;
+  padding: 0;
+  min-width: 0;
+}
+.samurai-portada {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  flex: none;
+  overflow: hidden;
+  border: 2px solid #c9a961;
+  font-size: 0;
+}
+.samurai-portada img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.samurai-kata strong {
+  display: block;
+  font-size: 14px;
+}
+.samurai-kata small {
+  display: block;
+  font-size: 9px;
+  color: #9e8f7c;
+  margin-top: 4px;
+}
+.samurai-grado {
+  font:
+    9px 'JetBrains Mono',
+    monospace;
+  color: #c9a961;
+  letter-spacing: 0.1em;
+}
+.samurai-acc {
+  grid-column: 2/4;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 6px;
+}
+.samurai-kata.is-active {
+  box-shadow: inset 0 0 0 2px #c9a961;
+}
+
+/* ========================================================= */
+/* KAWAII · rediseño completo                                 */
+/* ========================================================= */
+.kawaii-home {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 190px);
+  overflow: hidden;
+}
+.kawaii-nubes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.kawaii-nube {
+  position: absolute;
+  width: 150px;
+  height: 54px;
+  border-radius: 40px;
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 8px 20px rgba(158, 224, 200, 0.25);
+}
+.kawaii-nube.s1 {
+  left: 10%;
+  top: 16%;
+}
+.kawaii-nube.s2 {
+  right: 12%;
+  top: 24%;
+  transform: scale(0.75);
+}
+.kawaii-arco {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 180px;
+  background: linear-gradient(180deg, transparent, rgba(255, 46, 136, 0.2));
+}
+.kawaii-panel {
+  position: relative;
+  z-index: 1;
+  width: min(600px, 100%);
+  text-align: center;
+  padding: 30px;
+}
+.kawaii-cara-grande {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 22px;
+  border-radius: 50%;
+  background: #9ee0c8;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 14px 34px rgba(158, 224, 200, 0.45);
+}
+.kawaii-cara-grande span {
+  font-size: 44px;
+  color: #fff;
+}
+.kawaii-kicker {
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  letter-spacing: 0.22em;
+  color: #ff9ec4;
+}
+.kawaii-panel h1 {
+  margin: 14px 0 16px;
+  font-size: 48px;
+}
+.kawaii-panel > p {
+  color: #b98ca3;
+  line-height: 1.7;
+  max-width: 430px;
+  margin: 0 auto;
+}
+.kawaii-acciones {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 24px;
+}
+.kawaii-acciones button {
+  border: 0;
+  background: #ff2e88;
+  color: #fff;
+  box-shadow: 0 6px 20px rgba(255, 46, 136, 0.4);
+  padding: 11px 18px;
+  cursor: pointer;
+  font-size: 11px;
+  border-radius: 24px;
+}
+.kawaii-acciones button:last-child {
+  background: #8b5cf6;
+  color: #fff;
+}
+.kawaii-dato {
+  margin-top: 20px;
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  color: #ff8ac4;
+}
+.kawaii-jardin {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 20px;
+  padding: 28px 6px 12px;
+}
+.kawaii-arco-arriba {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  top: 2px;
+  height: 90px;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 18% 0, rgba(255, 46, 136, 0.4), transparent 55%),
+    radial-gradient(ellipse at 82% 0, rgba(139, 92, 246, 0.4), transparent 55%);
+}
+.kawaii-nube-amiga {
+  position: relative;
+  padding: 20px 16px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 30px;
+  background: linear-gradient(160deg, var(--c), rgba(26, 11, 36, 0.85));
+  text-align: center;
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.35),
+    inset 0 1px rgba(255, 255, 255, 0.18);
+  transition:
+    transform 0.25s,
+    box-shadow 0.25s;
+}
+.kawaii-nube-amiga::before {
+  content: '';
+  position: absolute;
+  top: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 34% 30%,
+    rgba(255, 255, 255, 0.95),
+    var(--c) 58%,
+    transparent 74%
+  );
+  opacity: 0.9;
+  pointer-events: none;
+}
+.kawaii-nube-amiga:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 30px 60px rgba(255, 46, 136, 0.35);
+}
+.kawaii-nube-amiga button {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: #fff4ff;
+  padding: 0;
+  width: 100%;
+}
+.kawaii-foto {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 108px;
+  height: 108px;
+  margin: 8px auto 14px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 5px solid rgba(255, 255, 255, 0.9);
+  box-shadow:
+    0 0 0 3px rgba(255, 46, 136, 0.4),
+    0 12px 30px rgba(0, 0, 0, 0.4);
+}
+.kawaii-foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.kawaii-ojitos {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(26, 11, 36, 0.9);
+  color: #ff8ac4;
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+.kawaii-nube-amiga strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 800;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.kawaii-nube-amiga small {
+  display: block;
+  font-size: 9px;
+  color: #e0b9ea;
+  margin-top: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.kawaii-acc {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+.kawaii-nube-amiga.is-active {
+  box-shadow:
+    0 0 0 3px #ff2e88,
+    0 22px 50px rgba(255, 46, 136, 0.5);
+}
+.kawaii-nube-amiga.is-active::before {
+  opacity: 1;
+}
+.kawaii-nube-amiga.is-active::before {
+  opacity: 1;
+}

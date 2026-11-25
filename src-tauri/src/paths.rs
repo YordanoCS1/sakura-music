@@ -72,6 +72,12 @@ pub fn covers_dir() -> PathBuf {
     dir
 }
 
+pub fn cover_thumbs_dir() -> PathBuf {
+    let dir = covers_dir().join("thumbs");
+    let _ = std::fs::create_dir_all(&dir);
+    dir
+}
+
 pub fn bin_dir() -> PathBuf {
     let dir = ensure_data_dir().join("bin");
     let _ = std::fs::create_dir_all(&dir);

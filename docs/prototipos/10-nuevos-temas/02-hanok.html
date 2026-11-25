@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>02 · Hanok (한옥) · Corea</title>
+  <style>
+    :root { --hanji: #f5efe4; --madera: #7a4b2a; --madera-osc: #4b2d18; --giwa: #2c3748; --tinta: #241d17; --borde: #d8cbb8; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--hanji); color: var(--tinta); font-family: 'Segoe UI', system-ui, sans-serif; height: 100vh; display: flex; flex-direction: column; }
+    .techo { height: 56px; background: var(--giwa); color: #f5efe4; display: flex; align-items: center; justify-content: space-between; padding: 0 28px; border-bottom: 4px solid var(--madera); }
+    .techo b { letter-spacing: .16em; font-weight: 600; font-size: 14px; }
+    .techo nav { display: flex; gap: 6px; }
+    .techo button { background: transparent; border: 1px solid rgba(255,255,255,.18); color: #cbd5e1; padding: 6px 14px; cursor: pointer; font-size: 12px; }
+    .techo button.on { background: var(--madera); border-color: var(--madera); color: #fff; }
+    main { flex: 1; overflow: auto; padding: 30px 40px; }
+    .vista { display: none; max-width: 1080px; margin: 0 auto; }
+    .vista.on { display: block; }
+    .patio { display: grid; grid-template-columns: 1.1fr .9fr; gap: 32px; align-items: stretch; min-height: 430px; }
+    .celosia {
+      background: #fffaf0; border: 8px solid var(--madera); padding: 28px; position: relative;
+      background-image: linear-gradient(to right, rgba(122,75,42,.15) 1px, transparent 1px), linear-gradient(to bottom, rgba(122,75,42,.15) 1px, transparent 1px);
+      background-size: 48px 48px; display: flex; flex-direction: column; justify-content: flex-end;
+    }
+    .celosia h1 { font-size: 42px; margin: 0 0 10px; color: var(--madera-osc); }
+    .celosia p { margin: 0 0 18px; color: #5f4f42; line-height: 1.7; }
+    .celosia button { align-self: flex-start; background: var(--giwa); color: #fff; border: 0; padding: 11px 22px; cursor: pointer; font-size: 13px; }
+    .pabellon { background: var(--giwa); color: #f5efe4; padding: 28px; border: 6px solid var(--madera-osc); display: flex; flex-direction: column; justify-content: space-between; }
+    .pabellon .kanji { font-size: 72px; color: rgba(245,239,228,.16); text-align: right; }
+    .rejilla { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .cuarto { background: #fffbf4; border: 2px solid var(--madera); padding: 16px; display: flex; gap: 14px; align-items: center; }
+    .cuarto .foto { width: 58px; height: 58px; background: var(--giwa); color: var(--hanji); display: grid; place-items: center; font-size: 20px; border: 2px solid var(--madera); flex: none; }
+    .cuarto strong { display: block; font-size: 14px; }
+    .cuarto small { color: #756556; font-size: 12px; }
+    .viga { height: 70px; background: var(--madera-osc); color: var(--hanji); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; border-top: 3px solid var(--madera); }
+  </style>
+</head>
+<body>
+  <header class="techo">
+    <b>한옥 · HANOK STUDIO</b>
+    <nav>
+      <button class="on" data-v="home">Patio</button>
+      <button data-v="lib">Pabellones</button>
+    </nav>
+  </header>
+  <main>
+    <section class="vista on" id="home">
+      <div class="patio">
+        <div class="celosia">
+          <h1>Arquitectura de madera y papel hanji</h1>
+          <p>Celosías simétricas, tejas azul pizarra y un patio luminoso para escuchar discos completos sin distracciones.</p>
+          <button onclick="ir('lib')">Entrar a la biblioteca</button>
+        </div>
+        <div class="pabellon">
+          <div><small style="letter-spacing:.18em;color:#94a3b8">PABELLÓN ACTIVO</small><h2 style="margin:8px 0 4px">Lluvia en Gyeongbokgung</h2><p style="margin:0;color:#cbd5e1;font-size:13px">14 pistas · 52 min · FLAC</p></div>
+          <div class="kanji">한옥</div>
+        </div>
+      </div>
+    </section>
+    <section class="vista" id="lib">
+      <h2 style="margin:0 0 16px;color:var(--madera-osc)">Biblioteca · Pabellones de madera</h2>
+      <div class="rejilla">
+        <div class="cuarto"><div class="foto">한</div><div><strong>Patio del Norte</strong><small>Jiyoon · 3:44</small></div></div>
+        <div class="cuarto"><div class="foto">산</div><div><strong>Monte Bukhansan</strong><small>Daejeon Trio · 4:21</small></div></div>
+        <div class="cuarto"><div class="foto">비</div><div><strong>Tejas bajo la lluvia</strong><small>Mina Ko · 3:58</small></div></div>
+        <div class="cuarto"><div class="foto">차</div><div><strong>Salón Insadong</strong><small>Haneul · 4:10</small></div></div>
+        <div class="cuarto"><div class="foto">달</div><div><strong>Noche en Jeonju</strong><small>Yoon · 5:12</small></div></div>
+        <div class="cuarto"><div class="foto">봄</div><div><strong>Primavera en Namsan</strong><small>Bora · 3:19</small></div></div>
+      </div>
+    </section>
+  </main>
+  <footer class="viga">
+    <div><strong>Tejas bajo la lluvia</strong> · <span style="opacity:.75;font-size:12px">Mina Ko</span></div>
+    <div>1:42 / 3:58</div>
+    <div>◀◀ &nbsp; ⏸ &nbsp; ▶▶</div>
+  </footer>
+  <script>
+    function ir(id) {
+      document.querySelectorAll('.vista').forEach((v) => v.classList.remove('on'));
+      document.getElementById(id).classList.add('on');
+      document.querySelectorAll('.techo button').forEach((b) => b.classList.toggle('on', b.dataset.v === id));
+    }
+    document.querySelectorAll('.techo button').forEach((b) => (b.onclick = () => ir(b.dataset.v)));
+  </script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>08 · Mecha HUD (機甲) · Anime</title>
+  <style>
+    :root { --negro: #0b0d11; --panel: #141821; --naranja: #ff5c00; --verde: #4af626; --texto: #edf1f7; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--negro); color: var(--texto); font-family: Consolas, 'Courier New', monospace; height: 100vh; display: flex; flex-direction: column; }
+    .nav {
+      height: 52px; background: #0f1218; border-bottom: 2px solid var(--naranja);
+      display: flex; align-items: center; justify-content: space-between; padding: 0 24px;
+    }
+    .peligro {
+      height: 8px;
+      background: repeating-linear-gradient(-45deg, var(--naranja), var(--naranja) 12px, #111 12px, #111 24px);
+    }
+    .nav button { background: #191f2a; border: 1px solid #303a4d; color: #9aa7bd; padding: 6px 14px; cursor: pointer; font: inherit; margin-left: 6px; }
+    .nav button.on { background: var(--naranja); color: #0b0d11; border-color: var(--naranja); font-weight: 700; }
+    main { flex: 1; overflow: auto; padding: 28px 36px; background-image: radial-gradient(rgba(74,246,38,.08) 1px, transparent 1px); background-size: 24px 24px; }
+    .vista { display: none; max-width: 1080px; margin: 0 auto; }
+    .vista.on { display: block; }
+    .cabina { display: grid; grid-template-columns: 1fr 340px; gap: 28px; align-items: center; min-height: 410px; }
+    .hud { border: 1px solid var(--naranja); background: rgba(20,24,33,.9); padding: 26px; clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 22px 100%, 0 calc(100% - 22px)); }
+    .radar { height: 280px; border: 2px solid var(--verde); border-radius: 50%; display: grid; place-items: center; color: var(--verde); position: relative; box-shadow: inset 0 0 40px rgba(74,246,38,.12); }
+    .modulos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .mod {
+      background: var(--panel); border-left: 4px solid var(--naranja); padding: 16px;
+      clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%);
+    }
+    .mod span { color: var(--verde); font-size: 11px; }
+    .dock { height: 66px; background: #0f1218; border-top: 2px solid var(--naranja); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <strong>UNIT-01 // 機甲 AUDIO HUD</strong>
+    <nav><button class="on" data-v="home">CABINA</button><button data-v="lib">MÓDULOS</button></nav>
+  </header>
+  <div class="peligro"></div>
+  <main>
+    <section class="vista on" id="home">
+      <div class="cabina">
+        <div class="hud">
+          <div style="color:var(--naranja);font-size:12px">[ SYNC RATIO: 98.4% // AUDIO ONLINE ]</div>
+          <h1 style="font-size:40px;margin:10px 0">CABINA TÁCTICA DE SONIDO</h1>
+          <p style="color:#9aa7bd;line-height:1.7">Paneles chaflanados, alertas naranja industrial y telemetría verde fósforo inspirada en anime mecha clásico.</p>
+          <button onclick="ir('lib')" style="background:var(--verde);color:#0b0d11;border:0;padding:10px 20px;font:inherit;font-weight:700;cursor:pointer">DESPLEGAR BIBLIOTECA &gt;&gt;</button>
+        </div>
+        <div class="radar"><div style="text-align:center"><div style="font-size:32px">機甲</div><small>TARGET LOCKED</small></div></div>
+      </div>
+    </section>
+    <section class="vista" id="lib">
+      <div class="modulos">
+        <div class="mod"><span>TRK-001 // ACTIVE</span><h3 style="margin:6px 0 4px">Cruel Angel Synth</h3><small style="color:#9aa7bd">NERV OST · 4:05</small></div>
+        <div class="mod"><span>TRK-002 // READY</span><h3 style="margin:6px 0 4px">Decisive Battle</h3><small style="color:#9aa7bd">Shiro Sagisu · 2:24</small></div>
+        <div class="mod"><span>TRK-003 // READY</span><h3 style="margin:6px 0 4px">Hangar Launch</h3><small style="color:#9aa7bd">Mecha Core · 3:49</small></div>
+        <div class="mod"><span>TRK-004 // READY</span><h3 style="margin:6px 0 4px">Orbital Drop</h3><small style="color:#9aa7bd">Tokyo-3 · 4:31</small></div>
+        <div class="mod"><span>TRK-005 // READY</span><h3 style="margin:6px 0 4px">Reactor Pulse</h3><small style="color:#9aa7bd">A.T. Field · 3:18</small></div>
+        <div class="mod"><span>TRK-006 // READY</span><h3 style="margin:6px 0 4px">Zero Gravity</h3><small style="color:#9aa7bd">Gundam Lab · 5:02</small></div>
+      </div>
+    </section>
+  </main>
+  <footer class="dock">
+    <div><span style="color:var(--verde)">▶</span> <strong>Cruel Angel Synth</strong> · <small style="color:#9aa7bd">FLAC // 48kHz</small></div>
+    <div style="color:var(--naranja)">[ PREV ] [ PAUSE ] [ NEXT ]</div>
+  </footer>
+  <script>
+    function ir(id) {
+      document.querySelectorAll('.vista').forEach((v) => v.classList.remove('on'));
+      document.getElementById(id).classList.add('on');
+      document.querySelectorAll('.nav button').forEach((b) => b.classList.toggle('on', b.dataset.v === id));
+    }
+    document.querySelectorAll('.nav button').forEach((b) => (b.onclick = () => ir(b.dataset.v)));
+  </script>
+</body>
+</html>
