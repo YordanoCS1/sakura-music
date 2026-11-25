@@ -176,6 +176,14 @@ export default function App() {
   const [playerStyle, setPlayerStyle] = useState<PlayerStyle>(() => {
     return (localStorage.getItem('sakura_player_style') as PlayerStyle) || 'floating';
   });
+  const [carpetaExportacion, setCarpetaExportacion] = useState<string>(
+    () => localStorage.getItem('sakura_export_folder') ?? '',
+  );
+  const guardarCarpetaExportacion = (ruta: string) => {
+    setCarpetaExportacion(ruta);
+    if (ruta) localStorage.setItem('sakura_export_folder', ruta);
+    else localStorage.removeItem('sakura_export_folder');
+  };
   const [glassOpacity, setGlassOpacity] = useState<number>(() => {
     const saved = localStorage.getItem('sakura_glass_opacity');
     return saved ? parseInt(saved, 10) : 65;
@@ -1666,6 +1674,8 @@ export default function App() {
                 atajos={atajos}
                 escuchandoAtajo={escuchandoAtajo}
                 onEscucharAtajo={setEscuchandoAtajo}
+                carpetaExportacion={carpetaExportacion}
+                onSetCarpetaExportacion={guardarCarpetaExportacion}
                 onAbrirGenerador={() => setGeneradorAbierto(true)}
                 onGuardarTema={(tema) => {
                   setCustomThemes(guardarTemaPersonalizado(tema));
@@ -1763,6 +1773,8 @@ export default function App() {
                 toggleFavorite(activeTrack.id, { stopPropagation() {} } as React.MouseEvent)
               }
               tema={temaBase}
+              carpetaExportacion={carpetaExportacion}
+              onCarpetaExportacion={guardarCarpetaExportacion}
               onAviso={(mensaje, accion) => setAvisoAccion({ mensaje, accion })}
               onClose={() => setPortadaFull(false)}
             />

@@ -23,6 +23,7 @@ test.beforeEach(async ({ page }) => {
         'C:\\Users\\Prueba\\Downloads\\Artista - Titulo.png|C:\\Users\\Prueba\\Downloads|Descargas',
       leer_imagen_base64: null,
       abrir_carpeta: null,
+      abrir_archivo: null,
       remote_set_enabled: true,
       remote_update_state: null,
       search_catalog_songs: [],
@@ -311,7 +312,7 @@ test('la presentación muestra el álbum, navega con atajos y permite exportar',
   await expect(cartel.getByRole('button', { name: 'Exportar tarjeta' })).toBeVisible();
   await cartel.getByRole('button', { name: 'Exportar tarjeta' }).click();
   await expect(page.locator('.action-toast')).toContainText('guardada en Descargas');
-  await expect(page.getByRole('button', { name: 'Abrir carpeta' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Abrir imagen' })).toBeVisible();
 
   await page.keyboard.press('ArrowRight');
   await expect(page.getByRole('dialog', { name: /Presentación de Segunda/ })).toBeVisible();
@@ -1051,6 +1052,7 @@ test('el panel ahora suena muestra detalles, album y artista', async ({ page }) 
         'C:\\Users\\Prueba\\Downloads\\Artista - Titulo.png|C:\\Users\\Prueba\\Downloads|Descargas',
       leer_imagen_base64: null,
       abrir_carpeta: null,
+      abrir_archivo: null,
       remote_set_enabled: true,
       remote_update_state: null,
       search_catalog_songs: [],

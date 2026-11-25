@@ -928,6 +928,7 @@ pub fn run() {
             guardar_imagen,
             leer_imagen_base64,
             abrir_carpeta,
+            abrir_archivo,
             read_lyrics,
             search_lyrics,
             save_track_lyrics,
@@ -1100,6 +1101,28 @@ fn leer_imagen_base64(ruta: String) -> Result<String, String> {
     ))
 }
 
+/// Abre el PNG con la aplicación por defecto del sistema.
+#[tauri::command]
+fn abrir_archivo(ruta: String) -> Result<(), String> {
+    val::ruta(&ruta, "Archivo a abrir")?;
+    let destino = PathBuf::from(&ruta);
+    let destino = std::fs::canonicalize(&destino).unwrap_or(destino);
+    if !destino.is_file() {
+        return Err(format!("El archivo no existe: {}", destino.display()));
+    }
+    #[cfg(windows)]
+    std::process::Command::new("cmd")
+        .args(["/C", "start", "", &destino.to_string_lossy()])
+        .spawn()
+        .map_err(|error| format!("No se pudo abrir el archivo: {error}"))?;
+    #[cfg(not(windows))]
+    std::process::Command::new("xdg-open")
+        .arg(&destino)
+        .spawn()
+        .map_err(|error| format!("No se pudo abrir el archivo: {error}"))?;
+    Ok(())
+}
+
 /// Abre una carpeta en el explorador del sistema (para el aviso del PNG).
 #[tauri::command]
 fn abrir_carpeta(ruta: String) -> Result<(), String> {
@@ -1131,7 +1154,12 @@ fn carpeta_de_descargas(app: &tauri::AppHandle) -> Option<PathBuf> {
 /// El navegador no descarga los `data:` URL dentro del WebView de Tauri,
 /// así que el Rust decodifica el base64 y escribe el archivo.
 #[tauri::command]
-fn guardar_imagen(app: tauri::AppHandle, nombre: String, datos: String) -> Result<String, String> {
+fn guardar_imagen(
+    app: tauri::AppHandle,
+    nombre: String,
+    datos: String,
+    carpeta_elegida: Option<String>,
+) -> Result<String, String> {
     use base64::Engine;
 
     val::texto(&nombre, 200, "Nombre de archivo")?;
@@ -1153,16 +1181,26 @@ fn guardar_imagen(app: tauri::AppHandle, nombre: String, datos: String) -> Resul
     let probe = carpeta_de_descargas(&app)
         .map(|carpeta| carpeta.join(format!("{prefijo}.tmp")))
         .unwrap_or_default();
-    let (carpeta, origen) =
-        if !probe.as_os_str().is_empty() && std::fs::write(&probe, b"ok").is_ok() {
-            let _ = std::fs::remove_file(&probe);
-            (probe.parent().unwrap().to_path_buf(), "Descargas")
-        } else {
-            let alternativa = paths::ensure_data_dir().join("exports");
-            std::fs::create_dir_all(&alternativa)
-                .map_err(|error| format!("No se pudo crear la carpeta de exportación: {error}"))?;
-            (alternativa, "la carpeta de datos de la app")
-        };
+    let elegida = carpeta_elegida
+        .filter(|valor| !valor.trim().is_empty())
+        .map(PathBuf::from);
+    let (carpeta, origen) = if let Some(destino) = elegida {
+        std::fs::create_dir_all(&destino)
+            .map_err(|error| format!("No se pudo crear la carpeta elegida: {error}"))?;
+        let prueba = destino.join(format!("{prefijo}.tmp"));
+        std::fs::write(&prueba, b"ok")
+            .map_err(|error| format!("La carpeta elegida no es escribible: {error}"))?;
+        let _ = std::fs::remove_file(&prueba);
+        (destino, "la carpeta elegida")
+    } else if !probe.as_os_str().is_empty() && std::fs::write(&probe, b"ok").is_ok() {
+        let _ = std::fs::remove_file(&probe);
+        (probe.parent().unwrap().to_path_buf(), "Descargas")
+    } else {
+        let alternativa = paths::ensure_data_dir().join("exports");
+        std::fs::create_dir_all(&alternativa)
+            .map_err(|error| format!("No se pudo crear la carpeta de exportación: {error}"))?;
+        (alternativa, "la carpeta de datos de la app")
+    };
 
     let mut destino = carpeta.join(&nombre);
     if destino.exists() {

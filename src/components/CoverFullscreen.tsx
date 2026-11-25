@@ -4,6 +4,7 @@ import {
   Calendar,
   Disc3,
   Download,
+  FolderOpen,
   Eye,
   Gauge,
   HardDrive,
@@ -13,7 +14,7 @@ import {
   Sparkles,
   X,
 } from 'lucide-react';
-import { invoke } from '../lib/puente';
+import { invoke, open } from '../lib/puente';
 import type { ScannedTrack } from '../types';
 
 interface LineaLetra {
@@ -31,6 +32,8 @@ interface CoverFullscreenProps {
   esFav: boolean;
   onToggleFavorite: () => void;
   tema: string;
+  carpetaExportacion: string;
+  onCarpetaExportacion: (ruta: string) => void;
 }
 
 const COLORES: Record<string, [string, string, string]> = {
@@ -82,6 +85,8 @@ export default function CoverFullscreen({
   esFav,
   onToggleFavorite,
   tema,
+  carpetaExportacion,
+  onCarpetaExportacion,
 }: CoverFullscreenProps) {
   const [letras, setLetras] = useState<LineaLetra[]>([]);
   const [lineaActual, setLineaActual] = useState(0);
@@ -163,6 +168,14 @@ export default function CoverFullscreen({
     const nodo = letrasRef.current?.querySelector('.is-current');
     nodo?.scrollIntoView({ block: 'center', behavior: 'smooth' });
   }, [lineaActual]);
+
+  const elegirCarpeta = async () => {
+    const destino = await open({ directory: true });
+    if (typeof destino === 'string') {
+      onCarpetaExportacion(destino);
+      onAviso(`Carpeta de exportación: ${destino}`);
+    }
+  };
 
   const exportar = async () => {
     setExportando(true);
@@ -326,14 +339,15 @@ export default function CoverFullscreen({
       const respuesta = await invoke<string>('guardar_imagen', {
         nombre,
         datos: lienzo.toDataURL('image/png'),
+        carpeta_elegida: carpetaExportacion || undefined,
       });
-      const [ruta, carpeta = '', origen = 'Descargas'] = respuesta.split('|');
+      const [ruta, , origen = 'Descargas'] = respuesta.split('|');
       onAviso(`Tarjeta guardada en ${origen}: ${ruta}`, {
-        etiqueta: 'Abrir carpeta',
+        etiqueta: 'Abrir imagen',
         onClick: () => {
-          void invoke('abrir_carpeta', { ruta: carpeta || ruta })
-            .then(() => onAviso('Carpeta abierta en el explorador.'))
-            .catch((error: unknown) => onAviso(`No se pudo abrir la carpeta: ${String(error)}`));
+          void invoke('abrir_archivo', { ruta })
+            .then(() => onAviso('Imagen abierta.'))
+            .catch((error: unknown) => onAviso(`No se pudo abrir la imagen: ${String(error)}`));
         },
       });
     } catch (error) {
@@ -354,6 +368,14 @@ export default function CoverFullscreen({
       <div className="cover-full-barra">
         <button type="button" onClick={onClose} aria-label="Salir" title="Salir (Esc)">
           <X className="w-4 h-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => void elegirCarpeta()}
+          aria-label="Elegir carpeta de exportación"
+          title="Elegir carpeta de exportación"
+        >
+          <FolderOpen className="w-4 h-4" />
         </button>
         <button
           type="button"
