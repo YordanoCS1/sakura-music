@@ -6948,7 +6948,7 @@ html.splash-handoff .player-dock { animation: contenido-aparecer 460ms 120ms eas
 /* DESHACER BORRADO                                           */
 /* ========================================================= */
 .undo-toast {
-  position:fixed; z-index:260; left:50%; bottom:104px; transform:translateX(-50%);
+  position:fixed; z-index:500; left:50%; bottom:104px; transform:translateX(-50%);
   display:flex; align-items:center; gap:10px; min-width:340px; max-width:90vw;
   padding:10px 12px; border:1px solid rgba(255,255,255,.16); border-radius:12px;
   background:rgba(20,16,26,.96); color:#f4eef6; box-shadow:0 18px 48px rgba(0,0,0,.5);
@@ -8491,7 +8491,7 @@ html[data-theme-transition='space'] #theme-panel.panel-enter { animation:t-estud
 }
 
 /* Toast con acción. */
-.action-toast { position:fixed; z-index:310; left:50%; bottom:26px; transform:translateX(-50%); display:flex; align-items:center; gap:10px; max-width:min(560px, calc(100vw - 24px)); padding:10px 12px; border:1px solid rgba(255,255,255,.14); border-radius:12px; background:#1c1820; color:#f4eef6; box-shadow:0 18px 50px rgba(0,0,0,.5); animation:entrada-tema 240ms ease both; }
+.action-toast { position:fixed; z-index:500; left:50%; bottom:26px; transform:translateX(-50%); display:flex; align-items:center; gap:10px; max-width:min(560px, calc(100vw - 24px)); padding:10px 12px; border:1px solid rgba(255,255,255,.14); border-radius:12px; background:#1c1820; color:#f4eef6; box-shadow:0 18px 50px rgba(0,0,0,.5); animation:entrada-tema 240ms ease both; }
 .action-toast-icon { display:grid; place-items:center; width:26px; height:26px; border-radius:50%; background:#3f7d5a; color:#fff; flex:none; }
 .action-toast-copy { font-size:11px; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .action-toast-btn { margin-left:auto; flex:none; border:0; border-radius:8px; padding:7px 11px; background:var(--accent-600, #a8442f); color:#fff; font-size:10px; font-weight:700; cursor:pointer; }

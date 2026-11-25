@@ -166,6 +166,7 @@ export default function CoverFullscreen({
 
   const exportar = async () => {
     setExportando(true);
+    onAviso('Generando tarjeta…');
     try {
       const lienzo = document.createElement('canvas');
       lienzo.width = 1000;
@@ -203,11 +204,12 @@ export default function CoverFullscreen({
       ctx.fillText('SAKURA MUSIC', 70, 965);
 
       const nombre = `${track.artist} - ${track.title}.png`;
-      const ruta = await invoke<string>('guardar_imagen', {
+      const respuesta = await invoke<string>('guardar_imagen', {
         nombre,
         datos: lienzo.toDataURL('image/png'),
       });
-      onAviso(`Tarjeta guardada en Descargas: ${ruta.split(/[\\/]/).pop()}`);
+      const [ruta, origen = 'Descargas'] = respuesta.split('|');
+      onAviso(`Tarjeta guardada en ${origen}: ${ruta.split(/[\\/]/).pop()}`);
     } catch (error) {
       onAviso(`No se pudo guardar la tarjeta: ${String(error)}`);
     } finally {

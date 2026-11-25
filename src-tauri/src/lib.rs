@@ -1060,7 +1060,11 @@ fn importar_biblioteca(ruta: String) -> Result<String, String> {
     Ok("Biblioteca importada correctamente".to_string())
 }
 
-/// Guarda la tarjeta PNG generada en el lienzo del frontend en Descargas.
+fn carpeta_de_descargas(app: &tauri::AppHandle) -> Option<PathBuf> {
+    app.path().download_dir().ok()
+}
+
+/// Guarda la tarjeta PNG generada en lienzo del frontend en Descargas.
 /// El navegador no descarga los `data:` URL dentro del WebView de Tauri,
 /// así que el Rust decodifica el base64 y escribe el archivo.
 #[tauri::command]
@@ -1075,12 +1079,27 @@ fn guardar_imagen(app: tauri::AppHandle, nombre: String, datos: String) -> Resul
     if bytes.len() < 8 || &bytes[..8] != b"\x89PNG\r\n\x1a\n" {
         return Err("Los datos no son una imagen PNG válida".to_string());
     }
-    let carpeta = app
-        .path()
-        .download_dir()
-        .map_err(|error| format!("No se pudo resolver Descargas: {error}"))?;
-    std::fs::create_dir_all(&carpeta)
-        .map_err(|error| format!("No se pudo crear la carpeta: {error}"))?;
+    let prefijo = format!(
+        "guardar-{}-{}",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map(|d| d.as_millis())
+            .unwrap_or(0)
+    );
+    let probe = carpeta_de_descargas(&app)
+        .map(|carpeta| carpeta.join(format!("{prefijo}.tmp")))
+        .unwrap_or_default();
+    let (carpeta, origen) =
+        if !probe.as_os_str().is_empty() && std::fs::write(&probe, b"ok").is_ok() {
+            let _ = std::fs::remove_file(&probe);
+            (probe.parent().unwrap().to_path_buf(), "Descargas")
+        } else {
+            let alternativa = paths::ensure_data_dir().join("exports");
+            std::fs::create_dir_all(&alternativa)
+                .map_err(|error| format!("No se pudo crear la carpeta de exportación: {error}"))?;
+            (alternativa, "la carpeta de datos de la app")
+        };
 
     let mut destino = carpeta.join(&nombre);
     if destino.exists() {
@@ -1094,5 +1113,5 @@ fn guardar_imagen(app: tauri::AppHandle, nombre: String, datos: String) -> Resul
     }
     std::fs::write(&destino, &bytes)
         .map_err(|error| format!("No se pudo guardar la imagen: {error}"))?;
-    Ok(destino.to_string_lossy().to_string())
+    Ok(format!("{}|{origen}", destino.to_string_lossy()))
 }
