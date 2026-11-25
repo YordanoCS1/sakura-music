@@ -13,6 +13,7 @@
     "core:window:allow-set-size",
     "core:window:allow-set-always-on-top",
     "dialog:default",
-    "dialog:allow-open"
+    "dialog:allow-open",
+    "notification:default"
   ]
 }

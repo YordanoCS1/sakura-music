@@ -33,6 +33,7 @@ import StatsTab from './components/StatsTab';
 import TrackContextMenu from './components/TrackContextMenu';
 import { sonidoUI } from './lib/sonidos';
 import { esEscritorio } from './lib/puente';
+import { configurarNotificaciones, notificarDescarga } from './lib/notificaciones_nativas';
 import RemoteStatus from './components/RemoteStatus';
 import CoverFullscreen from './components/CoverFullscreen';
 import ActionToast from './components/ActionToast';
@@ -382,6 +383,12 @@ export default function App() {
     desactivado: playerStyle === 'off',
   });
 
+  useEffect(() => {
+    void configurarNotificaciones(() => setActiveTab('library'));
+    // El listener se registra una sola vez; `configurarNotificaciones` ya lo evita.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Atajos configurables: si se está reasignando, se captura la tecla.
   useEffect(() => {
     const alTeclar = (evento: KeyboardEvent) => {
@@ -539,6 +546,11 @@ export default function App() {
       window.setTimeout(() => setScanMessage(null), 4500);
     },
     onDescargaCompletada: (titulo) => {
+      void notificarDescarga(
+        titulo,
+        '',
+        tracks.find((pista) => pista.title === titulo)?.cover_url ?? null,
+      );
       sonidoUI(temaBase, 'confirm');
       setAvisoAccion({
         mensaje: `${titulo} descargada. Ya está en la biblioteca.`,
