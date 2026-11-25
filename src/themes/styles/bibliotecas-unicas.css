@@ -1,0 +1,678 @@
+/* ========================================================================
+   BIBLIOTECAS CON ESTRUCTURA ÚNICA · loto / ukiyo / vinilo / karesansui
+   ======================================================================== */
+
+/* ── LOTO · tríptico de rollos de seda ── */
+@keyframes loto-sello {
+  0%,
+  100% {
+    box-shadow: 0 0 0 rgba(212, 175, 55, 0);
+  }
+  50% {
+    box-shadow: 0 0 24px rgba(212, 175, 55, 0.45);
+  }
+}
+.app-shell[data-skin='loto'] .loto-birobo {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr) 58px;
+  gap: 18px;
+  align-items: start;
+  padding: 8px 0 40px;
+}
+.app-shell[data-skin='loto'] .loto-aleta {
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background: linear-gradient(180deg, #5e1023, #280911);
+  border: 1px solid rgba(212, 175, 55, 0.5);
+  border-radius: 6px;
+  color: #e8c983;
+  writing-mode: vertical-rl;
+  font:
+    10px 'Cormorant Garamond',
+    serif;
+  letter-spacing: 0.18em;
+}
+.app-shell[data-skin='loto'] .loto-aleta-kanji {
+  font-size: 34px;
+  color: #d4af37;
+  writing-mode: horizontal-tb;
+}
+.app-shell[data-skin='loto'] .loto-aleta-linea {
+  width: 1px;
+  height: 60px;
+  background: #d4af37;
+}
+.app-shell[data-skin='loto'] .loto-aleta-sello {
+  font-size: 30px;
+  color: #d4af37;
+  border: 2px solid #d4af37;
+  padding: 8px;
+  border-radius: 50%;
+  writing-mode: horizontal-tb;
+  animation: loto-sello 6s ease-in-out infinite;
+}
+.app-shell[data-skin='loto'] .loto-rollos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 22px;
+}
+.app-shell[data-skin='loto'] .loto-rollo {
+  position: relative;
+  padding: 16px 14px 14px;
+  border: 2px solid rgba(212, 175, 55, 0.55);
+  border-radius: 4px;
+  background: linear-gradient(180deg, #f6ead0, #d9c49a);
+  color: #3a120f;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.35);
+}
+.app-shell[data-skin='loto'] .loto-rollo::before,
+.app-shell[data-skin='loto'] .loto-rollo::after {
+  content: '';
+  position: absolute;
+  left: -10px;
+  right: -10px;
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #8a6a2f, #d4af37, #8a6a2f);
+}
+.app-shell[data-skin='loto'] .loto-rollo::before {
+  top: -8px;
+}
+.app-shell[data-skin='loto'] .loto-rollo::after {
+  bottom: -8px;
+}
+.app-shell[data-skin='loto'] .loto-rollo-cinta {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 8px;
+  background: rgba(212, 175, 55, 0.45);
+  border-radius: 2px;
+}
+.app-shell[data-skin='loto'] .loto-rollo-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  color: inherit;
+  text-align: center;
+  padding-top: 10px;
+}
+.app-shell[data-skin='loto'] .loto-rollo-cover {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3/4;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(212, 175, 55, 0.6);
+  background: #2a0c16;
+}
+.app-shell[data-skin='loto'] .loto-rollo-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.app-shell[data-skin='loto'] .loto-rollo-sello {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border: 2px solid #b93829;
+  color: #b93829;
+  background: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  border-radius: 2px;
+}
+.app-shell[data-skin='loto'] .loto-rollo-btn > strong {
+  font:
+    22px 'Cormorant Garamond',
+    serif;
+  line-height: 1.15;
+}
+.app-shell[data-skin='loto'] .loto-rollo-btn > small {
+  font-size: 10px;
+  color: #7a564a;
+}
+.app-shell[data-skin='loto'] .loto-rollo-regla {
+  width: 70%;
+  height: 1px;
+  background: rgba(138, 106, 47, 0.45);
+}
+.app-shell[data-skin='loto'] .loto-rollo-dur {
+  font:
+    9px 'JetBrains Mono',
+    monospace;
+  letter-spacing: 0.12em;
+  color: #8a6a2f;
+}
+.app-shell[data-skin='loto'] .loto-rollo.is-active {
+  outline: 2px solid #d4af37;
+  outline-offset: 4px;
+}
+.app-shell[data-skin='loto'] .loto-acc {
+  justify-content: center;
+  gap: 6px;
+  margin-top: 6px;
+}
+.app-shell[data-skin='loto'] .loto-acc button {
+  border: 1px solid rgba(138, 106, 47, 0.4);
+  border-radius: 2px;
+  color: #7a564a;
+}
+.app-shell[data-skin='loto'] .loto-acc button:hover {
+  background: #5e1023;
+  color: #f0d68a;
+}
+
+/* ── UKIYO · rollo lateral de estampas apaisadas ── */
+@keyframes ukiyo-flotar {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+.app-shell[data-skin='ukiyo'] .ukiyo-rollo-lateral {
+  display: flex;
+  gap: 22px;
+  overflow-x: auto;
+  padding: 20px 14px 26px;
+  scroll-snap-type: x mandatory;
+  scrollbar-color: #163a5f #f2e4c9;
+}
+.app-shell[data-skin='ukiyo'] .ukiyo-lamina {
+  position: relative;
+  flex: 0 0 360px;
+  min-height: 330px;
+  padding: 0;
+  background: #f6ead2;
+  border: 2px solid #163a5f;
+  border-radius: 3px;
+  box-shadow: 8px 8px 0 rgba(185, 56, 41, 0.28);
+  overflow: hidden;
+  scroll-snap-align: start;
+}
+.app-shell[data-skin='ukiyo'] .ukiyo-lamina-ola {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 130px;
+}
+.app-shell[data-skin='ukiyo'] .ukiyo-lamina-sello {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  z-index: 3;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 3px double #b93829;
+  color: #b93829;
+  background: rgba(255, 255, 255, 0.65);
+  font-size: 18px;
+}
+.app-shell[data-skin='ukiyo'] .ukiyo-lamina-btn {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  width: 100%;
+  padding: 18px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  color: #0d2138;
+  text-align: left;
+}
+.app-shell[data-skin='ukiyo'] .ukiyo-cover {
+  width: 100%;
+  height: 180px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 2px solid #163a5f;
+  background: linear-gradient(160deg, #163a5f, #2c5f8a);
+  color: #f2e4c9;
+  font-size: 36px;
+}
+.app-shell[data-skin='ukiyo'] .ukiyo-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: sepia(0.15);
+}
+.app-shell[data-skin='ukiyo'] .ukiyo-cartucho {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.7);
+  border-left: 4px solid #b93829;
+}
+.app-shell[data-skin='ukiyo'] .ukiyo-cartucho strong {
+  font-size: 21px;
+}
+.app-shell[data-skin='ukiyo'] .ukiyo-cartucho small {
+  font-size: 10px;
+  color: #46617d;
+}
+.app-shell[data-skin='ukiyo'] .ukiyo-lamina.is-active {
+  outline: 3px solid #b93829;
+  outline-offset: 3px;
+}
+.app-shell[data-skin='ukiyo'] .ukiyo-lamina:hover .ukiyo-cover {
+  animation: ukiyo-flotar 3s ease-in-out infinite;
+}
+.app-shell[data-skin='ukiyo'] .ukiyo-acc {
+  position: absolute;
+  z-index: 4;
+  left: 18px;
+  bottom: 10px;
+}
+.app-shell[data-skin='ukiyo'] .ukiyo-acc button {
+  color: #163a5f;
+}
+.app-shell[data-skin='ukiyo'] .ukiyo-pie-rollo {
+  margin: 4px 14px 30px;
+  font:
+    10px 'JetBrains Mono',
+    monospace;
+  color: #46617d;
+}
+
+/* ── VINILO · estantería con discos asomando y plato activo ── */
+@keyframes vinilo-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.app-shell[data-skin='vinilo'] .vinilo-estante {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 34px 24px;
+  align-items: flex-end;
+  padding: 24px 12px 20px;
+  border-bottom: 8px solid #2a2520;
+  border-radius: 4px;
+}
+.app-shell[data-skin='vinilo'] .vinilo-funda {
+  position: relative;
+  width: 230px;
+  padding: 10px;
+  border: 1px solid rgba(255, 94, 58, 0.35);
+  border-radius: 4px;
+  background: linear-gradient(145deg, #2a2520, #151210);
+  transform: rotateY(-7deg);
+  transition:
+    transform 0.25s,
+    box-shadow 0.25s;
+}
+.app-shell[data-skin='vinilo'] .vinilo-funda:nth-child(even) {
+  transform: rotateY(5deg) translateY(10px);
+}
+.app-shell[data-skin='vinilo'] .vinilo-funda:hover {
+  transform: rotateY(0) translateY(-6px);
+  box-shadow: 0 24px 44px rgba(0, 0, 0, 0.6);
+}
+.app-shell[data-skin='vinilo'] .vinilo-disco-asoma {
+  position: absolute;
+  z-index: 0;
+  right: -26px;
+  top: 22px;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: repeating-radial-gradient(circle, #111 0 3px, #24201b 3px 5px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.6);
+  transition: right 0.25s;
+}
+.app-shell[data-skin='vinilo'] .vinilo-funda:hover .vinilo-disco-asoma {
+  right: -46px;
+}
+.app-shell[data-skin='vinilo'] .vinilo-funda-btn {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  color: inherit;
+  text-align: left;
+}
+.app-shell[data-skin='vinilo'] .vinilo-cover {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 3px solid #3d352d;
+  background: #201c18;
+  color: #ff5e3a;
+  font-size: 36px;
+}
+.app-shell[data-skin='vinilo'] .vinilo-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.app-shell[data-skin='vinilo'] .vinilo-cover-brillo {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, rgba(255, 255, 255, 0.16), transparent 42%);
+  pointer-events: none;
+}
+.app-shell[data-skin='vinilo'] .vinilo-etiqueta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 8px 10px;
+  border-left: 3px solid #ff5e3a;
+  background: rgba(0, 0, 0, 0.35);
+}
+.app-shell[data-skin='vinilo'] .vinilo-etiqueta strong {
+  font-size: 15px;
+}
+.app-shell[data-skin='vinilo'] .vinilo-etiqueta small {
+  font-size: 10px;
+  color: #a99a8d;
+}
+.app-shell[data-skin='vinilo'] .vinilo-rpm {
+  color: #ff7a52;
+  font-family: 'JetBrains Mono', monospace;
+}
+.app-shell[data-skin='vinilo'] .vinilo-funda.is-active {
+  outline: 2px solid #ff5e3a;
+}
+.app-shell[data-skin='vinilo'] .vinilo-acc {
+  position: relative;
+  z-index: 2;
+  margin-top: 8px;
+  gap: 6px;
+}
+.app-shell[data-skin='vinilo'] .vinilo-acc button {
+  border: 1px solid rgba(255, 94, 58, 0.35);
+  border-radius: 2px;
+  color: #c9b9aa;
+}
+.app-shell[data-skin='vinilo'] .vinilo-acc button:hover {
+  background: #ff5e3a;
+  color: #120e0b;
+}
+.app-shell[data-skin='vinilo'] .vinilo-plato-activo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin: 28px 12px 40px;
+  padding: 18px 24px;
+  border: 1px solid rgba(255, 94, 58, 0.3);
+  border-radius: 12px;
+  background: #161310;
+  color: #f0e5dc;
+}
+.app-shell[data-skin='vinilo'] .vinilo-plato-disco {
+  position: absolute;
+  left: 22px;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: repeating-radial-gradient(circle, #0d0c0a 0 3px, #26221d 3px 5px);
+  animation: vinilo-spin 5s linear infinite;
+}
+.app-shell[data-skin='vinilo'] .vinilo-plato-centro {
+  position: relative;
+  z-index: 1;
+  width: 54px;
+  height: 54px;
+  margin-left: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #ff5e3a;
+  background: #201c18;
+  color: #ff5e3a;
+  font-size: 20px;
+}
+.app-shell[data-skin='vinilo'] .vinilo-plato-centro img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.app-shell[data-skin='vinilo'] .vinilo-plato-activo > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.app-shell[data-skin='vinilo'] .vinilo-plato-activo small {
+  font:
+    9px 'JetBrains Mono',
+    monospace;
+  color: #ff7a52;
+  letter-spacing: 0.16em;
+}
+.app-shell[data-skin='vinilo'] .vinilo-plato-activo strong {
+  font-size: 17px;
+}
+.app-shell[data-skin='vinilo']
+  .vinilo-plato-activo
+  span:not(.vinilo-plato-disco):not(.vinilo-plato-centro) {
+  font-size: 11px;
+  color: #a99a8d;
+}
+
+/* ── KARESANSUI · piedras sobre arena rastrillada ── */
+@keyframes zen-respirar {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-1deg);
+  }
+  50% {
+    transform: translateY(-3px) rotate(1deg);
+  }
+}
+.app-shell[data-skin='karesansui'] .zen-jardin {
+  position: relative;
+  min-height: 560px;
+  padding: 50px 26px 70px;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 44px 36px;
+  align-items: start;
+}
+.app-shell[data-skin='karesansui'] .zen-arena {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-radial-gradient(
+      ellipse at 30% 30%,
+      rgba(60, 51, 42, 0.08) 0 2px,
+      transparent 2px 24px
+    ),
+    repeating-radial-gradient(
+      ellipse at 78% 72%,
+      rgba(60, 51, 42, 0.06) 0 2px,
+      transparent 2px 28px
+    );
+}
+.app-shell[data-skin='karesansui'] .zen-roca-mayor {
+  position: absolute;
+  right: 6%;
+  top: 9%;
+  width: 150px;
+  height: 96px;
+  border-radius: 48% 52% 40% 60%;
+  background: linear-gradient(145deg, #5a5348, #26221e);
+  box-shadow:
+    0 20px 34px rgba(40, 34, 28, 0.35),
+    inset 0 3px 10px rgba(255, 255, 255, 0.12);
+  opacity: 0.7;
+  pointer-events: none;
+}
+.app-shell[data-skin='karesansui'] .zen-piedra {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  border-radius: 46% 54% 42% 58% / 18% 22% 78% 82%;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.86), rgba(220, 214, 202, 0.82));
+  box-shadow:
+    0 18px 30px rgba(60, 51, 42, 0.18),
+    inset 0 2px 8px rgba(255, 255, 255, 0.6);
+  transform: translateY(calc(var(--piedra) * 4px));
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
+}
+.app-shell[data-skin='karesansui'] .zen-piedra:nth-child(odd) {
+  border-radius: 54% 46% 60% 40% / 22% 18% 82% 78%;
+}
+.app-shell[data-skin='karesansui'] .zen-piedra:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 28px 46px rgba(60, 51, 42, 0.28);
+  animation: zen-respirar 4s ease-in-out infinite;
+}
+.app-shell[data-skin='karesansui'] .zen-piedra.is-active {
+  outline: 2px solid #3c332a;
+  outline-offset: 3px;
+  background: #fffdf8;
+}
+.app-shell[data-skin='karesansui'] .zen-piedra-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  color: #2b2721;
+  text-align: center;
+}
+.app-shell[data-skin='karesansui'] .zen-piedra-cover {
+  width: 118px;
+  height: 118px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 50% 50% 44% 56% / 44% 52% 48% 56%;
+  border: 3px solid rgba(60, 51, 42, 0.4);
+  background: #d8d2c6;
+  color: #4a433a;
+  font-size: 32px;
+  box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+.app-shell[data-skin='karesansui'] .zen-piedra-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.app-shell[data-skin='karesansui'] .zen-piedra-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.app-shell[data-skin='karesansui'] .zen-piedra-info small:first-child {
+  font:
+    8px 'JetBrains Mono',
+    monospace;
+  letter-spacing: 0.16em;
+  color: #8c8376;
+}
+.app-shell[data-skin='karesansui'] .zen-piedra-info strong {
+  font-size: 16px;
+}
+.app-shell[data-skin='karesansui'] .zen-piedra-info small:last-child {
+  font-size: 10px;
+  color: #6b655b;
+}
+.app-shell[data-skin='karesansui'] .zen-acc {
+  justify-content: center;
+  gap: 6px;
+}
+.app-shell[data-skin='karesansui'] .zen-acc button {
+  border: 1px solid rgba(60, 51, 42, 0.3);
+  border-radius: 999px;
+  color: #4a433a;
+}
+.app-shell[data-skin='karesansui'] .zen-acc button:hover {
+  background: #3c332a;
+  color: #f2eee5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell[data-skin] .loto-aleta-sello,
+  .app-shell[data-skin] .vinilo-disco-asoma,
+  .app-shell[data-skin] .vinilo-plato-disco,
+  .app-shell[data-skin] .zen-piedra:hover {
+    animation: none !important;
+  }
+}
+@media (max-width: 760px) {
+  .app-shell[data-skin='loto'] .loto-birobo {
+    grid-template-columns: 1fr;
+  }
+  .app-shell[data-skin='loto'] .loto-aleta {
+    min-height: 70px;
+    writing-mode: horizontal-tb;
+    flex-direction: row;
+  }
+  .app-shell[data-skin='ukiyo'] .ukiyo-lamina {
+    flex-basis: 300px;
+  }
+  .app-shell[data-skin='vinilo'] .vinilo-funda {
+    width: 200px;
+  }
+  .app-shell[data-skin='karesansui'] .zen-jardin {
+    gap: 28px;
+  }
+}
+
+/* Ajustes de contraste vistos en captura. */
+.app-shell[data-skin='ukiyo'] .ukiyo-acc {
+  background: rgba(255, 255, 255, 0.82);
+  padding: 4px 8px;
+  border-radius: 999px;
+  bottom: 8px;
+}
+.app-shell[data-skin='ukiyo'] .ukiyo-acc button {
+  color: #163a5f;
+}
+.app-shell[data-skin='vinilo'] .vinilo-etiqueta {
+  border-radius: 0 !important;
+  background: rgba(0, 0, 0, 0.62) !important;
+  padding: 10px 12px !important;
+  z-index: 2;
+}
+.app-shell[data-skin='vinilo'] .vinilo-etiqueta strong {
+  white-space: normal;
+}

@@ -1122,50 +1122,64 @@ export default function ThemeLibrary({
       <div className="loto-library">
         <header className="loto-lib-cabecera">
           <div>
-            <small>蓮 · PERGAMINO IMPERIAL</small>
-            <h1>Biblioteca de Seda</h1>
+            <small>蓮 · TRÍPTICO DE SEDA</small>
+            <h1>Pergamino Imperial</h1>
           </div>
           {navCarpetas}
-          <span className="loto-lib-count">{total} piezas</span>
+          <span className="loto-lib-count">{total} rollos</span>
         </header>
         {selectorCarpetas}
-        {vistaTracks.length === 0 ? (
-          vacio
-        ) : (
-          <div className="loto-pergamino">
+        <div className="loto-birobo">
+          <aside className="loto-aleta">
+            <span className="loto-aleta-kanji">蓮</span>
+            <small>SEDA & ORO</small>
+            <span className="loto-aleta-linea" />
+            <small>SALA DE ROLLOS</small>
+          </aside>
+          <div className="loto-rollos">
             {vistaTracks.map((track, i) => (
               <article
                 key={track.id}
                 data-track-id={track.id}
-                className={`loto-fila ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+                className={`loto-rollo ${activeTrack?.id === track.id ? 'is-active' : ''}`}
               >
+                <span className="loto-rollo-cinta" aria-hidden="true" />
                 <button
                   type="button"
-                  className="loto-fila-btn"
+                  className="loto-rollo-btn"
                   onClick={() => onPlayTrack(track)}
                   onDoubleClick={() => onPresentTrack?.(track)}
                 >
-                  <span className="loto-num">{String(i + 1).padStart(2, '0')}</span>
-                  <span className="loto-cover">
+                  <span className="loto-rollo-cover">
                     {track.cover_url ? (
                       <img src={getCoverSrc(track.cover_url)} alt="" />
                     ) : (
                       <span aria-hidden="true">🪷</span>
                     )}
+                    <span className="loto-rollo-sello" aria-hidden="true">
+                      蓮
+                    </span>
                   </span>
-                  <span className="loto-meta">
-                    <strong>{track.title}</strong>
-                    <small>
-                      {track.artist} · {track.album}
-                    </small>
-                  </span>
-                  <span className="loto-dur">{track.duration_str}</span>
+                  <strong>{track.title}</strong>
+                  <small>
+                    {track.artist} · {track.album}
+                  </small>
+                  <span className="loto-rollo-regla" aria-hidden="true" />
+                  <small className="loto-rollo-dur">
+                    {String(i + 1).padStart(2, '0')} · {track.duration_str}
+                  </small>
                 </button>
                 <div className="loto-acc">{acciones(track)}</div>
               </article>
             ))}
           </div>
-        )}
+          <aside className="loto-aleta loto-aleta-der">
+            <small> Colección local </small>
+            <span className="loto-aleta-sello" aria-hidden="true">
+              金
+            </span>
+          </aside>
+        </div>
       </div>
     );
   }
@@ -1176,100 +1190,133 @@ export default function ThemeLibrary({
         <header className="ukiyo-lib-cabecera">
           <span className="ukiyo-sello">波</span>
           <div>
-            <small>富嶽三十六景 · XILOGRAFÍA</small>
+            <small>富嶽三十六景 · rollo lateral</small>
             <h1>Estampas Musicales</h1>
           </div>
           {navCarpetas}
           <span className="ukiyo-lib-count">{total} láminas</span>
         </header>
         {selectorCarpetas}
-        {vistaTracks.length === 0 ? (
-          vacio
-        ) : (
-          <div className="ukiyo-estampas">
-            {vistaTracks.map((track) => (
-              <article
-                key={track.id}
-                data-track-id={track.id}
-                className={`ukiyo-estampa ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+        <div className="ukiyo-rollo-lateral">
+          {vistaTracks.map((track) => (
+            <article
+              key={track.id}
+              data-track-id={track.id}
+              className={`ukiyo-lamina ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+            >
+              <svg
+                className="ukiyo-lamina-ola"
+                viewBox="0 0 300 120"
+                fill="none"
+                aria-hidden="true"
               >
-                <button
-                  type="button"
-                  className="ukiyo-estampa-btn"
-                  onClick={() => onPlayTrack(track)}
-                  onDoubleClick={() => onPresentTrack?.(track)}
-                >
-                  <span className="ukiyo-cover">
-                    {track.cover_url ? (
-                      <img src={getCoverSrc(track.cover_url)} alt="" />
-                    ) : (
-                      <span aria-hidden="true">波</span>
-                    )}
-                  </span>
+                <path
+                  d="M0 120 L0 60 Q60 10 120 65 Q170 110 220 55 Q260 15 300 70 L300 120 Z"
+                  fill="#163a5f"
+                />
+                <path d="M0 90 Q80 50 150 95 Q220 135 300 80 L300 120 L0 120 Z" fill="#2c5f8a" />
+                <path
+                  d="M150 50 Q175 28 205 55"
+                  stroke="#fff9ec"
+                  strokeWidth="7"
+                  strokeLinecap="round"
+                />
+              </svg>
+              <span className="ukiyo-lamina-sello" aria-hidden="true">
+                波
+              </span>
+              <button
+                type="button"
+                className="ukiyo-lamina-btn"
+                onClick={() => onPlayTrack(track)}
+                onDoubleClick={() => onPresentTrack?.(track)}
+              >
+                <span className="ukiyo-cover">
+                  {track.cover_url ? (
+                    <img src={getCoverSrc(track.cover_url)} alt="" />
+                  ) : (
+                    <span aria-hidden="true">波</span>
+                  )}
+                </span>
+                <span className="ukiyo-cartucho">
                   <strong>{track.title}</strong>
                   <small>
                     {track.artist} · {track.duration_str}
                   </small>
-                </button>
-                <div className="ukiyo-acc">{acciones(track)}</div>
-              </article>
-            ))}
-          </div>
-        )}
+                </span>
+              </button>
+              <div className="ukiyo-acc">{acciones(track)}</div>
+            </article>
+          ))}
+        </div>
+        <p className="ukiyo-pie-rollo">Deslizá el rollo para recorrer las estampas →</p>
       </div>
     );
   }
 
   if (theme === 'vinilo') {
+    const activa = vistaTracks.find((t) => t.id === activeTrack?.id) ?? vistaTracks[0];
     return (
       <div className="vinilo-library">
         <header className="vinilo-lib-cabecera">
           <div>
-            <small>33 RPM · ESTANTERÍA ANALÓGICA</small>
+            <small>33 RPM · estantería analógica</small>
             <h1>Fundas de Vinilo</h1>
           </div>
           {navCarpetas}
           <span className="vinilo-lib-count">{total} LPs</span>
         </header>
         {selectorCarpetas}
-        {vistaTracks.length === 0 ? (
-          vacio
-        ) : (
-          <div className="vinilo-estanteria">
-            {vistaTracks.map((track, i) => (
-              <article
-                key={track.id}
-                data-track-id={track.id}
-                className={`vinilo-funda-card ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+        <div className="vinilo-estante">
+          {vistaTracks.map((track, i) => (
+            <article
+              key={track.id}
+              data-track-id={track.id}
+              className={`vinilo-funda ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+              style={{ '--funda': i } as React.CSSProperties}
+            >
+              <span className="vinilo-disco-asoma" aria-hidden="true" />
+              <button
+                type="button"
+                className="vinilo-funda-btn"
+                onClick={() => onPlayTrack(track)}
+                onDoubleClick={() => onPresentTrack?.(track)}
               >
-                <button
-                  type="button"
-                  className="vinilo-funda-btn"
-                  onClick={() => onPlayTrack(track)}
-                  onDoubleClick={() => onPresentTrack?.(track)}
-                >
-                  <span className="vinilo-cover">
-                    {track.cover_url ? (
-                      <img src={getCoverSrc(track.cover_url)} alt="" />
-                    ) : (
-                      <span aria-hidden="true">◉</span>
-                    )}
-                  </span>
-                  <span className="vinilo-meta">
-                    <strong>
-                      {String(i + 1).padStart(2, '0')} · {track.title}
-                    </strong>
-                    <small>
-                      {track.artist} · {track.album}
-                    </small>
-                  </span>
-                  <span className="vinilo-rpm">
+                <span className="vinilo-cover">
+                  {track.cover_url ? (
+                    <img src={getCoverSrc(track.cover_url)} alt="" />
+                  ) : (
+                    <span aria-hidden="true">◉</span>
+                  )}
+                  <span className="vinilo-cover-brillo" aria-hidden="true" />
+                </span>
+                <span className="vinilo-etiqueta">
+                  <strong>
+                    {String(i + 1).padStart(2, '0')} · {track.title}
+                  </strong>
+                  <small>
+                    {track.artist} · {track.album}
+                  </small>
+                  <small className="vinilo-rpm">
                     {activeTrack?.id === track.id ? '● SONANDO' : track.duration_str}
-                  </span>
-                </button>
-                <div className="vinilo-acc">{acciones(track)}</div>
-              </article>
-            ))}
+                  </small>
+                </span>
+              </button>
+              <div className="vinilo-acc">{acciones(track)}</div>
+            </article>
+          ))}
+        </div>
+        {activa && (
+          <div className="vinilo-plato-activo">
+            <span className="vinilo-plato-disco" aria-hidden="true" />
+            <span className="vinilo-plato-centro" aria-hidden="true">
+              {activa.cover_url ? <img src={getCoverSrc(activa.cover_url)} alt="" /> : '◉'}
+            </span>
+            <div>
+              <small>EN EL PLATO</small>
+              <strong>{activa.title}</strong>
+              <span>{activa.artist} · 33⅓ RPM</span>
+            </div>
           </div>
         )}
       </div>
@@ -1281,48 +1328,48 @@ export default function ThemeLibrary({
       <div className="karesansui-library">
         <header className="karesansui-lib-cabecera">
           <div>
-            <small>枯山水 · JARDÍN DE ARENA</small>
+            <small>枯山水 · jardín de arena</small>
             <h1>Piedras de Paso</h1>
           </div>
           {navCarpetas}
           <span className="karesansui-lib-count">{total} piedras</span>
         </header>
         {selectorCarpetas}
-        {vistaTracks.length === 0 ? (
-          vacio
-        ) : (
-          <div className="karesansui-senda">
-            {vistaTracks.map((track) => (
-              <article
-                key={track.id}
-                data-track-id={track.id}
-                className={`karesansui-piedra ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+        <div className="zen-jardin">
+          <div className="zen-arena" aria-hidden="true" />
+          <span className="zen-roca-mayor" aria-hidden="true" />
+          {vistaTracks.map((track, i) => (
+            <article
+              key={track.id}
+              data-track-id={track.id}
+              className={`zen-piedra ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+              style={{ '--piedra': i } as React.CSSProperties}
+            >
+              <button
+                type="button"
+                className="zen-piedra-btn"
+                onClick={() => onPlayTrack(track)}
+                onDoubleClick={() => onPresentTrack?.(track)}
               >
-                <button
-                  type="button"
-                  className="karesansui-piedra-btn"
-                  onClick={() => onPlayTrack(track)}
-                  onDoubleClick={() => onPresentTrack?.(track)}
-                >
-                  <span className="karesansui-cover">
-                    {track.cover_url ? (
-                      <img src={getCoverSrc(track.cover_url)} alt="" />
-                    ) : (
-                      <span aria-hidden="true">石</span>
-                    )}
-                  </span>
-                  <span className="karesansui-meta">
-                    <strong>{track.title}</strong>
-                    <small>
-                      {track.artist} · {track.duration_str}
-                    </small>
-                  </span>
-                </button>
-                <div className="karesansui-acc">{acciones(track)}</div>
-              </article>
-            ))}
-          </div>
-        )}
+                <span className="zen-piedra-cover">
+                  {track.cover_url ? (
+                    <img src={getCoverSrc(track.cover_url)} alt="" />
+                  ) : (
+                    <span aria-hidden="true">石</span>
+                  )}
+                </span>
+                <span className="zen-piedra-info">
+                  <small>PIEDRA {String(i + 1).padStart(2, '0')}</small>
+                  <strong>{track.title}</strong>
+                  <small>
+                    {track.artist} · {track.duration_str}
+                  </small>
+                </span>
+              </button>
+              <div className="zen-acc">{acciones(track)}</div>
+            </article>
+          ))}
+        </div>
       </div>
     );
   }
