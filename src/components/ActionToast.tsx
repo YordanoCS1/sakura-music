@@ -26,7 +26,9 @@ export default function ActionToast({
       <span className="action-toast-icon" aria-hidden="true">
         <Check className="w-4 h-4" />
       </span>
-      <span className="action-toast-copy">{mensaje}</span>
+      <span className="action-toast-copy" title={mensaje}>
+        {mensaje}
+      </span>
       {accion && (
         <button type="button" className="action-toast-btn" onClick={accion.onClick}>
           {accion.etiqueta}

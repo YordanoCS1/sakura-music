@@ -27,7 +27,7 @@ interface CoverFullscreenProps {
   portada: string | null;
   onClose: () => void;
   onSelectTrack: (track: ScannedTrack) => void;
-  onAviso: (mensaje: string) => void;
+  onAviso: (mensaje: string, accion?: { etiqueta: string; onClick: () => void }) => void;
   esFav: boolean;
   onToggleFavorite: () => void;
   tema: string;
@@ -214,7 +214,13 @@ export default function CoverFullscreen({
         datos: lienzo.toDataURL('image/png'),
       });
       const [ruta, origen = 'Descargas'] = respuesta.split('|');
-      onAviso(`Tarjeta guardada en ${origen}: ${ruta.split(/[\\/]/).pop()}`);
+      const carpeta = ruta.replace(/[\\/][^\\/]+$/, '');
+      onAviso(`Tarjeta guardada en ${origen}: ${ruta}`, {
+        etiqueta: 'Abrir carpeta',
+        onClick: () => {
+          void invoke('abrir_carpeta', { ruta: carpeta }).catch(() => undefined);
+        },
+      });
     } catch (error) {
       onAviso(`No se pudo guardar la tarjeta: ${String(error)}`);
     } finally {

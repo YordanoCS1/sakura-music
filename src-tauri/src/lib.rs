@@ -927,6 +927,7 @@ pub fn run() {
             importar_biblioteca,
             guardar_imagen,
             leer_imagen_base64,
+            abrir_carpeta,
             read_lyrics,
             search_lyrics,
             save_track_lyrics,
@@ -1097,6 +1098,27 @@ fn leer_imagen_base64(ruta: String) -> Result<String, String> {
         "data:image/{tipo};base64,{}",
         base64::engine::general_purpose::STANDARD.encode(bytes)
     ))
+}
+
+/// Abre una carpeta en el explorador del sistema (para el aviso del PNG).
+#[tauri::command]
+fn abrir_carpeta(ruta: String) -> Result<(), String> {
+    val::ruta(&ruta, "Carpeta a abrir")?;
+    let destino = PathBuf::from(&ruta);
+    if !destino.is_dir() {
+        return Err("La carpeta no existe".to_string());
+    }
+    #[cfg(windows)]
+    std::process::Command::new("explorer")
+        .arg(&destino)
+        .spawn()
+        .map_err(|error| format!("No se pudo abrir el explorador: {error}"))?;
+    #[cfg(not(windows))]
+    std::process::Command::new("xdg-open")
+        .arg(&destino)
+        .spawn()
+        .map_err(|error| format!("No se pudo abrir el explorador: {error}"))?;
+    Ok(())
 }
 
 fn carpeta_de_descargas(app: &tauri::AppHandle) -> Option<PathBuf> {
