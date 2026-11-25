@@ -6288,13 +6288,13 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .kawaii-botones { display:flex; gap:10px; margin-top:20px; }
 .kawaii-botones button { border:0; background:#ff9ec4; color:#fff; padding:11px 18px; cursor:pointer; font-size:11px; border-radius:20px; }
 .kawaii-botones button:last-child { background:#9ee0c8; color:#7a4a6a; }
-.kawaii-dato { margin-top:20px; font:10px 'JetBrains Mono',monospace; color:#b98ca3; }
-.kawaii-cab { display:flex; align-items:center; gap:14px; padding-bottom:14px; margin-bottom:16px; border-bottom:4px solid #ff9ec4; }
-.kawaii-cab-glifo { font-size:26px; color:#ff9ec4; }
-.kawaii-cab-tit small { font:9px 'JetBrains Mono',monospace; letter-spacing:.16em; color:#ff9ec4; }
-.kawaii-cab-tit h1 { margin:4px 0 0; font-size:26px; }
+.kawaii-dato { margin-top:20px; font:10px 'JetBrains Mono',monospace; color:#8d7fa6; }
+.kawaii-cab { display:flex; align-items:center; gap:14px; padding:14px 18px; margin-bottom:18px; border:1px solid rgba(155,124,232,.25); border-radius:24px; background:linear-gradient(135deg, rgba(190,170,255,.18), rgba(150,235,205,.14)); backdrop-filter:blur(10px); }
+.kawaii-cab-glifo { display:grid; place-items:center; width:42px; height:42px; flex:none; border-radius:14px; background:linear-gradient(135deg, #9b7ce8, #c6a9ff); color:#fff; font-size:22px; box-shadow:0 8px 20px rgba(155,124,232,.3); transform:rotate(-8deg); }
+.kawaii-cab-tit small { font:9px 'JetBrains Mono',monospace; letter-spacing:.18em; color:#9b7ce8; }
+.kawaii-cab-tit h1 { margin:3px 0 0; font-size:26px; letter-spacing:-.02em; }
 .kawaii-cab .theme-library-nav { margin-left:auto; }
-.kawaii-cab-count { font:10px 'JetBrains Mono',monospace; color:#b98ca3; }
+.kawaii-cab-count { font:10px 'JetBrains Mono',monospace; color:#8d7fa6; white-space:nowrap; }
 .kawaii-amigos { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; }
 .kawaii-amigo { border-radius:24px; padding:16px 12px; background:var(--c); box-shadow:0 8px 18px rgba(0,0,0,.06); text-align:center; }
 .kawaii-amigo button { background:transparent; border:0; cursor:pointer; color:#fff; padding:0; }
@@ -6504,7 +6504,7 @@ html[data-theme-transition='kawaii'] #theme-panel.panel-enter { animation: t-kaw
 .kawaii-nube { position:absolute; width:150px; height:54px; border-radius:40px; background:rgba(255,255,255,.7); box-shadow:0 8px 20px rgba(158,224,200,.25); }
 .kawaii-nube.s1 { left:10%; top:16%; }
 .kawaii-nube.s2 { right:12%; top:24%; transform:scale(.75); }
-.kawaii-arco { position:absolute; left:0; right:0; bottom:0; height:180px; background:linear-gradient(180deg,transparent,rgba(255,158,196,.18)); }
+.kawaii-arco { position:absolute; left:0; right:0; bottom:0; height:180px; background:linear-gradient(180deg,transparent,rgba(155,124,232,.16)); }
 .kawaii-panel { position:relative; z-index:1; width:min(600px,100%); text-align:center; padding:30px; }
 .kawaii-cara-grande { width:120px; height:120px; margin:0 auto 22px; border-radius:50%; background:#9ee0c8; display:grid; place-items:center; box-shadow:0 14px 34px rgba(158,224,200,.45); }
 .kawaii-cara-grande span { font-size:44px; color:#fff; }
@@ -6512,20 +6512,23 @@ html[data-theme-transition='kawaii'] #theme-panel.panel-enter { animation: t-kaw
 .kawaii-panel h1 { margin:14px 0 16px; font-size:48px; }
 .kawaii-panel>p { color:#b98ca3; line-height:1.7; max-width:430px; margin:0 auto; }
 .kawaii-acciones { display:flex; gap:10px; justify-content:center; margin-top:24px; }
-.kawaii-acciones button { border:0; background:#ff9ec4; color:#fff; padding:11px 18px; cursor:pointer; font-size:11px; border-radius:24px; }
-.kawaii-acciones button:last-child { background:#9ee0c8; color:#7a4a6a; }
-.kawaii-dato { margin-top:20px; font:10px 'JetBrains Mono',monospace; color:#b98ca3; }
-.kawaii-jardin { position:relative; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:16px; padding-top:18px; }
-.kawaii-arco-arriba { position:absolute; left:0; right:0; top:0; height:90px; background:linear-gradient(180deg,rgba(255,158,196,.12),transparent); pointer-events:none; }
-.kawaii-nube-amiga { position:relative; padding:18px 12px 14px; border-radius:38px 38px 20px 20px; background:var(--c); text-align:center; box-shadow:0 12px 24px rgba(0,0,0,.06); }
-.kawaii-nube-amiga button { background:transparent; border:0; cursor:pointer; color:#fff; padding:0; width:100%; }
-.kawaii-foto { position:relative; display:grid; place-items:center; width:92px; height:92px; margin:0 auto 12px; border-radius:50%; overflow:hidden; border:4px solid rgba(255,255,255,.8); }
+.kawaii-acciones button { border:0; background:#9b7ce8; color:#fff; padding:11px 18px; cursor:pointer; font-size:11px; border-radius:24px; }
+.kawaii-acciones button:last-child { background:#c9f2e2; color:#4a3562; }
+.kawaii-dato { margin-top:20px; font:10px 'JetBrains Mono',monospace; color:#8d7fa6; }
+.kawaii-jardin { position:relative; display:grid; grid-template-columns:repeat(auto-fill,minmax(184px,1fr)); gap:18px; padding:26px 6px 10px; }
+.kawaii-arco-arriba { position:absolute; left:6%; right:6%; top:4px; height:70px; pointer-events:none; background:radial-gradient(ellipse at 20% 0, rgba(190,170,255,.3), transparent 55%), radial-gradient(ellipse at 80% 0, rgba(150,235,205,.28), transparent 55%); }
+.kawaii-nube-amiga { position:relative; padding:20px 16px 18px; border:1px solid rgba(255,255,255,.85); border-radius:30px; background:linear-gradient(155deg, rgba(255,255,255,.9), var(--c)); text-align:center; box-shadow:0 16px 36px rgba(90,60,130,.12), inset 0 1px rgba(255,255,255,.9); transition:transform .25s, box-shadow .25s; }
+.kawaii-nube-amiga::before { content:''; position:absolute; top:-26px; left:50%; transform:translateX(-50%); width:58px; height:58px; border-radius:50%; background:radial-gradient(circle at 34% 30%, #fff, var(--c) 62%, transparent 72%); opacity:.75; pointer-events:none; }
+.kawaii-nube-amiga:hover { transform:translateY(-6px); box-shadow:0 26px 48px rgba(90,60,130,.2); }
+.kawaii-nube-amiga button { background:transparent; border:0; cursor:pointer; color:#4a3562; padding:0; width:100%; }
+.kawaii-foto { position:relative; display:grid; place-items:center; width:104px; height:104px; margin:8px auto 14px; border-radius:50%; overflow:hidden; border:5px solid rgba(255,255,255,.9); box-shadow:0 10px 24px rgba(70,45,100,.16); }
 .kawaii-foto img { width:100%; height:100%; object-fit:cover; }
-.kawaii-ojitos { position:absolute; bottom:-2px; left:50%; transform:translateX(-50%); background:rgba(255,255,255,.9); color:#7a4a6a; font-size:11px; padding:2px 6px; border-radius:10px; white-space:nowrap; }
-.kawaii-nube-amiga strong { display:block; font-size:13px; }
-.kawaii-nube-amiga small { display:block; font-size:9px; color:rgba(255,255,255,.9); margin-top:4px; }
+.kawaii-ojitos { position:absolute; bottom:4px; left:50%; transform:translateX(-50%); background:rgba(255,255,255,.92); color:#7a5aa0; font-size:10px; padding:2px 7px; border-radius:10px; white-space:nowrap; }
+.kawaii-nube-amiga strong { display:block; font-size:13px; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.kawaii-nube-amiga small { display:block; font-size:9px; color:#7d6b96; margin-top:4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .kawaii-acc { display:flex; justify-content:center; margin-top:10px; }
-.kawaii-nube-amiga.is-active { box-shadow:0 0 0 3px #ff9ec4,0 12px 24px rgba(0,0,0,.06); }
+.kawaii-nube-amiga.is-active { box-shadow:0 0 0 3px #9b7ce8, 0 20px 44px rgba(155,124,232,.3); }
+.kawaii-nube-amiga.is-active::before { opacity:1; }
 
 
 /* ========================================================= */
@@ -8483,30 +8486,28 @@ html[data-theme-transition='space'] #theme-panel.panel-enter { animation:t-estud
 .cover-full[data-skin='samurai'] .cover-full-copy h1 { font-family:'Cormorant Garamond',serif; font-size:52px; letter-spacing:.06em; }
 .cover-full[data-skin='samurai'] .cover-full-card-head button.is-fav { color:#b7352a; }
 
-/* --- 13 · Kawaii: cuaderno pastel, polaroid, cinta washi y pegatina --- */
-.cover-full[data-skin='kawaii'] { --cf-bg:#fff6fb; --cf-fg:#5b3350; --cf-soft:#9d708c; --cf-accent:#f278ad; --cf-card:#fffdfd; --cf-line:rgba(242,120,173,.4); --cf-radius:22px; background:
-  radial-gradient(circle at 12% 10%, rgba(255,190,220,.45), transparent 30%),
-  radial-gradient(circle at 88% 85%, rgba(170,235,215,.4), transparent 32%),
-  repeating-linear-gradient(0deg, transparent 0 31px, rgba(242,120,173,.12) 31px 32px),
-  #fff9fd; }
+/* --- 13 · Kawaii: jardín pastel lila-menta, burbujas y destellos --- */
+.cover-full[data-skin='kawaii'] { --cf-bg:#f7f3ff; --cf-fg:#45335e; --cf-soft:#8d7fa6; --cf-accent:#9b7ce8; --cf-card:rgba(255,255,255,.72); --cf-line:rgba(155,124,232,.32); --cf-radius:26px; background:
+  radial-gradient(circle at 18% 12%, rgba(190,170,255,.5), transparent 34%),
+  radial-gradient(circle at 82% 78%, rgba(150,235,205,.45), transparent 36%),
+  radial-gradient(circle at 62% 18%, rgba(255,205,170,.35), transparent 28%),
+  #fbf9ff; }
 .cover-full[data-skin='kawaii']::before { background:none; }
-.cover-full[data-skin='kawaii'] .cover-full-deco span { border:0; opacity:.5; }
-.cover-full[data-skin='kawaii'] .cover-full-deco span:nth-child(1) { width:130px; height:34px; left:7%; top:8%; border-radius:2px; background:repeating-linear-gradient(45deg, rgba(242,120,173,.4) 0 8px, rgba(255,182,207,.4) 8px 16px); transform:rotate(-12deg); }
-.cover-full[data-skin='kawaii'] .cover-full-deco span:nth-child(2) { width:110px; height:30px; right:9%; bottom:12%; border-radius:2px; background:repeating-linear-gradient(-45deg, rgba(150,220,200,.5) 0 8px, rgba(200,245,230,.5) 8px 16px); transform:rotate(9deg); }
-.cover-full[data-skin='kawaii'] .cover-full-deco span:nth-child(3) { width:54px; height:54px; right:14%; top:18%; left:auto; bottom:auto; border-radius:50% 50% 50% 12%; background:rgba(242,120,173,.22); transform:rotate(18deg); }
-.cover-full[data-skin='kawaii'] .cover-full-deco span:nth-child(4) { width:36px; height:36px; left:11%; bottom:22%; border-radius:50% 50% 12% 50%; background:rgba(255,190,220,.35); }
-.cover-full[data-skin='kawaii'] .cover-full-deco span:nth-child(5) { display:none; }
-.cover-full[data-skin='kawaii'] .cover-full-arte { padding:14px 14px 44px; background:#fff; border-radius:3px; box-shadow:0 20px 55px rgba(120,70,100,.22), 0 2px 6px rgba(120,70,100,.1); transform:rotate(-2deg); }
+.cover-full[data-skin='kawaii'] .cover-full-deco span { border:0; border-radius:50%; filter:blur(2px); }
+.cover-full[data-skin='kawaii'] .cover-full-deco span:nth-child(1) { width:16vw; height:16vw; left:6%; top:10%; background:radial-gradient(circle at 32% 28%, rgba(255,255,255,.9), rgba(190,170,255,.28) 55%, transparent 72%); }
+.cover-full[data-skin='kawaii'] .cover-full-deco span:nth-child(2) { width:11vw; height:11vw; right:10%; bottom:14%; background:radial-gradient(circle at 32% 28%, rgba(255,255,255,.9), rgba(150,235,205,.3) 55%, transparent 72%); }
+.cover-full[data-skin='kawaii'] .cover-full-deco span:nth-child(3) { width:7vw; height:7vw; right:16%; top:16%; left:auto; bottom:auto; background:radial-gradient(circle at 32% 28%, #fff, rgba(255,205,170,.4) 60%, transparent 72%); }
+.cover-full[data-skin='kawaii'] .cover-full-deco span:nth-child(4) { width:5vw; height:5vw; left:14%; bottom:20%; background:radial-gradient(circle at 32% 28%, #fff, rgba(190,170,255,.35) 60%, transparent 72%); }
+.cover-full[data-skin='kawaii'] .cover-full-deco span:nth-child(5) { width:60vw; height:60vw; border:1px solid rgba(155,124,232,.18); transform:translate(-50%,-50%); }
 .cover-full[data-skin='kawaii'] .cover-full-halo { display:none; }
-.cover-full[data-skin='kawaii'] .cover-full-art { border:0; border-radius:0; box-shadow:none; }
-.cover-full[data-skin='kawaii'] .cover-full-arte::after { content:'♥  nunca dejes de brillar'; position:absolute; bottom:12px; left:0; right:0; text-align:center; font-size:10px; color:#a87d96; font-family:'Cormorant Garamond',serif; letter-spacing:.04em; }
-.cover-full[data-skin='kawaii'] .cover-full-sello { bottom:-26px; border:0; background:#fff6bf; color:#8a6a3a; border-radius:999px; box-shadow:0 6px 14px rgba(120,70,100,.15); transform:translateX(-50%) rotate(3deg); }
-.cover-full[data-skin='kawaii'] .cover-full-copy h1 { font-weight:800; letter-spacing:-.03em; font-size:40px; }
-.cover-full[data-skin='kawaii'] .cover-full-copy h1::before { content:'♥'; display:inline-grid; place-items:center; width:34px; height:34px; margin-right:12px; border-radius:50%; background:var(--cf-accent); color:#fff; font-size:16px; vertical-align:middle; box-shadow:0 4px 0 rgba(120,50,90,.25); }
-.cover-full[data-skin='kawaii'] .cover-full-card { border-radius:22px 22px 22px 4px; border:1px dashed var(--cf-accent); box-shadow:0 10px 26px rgba(242,120,173,.16); transform:rotate(.6deg); }
-.cover-full[data-skin='kawaii'] .cover-full-card-head { font-family:'Cormorant Garamond',serif; letter-spacing:.1em; }
-.cover-full[data-skin='kawaii'] .cover-full-lyrics { border-left:2px solid rgba(242,120,173,.35); padding-left:12px; }
-.cover-full[data-skin='kawaii'] .cover-full-lyrics p.is-current::after { content:' ♥'; color:var(--cf-accent); }
+.cover-full[data-skin='kawaii'] .cover-full-art { border:0; border-radius:32px; box-shadow:0 30px 70px rgba(110,80,160,.28), 0 0 0 6px rgba(255,255,255,.75); }
+.cover-full[data-skin='kawaii'] .cover-full-sello { border:1px solid rgba(155,124,232,.3); background:rgba(255,255,255,.8); color:var(--cf-accent); border-radius:999px; backdrop-filter:blur(10px); }
+.cover-full[data-skin='kawaii'] .cover-full-copy h1 { font-weight:800; letter-spacing:-.035em; font-size:46px; }
+.cover-full[data-skin='kawaii'] .cover-full-copy h1::before { content:'✦'; display:inline-grid; place-items:center; width:36px; height:36px; margin-right:12px; border-radius:12px; background:linear-gradient(135deg, var(--cf-accent), #c6a9ff); color:#fff; font-size:16px; vertical-align:middle; box-shadow:0 6px 16px rgba(155,124,232,.35); transform:rotate(-8deg); }
+.cover-full[data-skin='kawaii'] .cover-full-card { border-radius:26px; border:1px solid rgba(255,255,255,.9); background:rgba(255,255,255,.72); box-shadow:0 18px 45px rgba(110,80,160,.15); backdrop-filter:blur(18px); }
+.cover-full[data-skin='kawaii'] .cover-full-card-head { color:var(--cf-accent); }
+.cover-full[data-skin='kawaii'] .cover-full-lyrics { border-left:0; padding-left:0; }
+.cover-full[data-skin='kawaii'] .cover-full-lyrics p.is-current::after { content:' ✦'; color:var(--cf-accent); }
 
 /* --- 14 · Manga: viñeta, halftone y tinta roja --- */
 .cover-full[data-skin='manga'] { --cf-bg:#fdfcf8; --cf-fg:#0d0d0d; --cf-soft:#4a4a4a; --cf-accent:#d62828; --cf-card:#fff; --cf-line:#0d0d0d; --cf-radius:0; background:#fdfcf8; }

@@ -262,14 +262,14 @@ export default function ThemeLibrary({
         return (
           <header className="kawaii-cab">
             <span className="kawaii-cab-glifo" aria-hidden="true">
-              ♡
+              ✦
             </span>
             <div className="kawaii-cab-tit">
-              <small>PARQUE · 01</small>
+              <small>JARDÍN · 01</small>
               <h1>Biblioteca</h1>
             </div>
             {navCarpetas}
-            <span className="kawaii-cab-count">{total} AMIGOS</span>
+            <span className="kawaii-cab-count">{total} PISTAS</span>
           </header>
         );
       default:
@@ -292,7 +292,7 @@ export default function ThemeLibrary({
     shonen: 'Misiones',
     ghost: 'Ecos',
     samurai: 'Formas',
-    kawaii: 'Amigos',
+    kawaii: 'Jardín',
     manga: 'Capítulos',
     space: 'Canales',
   };
@@ -1003,7 +1003,7 @@ export default function ThemeLibrary({
                 className={`kawaii-nube-amiga ${activeTrack?.id === track.id ? 'is-active' : ''}`}
                 style={
                   {
-                    '--c': ['#ffc0d9', '#b8ecd8', '#d9c6f2', '#ffe0b0'][i % 4],
+                    '--c': ['#e4d6ff', '#c9f2e2', '#ffe2c4', '#d7e9ff'][i % 4],
                   } as React.CSSProperties
                 }
               >
@@ -1014,7 +1014,7 @@ export default function ThemeLibrary({
                 >
                   <span className="kawaii-foto">
                     {portadaDe(track)}
-                    <span className="kawaii-ojitos">(◕‿◕)</span>
+                    <span className="kawaii-ojitos">✦ ✧ ✦</span>
                   </span>
                   <strong>{track.title}</strong>
                   <small>
