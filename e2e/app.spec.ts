@@ -19,7 +19,8 @@ test.beforeEach(async ({ page }) => {
       remote_is_enabled: false,
       remote_local_ip: '127.0.0.1',
       remote_pin: '123456',
-      guardar_imagen: 'C:\\Users\\Prueba\\Downloads\\Artista - Titulo.png',
+      guardar_imagen:
+        'C:\\Users\\Prueba\\Downloads\\Artista - Titulo.png|C:\\Users\\Prueba\\Downloads|Descargas',
       leer_imagen_base64: null,
       abrir_carpeta: null,
       remote_set_enabled: true,
@@ -1046,7 +1047,8 @@ test('el panel ahora suena muestra detalles, album y artista', async ({ page }) 
       remote_is_enabled: false,
       remote_local_ip: '127.0.0.1',
       remote_pin: '123456',
-      guardar_imagen: 'C:\\Users\\Prueba\\Downloads\\Artista - Titulo.png',
+      guardar_imagen:
+        'C:\\Users\\Prueba\\Downloads\\Artista - Titulo.png|C:\\Users\\Prueba\\Downloads|Descargas',
       leer_imagen_base64: null,
       abrir_carpeta: null,
       remote_set_enabled: true,

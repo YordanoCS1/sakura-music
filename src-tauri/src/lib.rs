@@ -1105,9 +1105,11 @@ fn leer_imagen_base64(ruta: String) -> Result<String, String> {
 fn abrir_carpeta(ruta: String) -> Result<(), String> {
     val::ruta(&ruta, "Carpeta a abrir")?;
     let destino = PathBuf::from(&ruta);
+    let destino = std::fs::canonicalize(&destino).unwrap_or(destino);
     if !destino.is_dir() {
-        return Err("La carpeta no existe".to_string());
+        return Err(format!("La carpeta no existe: {}", destino.display()));
     }
+    logging::info("lib", &format!("Abriendo carpeta: {}", destino.display()));
     #[cfg(windows)]
     std::process::Command::new("explorer")
         .arg(&destino)
@@ -1174,5 +1176,9 @@ fn guardar_imagen(app: tauri::AppHandle, nombre: String, datos: String) -> Resul
     }
     std::fs::write(&destino, &bytes)
         .map_err(|error| format!("No se pudo guardar la imagen: {error}"))?;
-    Ok(format!("{}|{origen}", destino.to_string_lossy()))
+    Ok(format!(
+        "{}|{}|{origen}",
+        destino.to_string_lossy(),
+        carpeta.to_string_lossy()
+    ))
 }

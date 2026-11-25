@@ -168,57 +168,172 @@ export default function CoverFullscreen({
     setExportando(true);
     onAviso('Generando tarjeta…');
     try {
+      const W = 1200;
+      const H = 1560;
       const lienzo = document.createElement('canvas');
-      lienzo.width = 1000;
-      lienzo.height = 1000;
+      lienzo.width = W;
+      lienzo.height = H;
       const ctx = lienzo.getContext('2d');
       if (!ctx) return;
-      const degradado = ctx.createLinearGradient(0, 0, 1000, 1000);
-      degradado.addColorStop(0, fondo);
-      degradado.addColorStop(1, acento);
-      ctx.fillStyle = degradado;
-      ctx.fillRect(0, 0, 1000, 1000);
-      ctx.fillStyle = 'rgba(0,0,0,.25)';
-      ctx.fillRect(0, 0, 1000, 1000);
 
-      // La carátula viene de asset:// o de una URL externa: dibujarla tal cual
-      // contamina el canvas y toDataURL falla. La leemos como data URL desde Rust.
+      const redondear = (x: number, y: number, w: number, h: number, r: number) => {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.arcTo(x + w, y, x + w, y + h, r);
+        ctx.arcTo(x + w, y + h, x, y + h, r);
+        ctx.arcTo(x, y + h, x, y, r);
+        ctx.arcTo(x, y, x + w, y, r);
+        ctx.closePath();
+      };
+      const palabra = (valor: string, max: number) => {
+        let corte = valor;
+        while (ctx.measureText(corte).width > max && corte.length > 3) {
+          corte = corte.slice(0, -2) + '…';
+        }
+        return corte;
+      };
+
+      // Fondo con luz de tema.
+      const fondoLineal = ctx.createLinearGradient(0, 0, W, H);
+      fondoLineal.addColorStop(0, fondo);
+      fondoLineal.addColorStop(0.6, fondo);
+      fondoLineal.addColorStop(1, acento);
+      ctx.fillStyle = fondoLineal;
+      ctx.fillRect(0, 0, W, H);
+      const brillo = ctx.createRadialGradient(180, 140, 10, 180, 140, 900);
+      brillo.addColorStop(0, `${acento}66`);
+      brillo.addColorStop(1, 'transparent');
+      ctx.fillStyle = brillo;
+      ctx.fillRect(0, 0, W, H);
+      ctx.strokeStyle = `${acento}44`;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(W - 90, 120, 220, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(W - 90, 120, 300, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Carátula: se lee como data URL para no contaminar el canvas.
       const fuente = track.cover_url
         ? await invoke<string>('leer_imagen_base64', { ruta: track.cover_url }).catch(() => null)
         : null;
+      ctx.save();
+      ctx.shadowColor = 'rgba(0,0,0,.45)';
+      ctx.shadowBlur = 60;
+      ctx.shadowOffsetY = 24;
+      redondear(90, 100, 1020, 1020, 44);
+      ctx.fillStyle = 'rgba(0,0,0,.35)';
+      ctx.fill();
+      ctx.restore();
+      ctx.save();
+      redondear(90, 100, 1020, 1020, 44);
+      ctx.clip();
       if (fuente) {
         await new Promise<void>((resolver) => {
           const imagen = new Image();
           imagen.onload = () => {
-            ctx.drawImage(imagen, 170, 90, 660, 660);
+            ctx.drawImage(imagen, 90, 100, 1020, 1020);
             resolver();
           };
           imagen.onerror = () => resolver();
           imagen.src = fuente;
         });
+      } else {
+        ctx.fillStyle = 'rgba(255,255,255,.06)';
+        ctx.fillRect(90, 100, 1020, 1020);
+        ctx.fillStyle = texto;
+        ctx.globalAlpha = 0.35;
+        ctx.font = '260px system-ui';
+        ctx.textAlign = 'center';
+        ctx.fillText('♪', 600, 760);
+        ctx.globalAlpha = 1;
+        ctx.textAlign = 'left';
       }
+      ctx.strokeStyle = 'rgba(255,255,255,.45)';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(90, 100, 1020, 1020);
+      ctx.restore();
+
+      // Texto editorial.
+      const x = 90;
+      let y = 1210;
+      ctx.fillStyle = acento;
+      ctx.font = '600 24px monospace';
+      ctx.fillText('SAKURA MUSIC  ·  PRESENTACIÓN', x, y);
+
+      y += 70;
       ctx.fillStyle = texto;
-      ctx.font = 'bold 44px system-ui';
-      ctx.fillText(track.title.slice(0, 34), 70, 830);
-      ctx.font = '28px system-ui';
-      ctx.globalAlpha = 0.8;
-      ctx.fillText(track.artist.slice(0, 40), 70, 875);
-      ctx.fillText(track.album.slice(0, 40), 70, 915);
+      ctx.font = 'bold 62px system-ui';
+      ctx.fillText(palabra(track.title, W - 180), x, y);
+      if (ctx.measureText(track.title).width > W - 180 && track.title.length > 24) {
+        y += 66;
+        ctx.fillText(palabra(track.title.slice(Math.floor(track.title.length / 2)), W - 180), x, y);
+      }
+
+      y += 58;
+      ctx.fillStyle = texto;
+      ctx.globalAlpha = 0.85;
+      ctx.font = '34px system-ui';
+      ctx.fillText(palabra(track.artist || 'Artista desconocido', W - 180), x, y);
+
+      y += 46;
       ctx.globalAlpha = 0.6;
-      ctx.font = '18px monospace';
-      ctx.fillText('SAKURA MUSIC', 70, 965);
+      ctx.font = '26px system-ui';
+      ctx.fillText(palabra(track.album || 'Sin álbum', W - 180), x, y);
+      ctx.globalAlpha = 1;
+
+      // Chips de metadatos.
+      y += 48;
+      const chips = [
+        track.year?.toString() ?? '—',
+        track.genre || '—',
+        track.format,
+        track.duration_str,
+      ];
+      let chipX = x;
+      ctx.font = '22px monospace';
+      for (const chip of chips) {
+        const ancho = ctx.measureText(chip).width + 36;
+        if (chipX + ancho > W - 90) break;
+        redondear(chipX, y - 30, ancho, 46, 23);
+        ctx.fillStyle = `${acento}33`;
+        ctx.fill();
+        ctx.fillStyle = texto;
+        ctx.globalAlpha = 0.9;
+        ctx.fillText(chip, chipX + 18, y);
+        ctx.globalAlpha = 1;
+        chipX += ancho + 12;
+      }
+
+      // Pie.
+      ctx.strokeStyle = 'rgba(255,255,255,.2)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(x, H - 70);
+      ctx.lineTo(W - x, H - 70);
+      ctx.stroke();
+      ctx.fillStyle = texto;
+      ctx.globalAlpha = 0.65;
+      ctx.font = '20px monospace';
+      ctx.fillText(`TEMA · ${tema.toUpperCase()}`, x, H - 32);
+      ctx.textAlign = 'right';
+      ctx.fillText(new Date().toLocaleDateString(), W - x, H - 32);
+      ctx.textAlign = 'left';
+      ctx.globalAlpha = 1;
 
       const nombre = `${track.artist} - ${track.title}.png`;
       const respuesta = await invoke<string>('guardar_imagen', {
         nombre,
         datos: lienzo.toDataURL('image/png'),
       });
-      const [ruta, origen = 'Descargas'] = respuesta.split('|');
-      const carpeta = ruta.replace(/[\\/][^\\/]+$/, '');
+      const [ruta, carpeta = '', origen = 'Descargas'] = respuesta.split('|');
       onAviso(`Tarjeta guardada en ${origen}: ${ruta}`, {
         etiqueta: 'Abrir carpeta',
         onClick: () => {
-          void invoke('abrir_carpeta', { ruta: carpeta }).catch(() => undefined);
+          void invoke('abrir_carpeta', { ruta: carpeta || ruta })
+            .then(() => onAviso('Carpeta abierta en el explorador.'))
+            .catch((error: unknown) => onAviso(`No se pudo abrir la carpeta: ${String(error)}`));
         },
       });
     } catch (error) {
