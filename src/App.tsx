@@ -1763,6 +1763,7 @@ export default function App() {
                 toggleFavorite(activeTrack.id, { stopPropagation() {} } as React.MouseEvent)
               }
               tema={temaBase}
+              onAviso={(mensaje) => setAvisoAccion({ mensaje })}
               onClose={() => setPortadaFull(false)}
             />
           )}

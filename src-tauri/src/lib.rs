@@ -925,6 +925,7 @@ pub fn run() {
             trash_count,
             exportar_biblioteca,
             importar_biblioteca,
+            guardar_imagen,
             read_lyrics,
             search_lyrics,
             save_track_lyrics,
@@ -1057,4 +1058,41 @@ fn importar_biblioteca(ruta: String) -> Result<String, String> {
         }
     }
     Ok("Biblioteca importada correctamente".to_string())
+}
+
+/// Guarda la tarjeta PNG generada en el lienzo del frontend en Descargas.
+/// El navegador no descarga los `data:` URL dentro del WebView de Tauri,
+/// así que el Rust decodifica el base64 y escribe el archivo.
+#[tauri::command]
+fn guardar_imagen(app: tauri::AppHandle, nombre: String, datos: String) -> Result<String, String> {
+    use base64::Engine;
+
+    val::texto(&nombre, 200, "Nombre de archivo")?;
+    let nombre = nombre.replace(['\\', '/', ':', '*', '?', '"', '<', '>', '|'], "_");
+    let bytes = base64::engine::general_purpose::STANDARD
+        .decode(datos.trim_start_matches("data:image/png;base64,"))
+        .map_err(|error| format!("No se pudo decodificar la imagen: {error}"))?;
+    if bytes.len() < 8 || &bytes[..8] != b"\x89PNG\r\n\x1a\n" {
+        return Err("Los datos no son una imagen PNG válida".to_string());
+    }
+    let carpeta = app
+        .path()
+        .download_dir()
+        .map_err(|error| format!("No se pudo resolver Descargas: {error}"))?;
+    std::fs::create_dir_all(&carpeta)
+        .map_err(|error| format!("No se pudo crear la carpeta: {error}"))?;
+
+    let mut destino = carpeta.join(&nombre);
+    if destino.exists() {
+        let stem = destino.file_stem().unwrap_or_default().to_string_lossy();
+        let extension = destino.extension().unwrap_or_default().to_string_lossy();
+        let stamp = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map(|d| d.as_millis())
+            .unwrap_or(0);
+        destino = carpeta.join(format!("{stem}-{stamp}.{extension}"));
+    }
+    std::fs::write(&destino, &bytes)
+        .map_err(|error| format!("No se pudo guardar la imagen: {error}"))?;
+    Ok(destino.to_string_lossy().to_string())
 }

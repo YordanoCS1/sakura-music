@@ -19,6 +19,7 @@ test.beforeEach(async ({ page }) => {
       remote_is_enabled: false,
       remote_local_ip: '127.0.0.1',
       remote_pin: '123456',
+      guardar_imagen: 'C:\\Users\\Prueba\\Downloads\\Artista - Titulo.png',
       remote_set_enabled: true,
       remote_update_state: null,
       search_catalog_songs: [],
@@ -305,6 +306,8 @@ test('la presentación muestra el álbum, navega con atajos y permite exportar',
   await expect(cartel).toContainText('Ficha del álbum');
   await expect(cartel).toContainText('3 ·');
   await expect(cartel.getByRole('button', { name: 'Exportar tarjeta' })).toBeVisible();
+  await cartel.getByRole('button', { name: 'Exportar tarjeta' }).click();
+  await expect(page.locator('.action-toast')).toContainText('guardada en Descargas');
 
   await page.keyboard.press('ArrowRight');
   await expect(page.getByRole('dialog', { name: /Presentación de Segunda/ })).toBeVisible();
@@ -1040,6 +1043,7 @@ test('el panel ahora suena muestra detalles, album y artista', async ({ page }) 
       remote_is_enabled: false,
       remote_local_ip: '127.0.0.1',
       remote_pin: '123456',
+      guardar_imagen: 'C:\\Users\\Prueba\\Downloads\\Artista - Titulo.png',
       remote_set_enabled: true,
       remote_update_state: null,
       search_catalog_songs: [],

@@ -27,6 +27,7 @@ interface CoverFullscreenProps {
   portada: string | null;
   onClose: () => void;
   onSelectTrack: (track: ScannedTrack) => void;
+  onAviso: (mensaje: string) => void;
   esFav: boolean;
   onToggleFavorite: () => void;
   tema: string;
@@ -77,6 +78,7 @@ export default function CoverFullscreen({
   portada,
   onClose,
   onSelectTrack,
+  onAviso,
   esFav,
   onToggleFavorite,
   tema,
@@ -200,10 +202,14 @@ export default function CoverFullscreen({
       ctx.font = '18px monospace';
       ctx.fillText('SAKURA MUSIC', 70, 965);
 
-      const enlace = document.createElement('a');
-      enlace.download = `${track.artist} - ${track.title}.png`.replace(/[\\/:*?"<>|]/g, '_');
-      enlace.href = lienzo.toDataURL('image/png');
-      enlace.click();
+      const nombre = `${track.artist} - ${track.title}.png`;
+      const ruta = await invoke<string>('guardar_imagen', {
+        nombre,
+        datos: lienzo.toDataURL('image/png'),
+      });
+      onAviso(`Tarjeta guardada en Descargas: ${ruta.split(/[\\/]/).pop()}`);
+    } catch (error) {
+      onAviso(`No se pudo guardar la tarjeta: ${String(error)}`);
     } finally {
       setExportando(false);
     }
