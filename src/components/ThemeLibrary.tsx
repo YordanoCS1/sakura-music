@@ -1036,26 +1036,47 @@ export default function ThemeLibrary({
   }
 
   if (theme === 'sakura') {
+    const activa = vistaTracks.find((t) => t.id === activeTrack?.id) ?? vistaTracks[0];
     return (
       <div className="sakura-library">
-        <header className="sakura-lib-cabecera">
-          <div>
-            <small>桜大樹 · RAMAS EN FLOR</small>
+        <section className="sakura-hero">
+          <div className="sakura-hero-foto" aria-hidden="true" />
+          <div className="sakura-hero-texto">
+            <span className="sakura-hero-kicker">桜 · HANAMI ROOM</span>
             <h1>Biblioteca Primaveral</h1>
+            <p>{total} flores en tu jardín ·cada pista florece bajo el cerezo.</p>
+            <div className="sakura-hero-nav">{navCarpetas}</div>
           </div>
-          {navCarpetas}
-          <span className="sakura-lib-count">{total} flores</span>
-        </header>
+          {activa && (
+            <div className="sakura-hero-medallon">
+              <span className="sakura-petalos" aria-hidden="true">
+                <i />
+                <i />
+                <i />
+                <i />
+                <i />
+              </span>
+              {activa.cover_url ? (
+                <img src={getCoverSrc(activa.cover_url)} alt="" />
+              ) : (
+                <span aria-hidden="true">桜</span>
+              )}
+              <small>{activa.title}</small>
+            </div>
+          )}
+        </section>
+
         {selectorCarpetas}
         {vistaTracks.length === 0 ? (
           vacio
         ) : (
-          <div className="sakura-ramas-grid">
-            {vistaTracks.map((track) => (
+          <div className="sakura-jardin">
+            {vistaTracks.map((track, i) => (
               <article
                 key={track.id}
                 data-track-id={track.id}
-                className={`sakura-flor-card ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+                className={`sakura-flor ${activeTrack?.id === track.id ? 'is-active' : ''}`}
+                style={{ '--flor': i } as React.CSSProperties}
               >
                 <button
                   type="button"
@@ -1064,16 +1085,26 @@ export default function ThemeLibrary({
                   onDoubleClick={() => onPresentTrack?.(track)}
                 >
                   <span className="sakura-flor-cover">
+                    <span className="sakura-petalos" aria-hidden="true">
+                      <i />
+                      <i />
+                      <i />
+                      <i />
+                      <i />
+                    </span>
                     {track.cover_url ? (
                       <img src={getCoverSrc(track.cover_url)} alt="" />
                     ) : (
-                      <span aria-hidden="true">🌸</span>
+                      <span className="sakura-flor-mark" aria-hidden="true">
+                        桜
+                      </span>
                     )}
                   </span>
                   <span className="sakura-flor-info">
+                    <small className="sakura-flor-num">FLOR {String(i + 1).padStart(2, '0')}</small>
                     <strong>{track.title}</strong>
-                    <small>
-                      {track.artist} · {track.duration_str}
+                    <small className="sakura-flor-sub">
+                      {track.artist} · {track.album} · {track.duration_str}
                     </small>
                   </span>
                 </button>

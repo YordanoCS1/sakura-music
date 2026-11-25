@@ -5,6 +5,7 @@ Todos los cambios destacables de este proyecto se registran aquí. El formato si
 ## [2.0.0] - 2026-11-25
 
 ### Agregado
+- **Sakura jardín hanami**: la biblioteca estrena un hero con la foto real del cerezo, medallón de flor de cinco pétalos con la pista activa, rama que atraviesa las flores y tarjetas con portada en pétalos, numeración “FLOR 01”, metadata completa y disposición en zigzag.
 - **Bibliotecas de los 5 temas nuevos rediseñadas**: portadas cuadradas protagonistas, títulos completos sin recortar, tarjetas en grilla y contraste legible (especialmente Karesansui, antes con texto claro sobre arena clara y un arco que se salía de la tarjeta).
 - **Sakura con foto real**: el SVG del árbol se reemplazó por una fotografía de un cerezo en flor (CC0, guardada en `public/images/`, sin red), con pétalos animados y desvanecido; la biblioteca usa la misma foto desenfocada de fondo y tarjetas de jardín más ricas.
 - **19 temas con identidad completa**: a los 14 originales se suman Árbol de Sakura, Loto Imperial, La Gran Ola, Tocadiscos 3D y Karesansui, con Home y biblioteca propias. Un módulo de realce añade atmósfera animada (pétalos, seda y oro, ola y halftone, plato giratorio, arena rastrillada), nav, reproductor, paneles, modales y presentación diferenciados para cada uno, respetando `prefers-reduced-motion`.
