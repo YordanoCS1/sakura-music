@@ -259,6 +259,65 @@ test('doble clic en una pista presenta la canción con el reproductor apagado', 
   await expect(cartel).toHaveCount(0);
 });
 
+test('la presentación muestra el álbum, navega con atajos y permite exportar', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('sakura_player_style', 'off');
+    const pista = (n: number, titulo: string) => ({
+      id: `alb${n}`,
+      path: `Disco\\alb${n}.flac`,
+      title: titulo,
+      artist: 'Artista',
+      album: 'Álbum completo',
+      album_artist: 'Artista',
+      track_number: n,
+      duration: 120 + n,
+      duration_str: '2:00',
+      format: 'FLAC',
+      bitrate_kbps: 900,
+      cover_url: null,
+      year: 2024,
+      genre: 'Jazz',
+      file_size: 1000,
+    });
+    const w = window as unknown as {
+      __TAURI_INTERNALS__: { invoke: (cmd: string) => Promise<unknown> };
+    };
+    const anterior = w.__TAURI_INTERNALS__.invoke;
+    w.__TAURI_INTERNALS__.invoke = async (cmd: string, args?: unknown) => {
+      if (cmd === 'get_cached_library')
+        return [pista(1, 'Primera'), pista(2, 'Segunda'), pista(3, 'Tercera')];
+      if (cmd === 'read_lyrics')
+        return [
+          { time: 0, text: 'Letra uno' },
+          { time: 5, text: 'Letra dos' },
+        ];
+      return anterior(cmd, args);
+    };
+  });
+  await page.goto('/');
+  await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });
+  await page.getByRole('tab', { name: /Biblioteca/ }).click();
+  await page.locator('[data-track-id="alb1"]').first().dblclick();
+
+  const cartel = page.getByRole('dialog', { name: /Presentación de Primera/ });
+  await expect(cartel).toBeVisible();
+  await expect(cartel.locator('.cover-full-carrusel button')).toHaveCount(3);
+  await expect(cartel).toContainText('Ficha del álbum');
+  await expect(cartel).toContainText('3 ·');
+  await expect(cartel.getByRole('button', { name: 'Exportar tarjeta' })).toBeVisible();
+
+  await page.keyboard.press('ArrowRight');
+  await expect(page.getByRole('dialog', { name: /Presentación de Segunda/ })).toBeVisible();
+  await page.keyboard.press('a');
+  await expect(page.locator('.cover-full-inner.is-solo-arte')).toHaveCount(1);
+  await expect(page.locator('.cover-full-card')).toHaveCount(0);
+  await page.keyboard.press('a');
+  await page.keyboard.press('l');
+  await expect(page.locator('.cover-full-lyrics')).toHaveCount(0);
+  await page.keyboard.press('Escape');
+  await expect(cartel).toHaveCount(0);
+});
+
 test('Byobu permite elegir una imagen de inicio', async ({ page }) => {
   await page.addInitScript(() => {
     localStorage.setItem('sakura_theme', 'byobu');

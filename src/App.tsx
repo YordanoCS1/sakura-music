@@ -1752,6 +1752,11 @@ export default function App() {
           {portadaFull && activeTrack && (
             <CoverFullscreen
               track={activeTrack}
+              tracks={tracks}
+              onSelectTrack={(pista) => {
+                sonidoUI(temaBase, 'click');
+                setActiveTrack(pista);
+              }}
               portada={activeTrack.cover_url ? getCoverSrc(activeTrack.cover_url) : null}
               esFav={favorites.includes(activeTrack.id)}
               onToggleFavorite={() =>
