@@ -326,6 +326,18 @@ test('la presentación muestra el álbum, navega con atajos y permite exportar',
   await expect(cartel).toHaveCount(0);
 });
 
+test('la carpeta de exportación persiste en Ajustes', async ({ page }) => {
+  await page.addInitScript(() =>
+    localStorage.setItem('sakura_export_folder', 'D:\\Música\\Mis exportaciones'),
+  );
+  await page.goto('/');
+  await expect(page.locator('#sakura-splash')).toBeHidden({ timeout: 8_000 });
+  await page.getByRole('tab', { name: /Ajustes/ }).click();
+  await page.getByRole('button', { name: 'Archivos', exact: true }).click();
+  await expect(page.getByText('D:\\Música\\Mis exportaciones')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Abrir carpeta actual' })).toBeVisible();
+});
+
 test('Byobu permite elegir una imagen de inicio', async ({ page }) => {
   await page.addInitScript(() => {
     localStorage.setItem('sakura_theme', 'byobu');

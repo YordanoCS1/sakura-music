@@ -339,7 +339,7 @@ export default function CoverFullscreen({
       const respuesta = await invoke<string>('guardar_imagen', {
         nombre,
         datos: lienzo.toDataURL('image/png'),
-        carpeta_elegida: carpetaExportacion || undefined,
+        carpetaElegida: carpetaExportacion || undefined,
       });
       const [ruta, , origen = 'Descargas'] = respuesta.split('|');
       onAviso(`Tarjeta guardada en ${origen}: ${ruta}`, {

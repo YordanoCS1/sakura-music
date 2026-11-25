@@ -520,6 +520,42 @@ export default function SettingsTab(props: SettingsTabProps) {
         >
           <ToolsPanel />
         </Tarjeta>
+        <Tarjeta
+          n="09d"
+          titulo="Carpeta de exportación"
+          desc="Dónde se guardan las tarjetas PNG exportadas"
+          icono={FolderOpen}
+          ancha
+        >
+          <div className="set-actions">
+            <button
+              type="button"
+              onClick={async () => {
+                const destino = await open({ directory: true });
+                if (typeof destino === 'string') onSetCarpetaExportacion(destino);
+              }}
+            >
+              <FolderOpen className="w-3.5 h-3.5" /> Elegir carpeta
+            </button>
+            {carpetaExportacion && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => void invoke('abrir_carpeta', { ruta: carpetaExportacion })}
+                >
+                  <FolderOpen className="w-3.5 h-3.5" /> Abrir carpeta actual
+                </button>
+                <button type="button" onClick={() => onSetCarpetaExportacion('')}>
+                  <Trash2 className="w-3.5 h-3.5" /> Restablecer
+                </button>
+              </>
+            )}
+          </div>
+          <p className="set-note" style={{ marginTop: 8 }}>
+            {carpetaExportacion ||
+              'Si no la elegís, se usa Descargas (o la carpeta de datos de la app).'}
+          </p>
+        </Tarjeta>
       </>
     ),
     sistema: (
@@ -775,42 +811,6 @@ export default function SettingsTab(props: SettingsTabProps) {
               </div>
             ))}
           </div>
-        </Tarjeta>
-        <Tarjeta
-          n="09d"
-          titulo="Carpeta de exportación"
-          desc="Dónde se guardan las tarjetas PNG exportadas"
-          icono={FolderOpen}
-          ancha
-        >
-          <div className="set-actions">
-            <button
-              type="button"
-              onClick={async () => {
-                const destino = await open({ directory: true });
-                if (typeof destino === 'string') onSetCarpetaExportacion(destino);
-              }}
-            >
-              <FolderOpen className="w-3.5 h-3.5" /> Elegir carpeta
-            </button>
-            {carpetaExportacion && (
-              <>
-                <button
-                  type="button"
-                  onClick={() => void invoke('abrir_carpeta', { ruta: carpetaExportacion })}
-                >
-                  <FolderOpen className="w-3.5 h-3.5" /> Abrir carpeta actual
-                </button>
-                <button type="button" onClick={() => onSetCarpetaExportacion('')}>
-                  <Trash2 className="w-3.5 h-3.5" /> Restablecer
-                </button>
-              </>
-            )}
-          </div>
-          <p className="set-note" style={{ marginTop: 8 }}>
-            {carpetaExportacion ||
-              'Si no la elegís, se usa Descargas (o la carpeta de datos de la app).'}
-          </p>
         </Tarjeta>
         <Tarjeta
           n="10"
