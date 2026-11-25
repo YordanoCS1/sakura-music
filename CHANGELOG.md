@@ -6,7 +6,7 @@ Todos los cambios destacables de este proyecto se registran aquí. El formato si
 
 ### Agregado
 - **Presentación con identidad única por tema**: los 14 temas tienen diseño propio y exclusivo —consola ámbar, tinta sobre arroz, caligrafía con sello rojo, biombo dorado, washi con listones, origami plegado, rejilla suiza, luna estrellada, libro mayor, velocidad shōnen, bruma cian glitch, laca y oro samurái, pastel kawaii y viñeta manga— con fondos, tipografías, formas de carátula, tarjeta y decoración diferenciadas.
-- **Kawaii rediseñado**: paleta lila/menta/melocotón en lugar del rosa dominante; la presentación usa burbujas y destellos, y la biblioteca es un jardín de burbujas flotantes con portadas redondas y cabecera de cristal.
+- **Kawaii neón**: paleta intensa de rosa fuerte `#ff2e88`, lila eléctrico `#8b5cf6` y cian sobre fondo oscuro, con brillos y halo; la presentación y la biblioteca (burbujas con portadas redondas y cabecera de cristal) comparten la misma identidad potente.
 - **Doble clic en una pista** de la biblioteca abre directamente su presentación, aunque el reproductor esté desactivado; selecciona la pista sin iniciar audio.
 - **Presentación de canción accesible con el reproductor desactivado**: botón *Presentar canción* junto al aviso flotante y atajo `Ctrl+Shift+P`. La pantalla muestra la carátula protagonista, una ficha editorial (álbum, año, género, formato, tamaño, duración, favorito) y letras LRC sincronizadas.
 - **Reproductor desactivable**: nueva opción *Desactivado* en Ajustes → Reproductor oculta la barra y pausa la música; un botón flotante (o `Ctrl+P`) lo reactiva. El estado se guarda en `localStorage`.

@@ -1003,7 +1003,7 @@ export default function ThemeLibrary({
                 className={`kawaii-nube-amiga ${activeTrack?.id === track.id ? 'is-active' : ''}`}
                 style={
                   {
-                    '--c': ['#e4d6ff', '#c9f2e2', '#ffe2c4', '#d7e9ff'][i % 4],
+                    '--c': ['#ff2e88', '#8b5cf6', '#22d3ee', '#ff6ec7'][i % 4],
                   } as React.CSSProperties
                 }
               >
