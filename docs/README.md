@@ -21,6 +21,7 @@ Esta carpeta contiene la documentación técnica y de referencia del proyecto Sa
 | Auditoría de contraste de los 14 temas originales | [contraste.md](contraste.md) |
 | Tokens y reglas visuales | [diseno.md](diseno.md) |
 | Cómo agregar un tema oficial | [como-agregar-un-tema.md](como-agregar-un-tema.md) |
+| Alternativas de biblioteca para Sakura | [prototipos/sakura-bibliotecas/index.html](prototipos/sakura-bibliotecas/index.html) |
 | Comandos y eventos disponibles | [ipc-contract.md](ipc-contract.md) (59 comandos / 7 eventos) |
 | Funciones nuevas (playlists, deshacer, letras, temas Manga y Estudio) | [nuevas-funciones.md](nuevas-funciones.md) |
 | Dónde y cómo se guardan los datos | [data-formats.md](data-formats.md) |
@@ -39,6 +40,7 @@ docs/
   README.md                  este índice
   racional-de-decisiones.md  por qué se eligió cada lenguaje y acción
   como-agregar-un-tema.md    checklist para un tema con vistas propias
+  prototipos/sakura-bibliotecas/   seis diseños alternativos de biblioteca
   casos-de-uso.md            actores, CU-01…CU-17 y flujos detallados
   requisitos.md              RF/RNF con criterio de aceptación y tests
   arquitectura.md            capas, hilos, persistencia, seguridad y secuencias
