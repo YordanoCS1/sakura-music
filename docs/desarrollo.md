@@ -104,6 +104,8 @@ npm run format          # Prettier sobre TS/TSX/JS/JSON/YAML
 npm run test            # Vitest (94 tests unitarios del frontend)
 npm run test:e2e        # Playwright (41 tests E2E)
 npm run pipeline        # check + E2E + fmt + clippy + cargo test → pasa en verde
+npm run clean:cargo     # borra sólo target/debug/incremental e informa los MB liberados
+npm run clean:cargo -- --all   # cargo clean completo (recompila también dependencias)
 cargo test --manifest-path src-tauri/Cargo.toml   # 59 tests Rust
 cargo fmt --check --manifest-path src-tauri/Cargo.toml
 cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings
@@ -112,6 +114,16 @@ cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings
 > **`[profile.dev] debug = 0`** en `Cargo.toml`: MSVC (linker D8050) no maneja
 > bien los target paths largos con información de debug completa. Si necesitás
 > debug symbols, hacelo con un profile explícito, pero no cambies el default.
+
+> **Caché de Rust:** `npm run clean:cargo` borra sólo
+> `src-tauri/target/debug/incremental`, que es lo que más crece (las sesiones se
+> acumulan cuando falla el *hardlinking* en Windows). Las dependencias de
+> `target/debug/deps` se conservan, así que el próximo build recompila el código
+> de la app, no todas las librerías. El script se niega a borrar si detecta
+> `cargo`, `rustc`, `sakura-desktop` o `sakura-cli` en ejecución: hay que cerrar
+> la app primero. `--all` llama a `cargo clean` y borra todo `target/`, útil sólo
+> cuando se quiere empezar de cero. Esta herramienta es de desarrollo: no existe
+> dentro de la app, porque quien usa el binario publicado no tiene `target/`.
 
 ### Integración continua
 

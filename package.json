@@ -18,7 +18,8 @@
     "format:check": "prettier --check .",
     "audit": "npm audit --audit-level=high",
     "check": "npm run typecheck && npm run lint && npm run format:check && npm run test && npm run build",
-    "pipeline": "npm run check && npm run test:e2e && cargo fmt --check --manifest-path src-tauri/Cargo.toml && cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings && cargo test --manifest-path src-tauri/Cargo.toml"
+    "pipeline": "npm run check && npm run test:e2e && cargo fmt --check --manifest-path src-tauri/Cargo.toml && cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings && cargo test --manifest-path src-tauri/Cargo.toml",
+    "clean:cargo": "node scripts/limpiar_cache_rust.mjs"
   },
   "dependencies": {
     "@tanstack/react-virtual": "^3.14.26",
