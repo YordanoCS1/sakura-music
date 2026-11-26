@@ -179,7 +179,7 @@ no con la misma grilla de tarjetas en otro color:
 
 | Tema | Estructura | Motivo de la forma |
 |---|---|---|
-| `sakura` | Jardín hanami: foto real del cerezo, medallón de cinco pétalos, rama y flores en zigzag | El pétalo y la rama son el motivo del tema; una tarjeta cuadrada no transmitía "cerezo en flor" |
+| `sakura` | Anillos de crecimiento: un anillo por canción, flor con carátula en cada anillo y foto real del cerezo en el hero | Cada canción tiene su propio anillo; la distancia al núcleo indica antigüedad, sin agrupar por álbum |
 | `loto` | Tríptico de rollos de seda con aletas laterales, varillas doradas y sellos | El rollo y el oro son propios de la estética imperial |
 | `ukiyo` | Rollo lateral de estampas apaisadas con ola SVG y sello rojo | La estampa japonesa se lee en horizontal, como un pergamino que se desliza |
 | `vinilo` | Estantería de fundas con discos que asoman, inclinación 3D y plato activo | La analogía física (funda + disco + plato) es la identidad del tema |
@@ -262,7 +262,7 @@ guardada en el repo, en lugar del SVG del árbol o de una imagen remota.
 **Por qué.** La app es local-first: si la biblioteca funciona sin conexión, su
 apariencia también debe hacerlo. Una imagen remota introduciría una dependencia
 de red y un riesgo de que el fondo desaparezca. La foto real, además, hace que
-el jardín hanami se reconozca como tal de un vistazo.
+el cerezo se reconozca como tal de un vistazo.
 
 **Alternativas descartadas.** SVG estilizado: se veía como un dibujo, no como un
 cerezo. URL externa: rompe el funcionamiento offline.

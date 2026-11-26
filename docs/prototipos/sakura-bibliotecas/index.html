@@ -156,12 +156,18 @@
       });
       const rayosCopa = ptsCopa.map((p) => `<path class="trazo" d="M 570 270 Q 570 ${p.y - 40} ${p.x} ${p.y}"/>`).join('');
 
-      // 6 · Anillos: tres niveles concéntricos.
-      const ptsAnillos = [
-        { x: 420, y: 190 }, { x: 720, y: 190 }, { x: 570, y: 430 },
-        { x: 300, y: 300 }, { x: 840, y: 300 }, { x: 800, y: 480 }, { x: 570, y: 95 },
-      ];
-      const circAnillos = [150, 280, 410].map((r) => `<circle class="anillo" cx="570" cy="285" r="${r}"/>`).join('');
+      // 6 · Anillos: un anillo por canción, del núcleo hacia afuera.
+      const angulosAnillos = [-90, -42, 6, 54, 102, 150, 198];
+      const radiosAnillos = tracks.map((_, i) => 80 + i * 40);
+      const ptsAnillos = tracks.map((_, i) => {
+        const ang = angulosAnillos[i] * Math.PI / 180;
+        const r = radiosAnillos[i];
+        return {
+          x: 570 + r * Math.cos(ang),
+          y: Math.max(120, Math.min(470, 285 + r * Math.sin(ang))),
+        };
+      });
+      const circAnillos = radiosAnillos.map((r) => `<circle class="anillo" cx="570" cy="285" r="${r}"/>`).join('');
 
       const herbario = tracks.map(([t, a, d], i) => `
         <article class="especimen"><span class="num">ESP. ${String(i + 1).padStart(2, '0')}</span>
@@ -206,9 +212,9 @@
         },
         {
           id: 'anillos', nombre: 'Anillos de crecimiento', titulo: '6 · Anillos de crecimiento',
-          desc: 'La biblioteca se lee como el tronco cortado de un cerezo: anillos concéntricos por álbum y flores sobre cada anillo.',
-          detalle: 'La distancia al centro indica antigüedad; cada pista queda sobre su anillo. Es una vista de datos con forma orgánica.',
-          html: `${cab('Historial del árbol', 'Anillos de crecimiento', '3 álbumes')}<div class="escena"><svg viewBox="0 0 1140 570">${circAnillos}</svg><div class="centro-tronco">NÚCLEO<br>桜</div>${ptsAnillos.map((p, i) => nodo(p.x, p.y, i)).join('')}</div>`,
+          desc: 'La biblioteca se lee como el tronco cortado de un cerezo: un anillo por canción, del núcleo hacia afuera.',
+          detalle: 'Cada canción tiene su propio anillo y su flor con la carátula; el centro es la más reciente. La etiqueta nombra la canción, no el álbum.',
+          html: `${cab('Historial del árbol', 'Anillos por canción', `${tracks.length} canciones`)}<div class="escena"><svg viewBox="0 0 1140 570">${circAnillos}</svg><div class="centro-tronco">NÚCLEO<br>桜</div>${ptsAnillos.map((p, i) => nodo(p.x, p.y, i)).join('')}</div>`,
         },
       ];
 

@@ -39,7 +39,7 @@ CC0 / dominio público), almacenada localmente para que la app funcione sin red.
 | **Samurái** | Lacado rojo, acero y oro, con líneas de armadura y sellos. |
 | **Kawaii** | Pastel, ternura y caritas, con formas redondeadas y colores dulces. |
 | **Manga** | Viñetas, tinta y screentone. Papel `#fbfaf7`, tinta `#101010` y un acento rojo `#d62828`. El Inicio es una portada de revista (`第 01 話`, globo de diálogo, sello 開 y línea de tiempo) y la biblioteca son páginas de viñetas con tramado halftone, globo con el título, tag **GO!** y carátulas en blanco y negro. La cabecera es negra con el glifo 漫 y la navegación lleva kanji sobre cuadrado rojo; también tiene estilo propio en Ajustes, panel "Ahora suena", playlists, paleta ⌘K, modales de metadatos, splash y transición de página `t-manga`. |
-| **Sakura** | Jardín hanami: foto real del cerezo, medallón de flor de cinco pétalos con la pista activa, rama y tarjetas en zigzag con numeración *FLOR 01*. |
+| **Sakura** | Anillos de crecimiento: un anillo por canción con una flor de cinco pétalos que lleva la carátula en el centro; el núcleo marca la pista más reciente. El hero conserva la foto real del cerezo. |
 | **Loto Imperial** | Tríptico de seda carmesí y oro: aletas laterales con kanji 蓮, rollos con varillas doradas y sellos. |
 | **La Gran Ola** | Rollo lateral de estampas apaisadas con ola SVG, cartucho de título y sello rojo 波. Se desliza en horizontal. |
 | **Tocadiscos 3D** | Estantería analógica: fundas inclinadas, discos que asoman al pasar el mouse, etiqueta *● SONANDO* y plato giratorio con la pista activa. |

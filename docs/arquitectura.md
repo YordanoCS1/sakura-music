@@ -286,7 +286,7 @@ La app usa **19 temas, todos propios**: ningún tema oficial es genérico.
   portada de revista en Home y páginas de viñetas en biblioteca, con cabecera
   negra y glifo 漫; es además arquetipo del generador de temas. Los cinco
   temas nuevos añadidos el 2026-11-25 (`sakura`, `loto`, `ukiyo`, `vinilo` y
-  `karesansui`) tienen biblioteca de estructura propia: jardín hanami, rollos
+  `karesansui`) tienen biblioteca de estructura propia: anillos por canción, rollos
   de seda, estampas apaisadas, estantería de discos y arena rastrillada.
 
 `LibraryTab`/`ZenTopNav` se conservan en el código únicamente como fallback para

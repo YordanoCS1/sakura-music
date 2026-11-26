@@ -1076,7 +1076,13 @@ export default function ThemeLibrary({
                 key={track.id}
                 data-track-id={track.id}
                 className={`sakura-flor ${activeTrack?.id === track.id ? 'is-active' : ''}`}
-                style={{ '--flor': i } as React.CSSProperties}
+                style={
+                  {
+                    '--flor': i,
+                    '--ang': `${(i * 47) % 360}deg`,
+                    '--radio': `${70 + (i % 12) * 24}px`,
+                  } as React.CSSProperties
+                }
               >
                 <button
                   type="button"

@@ -156,7 +156,7 @@ pasos ya no están pendientes: la app implementa los 14 temas descriptos arriba
 `sakura`, `loto`, `ukiyo`, `vinilo` y `karesansui`.
 
 > **Nota (2026-11-25):** los cinco temas nuevos tienen Home y biblioteca de
-> estructura propia —jardín hanami, rollos de seda, estampas, estantería y
+> estructura propia —anillos por canción, rollos de seda, estampas, estantería y
 > jardín zen—, no una variante de paleta. Ver
 > [racional-de-decisiones.md](../racional-de-decisiones.md#5-bibliotecas-con-estructura-propia-no-un-cambio-de-color).
 Para temas nuevos, seguí la receta de [desarrollo.md](../desarrollo.md).

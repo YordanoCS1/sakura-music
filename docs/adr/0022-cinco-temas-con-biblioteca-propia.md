@@ -60,3 +60,10 @@ importa al final de `App.css`. Como en el ADR 0019, `data-theme` sigue fijo en
 `src/themes/styles/nuevos-5-temas-pro.css`, `src/App.css`,
 `src/components/CoverFullscreen.tsx`, `public/images/sakura-tree.jpg` y
 `e2e/app.spec.ts`.
+
+---
+
+> **Nota (2026-11-26):** la biblioteca de `sakura` se rediseñó después de esta
+> decisión: pasó del jardín en zigzag a **anillos de crecimiento por canción**,
+> con un anillo y una flor por pista en vez de una rama. La metáfora del cerezo
+> y la foto real del hero se conservan.

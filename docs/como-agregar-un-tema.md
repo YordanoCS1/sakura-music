@@ -71,7 +71,7 @@ comparar con las 18 bibliotecas existentes y elegir una forma que no se repita:
 | `sumie` | Pergamino con ensō |
 | `byobu` | Díptico editorial |
 | `manga` | Páginas de viñetas |
-| `sakura` | Jardín hanami con flores y rama |
+| `sakura` | Anillos de crecimiento, un anillo por canción |
 | `loto` | Tríptico de rollos de seda |
 | `ukiyo` | Rollo lateral de estampas |
 | `vinilo` | Estantería de fundas y plato |

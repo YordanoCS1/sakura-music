@@ -64,8 +64,8 @@ los snapshots `space-home-win32.png` y `space-library-win32.png` y el badge
 
 ## Cinco temas nuevos con biblioteca propia
 
-Se sumaron `sakura` (jardín hanami con foto real del cerezo, medallón de
-cinco pétalos y flores en zigzag), `loto` (tríptico de rollos de seda con
+Se sumaron `sakura` (anillos de crecimiento por canción con foto real del
+cerezo y medallón de cinco pétalos), `loto` (tríptico de rollos de seda con
 varillas doradas), `ukiyo` (rollo lateral de estampas apaisadas con ola
 SVG), `vinilo` (estantería de fundas con discos que asoman y plato activo)
 y `karesansui` (arena rastrillada con piedras de paso). Ninguno reutiliza la

@@ -99,7 +99,7 @@ docs/
 Capturas reales de la **UI actual (Tauri + React)**, generadas con Playwright
 sobre Vite con un IPC simulado. Inicio, Buscar, Cola, Listas y Ajustes muestran
 **Estudio** (`space`, tema por defecto); la biblioteca muestra **Sakura** y su
-jardín hanami con la foto real del cerezo. Las imágenes de la v1 (PySide6) se
+anillos de crecimiento por canción con la foto real del cerezo. Las imágenes de la v1 (PySide6) se
 conservan en `img/preview_*.png` como referencia histórica.
 
 ![Inicio (Estudio)](img/v2-home.png)

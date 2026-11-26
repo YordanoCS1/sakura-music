@@ -1,0 +1,111 @@
+/* ==========================================================================
+   SAKURA · biblioteca en anillos de crecimiento, una flor por canción
+   Se importa al final de App.css para ganar sobre el jardín en zigzag.
+   ========================================================================== */
+
+.app-shell[data-skin='sakura'] .sakura-jardin {
+  position: relative;
+  display: block;
+  min-height: 780px;
+  margin-top: 18px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(229, 77, 134, 0.22);
+  border-radius: 30px;
+  background:
+    repeating-radial-gradient(
+      circle at 50% 42%,
+      transparent 0 33px,
+      rgba(229, 77, 134, 0.16) 34px 35px
+    ),
+    rgba(255, 255, 255, 0.62);
+}
+
+.app-shell[data-skin='sakura'] .sakura-jardin::before {
+  content: '桜';
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  z-index: 0;
+  inline-size: 84px;
+  block-size: 84px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #fff;
+  border: 2px solid rgba(229, 77, 134, 0.35);
+  color: #c9336d;
+  font:
+    26px 'Cormorant Garamond',
+    serif;
+  box-shadow: 0 8px 22px rgba(150, 50, 90, 0.14);
+}
+
+.app-shell[data-skin='sakura'] .sakura-jardin .sakura-flor {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  z-index: 1;
+  inline-size: 144px;
+  padding: 8px;
+  border: 1px solid rgba(229, 77, 134, 0.28);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 12px 26px rgba(150, 50, 90, 0.14);
+  transform: translate(-50%, -50%) rotate(var(--ang)) translateX(var(--radio))
+    rotate(calc(-1 * var(--ang)));
+  animation: none !important;
+  transition: box-shadow 0.2s;
+}
+
+.app-shell[data-skin='sakura'] .sakura-jardin .sakura-flor:hover {
+  transform: translate(-50%, -50%) rotate(var(--ang)) translateX(calc(var(--radio) + 12px))
+    rotate(calc(-1 * var(--ang)));
+  box-shadow: 0 20px 40px rgba(214, 48, 108, 0.26);
+}
+
+.app-shell[data-skin='sakura'] .sakura-jardin .sakura-flor.is-active {
+  border-color: #e54d86;
+  box-shadow:
+    0 0 0 2px rgba(229, 77, 134, 0.3),
+    0 18px 36px rgba(214, 48, 108, 0.22);
+}
+
+.app-shell[data-skin='sakura'] .sakura-jardin .sakura-flor-cover {
+  inline-size: 60px;
+  block-size: 60px;
+  margin: 0 auto 8px;
+}
+
+.app-shell[data-skin='sakura'] .sakura-jardin .sakura-flor-cover > img,
+.app-shell[data-skin='sakura'] .sakura-jardin .sakura-flor-mark {
+  inline-size: 44px;
+  block-size: 44px;
+  font-size: 18px;
+}
+
+.app-shell[data-skin='sakura'] .sakura-jardin .sakura-flor-info {
+  text-align: center;
+}
+
+.app-shell[data-skin='sakura'] .sakura-jardin .sakura-flor-info strong {
+  font-size: 13px;
+}
+
+.app-shell[data-skin='sakura'] .sakura-jardin .sakura-flor-sub {
+  font-size: 9px;
+}
+
+.app-shell[data-skin='sakura'] .sakura-jardin .sakura-flor-acc {
+  justify-content: center;
+}
+
+@media (max-width: 760px) {
+  .app-shell[data-skin='sakura'] .sakura-jardin {
+    min-height: 720px;
+  }
+  .app-shell[data-skin='sakura'] .sakura-jardin .sakura-flor {
+    inline-size: 140px;
+  }
+}

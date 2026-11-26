@@ -56,7 +56,7 @@ red, y se carga bajo demanda. La declaración y los selectores viven en
 | `samurai` | Samurái | Lacado rojo/negro, textura de armadura, serif marcada |
 | `kawaii` | Kawaii | Pastel, redondeado extremo y detalles playful |
 | `manga` | Manga | **Revista de viñetas**: papel `#fbfaf7`, tinta `#101010`, tramado screentone y un solo acento rojo `#d62828` |
-| `sakura` | Sakura | **Jardín hanami**: foto real del cerezo, medallón de cinco pétalos, rama y flores en zigzag |
+| `sakura` | Sakura | **Anillos de crecimiento**: un anillo por canción, flor con la carátula en el centro y foto real del cerezo en el hero |
 | `loto` | Loto Imperial | **Tríptico de seda**: rollos con varillas doradas, aletas laterales y sellos |
 | `ukiyo` | La Gran Ola | **Rollo lateral de estampas**: láminas apaisadas con ola SVG y sello rojo |
 | `vinilo` | Tocadiscos 3D | **Estantería analógica**: fundas inclinadas, discos que asoman y plato activo |
