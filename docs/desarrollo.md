@@ -59,7 +59,7 @@ Sakura_Music/
 ├── src-tauri/                    # Backend (Tauri 2 + Rust)
 │   ├── src/
 │   │   ├── main.rs               # callback mínimo para desktop
-│   │   ├── lib.rs                # 40 comandos Tauri, scope asset, ciclo de vida
+│   │   ├── lib.rs                # 56 comandos Tauri, scope asset, ciclo de vida
 │   │   ├── catalog.rs            # 3 comandos de catálogo (iTunes/Deezer/MusicBrainz)
 │   │   ├── scanner.rs            # walkdir + rayon + lofty, escritura atómica, tests
 │   │   ├── downloader.rs         # DownloadManager, yt-dlp, cancelación, tests
@@ -79,7 +79,7 @@ Sakura_Music/
 │   └── capabilities/default.json # permisos: core y dialog
 ├── scripts/
 │   └── benchmark_scan.mjs        # benchmark de escaneo (10k pistas ≈ 12,6 s en release)
-├── e2e/                          # suites Playwright (32 tests)
+├── e2e/                          # suites Playwright (41 tests)
 ├── docs/                         # esta documentación
 ├── legacy_python/                # v1.0 histórica (Python + PySide6), no se toca
 ├── iniciar_sakura.bat            # npm run tauri dev en Windows
@@ -101,8 +101,8 @@ npm run check           # tipos + lint + formato + tests + build del frontend
 npm run typecheck       # solo tsc --noEmit
 npm run lint            # ESLint sobre src/
 npm run format          # Prettier sobre TS/TSX/JS/JSON/YAML
-npm run test            # Vitest (60 tests unitarios del frontend)
-npm run test:e2e        # Playwright (32 tests E2E)
+npm run test            # Vitest (94 tests unitarios del frontend)
+npm run test:e2e        # Playwright (41 tests E2E)
 npm run pipeline        # check + E2E + fmt + clippy + cargo test → pasa en verde
 cargo test --manifest-path src-tauri/Cargo.toml   # 59 tests Rust
 cargo fmt --check --manifest-path src-tauri/Cargo.toml
@@ -184,6 +184,8 @@ sus efectos, cancelación y reintento de filas.
 
 ### Agregar un tema
 
+El checklist completo está en [como-agregar-un-tema.md](como-agregar-un-tema.md).
+
 **Sólo para temas importados:** sumá el id a `ThemeMode` en `src/types.ts` y un
 bloque `.app-shell[data-skin='id']` en `src/App.css` con `--m3-*`, `--space-*`,
 `--accent-*` y `--theme-*`. Mantiene `data-theme="space"` fijo y cae en
@@ -207,7 +209,7 @@ superficie además de los tokens de color. Ver [ADR 0012](adr/0012-temas-multipl
    `deleted_tracks`), con `foreign_keys=ON` y `ON DELETE CASCADE`.
 2. Exponé el comando en `lib.rs`, registralo en `invoke_handler!` y validá los
    argumentos en `validacion.rs` en la frontera IPC.
-3. Agregalo a `docs/ipc-contract.md` (51 comandos / 7 eventos) y al tipo en
+3. Agregalo a `docs/ipc-contract.md` (59 comandos / 7 eventos) y al tipo en
    `src/types.ts`; consumilo desde `PlaylistsPanel` o `UndoToast`.
 4. Si el comando crea archivos visibles, autorizá la carpeta con
    `app.asset_protocol_scope().allow_directory(...)`.

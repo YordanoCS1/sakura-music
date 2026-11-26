@@ -53,6 +53,11 @@ adelante rigen la v2.
 | [0019](0019-temas-propios-estructurales.md) | Temas propios con identidad estructural | Vigente (amplía 0012; hoy 19 propios, incluidos los cinco nuevos) |
 | [0020](0020-paleta-de-comandos.md) | Paleta de comandos y navegación de seis pestañas | Vigente |
 | [0021](0021-busqueda-de-letras-online.md) | Búsqueda de letras online con LRCLIB | Vigente (amplía 0015) |
+| [0022](0022-cinco-temas-con-biblioteca-propia.md) | Cinco temas nuevos con biblioteca de estructura propia | Vigente (amplía 0019; hoy 19 temas) |
+
+> **Nota sobre la numeración:** no existe ADR 0018. El número se reservó durante
+> la reorganización de decisiones de la v2 y no se llegó a redactar. No se
+> reutiliza: los ADRs conservan su numeración original.
 
 ## Cómo agregar una decisión
 

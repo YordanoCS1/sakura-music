@@ -35,7 +35,7 @@ flowchart TB
     end
 
     subgraph IPC["IPC Tauri"]
-        CMD["invoke(): 51 comandos<br/>(48 lib.rs + 3 catalog.rs)"]
+        CMD["invoke(): 59 comandos<br/>(56 lib.rs + 3 catalog.rs)"]
         EVT["7 eventos de progreso y resultados"]
     end
 
@@ -45,7 +45,7 @@ flowchart TB
         WATCH["library_watcher.rs<br/>notify + debounce"]
         DL["downloader.rs<br/>DownloadManager, 2 en paralelo"]
         PATH["paths.rs<br/>.tauri_data, OnceLock"]
-        LIB["lib.rs<br/>40 comandos, scope asset, ciclo de vida"]
+        LIB["lib.rs<br/>56 comandos, scope asset, ciclo de vida"]
         CATALOG["catalog.rs<br/>3 comandos de catálogo"]
         VAL["validacion.rs<br/>frontera IPC"]
         PL["playlists.rs · lyrics.rs<br/>queue.rs · logging.rs · remote.rs · tools.rs"]
@@ -76,7 +76,7 @@ flowchart TB
 |---|---|---|
 | `src/App.tsx` | Seis pestañas (`AppTab`), reproductor, editor, cola, temas. Lee `localStorage` para preferencias. | Leer tags ni lanzar `yt-dlp` directamente |
 | Componentes `src/components/` | `NowPlayingPanel` (Detalles/Letras/Álbum/Artista), `PlaylistsPanel`, `CommandPalette` (⌘K), `UndoToast`, `SystemPanel`, `VirtualizedGrid`; `ThemeLibrary`/`ThemeHome`/`ThemeNav` para los 19 temas propios. | Hablar directo con Rust: todo pasa por `invoke`/eventos |
-| `lib.rs` | Registrar los 40 comandos propios, inicializar carpeta de datos, autorizar carpetas en el scope `asset:`, cancelar descargas al salir. | Contener lógica de parsing o pesos |
+| `lib.rs` | Registrar los 56 comandos propios, inicializar carpeta de datos, autorizar carpetas en el scope `asset:`, cancelar descargas al salir. | Contener lógica de parsing o pesos |
 | `catalog.rs` | Consultar iTunes, Deezer y MusicBrainz (con portadas de Cover Art Archive) vía `reqwest`, con User-Agent propio, y exponer 3 comandos Tauri. | Hacer `fetch` desde el frontend (CORS/User-Agent) ni pintar UI |
 | `validacion.rs` | Validar en la frontera IPC (longitudes, caracteres de control, rutas y lotes) y exigir scope canónico para escrituras. | Confiar en lo que manda el frontend |
 | `scanner.rs` | Enumerar y leer pistas en paralelo, lectura/escritura de tags con `lofty`, carátulas con extensión real. | Conocer React ni `localStorage` |

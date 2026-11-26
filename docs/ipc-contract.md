@@ -1,6 +1,6 @@
 # Contrato IPC (frontend ↔ Rust)
 
-Toda la comunicación entre React y el núcleo Rust pasa por `invoke()` y por eventos de Tauri. Este documento es la lista canonical de los **51 comandos** y los **7 eventos**. Si agregás uno, actualice este archivo en el mismo commit.
+Toda la comunicación entre React y el núcleo Rust pasa por `invoke()` y por eventos de Tauri. Este documento es la lista canonical de los **59 comandos** y los **7 eventos**. Si agregás uno, actualice este archivo en el mismo commit.
 
 Los tipos (`ScannedTrack`, `PersistedDownload`, etc.) están en [`src/types.ts`](../src/types.ts) y su contrato Rust en los módulos indicados. Los formatos persistidos están en [data-formats.md](data-formats.md).
 
@@ -67,8 +67,10 @@ Fuentes: `itunes`, `deezer` y `musicbrainz`. Estas consultas viven en Rust porqu
 | `save_download_queue` | `items: PersistedDownload[]` | `boolean` | `lib.rs` |
 | `tools_status` | — | `ToolStatus[]` | `lib.rs` |
 | `install_downloader_tools` | `tool: 'ytdlp' \| 'ffmpeg'` | `ToolStatus` | `lib.rs` |
+| `list_download_history` | — | `DownloadHistoryItem[]` | `lib.rs` |
+| `clear_download_history` | — | — | `lib.rs` |
 
-`search_online` y `resolve_playlist` emiten resultados parciales por evento mientras `yt-dlp` va imprimiendo líneas; el array que devuelve el comando es el resultado final. La cola se persiste mandando el array completo a `save_download_queue` en cada cambio (no existe un comando para "vaciar" el archivo).
+`search_online` y `resolve_playlist` emiten resultados parciales por evento mientras `yt-dlp` va imprimiendo líneas; el array que devuelve el comando es el resultado final. La cola se persiste mandando el array completo a `save_download_queue` en cada cambio. El historial es independiente: `list_download_history` lo consulta y `clear_download_history` lo limpia sin tocar la cola activa.
 
 ### Mantenimiento y diagnóstico
 
@@ -107,6 +109,24 @@ Si faltan las herramientas, `tools_status` informa qué está disponible y
 `install_downloader_tools` las descarga a `bin/` con verificación SHA256. Nunca
 sobrescribe un binario que ya esté en el PATH.
 
+### Archivos, imágenes y portabilidad
+
+| Comando | Parámetros | Devuelve | Origen |
+|---|---|---|---|
+| `exportar_biblioteca` | `ruta: string`, `preferencias?: string` | `string` (ruta del ZIP) | `lib.rs` |
+| `importar_biblioteca` | `ruta: string` | `string` (mensaje) | `lib.rs` |
+| `guardar_imagen` | `nombre`, `datos` (base64), `carpeta_elegida?` | `string` (ruta del PNG) | `lib.rs` |
+| `leer_imagen_base64` | `ruta: string` | `string` (data URL) | `lib.rs` |
+| `abrir_archivo` | `ruta: string` | — | `lib.rs` |
+| `abrir_carpeta` | `ruta: string` | — | `lib.rs` |
+
+La biblioteca portátil es un ZIP con la base SQLite (copia consistente), las
+carátulas y las preferencias; la importación valida `integrity_check` antes
+de reemplazar la base. `guardar_imagen` decodifica el PNG de la presentación
+en Rust para no contaminar el canvas del frontend, y `leer_imagen_base64`
+entrega la carátula al exportar el póster. `abrir_archivo` y `abrir_carpeta`
+usan la app por defecto del sistema; en el celular no están disponibles.
+
 ## Eventos
 
 | Evento | Payload | Cuándo se emite |
@@ -124,7 +144,7 @@ El frontend filtra `library-changed` comparando la ruta con la carpeta activa, p
 
 ## Registro de comandos
 
-Los 51 comandos están registrados en el `invoke_handler` de `lib.rs` (48 definidos ahí y 3 en `catalog.rs`). Si agregás uno nuevo:
+Los 59 comandos están registrados en el `invoke_handler` de `lib.rs` (56 definidos ahí y 3 en `catalog.rs`). Si agregás uno nuevo:
 
 1. Definilo con `#[tauri::command]` y devolvé `Result<_, String>` cuando pueda fallar.
 2. Registralo en `generate_handler!`.
@@ -135,7 +155,7 @@ Los 51 comandos están registrados en el `invoke_handler` de `lib.rs` (48 defini
 
 ## Control remoto local
 
-El módulo `remote.rs` levanta un servidor HTTP en el puerto **17342** al iniciar la app. El frontend usa cuatro comandos para administrarlo:
+El módulo `remote.rs` levanta un servidor HTTP en el puerto **17342** al iniciar la app. El frontend usa seis comandos para administrarlo:
 
 | Comando | Parámetros | Devuelve |
 |---|---|---|
@@ -143,5 +163,7 @@ El módulo `remote.rs` levanta un servidor HTTP en el puerto **17342** al inicia
 | `remote_is_enabled` | — | `boolean` |
 | `remote_local_ip` | — | `string` |
 | `remote_update_state` | `title`, `artist`, `playing`, `position`, `duration` | — |
+| `remote_pin` | — | `string` (PIN de 6 dígitos) |
+| `remote_responder` | `id: string`, `resultado: Value` | — |
 
 El servidor sirve una página de control en `/`, expone `/api/status` y `/api/search?q=`, y envía las acciones al frontend con el evento `remote-command`. Sólo responde cuando el flag está activo (Ajustes → Control remoto).
