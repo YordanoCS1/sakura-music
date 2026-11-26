@@ -3,7 +3,9 @@
 Un **ADR** (*Architecture Decision Record*) documenta una decisión importante, el
 contexto que la originó, las alternativas consideradas y las consecuencias de
 elegirla. Sirve para que quien lea el código dentro de seis meses entienda
-**por qué** es así y no de otra forma.
+**por qué** es así y no de otra forma. Para una explicación narrativa y
+conectada de todas las decisiones, ver
+[Por qué Sakura Music es así](../racional-de-decisiones.md).
 
 Los ADRs 0001–0008 describen la **versión 1.0 en Python/PySide6** y quedaron como
 histórico al migrar: no se reescriben, se les marca el estado (reemplazado,

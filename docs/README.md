@@ -11,6 +11,7 @@ Esta carpeta contiene la documentación técnica y de referencia del proyecto Sa
 | Si desea… | Leé |
 |---|---|
 | Visión general, instalación y arranque rápido | [README principal](../README.md) |
+| Por qué se eligió cada lenguaje, forma y acción | [racional-de-decisiones.md](racional-de-decisiones.md) |
 | Arquitectura v2 (Tauri + Rust + React) | [arquitectura.md](arquitectura.md) |
 | La promesa verificable de la app | [requisitos.md](requisitos.md) |
 | Flujos paso a paso | [casos-de-uso.md](casos-de-uso.md) |
@@ -34,6 +35,7 @@ Esta carpeta contiene la documentación técnica y de referencia del proyecto Sa
 ```text
 docs/
   README.md                  este índice
+  racional-de-decisiones.md  por qué se eligió cada lenguaje y acción
   casos-de-uso.md            actores, CU-01…CU-17 y flujos detallados
   requisitos.md              RF/RNF con criterio de aceptación y tests
   arquitectura.md            capas, hilos, persistencia, seguridad y secuencias
@@ -144,8 +146,9 @@ sumá un ADR nuevo en vez de reescribir los viejos.
 
 ## Qué no vive aquí
 
-- El **porqué** detallado de cada decisión de diseño: está en el
-  [README](../README.md) y en los [ADRs](adr/README.md).
+- El **porqué** detallado de cada decisión de diseño: está en
+  [racional-de-decisiones.md](racional-de-decisiones.md) y, de forma formal y
+  atómica, en los [ADRs](adr/README.md).
 - La **referencia de API** generada: los módulos ya tienen docstrings y el
   proyecto no publica un sitio.
 - **Documentación componente por componente:** se documentan las páginas y los
