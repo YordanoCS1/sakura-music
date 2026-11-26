@@ -8,6 +8,34 @@ sólo como fallback para temas importados; ningún tema oficial la usa. Prototip
 de referencia en `docs/prototipos/` (históricos) y `docs/temas/` (propuestas). La
 fuente de verdad son `tailwind.config.js` y `App.css`.
 
+## Capas de tokens
+
+Los tokens se organizan de lo concreto a lo semántico. La regla es que los
+componentes consuman las capas 2 a 4, nunca un hex suelto:
+
+| Capa | Qué contiene | Ejemplo en el proyecto |
+|---|---|---|
+| 1. Literales | Colores, fuentes y tamaños crudos | `--m3-surface`, `--font-display`, `16px` |
+| 2. Semánticos | Significado dentro del tema | `--accent-*`, `--theme-ink`, `--tema-linea` |
+| 3. De UI | Superficies y estados compartidos | `--loto-hover`, `--loto-activo`, `--loto-suave` |
+| 4. De componente | Decisiones locales de un componente | `--loto-rollo-borde` |
+
+Los tokens de la capa 3 **no se escriben a mano**: se derivan en OKLCH a partir
+del acento de cada tema con `npm run paletas`, que genera
+`src/themes/styles/tonos-oklch.css` (archivo generado, no editar). Así los
+estados de hover, activo y superficie mantienen una relación perceptual uniforme entre
+los cinco temas nuevos, en vez de depender de valores elegidos uno por uno.
+
+
+## Tipografía de exhibición
+
+Además de Plus Jakarta Sans, JetBrains Mono y Cormorant Garamond, los cinco
+temas nuevos usan **Fraunces Variable** (`public/fonts/fraunces-latin-variable.woff2`,
+OFL-1.1) en sus titulares. Es una fuente variable con ejes `wght` (100–900),
+`opsz` (9–144), `SOFT` (0–100) y `WONK` (0–1); se sirve desde la propia app, sin
+red, y se carga bajo demanda. La declaración y los selectores viven en
+`src/styles/fuentes.css`.
+
 ## Temas disponibles
 
 ### Propios (19)

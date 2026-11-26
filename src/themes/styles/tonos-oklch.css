@@ -1,0 +1,24 @@
+/* Generado por scripts/generar_paletas.mjs (npm run paletas).
+   No editar a mano: los tonos se derivan en OKLCH desde el acento de cada tema. */
+:root {
+  --sakura-base: #e54d86;
+  --sakura-hover: #ff75ab;
+  --sakura-activo: #ba1f63;
+  --sakura-suave: #ffe5ed;
+  --loto-base: #d4af37;
+  --loto-hover: #fcd663;
+  --loto-activo: #ae8900;
+  --loto-suave: #f7eed5;
+  --ukiyo-base: #b93829;
+  --ukiyo-hover: #e35f4d;
+  --ukiyo-activo: #900100;
+  --ukiyo-suave: #ffe6e1;
+  --vinilo-base: #ff5e3a;
+  --vinilo-hover: #ff8662;
+  --vinilo-activo: #d43203;
+  --vinilo-suave: #ffe7df;
+  --karesansui-base: #3c332a;
+  --karesansui-hover: #5c5349;
+  --karesansui-activo: #1e160e;
+  --karesansui-suave: #ffebd6;
+}

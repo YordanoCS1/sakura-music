@@ -106,6 +106,7 @@ npm run test:e2e        # Playwright (41 tests E2E)
 npm run pipeline        # check + E2E + fmt + clippy + cargo test → pasa en verde
 npm run clean:cargo     # borra sólo target/debug/incremental e informa los MB liberados
 npm run clean:cargo -- --all   # cargo clean completo (recompila también dependencias)
+npm run paletas        # deriva los tonos OKLCH → src/themes/styles/tonos-oklch.css
 cargo test --manifest-path src-tauri/Cargo.toml   # 59 tests Rust
 cargo fmt --check --manifest-path src-tauri/Cargo.toml
 cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings

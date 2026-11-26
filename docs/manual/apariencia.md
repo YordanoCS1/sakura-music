@@ -45,6 +45,11 @@ CC0 / dominio público), almacenada localmente para que la app funcione sin red.
 | **Tocadiscos 3D** | Estantería analógica: fundas inclinadas, discos que asoman al pasar el mouse, etiqueta *● SONANDO* y plato giratorio con la pista activa. |
 | **Karesansui** | Jardín zen: arena rastrillada, piedras de paso de bordes orgánicos y una roca mayor al fondo. |
 
+Los cinco temas nuevos usan titulares con **Fraunces Variable**, una fuente
+serif local de peso variable incluida en la app (sin conexión). Sus tonos de
+hover y estado activo se derivan en OKLCH desde el color de acento de cada tema,
+para que la paleta sea coherente sin valores escritos a mano.
+
 También puede crear los tuyos con el **generador de temas**: elegís un
 arquetipo entre los 19 propios (Estudio, Manga y los cinco nuevos también están disponibles), ajustás colores
 y el CSS se inyecta en runtime sin tocar archivos del proyecto. Los temas

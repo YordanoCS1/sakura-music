@@ -1,0 +1,53 @@
+/* ==========================================================================
+   TIPOGRAFÍA DE EXHIBICIÓN · fuente variable local + tonos derivados
+   ========================================================================== */
+
+/* Fraunces: OFL-1.1, latin variable (wght/opsz/SOFT/WONK), servida desde /fonts. */
+@font-face {
+  font-family: 'Fraunces Variable';
+  src: url('/fonts/fraunces-latin-variable.woff2') format('woff2-variations');
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+/* Titulares de las bibliotecas nuevas. Se importa este módulo al final de
+   App.css para que éstas reglas ganen sobre los `font:` de cada tema. */
+.app-shell[data-skin='loto'] .loto-lib-cabecera h1,
+.app-shell[data-skin='ukiyo'] .ukiyo-lib-cabecera h1,
+.app-shell[data-skin='vinilo'] .vinilo-lib-cabecera h1,
+.app-shell[data-skin='karesansui'] .karesansui-lib-cabecera h1,
+.app-shell[data-skin='sakura'] .sakura-hero h1 {
+  font-family: 'Fraunces Variable', 'Cormorant Garamond', serif;
+  font-variation-settings:
+    'opsz' 42,
+    'SOFT' 20,
+    'WONK' 1;
+  font-weight: 600;
+}
+
+.app-shell[data-skin='loto'] .loto-rollo-btn > strong {
+  font-family: 'Fraunces Variable', 'Cormorant Garamond', serif;
+  font-variation-settings:
+    'opsz' 24,
+    'SOFT' 20,
+    'WONK' 1;
+  font-weight: 600;
+}
+
+/* Estados activos con tonos derivados en OKLCH (npm run paletas). */
+.app-shell[data-skin='sakura'] .sakura-flor.is-active {
+  border-color: var(--sakura-hover);
+}
+.app-shell[data-skin='loto'] .loto-rollo.is-active {
+  outline-color: var(--loto-hover);
+}
+.app-shell[data-skin='ukiyo'] .ukiyo-lamina.is-active {
+  outline-color: var(--ukiyo-hover);
+}
+.app-shell[data-skin='vinilo'] .vinilo-funda.is-active {
+  outline-color: var(--vinilo-hover);
+}
+.app-shell[data-skin='karesansui'] .zen-piedra.is-active {
+  outline-color: var(--karesansui-activo);
+}
