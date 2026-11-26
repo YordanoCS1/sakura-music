@@ -4,6 +4,9 @@ Todos los cambios destacables de este proyecto se registran aquí. El formato si
 
 ## [2.0.0] - 2026-11-25
 
+### Cambiado
+- **CI sin compilación incremental**: `.github/workflows/ci.yml` fija `CARGO_INCREMENTAL: '0'` a nivel de `env`. En las runners descartables el incremental apenas acelera el build (el código cambia en cada push) y acumula sesiones que inflan el caché de `Swatinem/rust-cache@v2`. El desarrollo local no se toca: `npm run tauri dev` sigue con incremental activo. La razón quedó documentada en `docs/pipeline.md`.
+
 ### Agregado
 - **Guía para agregar un tema** (`docs/como-agregar-un-tema.md`): checklist de diez pasos con los archivos exactos (`themeCatalog`, `themeMeta`, `themeIcons`, `App.css`, módulos de `src/themes/styles/`, `ThemeHome`, `ThemeLibrary`, `ThemeNav`, `CoverFullscreen`), reglas de recursos locales y reduced-motion, tabla de formas ya ocupadas por las 18 bibliotecas existentes, verificación con tests y capturas, y errores frecuentes. Enlazada desde `docs/README.md` y `desarrollo.md`.
 - **ADR 0022** (`docs/adr/0022-cinco-temas-con-biblioteca-propia.md`): registra la decisión de dar estructura propia a los cinco temas nuevos, la foto CC0 local y la verificación por capturas; se anotó en el índice que ADR 0018 quedó reservado y no se reutiliza.

@@ -9,6 +9,10 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  # El CI usa una runner descartable: la compilación incremental aporta poco
+  # (el código cambia en cada push) y acumula sesiones que inflan el caché.
+  # En local NO se desactiva: npm run tauri dev sí se beneficia de ella.
+  CARGO_INCREMENTAL: '0'
 
 jobs:
   checks:

@@ -54,6 +54,15 @@ No hay etapa de empaquetado ni de firma.
 > de debug completa; si necesitás símbolos, usá un profile explícito, pero no
 > cambies el default del pipeline.
 
+> Nota de caché: el workflow fija `CARGO_INCREMENTAL: '0'` a nivel de `env`.
+> Las runners son descartables y el código cambia en cada push, así que la
+> compilación incremental apenas acelera el CI y en cambio acumula sesiones que
+> inflan el caché de `Swatinem/rust-cache@v2`. Esto **no afecta al desarrollo
+> local**: `npm run tauri dev` mantiene el incremental activo. El aviso de
+> *hardlinking* que aparece en Windows es local (ruta `D:\Proyectos\...`), no
+> de las runners; si `target\debug\incremental` crece demasiado en la máquina,
+> se puede limpiar sólo esa carpeta sin borrar el resto de `target/`.
+
 `npm run pipeline` ejecuta las etapas bloqueantes en orden y hoy pasa en verde.
 
 ## Cómo verlo
