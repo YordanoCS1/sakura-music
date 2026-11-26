@@ -43,11 +43,13 @@ npm run tauri dev
 En Windows también puede hacer doble clic en **`iniciar_sakura.bat`**: hace
 exactamente `npm run tauri dev`.
 
-Para tener la app instalada (instalador .exe / .msi):
+Para compilar la app localmente (el proyecto no genera instalador):
 
 ```powershell
 npm run tauri build
 ```
+
+El resultado queda en `src-tauri/target/`; no hay instalador ni actualizador.
 
 ## Dónde quedan sus datos
 
@@ -80,46 +82,21 @@ nuevo. No perdés tags ni audio.
    descargue su primera canción en el formato que prefiera.
 4. En **Cola** vea el porcentaje, velocidad y ETA; al terminar, la canción
    aparece sola en Biblioteca.
-5. En **Ajustes** seleccione uno de los 14 temas y ajuste los efectos visuales;
+5. En **Ajustes** seleccione uno de los 19 temas y ajuste los efectos visuales;
    en **Ajustes → Sistema** puede verificar la base y vaciar la papelera.
 
 ## Control remoto desde el celular
 
-En **Ajustes → Sistema → Control remoto**, active el servidor local y escanee el
-**código QR** con el teléfono (en la misma red Wi-Fi). El QR incluye un **PIN de
-6 dígitos** que se muestra también en el panel: al escanear, el servidor abre una
-sesión y muestra la interfaz de Sakura Music en el navegador del celular. Si
-escribe la URL a mano, el PIN se pide en un formulario.
-
-Si la app no detecta la IP de la red (aparece `127.0.0.1`), escriba la IP de la
-PC en el campo y el QR se generará con ese valor. El PIN se renueva cada vez que
-se activa el servidor y se descarta al desactivarlo.
-
-La interfaz del celular es **la misma aplicación** (temas incluidos). Desde el
-teléfono puede ver la biblioteca, buscar, reproducir, **mandar descargas**,
-editar metadatos, administrar playlists y la papelera y consultar el doctor del
-sistema. Todas las acciones se ejecutan en la computadora; el celular solo
-envía comandos por la red local. **No hay streaming**: la música sigue sonando
-en la PC y el panel «Sonando en la PC» muestra el estado.
-
-Si el celular dice que no puede acceder al sitio, habilite el puerto en el
-firewall de Windows (como Administrador):
-
-```powershell
-netsh advfirewall firewall add rule name="Sakura Control Remoto" dir=in action=allow protocol=TCP localport=17342
-```
-
-Para que el celular vea la versión actual de la interfaz durante el desarrollo,
-ejecute `npm run build` antes de activar el control remoto: el servidor sirve el
-contenido compilado en `dist/`.
+La configuración completa (QR, PIN de 6 dígitos, firewall, qué se puede hacer y
+qué no) está en [control-remoto.md](control-remoto.md).
 
 Los siguientes pasos están en [buscar-y-descargar.md](buscar-y-descargar.md) y
 [biblioteca.md](biblioteca.md).
 
 ## Desinstalar
 
-1. Desinstalá la app como cualquier programa de Windows (Panel de control o
-   Configuración → Aplicaciones).
+1. No hay desinstalador: si compilaste la app desde el código, cerrala y borrá
+   el directorio de trabajo. El proyecto no genera instaladores.
 2. Si desea, elimine la carpeta de datos
    (`%LOCALAPPDATA%\com.sakura.music`): perderá caché y carátulas, **no su
    música**, que está en su biblioteca.

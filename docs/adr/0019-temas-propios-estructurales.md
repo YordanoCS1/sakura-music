@@ -56,3 +56,11 @@ El glifo del splash y el logo de la nav comparten
 `src/main.tsx`, más los snapshots `manga-home-win32.png`,
 `manga-library-win32.png`, `space-home-win32.png` y `space-library-win32.png` de
 `e2e/visuals.spec.ts` (el loop visual pasó de 7 a 8 temas).
+
+---
+
+> **Actualización (2026-11-25):** las cifras de 14 temas de arriba corresponden
+> al estado del 2026-11-20. El 2026-11-25 se sumaron `sakura`, `loto`, `ukiyo`,
+> `vinilo` y `karesansui`, con Home y biblioteca de estructura propia, por lo que
+> hoy son **19 temas propios**. Las cifras anteriores se conservan como parte del
+> histórico de la decisión.

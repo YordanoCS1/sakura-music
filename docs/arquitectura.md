@@ -31,7 +31,7 @@ flowchart TB
         TABS["7 pestañas (AppTab):<br/>home · library · search · queue<br/>playlists · settings"]
         PLAYER["PlayerBar + NowPlayingPanel<br/>Detalles · Letras · Álbum · Artista<br/>asset: + Blob URL"]
         PANEL["PlaylistsPanel · CommandPalette ⌘K<br/>UndoToast · SystemPanel<br/>VirtualizedGrid en LibraryTab"]
-        THEME["14 propios (ThemeLibrary/Home/Nav)<br/>Estudio = space · data-skin={tema}<br/>LibraryTab/ZenTopNav: fallback importados"]
+        THEME["19 propios (ThemeLibrary/Home/Nav)<br/>Estudio = space · data-skin={tema}<br/>LibraryTab/ZenTopNav: fallback importados"]
     end
 
     subgraph IPC["IPC Tauri"]
@@ -75,7 +75,7 @@ flowchart TB
 | Capa | Responsabilidad | No debe |
 |---|---|---|
 | `src/App.tsx` | Seis pestañas (`AppTab`), reproductor, editor, cola, temas. Lee `localStorage` para preferencias. | Leer tags ni lanzar `yt-dlp` directamente |
-| Componentes `src/components/` | `NowPlayingPanel` (Detalles/Letras/Álbum/Artista), `PlaylistsPanel`, `CommandPalette` (⌘K), `UndoToast`, `SystemPanel`, `VirtualizedGrid`; `ThemeLibrary`/`ThemeHome`/`ThemeNav` para los 14 temas propios. | Hablar directo con Rust: todo pasa por `invoke`/eventos |
+| Componentes `src/components/` | `NowPlayingPanel` (Detalles/Letras/Álbum/Artista), `PlaylistsPanel`, `CommandPalette` (⌘K), `UndoToast`, `SystemPanel`, `VirtualizedGrid`; `ThemeLibrary`/`ThemeHome`/`ThemeNav` para los 19 temas propios. | Hablar directo con Rust: todo pasa por `invoke`/eventos |
 | `lib.rs` | Registrar los 40 comandos propios, inicializar carpeta de datos, autorizar carpetas en el scope `asset:`, cancelar descargas al salir. | Contener lógica de parsing o pesos |
 | `catalog.rs` | Consultar iTunes, Deezer y MusicBrainz (con portadas de Cover Art Archive) vía `reqwest`, con User-Agent propio, y exponer 3 comandos Tauri. | Hacer `fetch` desde el frontend (CORS/User-Agent) ni pintar UI |
 | `validacion.rs` | Validar en la frontera IPC (longitudes, caracteres de control, rutas y lotes) y exigir scope canónico para escrituras. | Confiar en lo que manda el frontend |
@@ -89,7 +89,7 @@ flowchart TB
 > Nota: las vistas genéricas viven en `LibraryTab.tsx` (9 vistas) y usan
 > `VirtualizedGrid` con `content-visibility` condicional en bibliotecas de más
 > de 60 pistas, pero hoy son sólo fallback para temas importados: ningún tema
-> oficial las usa. Los 14 temas propios, incluido Estudio (`space`), tienen
+> oficial las usa. Los 19 temas propios, incluidos Estudio (`space`) y los cinco nuevos, tienen
 > `ThemeLibrary`/`ThemeHome`/`ThemeNav` y sus propios diálogos, iconos y splash.
 > `App.tsx` conserva el estado raíz y el player; las piezas grandes nuevas se
 > separan en `src/components/`.
@@ -266,7 +266,7 @@ sequenceDiagram
 
 ## Tema visual
 
-La app usa **14 temas, todos propios**: ningún tema oficial es genérico.
+La app usa **19 temas, todos propios**: ningún tema oficial es genérico.
 
 - **Estudio** (`space`, por defecto): "Consola de mezcla y medidores VU". Home
   con `EST·01`, medidor VU y rack de canales con faders; biblioteca en canales
@@ -276,14 +276,18 @@ La app usa **14 temas, todos propios**: ningún tema oficial es genérico.
   suena", playlists, paleta ⌘K, estadísticas, modales de metadatos, splash y
   transición `t-estudio`. Fija `data-theme="space"` y aplica además
   `data-skin="space"`.
-- **Los otros trece:** `sumie`, `byobu`, `shoji`, `origami`, `swiss`, `sumiink`,
-  `moonlit`, `ledger`, `shonen`, `ghost`, `samurai`, `kawaii` y `manga`. Cada uno
+- **Los otros dieciocho:** `sumie`, `byobu`, `shoji`, `origami`, `swiss`,
+  `sumiink`, `moonlit`, `ledger`, `shonen`, `ghost`, `samurai`, `kawaii`,
+  `manga`, `sakura`, `loto`, `ukiyo`, `vinilo` y `karesansui`. Cada uno
   fija `data-theme="space"` y usa `data-skin={tema}`, con `ThemeLibrary`,
   `ThemeHome` y `ThemeNav` propios: cabecera, Buscar, Cola, ajustes, diálogos,
   transiciones, iconos y splash propios. `manga` ("Viñetas, tinta y screentone")
   usa papel `#fbfaf7`, tinta `#101010` y rojo `#d62828` con tramado screentone:
   portada de revista en Home y páginas de viñetas en biblioteca, con cabecera
-  negra y glifo 漫; es además arquetipo del generador de temas.
+  negra y glifo 漫; es además arquetipo del generador de temas. Los cinco
+  temas nuevos añadidos el 2026-11-25 (`sakura`, `loto`, `ukiyo`, `vinilo` y
+  `karesansui`) tienen biblioteca de estructura propia: jardín hanami, rollos
+  de seda, estampas apaisadas, estantería de discos y arena rastrillada.
 
 `LibraryTab`/`ZenTopNav` se conservan en el código únicamente como fallback para
 temas importados; ningún tema oficial cae en la vista genérica de 9 vistas.

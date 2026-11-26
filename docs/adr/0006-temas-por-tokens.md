@@ -75,3 +75,11 @@ Reglas:
 
 `test_theme.py`, `test_theme_contrast.py`, `test_theme_switch.py`,
 `test_shells.py` y `test_designs.py`.
+
+---
+
+> **Actualización (2026-11-25):** las cifras de 14 temas de arriba corresponden
+> al estado del 2026-11-20. El 2026-11-25 se sumaron `sakura`, `loto`, `ukiyo`,
+> `vinilo` y `karesansui`, con Home y biblioteca de estructura propia, por lo que
+> hoy son **19 temas propios**. Las cifras anteriores se conservan como parte del
+> histórico de la decisión.

@@ -39,9 +39,14 @@ CC0 / dominio público), almacenada localmente para que la app funcione sin red.
 | **Samurái** | Lacado rojo, acero y oro, con líneas de armadura y sellos. |
 | **Kawaii** | Pastel, ternura y caritas, con formas redondeadas y colores dulces. |
 | **Manga** | Viñetas, tinta y screentone. Papel `#fbfaf7`, tinta `#101010` y un acento rojo `#d62828`. El Inicio es una portada de revista (`第 01 話`, globo de diálogo, sello 開 y línea de tiempo) y la biblioteca son páginas de viñetas con tramado halftone, globo con el título, tag **GO!** y carátulas en blanco y negro. La cabecera es negra con el glifo 漫 y la navegación lleva kanji sobre cuadrado rojo; también tiene estilo propio en Ajustes, panel "Ahora suena", playlists, paleta ⌘K, modales de metadatos, splash y transición de página `t-manga`. |
+| **Sakura** | Jardín hanami: foto real del cerezo, medallón de flor de cinco pétalos con la pista activa, rama y tarjetas en zigzag con numeración *FLOR 01*. |
+| **Loto Imperial** | Tríptico de seda carmesí y oro: aletas laterales con kanji 蓮, rollos con varillas doradas y sellos. |
+| **La Gran Ola** | Rollo lateral de estampas apaisadas con ola SVG, cartucho de título y sello rojo 波. Se desliza en horizontal. |
+| **Tocadiscos 3D** | Estantería analógica: fundas inclinadas, discos que asoman al pasar el mouse, etiqueta *● SONANDO* y plato giratorio con la pista activa. |
+| **Karesansui** | Jardín zen: arena rastrillada, piedras de paso de bordes orgánicos y una roca mayor al fondo. |
 
 También puede crear los tuyos con el **generador de temas**: elegís un
-arquetipo entre los 14 propios (Estudio y Manga también están disponibles), ajustás colores
+arquetipo entre los 19 propios (Estudio, Manga y los cinco nuevos también están disponibles), ajustás colores
 y el CSS se inyecta en runtime sin tocar archivos del proyecto. Los temas
 generados se guardan en `localStorage` (`sakura_temas_personalizados`) y aparecen
 en el selector.
@@ -116,7 +121,7 @@ entrar, el glifo del splash pasa a la navegación con una transición continua
 `Ctrl+K` / `⌘K` abre la paleta de comandos: sirve para navegar entre pestañas,
 cambiar de tema, controlar la reproducción y buscar pistas. Usá **↑↓** para
 moverte, **↵** para ejecutar y **esc** para cerrar. La paleta toma el estilo del
-tema activo, incluidos los 14 propios.
+tema activo, incluidos los 19 propios.
 
 ## Vistas de biblioteca
 
@@ -135,14 +140,14 @@ En la **vista genérica**, hoy reservada como fallback para temas importados,
 | **Luz (Glow)** | Portadas con resplandor ambiental |
 | **Portadas** | Galería de carátulas |
 
-La vista se persiste en `sakura_view_mode`. En los **14 temas propios** no hay
+La vista se persiste en `sakura_view_mode`. En los **19 temas propios** no hay
 switcher de nueve vistas: cada tema dibuja su propia biblioteca estructural (en
 Estudio, canales con fader y VU), con Home, cabecera, Buscar, Cola, ajustes y
 diálogos a juego.
 
 ## Qué cambia y qué no
 
-Con 14 temas, al cambiar de tema cambian la paleta, la tipografía, los componentes
+Con 19 temas, al cambiar de tema cambian la paleta, la tipografía, los componentes
 y —en todos los oficiales— la estructura completa de cada pantalla. Aun así:
 
 | Sí | No |
@@ -159,7 +164,7 @@ y —en todos los oficiales— la estructura completa de cada pantalla. Aun así
 | La preferencia no se guarda | `localStorage` bloqueado por el WebView | Limpiá los datos del sitio en WebView2 y vuelva a elegir |
 | Las partículas no aparecen | Están apagadas en Ajustes | Activá **Efectos atmosféricos de partículas** |
 | Texto poco legible en algún modal | Superficie heredada de estilos viejos | Reportalo: los modales nuevos usan las superficies claras del tema activo |
-| Un tema no cambia la estructura | Está usando un tema importado, que cae en la vista genérica | Seleccione uno de los 14 temas oficiales: todos traen Home, biblioteca y diálogos propios, incluido Estudio (`space`) |
+| Un tema no cambia la estructura | Está usando un tema importado, que cae en la vista genérica | Seleccione uno de los 19 temas oficiales: todos traen Home, biblioteca y diálogos propios, incluido Estudio (`space`) |
 
 Más en [problemas.md](problemas.md) y en [../nuevas-funciones.md](../nuevas-funciones.md).
 

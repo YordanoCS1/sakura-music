@@ -37,3 +37,11 @@ Se evaluó la migración hacia una arquitectura moderna basada en **Tauri 2.0** 
 
 ### Negativas / Mitigaciones
 - Requiere compilador de Rust (`cargo`) para el desarrollo y empaquetado inicial.
+
+---
+
+> **Actualización (2026-11-25):** las cifras de 14 temas de arriba corresponden
+> al estado del 2026-11-20. El 2026-11-25 se sumaron `sakura`, `loto`, `ukiyo`,
+> `vinilo` y `karesansui`, con Home y biblioteca de estructura propia, por lo que
+> hoy son **19 temas propios**. Las cifras anteriores se conservan como parte del
+> histórico de la decisión.

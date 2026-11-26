@@ -1,6 +1,6 @@
 # Sistema de diseño
 
-Sakura Music usa **14 temas, todos propios**: ningún tema oficial es genérico.
+Sakura Music usa **19 temas, todos propios**: ningún tema oficial es genérico.
 Cada uno redefine la estructura completa con `ThemeLibrary`/`ThemeHome`/
 `ThemeNav`. El tema por defecto es **Estudio** (`space`), una consola de mezcla
 con medidores VU. La vista genérica `LibraryTab`/`ZenTopNav` sigue en el código
@@ -10,7 +10,7 @@ fuente de verdad son `tailwind.config.js` y `App.css`.
 
 ## Temas disponibles
 
-### Propios (14)
+### Propios (19)
 
 | Id | Nombre | Personalidad |
 |---|---|---|
@@ -28,6 +28,11 @@ fuente de verdad son `tailwind.config.js` y `App.css`.
 | `samurai` | Samurái | Lacado rojo/negro, textura de armadura, serif marcada |
 | `kawaii` | Kawaii | Pastel, redondeado extremo y detalles playful |
 | `manga` | Manga | **Revista de viñetas**: papel `#fbfaf7`, tinta `#101010`, tramado screentone y un solo acento rojo `#d62828` |
+| `sakura` | Sakura | **Jardín hanami**: foto real del cerezo, medallón de cinco pétalos, rama y flores en zigzag |
+| `loto` | Loto Imperial | **Tríptico de seda**: rollos con varillas doradas, aletas laterales y sellos |
+| `ukiyo` | La Gran Ola | **Rollo lateral de estampas**: láminas apaisadas con ola SVG y sello rojo |
+| `vinilo` | Tocadiscos 3D | **Estantería analógica**: fundas inclinadas, discos que asoman y plato activo |
+| `karesansui` | Karesansui | **Jardín zen**: arena rastrillada, piedras de paso orgánicas y roca mayor |
 
 Cada tema propio fija `data-theme="space"` y usa `data-skin={tema}` con
 `ThemeLibrary`, `ThemeHome` y `ThemeNav` propios: cabecera, Buscar, Cola,
@@ -49,7 +54,7 @@ el encabezado `IDENTIDAD POR TEMA`.
 
 | Familia | Cantidad | Biblioteca | Navegación | Superficies |
 |---|---|---|---|---|
-| Propios (`space`, `sumie`, `byobu`, `shoji`, `origami`, `swiss`, `sumiink`, `moonlit`, `ledger`, `shonen`, `ghost`, `samurai`, `kawaii`, `manga`) | 14 | `ThemeLibrary` propio | `ThemeHome` + `ThemeNav` propios | `data-skin={tema}`, estilos, iconos y splash propios |
+| Propios (`space`, `sumie`, `byobu`, `shoji`, `origami`, `swiss`, `sumiink`, `moonlit`, `ledger`, `shonen`, `ghost`, `samurai`, `kawaii`, `manga`, `sakura`, `loto`, `ukiyo`, `vinilo`, `karesansui`) | 19 | `ThemeLibrary` propio | `ThemeHome` + `ThemeNav` propios | `data-skin={tema}`, estilos, iconos y splash propios |
 | Fallback (temas importados) | — | `LibraryTab` con 9 vistas + `VirtualizedGrid` | `ZenTopNav` | Tokens + `App.css`; ningún tema oficial la usa |
 
 ### Notas visuales de Estudio
@@ -109,7 +114,7 @@ No se usan `gray-*` de Tailwind: los neutros salen de `ink-*` para que un cambio
 ### Paleta por tema
 
 La paleta de cada tema es un conjunto de variables, no una lista de clases: los
-14 temas propios pueden cambiar fondo, tipografía, borde y sombra además del
+19 temas propios pueden cambiar fondo, tipografía, borde y sombra además del
 acento. Por eso las superficies se leen siempre desde `--m3-*` y `--theme-*`, y
 los componentes usan `accent-*` para seguir el tema sin duplicar estilos. La
 paleta de comandos (`CommandPalette`, ⌘K) y los diálogos se estilizan con esos
@@ -126,7 +131,7 @@ teclado.
 
 Siempre se respeta `prefers-reduced-motion`. El glifo del splash hace un
 handoff continuo al logo de la navegación con
-`view-transition-name: sakura-glifo`, aplicable a los 14 temas (Estudio usa
+`view-transition-name: sakura-glifo`, aplicable a los 19 temas (Estudio usa
 `t-estudio` y Manga la transición de página `t-manga`).
 
 ## Forma y elevación

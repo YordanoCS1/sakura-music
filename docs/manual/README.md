@@ -12,7 +12,8 @@ descargar, ordenar, etiquetar, personalizar y, si algo falla, arreglarlo.
 | Buscar, descargar y la cola | [buscar-y-descargar.md](buscar-y-descargar.md) |
 | Escanear, mantener y explorar la biblioteca; Listas y Deshacer | [biblioteca.md](biblioteca.md) |
 | Editar tags, portadas, lote, catálogo y letras `.lrc` | [metadatos-y-letras.md](metadatos-y-letras.md) |
-| Los 14 temas, efectos y paleta ⌘K | [apariencia.md](apariencia.md) |
+| Los 19 temas, efectos y paleta ⌘K | [apariencia.md](apariencia.md) |
+| Control remoto desde el celular | [control-remoto.md](control-remoto.md) |
 | Actualizaciones, primer arranque y datos | [instalacion.md](instalacion.md) |
 | Síntomas, causas y diagnóstico (incluido actualizador y papelera) | [problemas.md](problemas.md) |
 
@@ -22,8 +23,9 @@ descargar, ordenar, etiquetar, personalizar y, si algo falla, arreglarlo.
 2. [buscar-y-descargar.md](buscar-y-descargar.md) — descargue su primera canción y revísela en Cola.
 3. [biblioteca.md](biblioteca.md) — seleccione su carpeta y una vista que te guste.
 4. [metadatos-y-letras.md](metadatos-y-letras.md) — arreglá los tags y sumá letras `.lrc`.
-5. [apariencia.md](apariencia.md) — seleccione entre los 14 temas (incluidos Estudio y Manga) y pruebe la paleta ⌘K.
-6. [problemas.md](problemas.md) — guardalo para cuando algo falle.
+5. [apariencia.md](apariencia.md) — seleccione entre los 19 temas (incluidos Estudio, Manga y los cinco nuevos) y pruebe la paleta ⌘K.
+6. [control-remoto.md](control-remoto.md) — active el QR y maneje la PC desde el celular.
+7. [problemas.md](problemas.md) — guardalo para cuando algo falle.
 
 ## Novedades que conviene conocer
 
@@ -38,6 +40,9 @@ descargar, ordenar, etiquetar, personalizar y, si algo falla, arreglarlo.
   ([metadatos-y-letras.md](metadatos-y-letras.md#letras-sincronizadas-lrc)).
 - **Paleta ⌘K:** `Ctrl+K` / `⌘K` para navegar, cambiar tema, reproducir y
   buscar; ↑↓, ↵ y esc ([apariencia.md](apariencia.md)).
+- **Control remoto:** el celular abre la misma interfaz con un PIN de 6
+  dígitos y ejecuta las acciones en la PC, sin streaming
+  ([control-remoto.md](control-remoto.md)).
 
 El detalle técnico de cada una está en [../nuevas-funciones.md](../nuevas-funciones.md).
 

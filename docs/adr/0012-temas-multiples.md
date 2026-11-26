@@ -41,3 +41,11 @@ El usuario pidió explícitamente varios diseños nuevos "totalmente diferentes"
 - `src/components/SettingsTab.tsx` — selector con `aria-pressed`.
 - `src/App.css` — selectores extendidos, bloques de los cuatro temas nuevos, reglas compartidas `--theme-*`; hoy incluye el bloque de Estudio (`data-skin='space'`).
 - `docs/diseno.md` — tokens y reglas visuales.
+
+---
+
+> **Actualización (2026-11-25):** las cifras de 14 temas de arriba corresponden
+> al estado del 2026-11-20. El 2026-11-25 se sumaron `sakura`, `loto`, `ukiyo`,
+> `vinilo` y `karesansui`, con Home y biblioteca de estructura propia, por lo que
+> hoy son **19 temas propios**. Las cifras anteriores se conservan como parte del
+> histórico de la decisión.

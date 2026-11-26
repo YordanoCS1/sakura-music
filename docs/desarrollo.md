@@ -27,11 +27,11 @@ Sakura_Music/
 ├── src/                          # Frontend (React 19 + TypeScript)
 │   ├── App.tsx                   # estado raíz: 7 pestañas (AppTab), player, editor, cola
 │   ├── main.tsx                  # entrada de React
-│   ├── App.css                   # Tailwind + tokens --m3-* / --accent-* / --theme-* de los 14 temas
+│   ├── App.css                   # Tailwind + tokens --m3-* / --accent-* / --theme-* de los 19 temas
 │   ├── types.ts                  # tipos compartidos (ScannedTrack, ViewMode, AppTab, ThemeMode, …)
 │   ├── components/
 │   │   ├── ZenTopNav.tsx         # navegación superior (pestañas + indicador)
-│   │   ├── ThemeNav.tsx          # navegación de los 14 temas propios
+│   │   ├── ThemeNav.tsx          # navegación de los 19 temas propios
 │   │   ├── ThemeHome.tsx         # inicio de los temas propios
 │   │   ├── ThemeLibrary.tsx      # biblioteca propia (no usa las 9 vistas genéricas)
 │   │   ├── ThemeQueue.tsx        # cola propia
@@ -96,7 +96,7 @@ comandos; `App.tsx` solo habla con `invoke` y eventos, nunca con `lofty` ni
 ```powershell
 npm run tauri dev       # desarrollo (o doble clic en iniciar_sakura.bat)
 npm run build           # tsc + vite build → dist/
-npm run tauri build     # instalador .exe / .msi
+npm run tauri build     # compila el bundle local (sin instalador)
 npm run check           # tipos + lint + formato + tests + build del frontend
 npm run typecheck       # solo tsc --noEmit
 npm run lint            # ESLint sobre src/
@@ -104,7 +104,7 @@ npm run format          # Prettier sobre TS/TSX/JS/JSON/YAML
 npm run test            # Vitest (60 tests unitarios del frontend)
 npm run test:e2e        # Playwright (32 tests E2E)
 npm run pipeline        # check + E2E + fmt + clippy + cargo test → pasa en verde
-cargo test --manifest-path src-tauri/Cargo.toml   # 47 tests Rust
+cargo test --manifest-path src-tauri/Cargo.toml   # 59 tests Rust
 cargo fmt --check --manifest-path src-tauri/Cargo.toml
 cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings
 ```
@@ -116,9 +116,9 @@ cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings
 ### Integración continua
 
 `.github/workflows/ci.yml` ejecuta en Windows, macOS y Linux (matriz de 3 SO) las
-mismas comprobaciones: `npm ci`, `npm run pipeline` (tipos, lint, formato, 58
-unitarios, 33 E2E, build del frontend, `cargo fmt --check`, `cargo clippy -D
-warnings` y los 47 tests Rust). La auditoría de npm (`npm run audit`) corre como
+mismas comprobaciones: `npm ci`, `npm run pipeline` (tipos, lint, formato, 94
+unitarios, 41 E2E, build del frontend, `cargo fmt --check`, `cargo clippy -D
+warnings` y los 59 tests Rust). La auditoría de npm (`npm run audit`) corre como
 paso informativo: hoy hay un aviso *high* de `picomatch` que afecta solo a
 dependencias de desarrollo y todavía no tiene corrección; no bloquea el pipeline.
 
@@ -163,11 +163,11 @@ tiempos de disco y del binario release.
 
 Los tests del frontend (`src/**/*.test.ts` y `.test.tsx`, 58 en total) cubren
 la conversión entre el ítem de UI y el formato persistido de la cola, el toast
-de deshacer y el fallback del `ErrorBoundary`; los 32 tests E2E de `e2e/`
+de deshacer y el fallback del `ErrorBoundary`; los 41 tests E2E de `e2e/`
 verifican arranque, splash, las 7 pestañas, paleta ⌘K y teclado. Todo lo demás
 se verifica a mano: búsqueda real en YouTube, descarga en los 4 formatos,
 playlist completa, edición individual y en lote (incluido el mensaje de fallos
-parciales), iTunes/Deezer/MusicBrainz, letras `.lrc`, playlists, los 14 temas y
+parciales), iTunes/Deezer/MusicBrainz, letras `.lrc`, playlists, los 19 temas y
 sus efectos, cancelación y reintento de filas.
 
 ## Recetas para extender
@@ -198,7 +198,7 @@ con `view-transition-name: sakura-glifo`. Si el tema es `space`, recordá aplica
 también `data-skin="space"` y sumar su transición (`t-estudio`).
 
 Corré `npm run build` para validar tipos y clases Tailwind. Los cambios
-limitados a la paleta usan `accent-*`; los 14 temas propios requieren estilos de
+limitados a la paleta usan `accent-*`; los 19 temas propios requieren estilos de
 superficie además de los tokens de color. Ver [ADR 0012](adr/0012-temas-multiples.md).
 
 ### Agregar una playlist o una operación de papelera
@@ -247,11 +247,11 @@ superficie además de los tokens de color. Ver [ADR 0012](adr/0012-temas-multipl
 | Rutas | `paths.rs` es el único lugar que conoce la carpeta de datos; nunca hay rutas hardcodeadas de usuario |
 | Escrituras | Siempre `write_atomic` para tags, caché y portadas |
 | Colores | Solo `accent-*` (variables `--accent-*`) fuera de `App.css`; el resto es rosa de apoyo (status) |
-| Tests | Un `#[test]` por comportamiento puro en su módulo (47 Rust); el frontend con 60 unitarios Vitest + 33 E2E Playwright, más `tsc` + build |
+| Tests | Un `#[test]` por comportamiento puro en su módulo (59 Rust); el frontend con 94 unitarios Vitest + 41 E2E Playwright, más `tsc` + build |
 
 ## Documentación
 
-- El **porqué** de cada decisión está en [adr/](adr/README.md).
+- El **porqué** de cada decisión está en [racional-de-decisiones.md](racional-de-decisiones.md) y, de forma atómica, en [adr/](adr/README.md).
 - Lo que la app **promete** está en [requisitos.md](requisitos.md).
 - Los flujos están en [casos-de-uso.md](casos-de-uso.md).
 - El manual de usuario está en [manual/](manual/README.md).

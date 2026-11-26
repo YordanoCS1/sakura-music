@@ -93,7 +93,7 @@ persistentes en SQLite. Cómo crearlas, renombrarlas y reordenarlas está en
 
 Desde cualquier pestaña puede apretar `Ctrl+K` / `⌘K` para abrir la **paleta de
 comandos**: navegación, cambio de tema, reproducción y búsqueda de pistas con
-**↑↓**, **↵** y **esc**. Está disponible en los 14 temas y se detalla en
+**↑↓**, **↵** y **esc**. Está disponible en los 19 temas y se detalla en
 [apariencia.md](apariencia.md).
 
 

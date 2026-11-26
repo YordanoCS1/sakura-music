@@ -1,6 +1,6 @@
 # Auditoría de contraste (WCAG AA)
 
-Revisión del 2026-11-20 sobre los **14 temas** actuales. Todo el texto normal
+Revisión del 2026-11-20 sobre los **14 temas originales**. Los cinco temas nuevos (`sakura`, `loto`, `ukiyo`, `vinilo` y `karesansui`) se revisaron con capturas reales y ajustes puntuales de contraste el 2026-11-25. Todo el texto normal
 de la interfaz debe superar **4.5:1** contra su superficie; los textos grandes
 pueden conformarse con 3:1, pero aquí se exige el criterio estricto.
 

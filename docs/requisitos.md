@@ -10,8 +10,8 @@ este documento (con fecha y motivo). **No se renumeran.**
 ## Cómo leer la trazabilidad
 
 - **Criterio:** qué tiene que pasar para considerar el requisito cumplido.
-- **Test:** `npm test` (Vitest, **60 tests** del frontend), `npm run test:e2e`
-  (Playwright, **33 tests**), `cargo test` (Rust, **47 tests**) o `tsc --noEmit`
+- **Test:** `npm test` (Vitest, **94 tests** del frontend), `npm run test:e2e`
+  (Playwright, **41 tests**), `cargo test` (Rust, **59 tests**) o `tsc --noEmit`
   (tipos). `npm run pipeline` corre todo en orden y pasa en verde.
 - Si un requisito depende de red o de un binario externo, no se testea en la
   suite: se verifica a mano con `yt-dlp`/`ffmpeg` reales.
@@ -181,16 +181,17 @@ guardado. La carpeta `covers/` no crece sin control entre sesiones.
 
 #### RF-17 · Temas visuales seleccionables
 
-**Criterio:** la app ofrece **14 temas, todos propios**: ningún tema oficial es
+**Criterio:** la app ofrece **19 temas, todos propios**: ningún tema oficial es
 genérico. El por defecto es **Estudio** (`space`, "Consola de mezcla y medidores
 VU"): Home tipo consola con `EST·01`, medidor VU y rack de canales con faders;
 biblioteca en canales con fader y VU; navegación negra con glifo ◎ y acento
 ámbar `#f0a23c`; estilo propio en Buscar, Cola, Ajustes, panel "Ahora suena",
 playlists, paleta ⌘K, estadísticas, modales de metadatos, splash y transición
 `t-estudio`. Su paleta es grafito `#15181a`, panel `#1d2226`, ámbar `#f0a23c`,
-verde LED `#7ee081` y texto `#f2ede6`, con tipografía monospace. Los otros trece
-(`sumie`, `byobu`, `shoji`, `origami`, `swiss`, `sumiink`, `moonlit`, `ledger`,
-`shonen`, `ghost`, `samurai`, `kawaii`, `manga`) usan `data-skin={tema}` y
+verde LED `#7ee081` y texto `#f2ede6`, con tipografía monospace. Los otros
+dieciocho (`sumie`, `byobu`, `shoji`, `origami`, `swiss`, `sumiink`, `moonlit`,
+`ledger`, `shonen`, `ghost`, `samurai`, `kawaii`, `manga`, `sakura`, `loto`,
+`ukiyo`, `vinilo` y `karesansui`) usan `data-skin={tema}` y
 `ThemeLibrary`/`ThemeHome`/`ThemeNav` propios (cabecera, Buscar, Cola, ajustes,
 diálogos, transiciones, iconos y splash propios). Estudio fija
 `data-theme="space"` y aplica además `data-skin="space"`; la vista genérica
@@ -261,7 +262,7 @@ muestra **Deshacer** durante 9 segundos; `restore_deleted_track` recupera el
 archivo y la fila, `empty_trash` borra definitivamente y `trash_count` informa
 el contador de Ajustes → Sistema (`SystemPanel`).
 
-**Test:** `UndoToast.test.tsx` (60 unitarios Vitest) + `library_db.rs` (tests de
+**Test:** `UndoToast.test.tsx` (94 unitarios Vitest) + `library_db.rs` (tests de
 la migración y las consultas de la papelera).
 
 #### RF-22 · Letras sincronizadas
@@ -295,7 +296,7 @@ se crea un respaldo con `VACUUM INTO` (retención de 3). `doctor_detallado`
 se muestran en Ajustes → Sistema.
 
 **Test:** test de integración de la migración `user_version` con backup
-automático sobre una base en disco (`library_db.rs`) + `cargo test` (43).
+automático sobre una base en disco (`library_db.rs`) + `cargo test` (59).
 
 ---
 
@@ -381,10 +382,10 @@ enlaza a `docs/`.
 | Biblioteca y reproducción | RF-08 … RF-12 | `cargo test` (`scanner`, `library_db`), manual |
 | Metadatos y catálogo | RF-13 … RF-16 | `cargo test` + `tsc`, manual |
 | Apariencia y navegación | RF-17 … RF-18 | Vitest + E2E + `npm run build`, manual |
-| Playlists, papelera, letras, paleta y BD | RF-20 … RF-24 | Vitest (60), E2E (33), `cargo test` (47), manual |
+| Playlists, papelera, letras, paleta y BD | RF-20 … RF-24 | Vitest (94), E2E (41), `cargo test` (59), manual |
 | Transversales | RNF-01 … RNF-08 | `npm run pipeline` completo |
 
-**Totales:** 60 tests unitarios Vitest, 32 tests E2E Playwright y **47 tests
+**Totales:** 94 tests unitarios Vitest, 41 tests E2E Playwright y **59 tests
 Rust** (`downloader`, `queue`, `scanner`, `library_db`, `tools`, migraciones,
 playlists y lyrics). `npm run pipeline` pasa en verde.
 

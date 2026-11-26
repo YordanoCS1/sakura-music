@@ -103,7 +103,7 @@ No perdés tags ni portadas: todo eso vive en los archivos de audio.
 |---|---|---|
 | El tema no cambia un color de estado | Los estados (rojo error, verde éxito) no siguen el tema | Es intencional |
 | El tema no se guarda | `localStorage` bloqueado | Limpiá los datos del WebView2 y vuelva a abrir la app |
-| Cambié de tema y la biblioteca no cambia de vista | Estás con un tema importado, que cae en la vista genérica (`LibraryTab`) | Los 14 temas oficiales son propios, incluido Estudio (`space`): todos traen biblioteca, cabecera y diálogos propios |
+| Cambié de tema y la biblioteca no cambia de vista | Estás con un tema importado, que cae en la vista genérica (`LibraryTab`) | Los 19 temas oficiales son propios, incluido Estudio (`space`): todos traen biblioteca, cabecera y diálogos propios |
 | La paleta `⌘K` no abre | El atajo no llegó al WebView | Probá `Ctrl+K` en Windows/Linux; seleccione la lupa de la cabecera como alternativa |
 
 ## Papelera
@@ -167,8 +167,8 @@ Incluí:
 ## Diagnóstico para desarrolladores
 
 ```powershell
-cargo test --manifest-path src-tauri/Cargo.toml   # 47 tests Rust
-npm run pipeline                                  # 60 unitarios + 33 E2E + 47 tests Rust + build
+cargo test --manifest-path src-tauri/Cargo.toml   # 59 tests Rust
+npm run pipeline                                  # 94 unitarios + 41 E2E + 59 tests Rust + build
 node node_modules/typescript/bin/tsc --noEmit      # tipos
 npm run build                                      # tsc + vite build
 ```

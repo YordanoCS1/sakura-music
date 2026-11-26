@@ -43,3 +43,11 @@ manda como un array ordenado de rutas (`playlist_reorder`).
 
 `src-tauri/src/playlists.rs`, `library_db.rs` (esquema), `lib.rs` (comandos),
 `src/components/PlaylistsPanel.tsx`, `src/themes/themeIcons.ts`.
+
+---
+
+> **Actualización (2026-11-25):** las cifras de 14 temas de arriba corresponden
+> al estado del 2026-11-20. El 2026-11-25 se sumaron `sakura`, `loto`, `ukiyo`,
+> `vinilo` y `karesansui`, con Home y biblioteca de estructura propia, por lo que
+> hoy son **19 temas propios**. Las cifras anteriores se conservan como parte del
+> histórico de la decisión.

@@ -302,10 +302,11 @@ Tabla).
 
 **Flujo principal**
 
-1. La app ofrece **14 temas, todos propios**: **Estudio** (`space`, "Consola de
+1. La app ofrece **19 temas, todos propios**: **Estudio** (`space`, "Consola de
    mezcla y medidores VU") y Sumi-e, Byōbu, Shōji, Origami, Swiss, Sumi Ink,
-   Moonlit, Ledger, Shōnen, Fantasmas, Samurái, Kawaii y **Manga**. En Ajustes
-   se elige uno. Estudio fija `data-theme="space"` y aplica además
+   Moonlit, Ledger, Shōnen, Fantasmas, Samurái, Kawaii, **Manga**, **Sakura**,
+   **Loto Imperial**, **La Gran Ola**, **Tocadiscos 3D** y **Karesansui**. En
+   Ajustes se elige uno. Estudio fija `data-theme="space"` y aplica además
    `data-skin="space"`: muestra Home tipo consola (`EST·01`, medidor VU, rack de
    canales con faders), biblioteca en canales con fader y VU, navegación negra
    con glifo ◎ y acento ámbar `#f0a23c`, y estilo propio en Buscar, Cola,
@@ -402,8 +403,8 @@ Ajustes).
 
 **Dónde está:** `docs/desarrollo.md`.
 
-**Tests:** `npm test` (58 Vitest), `npm run test:e2e` (32 Playwright),
-`cargo test` (47 Rust) y `npm run pipeline` (pasa en verde).
+**Tests:** `npm test` (94 Vitest), `npm run test:e2e` (41 Playwright),
+`cargo test` (59 Rust) y `npm run pipeline` (pasa en verde).
 
 ---
 

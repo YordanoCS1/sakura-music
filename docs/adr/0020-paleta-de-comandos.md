@@ -37,3 +37,11 @@ la sexta pestaña `playlists` a todos los temas (cada uno con su propio glifo).
 
 `src/components/CommandPalette.tsx`, `src/App.tsx`, `src/types.ts`,
 `src/themes/themeIcons.ts`, `ThemeNav.tsx`, `ZenTopNav.tsx`.
+
+---
+
+> **Actualización (2026-11-25):** las cifras de 14 temas de arriba corresponden
+> al estado del 2026-11-20. El 2026-11-25 se sumaron `sakura`, `loto`, `ukiyo`,
+> `vinilo` y `karesansui`, con Home y biblioteca de estructura propia, por lo que
+> hoy son **19 temas propios**. Las cifras anteriores se conservan como parte del
+> histórico de la decisión.

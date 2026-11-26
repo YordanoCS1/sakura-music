@@ -24,15 +24,16 @@ canciones, Now Playing y Cola.**
 
 ## Estado actual de la implementación
 
-La app **no usa seis temas ni estos ocho prototipos**: implementa **14 temas,
+La app **no usa seis temas ni estos ocho prototipos**: implementa **19 temas,
 todos propios**:
 
 - **Estudio** (`space`, antes M3 Zen y hoy tema propio): fija
   `data-theme="space"` y aplica también `data-skin="space"`. Es una consola de
   mezcla con medidores VU, Home con `EST·01`, biblioteca en canales con fader y
   VU y navegación negra con glifo ◎ sobre acento ámbar `#f0a23c`.
-- **Los otros trece** (`sumie`, `byobu`, `shoji`, `origami`, `swiss`, `sumiink`,
-  `moonlit`, `ledger`, `shonen`, `ghost`, `samurai`, `kawaii`, `manga`): usan
+- **Los otros dieciocho** (`sumie`, `byobu`, `shoji`, `origami`, `swiss`,
+  `sumiink`, `moonlit`, `ledger`, `shonen`, `ghost`, `samurai`, `kawaii`,
+  `manga`, `sakura`, `loto`, `ukiyo`, `vinilo` y `karesansui`): usan
   `data-skin={tema}` y tienen `ThemeLibrary`, `ThemeHome` y `ThemeNav` propios,
   con cabecera, Buscar, Cola, ajustes, diálogos, transiciones, iconos y splash
   propios.
@@ -43,8 +44,9 @@ para temas importados; ningún tema oficial los usa.
 > **Nota (2026-11-20):** ninguno de los ocho prototipos de este informe se
 > implementó como tema. Los temas `yoru`, `hanabi` y `aizuri` no salieron de aquí:
 > fueron variantes de paleta de una etapa posterior y también se retiraron por
-> no tener vistas estructurales propias. El estado actual es **14 temas propios**
-> (incluido Estudio, el ex `space` genérico).
+> no tener vistas estructurales propias. En ese momento eran **14 temas propios**
+> (incluido Estudio, el ex `space` genérico); el 2026-11-25 se sumaron cinco más
+> y hoy son **19** (ver nota al final).
 
 Algunos prototipos de este informe inspiraron temas propios (por ejemplo,
 *Bambú Minimal* → `sumie`/`shoji`, *Noche Estrellada* → `moonlit`,
@@ -150,5 +152,11 @@ viñetas en la biblioteca.
 Esta sección se conserva tal cual porque documenta el proceso de diseño original:
 "abra el HTML, vea cada tema en sus 5 pantallas y decí cuál te gusta". Hoy esos
 pasos ya no están pendientes: la app implementa los 14 temas descriptos arriba
-(incluido `manga`, que se sumó después de este informe).
+(incluido `manga`, que se sumó después de este informe) y los cinco nuevos
+`sakura`, `loto`, `ukiyo`, `vinilo` y `karesansui`.
+
+> **Nota (2026-11-25):** los cinco temas nuevos tienen Home y biblioteca de
+> estructura propia —jardín hanami, rollos de seda, estampas, estantería y
+> jardín zen—, no una variante de paleta. Ver
+> [racional-de-decisiones.md](../racional-de-decisiones.md#5-bibliotecas-con-estructura-propia-no-un-cambio-de-color).
 Para temas nuevos, seguí la receta de [desarrollo.md](../desarrollo.md).

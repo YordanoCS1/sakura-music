@@ -59,8 +59,19 @@ transición `t-estudio`. Paleta: grafito `#15181a`, panel `#1d2226`, ámbar
 `#f0a23c`, verde LED `#7ee081` y texto `#f2ede6`, con tipografía monospace.
 Mantiene `data-theme="space"` fijo y aplica también `data-skin="space"`. Sumó
 los snapshots `space-home-win32.png` y `space-library-win32.png` y el badge
-**PROPIO** en la galería. Los 14 temas oficiales son propios: `LibraryTab` y
+**PROPIO** en la galería. Los 19 temas oficiales son propios: `LibraryTab` y
 `ZenTopNav` quedan como fallback para temas importados.
+
+## Cinco temas nuevos con biblioteca propia
+
+Se sumaron `sakura` (jardín hanami con foto real del cerezo, medallón de
+cinco pétalos y flores en zigzag), `loto` (tríptico de rollos de seda con
+varillas doradas), `ukiyo` (rollo lateral de estampas apaisadas con ola
+SVG), `vinilo` (estantería de fundas con discos que asoman y plato activo)
+y `karesansui` (arena rastrillada con piedras de paso). Ninguno reutiliza la
+grilla de tarjetas de otro tema: comparten el mecanismo `data-skin` pero
+tienen Home y biblioteca estructuralmente distintos. El detalle está en
+[racional-de-decisiones.md](racional-de-decisiones.md#5-bibliotecas-con-estructura-propia-no-un-cambio-de-color).
 
 ## Paleta de comandos
 
