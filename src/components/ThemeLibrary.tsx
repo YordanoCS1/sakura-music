@@ -1085,13 +1085,17 @@ export default function ThemeLibrary({
                   onDoubleClick={() => onPresentTrack?.(track)}
                 >
                   <span className="sakura-flor-cover">
-                    <span className="sakura-petalos" aria-hidden="true">
-                      <i />
-                      <i />
-                      <i />
-                      <i />
-                      <i />
-                    </span>
+                    {/* Los pétalos son decoración: sólo se renderizan en la
+                        primera fila para no crear miles de nodos animados. */}
+                    {i < 12 && (
+                      <span className="sakura-petalos" aria-hidden="true">
+                        <i />
+                        <i />
+                        <i />
+                        <i />
+                        <i />
+                      </span>
+                    )}
                     {track.cover_url ? (
                       <img src={getCoverSrc(track.cover_url)} alt="" />
                     ) : (

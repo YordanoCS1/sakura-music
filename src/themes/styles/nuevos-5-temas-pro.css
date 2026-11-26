@@ -127,11 +127,11 @@
     inset 0 1px rgba(255, 255, 255, 0.8);
 }
 .app-shell[data-skin='sakura'] .player-dock {
-  background: rgba(255, 255, 255, 0.82) !important;
+  background: rgba(255, 255, 255, 0.94) !important;
   border: 1px solid rgba(229, 77, 134, 0.3) !important;
   border-radius: 999px !important;
   box-shadow: 0 18px 44px rgba(130, 40, 78, 0.2) !important;
-  backdrop-filter: blur(16px);
+  /* Sin backdrop-filter: difumina un fondo animado en cada frame. */
   color: #3d1626 !important;
 }
 .app-shell[data-skin='sakura'] .theme-modal,
@@ -651,18 +651,13 @@
     transform: translateY(-10px) scale(1.02);
   }
 }
+/* Transform, no background-position: el compositor la mueve sin repintar. */
 @keyframes sakura-petalos {
-  0% {
-    background-position:
-      0 0,
-      0 0,
-      0 0;
+  from {
+    transform: translate3d(0, 0, 0);
   }
-  100% {
-    background-position:
-      60px 420px,
-      -45px 520px,
-      30px 600px;
+  to {
+    transform: translate3d(24px, 420px, 0);
   }
 }
 
@@ -685,6 +680,7 @@
   object-position: left bottom;
   filter: saturate(1.05) contrast(1.05);
   animation: sakura-flotar 12s ease-in-out infinite;
+  will-change: transform;
 }
 .app-shell[data-skin='sakura'] .sakura-taiju-foto::after {
   content: '';
@@ -696,7 +692,11 @@
 }
 .app-shell[data-skin='sakura'] .sakura-taiju-petalos {
   position: absolute;
-  inset: 0;
+  top: -420px;
+  left: 0;
+  width: 100%;
+  height: calc(100% + 840px);
+  will-change: transform;
   opacity: 0.85;
   background-image:
     radial-gradient(ellipse 7px 11px at 12% 8%, #ff8fb8 60%, transparent 62%),
@@ -709,8 +709,8 @@
   animation: sakura-petalos 14s linear infinite;
 }
 .app-shell[data-skin='sakura'] .sakura-taiju-copy {
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.92);
+  /* Sin backdrop-filter por el mismo motivo que el player. */
   border: 1px solid rgba(229, 77, 134, 0.25);
   border-radius: 28px 10px 28px 10px;
   padding: 30px 34px;
@@ -1123,7 +1123,6 @@
   inset: 0;
   z-index: -1;
   background: url('/images/sakura-tree.jpg') center 42% / cover no-repeat;
-  filter: saturate(1.1) contrast(1.04);
 }
 .app-shell[data-skin='sakura'] .sakura-hero-foto::after {
   content: '';
@@ -1290,8 +1289,9 @@
   flex-direction: column;
   gap: 10px;
   padding: 16px;
-  background: rgba(255, 255, 255, 0.66);
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.88);
+  content-visibility: auto;
+  contain-intrinsic-size: 240px;
   border: 1px solid rgba(229, 77, 134, 0.26);
   border-radius: 26px 10px 26px 10px;
   box-shadow: 0 14px 32px rgba(150, 50, 90, 0.12);
@@ -1299,7 +1299,7 @@
     transform 0.25s,
     box-shadow 0.25s;
   animation: realce-entrar 420ms ease both;
-  animation-delay: calc(var(--flor) * 45ms);
+  animation-delay: min(calc(var(--flor) * 45ms), 540ms);
 }
 .app-shell[data-skin='sakura'] .sakura-flor:nth-child(even) {
   transform: translateY(18px);
@@ -1389,6 +1389,12 @@
 .app-shell[data-skin='sakura'] .sakura-flor-acc button:hover {
   background: #e54d86;
   color: #fff;
+}
+
+/* Con bibliotecas grandes, animar cinco pétalos por tarjeta satura el
+   compositor. Sólo la primera fila se anima; el resto queda estático. */
+.app-shell[data-skin='sakura'] .sakura-flor:nth-child(n + 13) .sakura-petalos i {
+  animation: none !important;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,0 +1,25 @@
+/* ==========================================================================
+   SAKURA · ajuste de rendimiento
+   Las animaciones infinitas sobre fotos grandes y gradientes obligaban al
+   compositor a repintar cada frame. Medido en dev con 1000 pistas: Sakura iba
+   a ~7 FPS y Estudio a ~58 FPS. Se conservan las animaciones de entrada
+   (`realce-entrar`) y el respirar de las cinco pétalos del medallón del hero.
+   ========================================================================== */
+
+.app-shell[data-skin='sakura'] .app-rail-row::after,
+.app-shell[data-skin='sakura'] .sakura-taiju-home::after,
+.app-shell[data-skin='sakura'] .sakura-taiju-foto img,
+.app-shell[data-skin='sakura'] .sakura-taiju-petalos,
+.app-shell[data-skin='sakura'] .sakura-flor .sakura-petalos i {
+  animation: none !important;
+  will-change: auto;
+}
+
+/* La máscara sobre una imagen animada exigía un buffer extra por frame. */
+.app-shell[data-skin='sakura'] .sakura-taiju-foto {
+  mask-image: none;
+  -webkit-mask-image: none;
+}
+.app-shell[data-skin='sakura'] .sakura-taiju-foto img {
+  filter: none;
+}

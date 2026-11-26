@@ -68,7 +68,7 @@ flowchart TB
 | Datos y flujos | [§12 herramientas](#s12) · [§13 cola](#s13) · [§14 playlists](#s14) · [§15 papelera](#s15) · [§16 letras](#s16) |
 | Interfaz y control | [§6 remoto](#s6) · [§7 notificaciones](#s7) · [§17 IPC](#s17) · [§18 paleta](#s18) · [§19 presentación](#s19) |
 | Ingeniería | [§9 release](#s9) · [§10 organización](#s10) · [§20 miniaturas](#s20) |
-| Cierre | [§21 decisiones retiradas](#s21) · [§22 principios](#s22) · [Resumen](#resumen) |
+| Cierre | [§21 decisiones retiradas](#s21) · [§22 principios](#s22) · [§23 rendimiento de Sakura](#s23) · [Resumen](#resumen) |
 
 ---
 
@@ -606,6 +606,37 @@ Si hay poco tiempo, estas siete frases resumen casi todas las decisiones:
 
 ---
 
+<a id="s23"></a>
+## 23. Rendimiento de Sakura
+
+**Decisión.** El tema conserva su foto real, sus pétalos y su medallón, pero
+desactiva las animaciones infinitas y el `backdrop-filter` sobre la imagen y los
+gradientes. Las flores usan `content-visibility: auto` y los pétalos sólo se
+renderizan en la primera fila. La foto pasó de 1920×1440 a 1600×1200 (0.56 MB).
+
+**Por qué.** Con 1000 pistas, Sakura corría a ~7 FPS (136 ms/frame) y tardaba
+4301 ms en abrir la biblioteca, contra ~58 FPS y 1230 ms de Estudio. Las
+métricas CDP mostraban casi cero tiempo de script y layout: el costo estaba en
+el compositor. Al desactivar todas las animaciones continuas, Sakura bajó a
+17 ms/frame, igual que Estudio. El culpable principal era `background-position`
+sobre un área de 760×663 px, que fuerza repintar cada frame, y el
+`backdrop-filter` aplicado sobre fondos animados.
+
+**Alternativas descartadas.** Quitar la foto (destruye la identidad del tema),
+virtualizar `ThemeLibrary` completo para los 19 temas (cambio mucho más grande)
+y mantener las animaciones tal cual (inaceptable con bibliotecas grandes).
+
+**Consecuencia.** Medido de nuevo: 16.4 ms/frame en Home y 16.6 en biblioteca,
+con 1000 pistas 17.9 ms/frame y 1292 ms para abrir la vista. Siguen vivas las
+animaciones de entrada (`realce-entrar`) y los cinco pétalos del medallón del
+hero. Las capturas antes/después confirmaron que el tema se reconoce igual.
+
+**Reflejo en el código.** `src/styles/sakura-rendimiento.css` (importado al final
+de `App.css`), `src/themes/styles/nuevos-5-temas-pro.css`,
+`src/components/ThemeLibrary.tsx` y `public/images/sakura-tree.jpg`.
+
+---
+
 <a id="resumen"></a>
 ## Resumen
 
@@ -633,3 +664,4 @@ Si hay poco tiempo, estas siete frases resumen casi todas las decisiones:
 | 20 | Miniaturas `covers/thumbs/` | Redimensionar por render, usar originales | § 20 |
 | 21 | Decisiones retiradas | — | § 21 |
 | 22 | Principios rectores | — | § 22 |
+| 23 | Animaciones continuas limitadas en Sakura | Quitar la foto, virtualizar los 19 temas | § 23 |
