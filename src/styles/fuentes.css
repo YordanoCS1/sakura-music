@@ -51,3 +51,39 @@
 .app-shell[data-skin='karesansui'] .zen-piedra.is-active {
   outline-color: var(--karesansui-activo);
 }
+
+/* Títulos dentro de las tarjetas: misma familia, tamaño de óptica menor. */
+.app-shell[data-skin='ukiyo'] .ukiyo-cartucho strong,
+.app-shell[data-skin='vinilo'] .vinilo-etiqueta strong,
+.app-shell[data-skin='karesansui'] .zen-piedra-info strong,
+.app-shell[data-skin='sakura'] .sakura-flor-info strong {
+  font-family: 'Fraunces Variable', 'Cormorant Garamond', serif;
+  font-variation-settings:
+    'opsz' 20,
+    'SOFT' 10,
+    'WONK' 0;
+  font-weight: 600;
+}
+
+/* Botones de acción con tonos derivados: hover y foco siempre coherentes
+   con el acento del tema, sin hex repetido en cada biblioteca. */
+.app-shell[data-skin='sakura'] .sakura-flor-acc button:hover {
+  background: var(--sakura-activo);
+  color: #fff;
+}
+.app-shell[data-skin='loto'] .loto-acc button:hover {
+  color: var(--loto-hover);
+  border-color: var(--loto-hover);
+}
+.app-shell[data-skin='ukiyo'] .ukiyo-acc button:hover {
+  background: var(--ukiyo-activo);
+  color: #fff;
+}
+.app-shell[data-skin='vinilo'] .vinilo-acc button:hover {
+  background: var(--vinilo-hover);
+  color: #120e0b;
+}
+.app-shell[data-skin='karesansui'] .zen-acc button:hover {
+  background: var(--karesansui-activo);
+  color: var(--karesansui-suave);
+}

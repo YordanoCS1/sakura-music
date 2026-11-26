@@ -5,6 +5,7 @@ Todos los cambios destacables de este proyecto se registran aquí. El formato si
 ## [2.0.0] - 2026-11-25
 
 ### Cambiado
+- **Fraunces y tonos OKLCH extendidos a las tarjetas**: los títulos dentro de las tarjetas de los cinco temas usan Fraunces con óptica menor, y los botones de acción toman `--*-hover`, `--*-activo` y `--*-suave` en lugar de colores fijos por tema. Verificado con capturas antes/después y leyendo los estilos computados en hover de los cinco temas.
 - **CI sin compilación incremental**: `.github/workflows/ci.yml` fija `CARGO_INCREMENTAL: '0'` a nivel de `env`. En las runners descartables el incremental apenas acelera el build (el código cambia en cada push) y acumula sesiones que inflan el caché de `Swatinem/rust-cache@v2`. El desarrollo local no se toca: `npm run tauri dev` sigue con incremental activo. La razón quedó documentada en `docs/pipeline.md`.
 
 ### Agregado
